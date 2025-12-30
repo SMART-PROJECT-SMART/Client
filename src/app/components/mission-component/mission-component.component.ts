@@ -1,6 +1,6 @@
 import { Component, output, input, OnInit, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UAVType, Priority } from '../../enums';
+import { UAVType, Priority } from '../../common/enums';
 import { ClientConstants } from '../../common';
 
 const { LocationValidation, TimeValidation } = ClientConstants.ValidationConstants;
