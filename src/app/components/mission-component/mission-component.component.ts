@@ -1,7 +1,10 @@
 import { Component, output } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UAVType } from '../../enums/uavType.enum';
-import { Priority } from '../../enums/priority.enum';
+import { UAVType, Priority } from '../../enums';
+import { ClientConstants } from '../../common';
+
+const { LocationValidation, TimeValidation } = ClientConstants.ValidationConstants;
+const { EMPTY_STRING, DEFAULT_NUMBER } = ClientConstants.FormDefaults;
 
 @Component({
   selector: 'app-mission-component',
@@ -12,37 +15,60 @@ import { Priority } from '../../enums/priority.enum';
 export class MissionComponentComponent {
   public readonly uavTypes = Object.values(UAVType);
   public readonly priority = Object.values(Priority);
-
   public readonly remove = output<void>();
 
   public missionForm = new FormGroup({
-    missionId: new FormControl('', [Validators.required]),
-    requiredUAVType: new FormControl('', [Validators.required]),
-    priority: new FormControl('', [Validators.required]),
-    location: new FormGroup({
-      latitude: new FormControl(0, [Validators.required, Validators.min(-90), Validators.max(90)]),
-      longitude: new FormControl(0, [
-        Validators.required,
-        Validators.min(-180),
-        Validators.max(180),
-      ]),
-      altitude: new FormControl(0, [Validators.required]),
-    }),
-    timeWindow: new FormGroup({
-      startTime: new FormGroup({
-        hours: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(23)]),
-        minutes: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(59)]),
-        seconds: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(59)]),
-      }),
-      endTime: new FormGroup({
-        hours: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(23)]),
-        minutes: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(59)]),
-        seconds: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(59)]),
-      }),
-    }),
+    missionId: new FormControl(EMPTY_STRING, [Validators.required]),
+    requiredUAVType: new FormControl(EMPTY_STRING, [Validators.required]),
+    priority: new FormControl(EMPTY_STRING, [Validators.required]),
+    location: this.createLocationFormGroup(),
+    timeWindow: this.createTimeWindowFormGroup(),
   });
 
   public onRemove(): void {
     this.remove.emit();
+  }
+
+  private createLocationFormGroup(): FormGroup {
+    return new FormGroup({
+      latitude: new FormControl(DEFAULT_NUMBER, [
+        Validators.required,
+        Validators.min(LocationValidation.LATITUDE_MIN),
+        Validators.max(LocationValidation.LATITUDE_MAX),
+      ]),
+      longitude: new FormControl(DEFAULT_NUMBER, [
+        Validators.required,
+        Validators.min(LocationValidation.LONGITUDE_MIN),
+        Validators.max(LocationValidation.LONGITUDE_MAX),
+      ]),
+      altitude: new FormControl(DEFAULT_NUMBER, [Validators.required]),
+    });
+  }
+
+  private createTimeWindowFormGroup(): FormGroup {
+    return new FormGroup({
+      startTime: this.createTimeFormGroup(),
+      endTime: this.createTimeFormGroup(),
+    });
+  }
+
+  private createTimeFormGroup(): FormGroup {
+    return new FormGroup({
+      hours: new FormControl(DEFAULT_NUMBER, [
+        Validators.required,
+        Validators.min(TimeValidation.HOURS_MIN),
+        Validators.max(TimeValidation.HOURS_MAX),
+      ]),
+      minutes: new FormControl(DEFAULT_NUMBER, [
+        Validators.required,
+        Validators.min(TimeValidation.MINUTES_MIN),
+        Validators.max(TimeValidation.MINUTES_MAX),
+      ]),
+      seconds: new FormControl(DEFAULT_NUMBER, [
+        Validators.required,
+        Validators.min(TimeValidation.SECONDS_MIN),
+        Validators.max(TimeValidation.SECONDS_MAX),
+      ]),
+    });
   }
 }
