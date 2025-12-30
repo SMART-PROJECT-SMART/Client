@@ -8,9 +8,10 @@ import { App } from './app';
 import { MissionComponentComponent } from './components/mission-component/mission-component.component';
 import { MatModule } from './modules/mat.module';
 import { AssignmentPageComponentComponent } from './components/assignment-page-component/assignment-page-component.component';
+import { AssignmentManagementComponent } from './components/assignment-management-component/assignment-management-component';
 
 @NgModule({
-  declarations: [App, MissionComponentComponent, AssignmentPageComponentComponent],
+  declarations: [App, MissionComponentComponent, AssignmentPageComponentComponent, AssignmentManagementComponent],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync()],
   bootstrap: [App],
