@@ -1,5 +1,4 @@
 import { Component, signal } from '@angular/core';
-import { MatModule } from './modules/mat.module';
 
 @Component({
   selector: 'app-root',

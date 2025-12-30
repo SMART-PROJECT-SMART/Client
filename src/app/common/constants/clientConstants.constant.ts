@@ -21,4 +21,12 @@ export namespace ClientConstants {
     export const EMPTY_STRING: string = '';
     export const DEFAULT_NUMBER: number = 0;
   }
+
+  export namespace AssignmentPageConstants {
+    export const ADD_MISSION_LABEL: string = 'Add Mission';
+    export const SUBMIT_LABEL: string = 'Submit';
+    export const APPLY_LABEL: string = 'Apply';
+    export const BACK_LABEL: string = 'Back';
+    export const NO_ASSIGNMENT_LABEL: string = 'Unassigned';
+  }
 }

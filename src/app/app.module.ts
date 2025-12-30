@@ -7,9 +7,10 @@ import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
 import { MissionComponentComponent } from './components/mission-component/mission-component.component';
 import { MatModule } from './modules/mat.module';
+import { AssignmentPageComponentComponent } from './components/assignment-page-component/assignment-page-component.component';
 
 @NgModule({
-  declarations: [App, MissionComponentComponent],
+  declarations: [App, MissionComponentComponent, AssignmentPageComponentComponent],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync()],
   bootstrap: [App],
