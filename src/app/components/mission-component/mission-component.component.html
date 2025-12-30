@@ -1,0 +1,77 @@
+<mat-card class="mission-card" [class.invalid]="missionForm.invalid && missionForm.touched">
+  <mat-card-content>
+    <button mat-icon-button color="warn" class="delete-btn" (click)="onRemove()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <form [formGroup]="missionForm" class="mission-form">
+      <mat-form-field appearance="outline"
+        ><mat-label>Mission Id</mat-label>
+        <input matInput formControlName="missionId" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Required UAV Type</mat-label>
+        <mat-select formControlName="requiredUAVType">
+          @for (type of uavTypes; track type) {
+          <mat-option [value]="type">{{ type }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Priority</mat-label>
+        <mat-select formControlName="priority">
+          @for (level of priority; track level) {
+          <mat-option [value]="level">{{ level }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <fieldset formGroupName="location" class="location-group">
+        <legend>Location</legend>
+        <mat-form-field appearance="outline">
+          <mat-label>Latitude</mat-label>
+          <input matInput type="number" formControlName="latitude" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Longitude</mat-label>
+          <input matInput type="number" formControlName="longitude" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Altitude</mat-label>
+          <input matInput type="number" formControlName="altitude" />
+        </mat-form-field>
+      </fieldset>
+      <fieldset formGroupName="timeWindow" class="time-window-group">
+        <legend>Time Window</legend>
+        <fieldset formGroupName="startTime" class="time-group">
+          <legend>Start Time</legend>
+          <mat-form-field appearance="outline">
+            <mat-label>Hours</mat-label>
+            <input matInput type="number" formControlName="hours" min="0" max="23" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Minutes</mat-label>
+            <input matInput type="number" formControlName="minutes" min="0" max="59" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Seconds</mat-label>
+            <input matInput type="number" formControlName="seconds" min="0" max="59" />
+          </mat-form-field>
+        </fieldset>
+        <fieldset formGroupName="endTime" class="time-group">
+          <legend>End Time</legend>
+          <mat-form-field appearance="outline">
+            <mat-label>Hours</mat-label>
+            <input matInput type="number" formControlName="hours" min="0" max="23" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Minutes</mat-label>
+            <input matInput type="number" formControlName="minutes" min="0" max="59" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Seconds</mat-label>
+            <input matInput type="number" formControlName="seconds" min="0" max="59" />
+          </mat-form-field>
+        </fieldset>
+      </fieldset>
+    </form>
+  </mat-card-content>
+</mat-card>

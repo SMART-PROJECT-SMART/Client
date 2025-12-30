@@ -1,0 +1,73 @@
+@use '../../../styles/constants' as *;
+
+.mission-card {
+  position: relative;
+  padding: $spacing-md;
+  margin-bottom: $spacing-lg;
+  background-color: $color-background-card;
+  border: $border-width-thin solid $color-primary-dark;
+  border-radius: $border-radius-md;
+
+  &.invalid {
+    border-color: $color-error;
+    border-width: $border-width-medium;
+  }
+}
+
+.delete-btn {
+  position: absolute;
+  top: $spacing-md;
+  right: $spacing-md;
+  z-index: $z-index-delete-button;
+  width: $button-size-md;
+  height: $button-size-md;
+}
+
+.mission-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding-top: $spacing-xl;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+fieldset {
+  border: $border-width-thin solid $color-primary-dark;
+  border-radius: $border-radius-sm;
+  padding: $spacing-md;
+  margin: 0;
+
+  legend {
+    color: $color-primary;
+    font-size: $font-size-lg;
+    font-weight: 500;
+    padding: 0 $spacing-sm;
+  }
+}
+
+.location-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.time-window-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.time-group {
+  display: flex;
+  flex-direction: row;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    flex: 1;
+    min-width: 80px;
+  }
+}

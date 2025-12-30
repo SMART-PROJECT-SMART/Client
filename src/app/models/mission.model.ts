@@ -1,5 +1,5 @@
-import { Priority } from '../common/enums/priority.enum';
-import { UAVType } from '../common/enums/uavType.enum';
+import { Priority } from '../enums/priority.enum';
+import { UAVType } from '../enums/uavType.enum';
 import { TimeWindow } from './timeWindow.model';
 
 export interface Mission {
