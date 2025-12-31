@@ -1,6 +1,7 @@
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideHttpClient } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing-module';
@@ -13,7 +14,7 @@ import { AssignmentManagementComponent } from './components/assignment-managemen
 @NgModule({
   declarations: [App, MissionComponentComponent, AssignmentPageComponentComponent, AssignmentManagementComponent],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
-  providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync()],
+  providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],
   bootstrap: [App],
 })
 export class AppModule {}

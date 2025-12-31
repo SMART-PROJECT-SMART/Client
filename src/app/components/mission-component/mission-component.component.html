@@ -58,40 +58,14 @@
         </legend>
         @if (isTimeWindowExpanded()) {
           <div class="time-window-content">
-            <fieldset formGroupName="startTime" class="time-group-section">
-              <legend>Start Time</legend>
-              <div class="time-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Hours</mat-label>
-                  <input matInput type="number" formControlName="hours" min="0" max="23" aria-label="Start hours" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Minutes</mat-label>
-                  <input matInput type="number" formControlName="minutes" min="0" max="59" aria-label="Start minutes" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Seconds</mat-label>
-                  <input matInput type="number" formControlName="seconds" min="0" max="59" aria-label="Start seconds" />
-                </mat-form-field>
-              </div>
-            </fieldset>
-            <fieldset formGroupName="endTime" class="time-group-section">
-              <legend>End Time</legend>
-              <div class="time-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Hours</mat-label>
-                  <input matInput type="number" formControlName="hours" min="0" max="23" aria-label="End hours" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Minutes</mat-label>
-                  <input matInput type="number" formControlName="minutes" min="0" max="59" aria-label="End minutes" />
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <mat-label>Seconds</mat-label>
-                  <input matInput type="number" formControlName="seconds" min="0" max="59" aria-label="End seconds" />
-                </mat-form-field>
-              </div>
-            </fieldset>
+            <mat-form-field appearance="outline">
+              <mat-label>Start Time</mat-label>
+              <input matInput type="datetime-local" formControlName="start" aria-label="Start time" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>End Time</mat-label>
+              <input matInput type="datetime-local" formControlName="end" aria-label="End time" />
+            </mat-form-field>
           </div>
         }
       </fieldset>

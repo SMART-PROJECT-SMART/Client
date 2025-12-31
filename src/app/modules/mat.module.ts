@@ -6,6 +6,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { MatInput } from '@angular/material/input';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 const MaterialModules = [
   MatCard,
@@ -18,6 +19,7 @@ const MaterialModules = [
   MatSelect,
   MatOption,
   MatInput,
+  MatProgressSpinner,
 ];
 
 @NgModule({

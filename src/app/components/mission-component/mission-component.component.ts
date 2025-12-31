@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UAVType, Priority } from '../../common/enums';
 import { ClientConstants } from '../../common';
 
-const { LocationValidation, TimeValidation } = ClientConstants.ValidationConstants;
+const { LocationValidation } = ClientConstants.ValidationConstants;
 const { EMPTY_STRING, DEFAULT_NUMBER } = ClientConstants.FormDefaults;
 
 @Component({
@@ -69,28 +69,8 @@ export class MissionComponentComponent implements OnInit {
 
   private createTimeWindowFormGroup(): FormGroup {
     return new FormGroup({
-      startTime: this.createTimeFormGroup(),
-      endTime: this.createTimeFormGroup(),
-    });
-  }
-
-  private createTimeFormGroup(): FormGroup {
-    return new FormGroup({
-      hours: new FormControl(DEFAULT_NUMBER, [
-        Validators.required,
-        Validators.min(TimeValidation.HOURS_MIN),
-        Validators.max(TimeValidation.HOURS_MAX),
-      ]),
-      minutes: new FormControl(DEFAULT_NUMBER, [
-        Validators.required,
-        Validators.min(TimeValidation.MINUTES_MIN),
-        Validators.max(TimeValidation.MINUTES_MAX),
-      ]),
-      seconds: new FormControl(DEFAULT_NUMBER, [
-        Validators.required,
-        Validators.min(TimeValidation.SECONDS_MIN),
-        Validators.max(TimeValidation.SECONDS_MAX),
-      ]),
+      start: new FormControl(null, [Validators.required]),
+      end: new FormControl(null, [Validators.required]),
     });
   }
 }

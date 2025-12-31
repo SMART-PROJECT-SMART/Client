@@ -1,8 +1,20 @@
-@if (currentStage() === AssignmentStage.MANAGEMENT) {
+@if (isLoading()) {
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>{{ messages.PROCESSING_MESSAGE }}</p>
+  </div>
+} @else if (errorMessage()) {
+  <div class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ errorMessage() }}</p>
+    <button mat-raised-button color="primary" (click)="onBackToManagement()">Back to Management</button>
+  </div>
+} @else if (currentStage() === AssignmentStage.MANAGEMENT) {
   <app-assignment-management-component (missionsSubmit)="onMissionsSubmit($event)"></app-assignment-management-component>
 } @else if (currentStage() === AssignmentStage.REVIEW) {
   <div class="review-stage">
-    <p>Review stage - Will be implemented with API results</p>
+    <h2>{{ messages.ASSIGNMENT_RESULT_TITLE }}</h2>
+    <p>{{ messages.SUCCESS_MESSAGE }}</p>
     <button mat-raised-button color="primary" (click)="onBackToManagement()">Back to Management</button>
   </div>
 }

@@ -1,5 +1,7 @@
 @use '../../../styles/constants' as *;
 
+.loading-container,
+.error-container,
 .review-stage {
   display: flex;
   flex-direction: column;
@@ -8,4 +10,12 @@
   height: 100vh;
   gap: $spacing-lg;
   padding: $spacing-lg;
+}
+
+.error-container {
+  mat-icon {
+    font-size: $icon-size-xxl;
+    width: $icon-size-xxl;
+    height: $icon-size-xxl;
+  }
 }
