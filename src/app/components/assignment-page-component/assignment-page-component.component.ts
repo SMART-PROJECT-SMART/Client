@@ -1,9 +1,14 @@
-import { Component, signal, inject } from '@angular/core';
-import { Mission } from '../../models/mission.model';
+import { Component, signal, inject, computed } from '@angular/core';
+import type {
+  Mission,
+  AssignmentSuggestionDto,
+  AssignmentAlgorithmRo,
+  MissionToUavAssignment,
+  UAV,
+  ApplyAssignmentDto,
+} from '../../models';
 import { AssignmentStage } from '../../common/enums/assignmentStage.enum';
 import { AssignmentApiService } from '../../services/assignment/api/assignment-api.service';
-import { AssignmentSuggestionDto } from '../../models/dto/assignmentSuggestionDto.dto';
-import { AssignmentAlgorithmRo } from '../../models/Ro/assignmentAlgorithmRo.ro';
 import { ClientConstants } from '../../common';
 import { interval, switchMap, takeWhile } from 'rxjs';
 
@@ -25,6 +30,16 @@ export class AssignmentPageComponentComponent {
   public assignmentResult = signal<AssignmentAlgorithmRo | null>(null);
   public isLoading = signal(false);
   public errorMessage = signal<string | null>(null);
+
+  public availableUavs = computed<UAV[]>(() => {
+    const result = this.assignmentResult();
+    if (!result) return [];
+    const uavMap = new Map<number, UAV>();
+    result.assignments.forEach((assignment) => {
+      uavMap.set(assignment.uav.tailId, assignment.uav);
+    });
+    return Array.from(uavMap.values());
+  });
 
   public onMissionsSubmit(missions: Mission[]): void {
     this.missions.set(missions);
@@ -48,6 +63,30 @@ export class AssignmentPageComponentComponent {
   public onBackToManagement(): void {
     this.currentStage.set(AssignmentStage.MANAGEMENT);
     this.assignmentResult.set(null);
+  }
+
+  public onApplyAssignment(data: { suggested: MissionToUavAssignment[]; actual: MissionToUavAssignment[] }): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    const dto: ApplyAssignmentDto = {
+      suggestedAssignments: data.suggested,
+      actualAssignments: data.actual,
+    };
+
+    this.assignmentApiService.applyAssignment(dto).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.currentStage.set(AssignmentStage.MANAGEMENT);
+        this.assignmentResult.set(null);
+        this.missions.set([]);
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(Messages.SUBMIT_ERROR);
+        console.error('Error applying assignment:', error);
+      },
+    });
   }
 
   private pollAssignmentStatus(assignmentId: string): void {

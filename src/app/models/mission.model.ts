@@ -1,6 +1,7 @@
 import { Priority } from '../common/enums/priority.enum';
 import { UAVType } from '../common/enums/uavType.enum';
-import { TimeWindow } from './timeWindow.model';
+import type { TimeWindow } from './timeWindow.model';
+import type { Location } from './location.model';
 
 export interface Mission {
   id: string;

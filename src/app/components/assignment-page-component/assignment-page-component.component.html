@@ -11,10 +11,11 @@
   </div>
 } @else if (currentStage() === AssignmentStage.MANAGEMENT) {
   <app-assignment-management-component (missionsSubmit)="onMissionsSubmit($event)"></app-assignment-management-component>
-} @else if (currentStage() === AssignmentStage.REVIEW) {
-  <div class="review-stage">
-    <h2>{{ messages.ASSIGNMENT_RESULT_TITLE }}</h2>
-    <p>{{ messages.SUCCESS_MESSAGE }}</p>
-    <button mat-raised-button color="primary" (click)="onBackToManagement()">Back to Management</button>
-  </div>
+} @else if (currentStage() === AssignmentStage.REVIEW && assignmentResult()) {
+  <app-assignment-review-component
+    [algorithmResult]="assignmentResult()!"
+    [availableUavs]="availableUavs()"
+    (back)="onBackToManagement()"
+    (apply)="onApplyAssignment($event)">
+  </app-assignment-review-component>
 }

@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AssignmentSuggestionDto } from '../../../models/dto/assignmentSuggestionDto.dto';
-import { ApplyAssignmentDto } from '../../../models/dto/applyAssignmentDto.dto';
-import { AssignmentRequestAcceptedRo } from '../../../models/Ro/assignmentRequestAcceptedRo.ro';
-import { AssignmentStatusRo } from '../../../models/Ro/assignmentStatusRo.ro';
-import { AssignmentAlgorithmRo } from '../../../models/Ro/assignmentAlgorithmRo.ro';
+import type {
+  AssignmentSuggestionDto,
+  ApplyAssignmentDto,
+  AssignmentRequestAcceptedRo,
+  AssignmentStatusRo,
+  AssignmentAlgorithmRo,
+} from '../../../models';
 import { ClientConstants } from '../../../common';
 
 const { Endpoints } = ClientConstants.MissionServiceAPI;
