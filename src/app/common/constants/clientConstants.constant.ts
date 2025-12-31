@@ -64,8 +64,16 @@ export namespace ClientConstants {
       export const SUBMIT_ERROR: string = 'Failed to submit missions. Please try again.';
       export const STATUS_ERROR: string = 'Failed to check assignment status. Please try again.';
       export const RESULT_ERROR: string = 'Failed to fetch assignment result. Please try again.';
+      export const APPLY_ERROR: string = 'Failed to apply assignment. Please try again.';
       export const SUCCESS_MESSAGE: string = 'Assignment suggestion completed successfully!';
       export const ASSIGNMENT_RESULT_TITLE: string = 'Assignment Result';
+    }
+
+    export namespace ErrorMessages {
+      export const SUBMIT_MISSIONS_ERROR: string = 'Error submitting missions';
+      export const POLL_STATUS_ERROR: string = 'Error polling assignment status';
+      export const APPLY_ASSIGNMENT_ERROR: string = 'Error applying assignment';
+      export const POLLING_IN_PROGRESS: string = 'Polling in progress';
     }
   }
 }

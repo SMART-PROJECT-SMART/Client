@@ -13,3 +13,4 @@ export type { AssignmentSuggestionRo } from './Ro/assignmentSuggestionRo.ro';
 export type { AssignmentRequestAcceptedRo } from './Ro/assignmentRequestAcceptedRo.ro';
 export type { AssignmentStatusRo } from './Ro/assignmentStatusRo.ro';
 export type { AssignmentAlgorithmRo } from './Ro/assignmentAlgorithmRo.ro';
+export type { ApplyAssignmentRo } from './Ro/applyAssignmentRo.ro';
