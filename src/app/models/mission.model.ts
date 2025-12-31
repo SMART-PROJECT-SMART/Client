@@ -1,5 +1,4 @@
-import { Priority } from '../common/enums/priority.enum';
-import { UAVType } from '../common/enums/uavType.enum';
+import type { Priority, UAVType } from '../common/enums';
 import type { TimeWindow } from './timeWindow.model';
 import type { Location } from './location.model';
 

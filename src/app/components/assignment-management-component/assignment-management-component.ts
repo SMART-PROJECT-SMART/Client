@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, output, viewChildren } from '@angular/core';
 import { ClientConstants } from '../../common';
 import { MissionComponentComponent } from '../mission-component/mission-component.component';
-import { Mission } from '../../models/mission.model';
+import type { Mission } from '../../models';
 
 const { ADD_MISSION_LABEL, SUBMIT_LABEL } = ClientConstants.AssignmentPageConstants;
 
@@ -12,17 +12,13 @@ const { ADD_MISSION_LABEL, SUBMIT_LABEL } = ClientConstants.AssignmentPageConsta
   styleUrl: './assignment-management-component.scss',
 })
 export class AssignmentManagementComponent {
-  @ViewChildren(MissionComponentComponent)
-  public missionComponents!: QueryList<MissionComponentComponent>;
-
-  @Output()
-  public missionsSubmit = new EventEmitter<Mission[]>();
-
-  public readonly addMissionLabel = ADD_MISSION_LABEL;
-  public readonly submitLabel = SUBMIT_LABEL;
+  public readonly missionComponents = viewChildren(MissionComponentComponent);
+  public readonly missionsSubmit = output<Mission[]>();
+  public readonly addMissionLabel: string = ADD_MISSION_LABEL;
+  public readonly submitLabel: string = SUBMIT_LABEL;
   public missionIds: number[] = [];
 
-  private nextMissionId = 0;
+  private nextMissionId: number = 0;
 
   public onAddMission(): void {
     this.missionIds.push(this.nextMissionId++);
@@ -33,7 +29,7 @@ export class AssignmentManagementComponent {
   }
 
   public onSubmit(): void {
-    const missions = this.missionComponents.map((component) => {
+    const missions: Mission[] = this.missionComponents().map((component: MissionComponentComponent) => {
       const formValue = component.missionForm.value;
       return {
         id: formValue.missionId!,
@@ -51,7 +47,7 @@ export class AssignmentManagementComponent {
       return true;
     }
 
-    return this.missionComponents?.some((component) => component.missionForm.invalid) ?? true;
+    return this.missionComponents().some((component: MissionComponentComponent) => component.missionForm.invalid);
   }
 
   public trackByMissionId(_index: number, missionId: number): number {

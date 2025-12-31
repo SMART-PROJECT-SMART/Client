@@ -7,6 +7,7 @@ import type {
   AssignmentRequestAcceptedRo,
   AssignmentStatusRo,
   AssignmentAlgorithmRo,
+  Mission,
 } from '../../../models';
 import { ClientConstants } from '../../../common';
 
@@ -16,7 +17,7 @@ const { Endpoints } = ClientConstants.MissionServiceAPI;
   providedIn: 'root',
 })
 export class AssignmentApiService {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private readonly httpClient: HttpClient) {}
 
   public createAssignmentSuggestion(
     dto: AssignmentSuggestionDto
@@ -41,8 +42,8 @@ export class AssignmentApiService {
     return this.httpClient.post<void>(Endpoints.APPLY_ASSIGNMENT, dto);
   }
 
-  public getActiveMission(tailId: number): Observable<any> {
-    return this.httpClient.get<any>(`${Endpoints.GET_ACTIVE_MISSION}/${tailId}`);
+  public getActiveMission(tailId: number): Observable<Mission | null> {
+    return this.httpClient.get<Mission | null>(`${Endpoints.GET_ACTIVE_MISSION}/${tailId}`);
   }
 
   public markMissionCompleted(tailId: number): Observable<void> {
