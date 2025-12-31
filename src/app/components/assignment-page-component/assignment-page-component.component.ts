@@ -3,6 +3,7 @@ import { Mission } from '../../models/mission.model';
 import { AssignmentStage } from '../../common/enums/assignmentStage.enum';
 import { AssignmentApiService } from '../../services/assignment/api/assignment-api.service';
 import { AssignmentSuggestionDto } from '../../models/dto/assignmentSuggestionDto.dto';
+import { AssignmentAlgorithmRo } from '../../models/Ro/assignmentAlgorithmRo.ro';
 import { ClientConstants } from '../../common';
 import { interval, switchMap, takeWhile } from 'rxjs';
 
@@ -21,7 +22,7 @@ export class AssignmentPageComponentComponent {
   public readonly messages = Messages;
   public currentStage = signal<AssignmentStage>(AssignmentStage.MANAGEMENT);
   public missions = signal<Mission[]>([]);
-  public assignmentResult = signal<any>(null);
+  public assignmentResult = signal<AssignmentAlgorithmRo | null>(null);
   public isLoading = signal(false);
   public errorMessage = signal<string | null>(null);
 

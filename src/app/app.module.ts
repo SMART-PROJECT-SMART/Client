@@ -10,9 +10,10 @@ import { MissionComponentComponent } from './components/mission-component/missio
 import { MatModule } from './modules/mat.module';
 import { AssignmentPageComponentComponent } from './components/assignment-page-component/assignment-page-component.component';
 import { AssignmentManagementComponent } from './components/assignment-management-component/assignment-management-component';
+import { AssignmentReviewComponent } from './components/assignment-review-component/assignment-review-component';
 
 @NgModule({
-  declarations: [App, MissionComponentComponent, AssignmentPageComponentComponent, AssignmentManagementComponent],
+  declarations: [App, MissionComponentComponent, AssignmentPageComponentComponent, AssignmentManagementComponent, AssignmentReviewComponent],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],
   bootstrap: [App],

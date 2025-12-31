@@ -5,6 +5,7 @@ import { AssignmentSuggestionDto } from '../../../models/dto/assignmentSuggestio
 import { ApplyAssignmentDto } from '../../../models/dto/applyAssignmentDto.dto';
 import { AssignmentRequestAcceptedRo } from '../../../models/Ro/assignmentRequestAcceptedRo.ro';
 import { AssignmentStatusRo } from '../../../models/Ro/assignmentStatusRo.ro';
+import { AssignmentAlgorithmRo } from '../../../models/Ro/assignmentAlgorithmRo.ro';
 import { ClientConstants } from '../../../common';
 
 const { Endpoints } = ClientConstants.MissionServiceAPI;
@@ -30,8 +31,8 @@ export class AssignmentApiService {
     );
   }
 
-  public getAssignmentResult(assignmentId: string): Observable<any> {
-    return this.httpClient.get<any>(`${Endpoints.GET_ASSIGNMENT_RESULT}/${assignmentId}`);
+  public getAssignmentResult(assignmentId: string): Observable<AssignmentAlgorithmRo> {
+    return this.httpClient.get<AssignmentAlgorithmRo>(`${Endpoints.GET_ASSIGNMENT_RESULT}/${assignmentId}`);
   }
 
   public applyAssignment(dto: ApplyAssignmentDto): Observable<void> {
