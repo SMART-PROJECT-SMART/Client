@@ -1,0 +1,20 @@
+{
+  "/api/assignment": {
+    "target": "http://127.0.0.1:5224",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/api/assignmentresult": {
+    "target": "http://127.0.0.1:5224",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/api/mission-status": {
+    "target": "http://127.0.0.1:5224",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}
