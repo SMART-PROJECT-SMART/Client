@@ -2,6 +2,7 @@ import { Component, output, input, OnInit, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UAVType, Priority } from '../../common/enums';
 import { ClientConstants } from '../../common';
+import { EnumUtil } from '../../common/utils';
 
 const { LocationValidation } = ClientConstants.ValidationConstants;
 const { EMPTY_STRING, DEFAULT_NUMBER } = ClientConstants.FormDefaults;
@@ -17,6 +18,7 @@ export class MissionComponentComponent implements OnInit {
   public readonly uavTypes: UAVType[] = Object.values(UAVType);
   public readonly priority: Priority[] = Object.values(Priority);
   public readonly remove = output<void>();
+  public readonly EnumUtil = EnumUtil;
 
   public readonly isLocationExpanded = signal<boolean>(false);
   public readonly isTimeWindowExpanded = signal<boolean>(false);

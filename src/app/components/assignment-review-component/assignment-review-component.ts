@@ -8,9 +8,9 @@ import type {
 } from '../../models';
 import { TelemetryField } from '../../common/enums';
 import { ClientConstants } from '../../common';
+import { TelemetryUtil, EnumUtil } from '../../common/utils';
 
 const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
-const TelemetryUnits = ClientConstants.TelemetryUnits;
 
 @Component({
   selector: 'app-assignment-review-component',
@@ -27,6 +27,8 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly backLabel: string = BACK_LABEL;
   public readonly applyLabel: string = APPLY_LABEL;
   public readonly TelemetryField = TelemetryField;
+  public readonly TelemetryUtil = TelemetryUtil;
+  public readonly EnumUtil = EnumUtil;
 
   public readonly editedAssignments: WritableSignal<Map<string, UavToMission>> = signal<Map<string, UavToMission>>(new Map());
   public readonly expandedMissions: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
@@ -135,33 +137,5 @@ export class AssignmentReviewComponent implements OnInit {
       uavTailId: assignment.uav.tailId,
       startTime: assignment.timeWindow.start,
     }));
-  }
-
-  public getTelemetryUnit(field: TelemetryField): string {
-    const unitMap: Record<TelemetryField, string> = {
-      [TelemetryField.DragCoefficient]: TelemetryUnits.DRAG_COEFFICIENT,
-      [TelemetryField.LiftCoefficient]: TelemetryUnits.LIFT_COEFFICIENT,
-      [TelemetryField.ThrottlePercent]: TelemetryUnits.THROTTLE_PERCENT,
-      [TelemetryField.CruiseAltitude]: TelemetryUnits.CRUISE_ALTITUDE,
-      [TelemetryField.Latitude]: TelemetryUnits.LATITUDE,
-      [TelemetryField.LandingGearStatus]: TelemetryUnits.LANDING_GEAR_STATUS,
-      [TelemetryField.Longitude]: TelemetryUnits.LONGITUDE,
-      [TelemetryField.Altitude]: TelemetryUnits.ALTITUDE,
-      [TelemetryField.CurrentSpeedKmph]: TelemetryUnits.CURRENT_SPEED_KMPH,
-      [TelemetryField.YawDeg]: TelemetryUnits.YAW_DEG,
-      [TelemetryField.PitchDeg]: TelemetryUnits.PITCH_DEG,
-      [TelemetryField.RollDeg]: TelemetryUnits.ROLL_DEG,
-      [TelemetryField.ThrustAfterInfluence]: TelemetryUnits.THRUST_AFTER_INFLUENCE,
-      [TelemetryField.FuelAmount]: TelemetryUnits.FUEL_AMOUNT,
-      [TelemetryField.DataStorageUsedGB]: TelemetryUnits.DATA_STORAGE_USED_GB,
-      [TelemetryField.FlightTimeSec]: TelemetryUnits.FLIGHT_TIME_SEC,
-      [TelemetryField.SignalStrength]: TelemetryUnits.SIGNAL_STRENGTH,
-      [TelemetryField.Rpm]: TelemetryUnits.RPM,
-      [TelemetryField.EngineDegrees]: TelemetryUnits.ENGINE_DEGREES,
-      [TelemetryField.NearestSleeveId]: TelemetryUnits.NEAREST_SLEEVE_ID,
-      [TelemetryField.TailId]: TelemetryUnits.TAIL_ID,
-      [TelemetryField.UAVTypeValue]: TelemetryUnits.UAV_TYPE_VALUE,
-    };
-    return unitMap[field];
   }
 }

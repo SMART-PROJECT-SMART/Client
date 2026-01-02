@@ -15,7 +15,7 @@
         <mat-label>Required UAV Type</mat-label>
         <mat-select formControlName="requiredUAVType" aria-label="Required UAV Type">
           @for (type of uavTypes; track type) {
-            <mat-option [value]="type">{{ type }}</mat-option>
+            <mat-option [value]="type">{{ EnumUtil.getUAVTypeDisplay(type) }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -23,7 +23,7 @@
         <mat-label>Priority</mat-label>
         <mat-select formControlName="priority" aria-label="Priority">
           @for (level of priority; track level) {
-            <mat-option [value]="level">{{ level }}</mat-option>
+            <mat-option [value]="level">{{ EnumUtil.getPriorityDisplay(level) }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -36,15 +36,15 @@
         @if (isLocationExpanded()) {
           <div class="location-group">
             <mat-form-field appearance="outline">
-              <mat-label>Latitude</mat-label>
+              <mat-label>Latitude (°)</mat-label>
               <input matInput type="number" formControlName="latitude" aria-label="Latitude" />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Longitude</mat-label>
+              <mat-label>Longitude (°)</mat-label>
               <input matInput type="number" formControlName="longitude" aria-label="Longitude" />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Altitude</mat-label>
+              <mat-label>Altitude (m)</mat-label>
               <input matInput type="number" formControlName="altitude" aria-label="Altitude" />
             </mat-form-field>
           </div>

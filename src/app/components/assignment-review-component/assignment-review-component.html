@@ -33,7 +33,7 @@
                 aria-label="Select UAV">
                 @for (uav of availableUavs(); track uav.tailId) {
                   <mat-option [value]="uav.tailId">
-                    UAV-{{ uav.tailId }} ({{ uav.uavType }})
+                    UAV-{{ uav.tailId }} ({{ EnumUtil.getUAVTypeDisplay(uav.uavType) }})
                     @if (uav.tailId === assignment.uav.tailId) {
                       <span class="suggested-badge">Suggested</span>
                     }
@@ -54,11 +54,11 @@
               <div class="mission-details">
                 <div class="detail-item">
                   <span class="detail-label">Priority:</span>
-                  <span class="detail-value">{{ assignment.mission.missionPriority }}</span>
+                  <span class="detail-value">{{ EnumUtil.getPriorityDisplay(assignment.mission.missionPriority) }}</span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Required UAV Type:</span>
-                  <span class="detail-value">{{ assignment.mission.requiredUAVType }}</span>
+                  <span class="detail-value">{{ EnumUtil.getUAVTypeDisplay(assignment.mission.requiredUAVType) }}</span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Location:</span>
@@ -90,8 +90,8 @@
               <div class="telemetry-grid">
                 @for (entry of getTelemetryEntries(editedAssignments().get(assignment.mission.id)!.uav); track entry[0]) {
                   <div class="telemetry-item">
-                    <span class="telemetry-label">{{ entry[0] }}:</span>
-                    <span class="telemetry-value">{{ entry[1] }} {{ getTelemetryUnit(entry[0]) }}</span>
+                    <span class="telemetry-label">{{ EnumUtil.getTelemetryFieldDisplay(entry[0]) }}:</span>
+                    <span class="telemetry-value">{{ entry[1] }} {{ TelemetryUtil.getUnit(entry[0]) }}</span>
                   </div>
                 }
               </div>
