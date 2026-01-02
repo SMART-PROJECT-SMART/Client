@@ -1,5 +1,14 @@
-import { Injectable } from '@angular/core';
-import { Observable, interval, switchMap, takeWhile, catchError, throwError, filter, take } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import {
+  Observable,
+  interval,
+  switchMap,
+  takeWhile,
+  catchError,
+  throwError,
+  filter,
+  take,
+} from 'rxjs';
 import { AssignmentApiService } from './api/assignment-api.service';
 import type {
   Mission,
@@ -16,8 +25,9 @@ const { PollingConstants, ErrorMessages } = ClientConstants.MissionServiceAPI;
 @Injectable({
   providedIn: 'root',
 })
-export class AssignmentOrchestratorService {
+export class AssignmentOrchestratorService implements OnDestroy {
   constructor(private readonly assignmentApiService: AssignmentApiService) {}
+  ngOnDestroy(): void {}
 
   public submitMissionsAndPoll(missions: Mission[]): Observable<AssignmentAlgorithmRo> {
     const dto: AssignmentSuggestionDto = { missions };

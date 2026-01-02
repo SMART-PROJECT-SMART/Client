@@ -1,4 +1,6 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import type {
   Mission,
   AssignmentAlgorithmRo,
@@ -18,7 +20,8 @@ const { Messages } = ClientConstants.MissionServiceAPI;
   templateUrl: './assignment-page-component.component.html',
   styleUrl: './assignment-page-component.component.scss',
 })
-export class AssignmentPageComponentComponent {
+export class AssignmentPageComponentComponent implements OnDestroy {
+  private readonly destroy$ = new Subject<void>();
   public readonly AssignmentStage = AssignmentStage;
   public readonly messages = Messages;
   public readonly currentStage = signal<AssignmentStage>(AssignmentStage.MANAGEMENT);
@@ -28,6 +31,11 @@ export class AssignmentPageComponentComponent {
   public readonly errorMessage = signal<string | null>(null);
 
   constructor(private readonly orchestratorService: AssignmentOrchestratorService) {}
+
+  public ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   public readonly availableUavs = computed<UAV[]>(() => {
     const result: AssignmentAlgorithmRo | null = this.assignmentResult();
@@ -44,14 +52,17 @@ export class AssignmentPageComponentComponent {
     this.setLoadingState(true);
     this.clearError();
 
-    this.orchestratorService.submitMissionsAndPoll(missions).subscribe({
-      next: (result: AssignmentAlgorithmRo) => {
-        this.handleAssignmentSuccess(result);
-      },
-      error: (error: unknown) => {
-        this.handleError(Messages.SUBMIT_ERROR, error);
-      },
-    });
+    this.orchestratorService
+      .submitMissionsAndPoll(missions)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (result: AssignmentAlgorithmRo) => {
+          this.handleAssignmentSuccess(result);
+        },
+        error: (error: unknown) => {
+          this.handleError(Messages.SUBMIT_ERROR, error);
+        },
+      });
   }
 
   public onBackToManagement(): void {
@@ -67,14 +78,17 @@ export class AssignmentPageComponentComponent {
       actualAssignments: event.actual,
     };
 
-    this.orchestratorService.applyAssignment(dto).subscribe({
-      next: (): void => {
-        this.handleApplySuccess();
-      },
-      error: (error: unknown) => {
-        this.handleError(Messages.APPLY_ERROR, error);
-      },
-    });
+    this.orchestratorService
+      .applyAssignment(dto)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (): void => {
+          this.handleApplySuccess();
+        },
+        error: (error: unknown) => {
+          this.handleError(Messages.APPLY_ERROR, error);
+        },
+      });
   }
 
   private handleAssignmentSuccess(result: AssignmentAlgorithmRo): void {
