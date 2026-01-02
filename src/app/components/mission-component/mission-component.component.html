@@ -1,7 +1,9 @@
 <mat-card
   class="mission-card"
   [class.invalid]="missionForm.invalid && missionForm.touched"
-  [class.valid]="isFormValid">
+  [class.valid]="isFormValid"
+  (focusout)="onCardBlur()"
+  tabindex="0">
   <mat-card-content>
     <button mat-icon-button color="warn" class="delete-btn" (click)="onRemove()" aria-label="Remove mission">
       <mat-icon>close</mat-icon>
@@ -10,6 +12,9 @@
       <mat-form-field appearance="outline">
         <mat-label>Mission ID</mat-label>
         <input matInput formControlName="missionId" aria-label="Mission ID" />
+        @if (missionForm.get('missionId')?.invalid && missionForm.get('missionId')?.touched) {
+          <mat-error>Mission ID is required</mat-error>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Required UAV Type</mat-label>
@@ -18,6 +23,9 @@
             <mat-option [value]="type">{{ EnumUtil.getUAVTypeDisplay(type) }}</mat-option>
           }
         </mat-select>
+        @if (missionForm.get('requiredUAVType')?.invalid && missionForm.get('requiredUAVType')?.touched) {
+          <mat-error>UAV Type is required</mat-error>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Priority</mat-label>
@@ -26,6 +34,9 @@
             <mat-option [value]="level">{{ EnumUtil.getPriorityDisplay(level) }}</mat-option>
           }
         </mat-select>
+        @if (missionForm.get('priority')?.invalid && missionForm.get('priority')?.touched) {
+          <mat-error>Priority is required</mat-error>
+        }
       </mat-form-field>
 
       <fieldset formGroupName="location" class="collapsible-section">
@@ -38,14 +49,35 @@
             <mat-form-field appearance="outline">
               <mat-label>Latitude (°)</mat-label>
               <input matInput type="number" formControlName="latitude" aria-label="Latitude" />
+              @if (missionForm.get('location.latitude')?.hasError('required') && missionForm.get('location.latitude')?.touched) {
+                <mat-error>Latitude is required</mat-error>
+              }
+              @if (missionForm.get('location.latitude')?.hasError('min') && missionForm.get('location.latitude')?.touched) {
+                <mat-error>Latitude must be ≥ -90°</mat-error>
+              }
+              @if (missionForm.get('location.latitude')?.hasError('max') && missionForm.get('location.latitude')?.touched) {
+                <mat-error>Latitude must be ≤ 90°</mat-error>
+              }
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Longitude (°)</mat-label>
               <input matInput type="number" formControlName="longitude" aria-label="Longitude" />
+              @if (missionForm.get('location.longitude')?.hasError('required') && missionForm.get('location.longitude')?.touched) {
+                <mat-error>Longitude is required</mat-error>
+              }
+              @if (missionForm.get('location.longitude')?.hasError('min') && missionForm.get('location.longitude')?.touched) {
+                <mat-error>Longitude must be ≥ -180°</mat-error>
+              }
+              @if (missionForm.get('location.longitude')?.hasError('max') && missionForm.get('location.longitude')?.touched) {
+                <mat-error>Longitude must be ≤ 180°</mat-error>
+              }
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Altitude (m)</mat-label>
               <input matInput type="number" formControlName="altitude" aria-label="Altitude" />
+              @if (missionForm.get('location.altitude')?.invalid && missionForm.get('location.altitude')?.touched) {
+                <mat-error>Altitude is required</mat-error>
+              }
             </mat-form-field>
           </div>
         }
@@ -61,10 +93,22 @@
             <mat-form-field appearance="outline">
               <mat-label>Start Time</mat-label>
               <input matInput type="datetime-local" formControlName="start" aria-label="Start time" />
+              @if (missionForm.get('timeWindow.start')?.hasError('required') && missionForm.get('timeWindow.start')?.touched) {
+                <mat-error>Start time is required</mat-error>
+              }
+              @if (missionForm.get('timeWindow.start')?.hasError('timeWindowInvalid') && missionForm.get('timeWindow.start')?.touched) {
+                <mat-error>Start time must be before end time</mat-error>
+              }
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>End Time</mat-label>
               <input matInput type="datetime-local" formControlName="end" aria-label="End time" />
+              @if (missionForm.get('timeWindow.end')?.hasError('required') && missionForm.get('timeWindow.end')?.touched) {
+                <mat-error>End time is required</mat-error>
+              }
+              @if (missionForm.get('timeWindow.end')?.hasError('timeWindowInvalid') && missionForm.get('timeWindow.end')?.touched) {
+                <mat-error>End time must be after start time</mat-error>
+              }
             </mat-form-field>
           </div>
         }

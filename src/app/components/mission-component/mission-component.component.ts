@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UAVType, Priority } from '../../common/enums';
 import { ClientConstants } from '../../common';
 import { EnumUtil } from '../../common/utils';
+import { timeWindowValidator } from '../../common/validators';
 
 const { LocationValidation } = ClientConstants.ValidationConstants;
 const { EMPTY_STRING } = ClientConstants.FormDefaults;
@@ -53,6 +54,10 @@ export class MissionComponentComponent implements OnInit {
     return this.missionForm.valid;
   }
 
+  public onCardBlur(): void {
+    this.missionForm.markAllAsTouched();
+  }
+
   private createLocationFormGroup(): FormGroup {
     return new FormGroup({
       latitude: new FormControl(null, [
@@ -70,9 +75,12 @@ export class MissionComponentComponent implements OnInit {
   }
 
   private createTimeWindowFormGroup(): FormGroup {
-    return new FormGroup({
-      start: new FormControl(null, [Validators.required]),
-      end: new FormControl(null, [Validators.required]),
-    });
+    return new FormGroup(
+      {
+        start: new FormControl(null, [Validators.required]),
+        end: new FormControl(null, [Validators.required]),
+      },
+      { validators: timeWindowValidator() }
+    );
   }
 }
