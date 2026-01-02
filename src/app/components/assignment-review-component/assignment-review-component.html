@@ -63,9 +63,9 @@
                 <div class="detail-item">
                   <span class="detail-label">Location:</span>
                   <span class="detail-value">
-                    Lat: {{ assignment.mission.location.latitude }},
-                    Lon: {{ assignment.mission.location.longitude }},
-                    Alt: {{ assignment.mission.location.altitude }}
+                    Lat: {{ assignment.mission.location.latitude }}°,
+                    Lon: {{ assignment.mission.location.longitude }}°,
+                    Alt: {{ assignment.mission.location.altitude }} m
                   </span>
                 </div>
                 <div class="detail-item">
@@ -91,7 +91,7 @@
                 @for (entry of getTelemetryEntries(editedAssignments().get(assignment.mission.id)!.uav); track entry[0]) {
                   <div class="telemetry-item">
                     <span class="telemetry-label">{{ entry[0] }}:</span>
-                    <span class="telemetry-value">{{ entry[1] }}</span>
+                    <span class="telemetry-value">{{ entry[1] }} {{ getTelemetryUnit(entry[0]) }}</span>
                   </div>
                 }
               </div>

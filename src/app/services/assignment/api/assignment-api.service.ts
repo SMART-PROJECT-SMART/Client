@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import type {
   AssignmentSuggestionDto,
   ApplyAssignmentDto,
@@ -22,24 +23,35 @@ export class AssignmentApiService {
   public createAssignmentSuggestion(
     dto: AssignmentSuggestionDto
   ): Observable<AssignmentRequestAcceptedRo> {
-    return this.httpClient.post<AssignmentRequestAcceptedRo>(
-      Endpoints.CREATE_ASSIGNMENT_SUGGESTION,
-      dto
+    const url: string = Endpoints.CREATE_ASSIGNMENT_SUGGESTION;
+    console.log('[API] POST', url, 'Body:', dto);
+    return this.httpClient.post<AssignmentRequestAcceptedRo>(url, dto).pipe(
+      tap((response: AssignmentRequestAcceptedRo) => console.log('[API] Response:', response))
     );
   }
 
   public checkAssignmentStatus(assignmentId: string): Observable<AssignmentStatusRo> {
-    return this.httpClient.get<AssignmentStatusRo>(
-      `${Endpoints.CHECK_ASSIGNMENT_STATUS}/${assignmentId}/status`
+    const url: string = `${Endpoints.CHECK_ASSIGNMENT_STATUS}/${assignmentId}/status`;
+    console.log('[API] GET', url);
+    return this.httpClient.get<AssignmentStatusRo>(url).pipe(
+      tap((response: AssignmentStatusRo) => console.log('[API] Response:', response))
     );
   }
 
   public getAssignmentResult(assignmentId: string): Observable<AssignmentAlgorithmRo> {
-    return this.httpClient.get<AssignmentAlgorithmRo>(`${Endpoints.GET_ASSIGNMENT_RESULT}/${assignmentId}`);
+    const url: string = `${Endpoints.GET_ASSIGNMENT_RESULT}/${assignmentId}`;
+    console.log('[API] GET', url);
+    return this.httpClient.get<AssignmentAlgorithmRo>(url).pipe(
+      tap((response: AssignmentAlgorithmRo) => console.log('[API] Response:', response))
+    );
   }
 
   public applyAssignment(dto: ApplyAssignmentDto): Observable<void> {
-    return this.httpClient.post<void>(Endpoints.APPLY_ASSIGNMENT, dto);
+    const url: string = Endpoints.APPLY_ASSIGNMENT;
+    console.log('[API] POST', url, 'Body:', dto);
+    return this.httpClient.post<void>(url, dto).pipe(
+      tap(() => console.log('[API] Apply assignment successful'))
+    );
   }
 
   public getActiveMission(tailId: number): Observable<Mission | null> {

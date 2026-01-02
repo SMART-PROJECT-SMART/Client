@@ -76,4 +76,29 @@ export namespace ClientConstants {
       export const POLLING_IN_PROGRESS: string = 'Polling in progress';
     }
   }
+
+  export namespace TelemetryUnits {
+    export const DRAG_COEFFICIENT: string = 'coeff';
+    export const LIFT_COEFFICIENT: string = 'coeff';
+    export const THROTTLE_PERCENT: string = '%';
+    export const CRUISE_ALTITUDE: string = 'm';
+    export const LATITUDE: string = 'deg';
+    export const LANDING_GEAR_STATUS: string = 'bool';
+    export const LONGITUDE: string = 'deg';
+    export const ALTITUDE: string = 'm';
+    export const CURRENT_SPEED_KMPH: string = 'kmph';
+    export const YAW_DEG: string = 'deg';
+    export const PITCH_DEG: string = 'deg';
+    export const ROLL_DEG: string = 'deg';
+    export const THRUST_AFTER_INFLUENCE: string = 'N';
+    export const FUEL_AMOUNT: string = '%';
+    export const DATA_STORAGE_USED_GB: string = 'GB';
+    export const FLIGHT_TIME_SEC: string = 'sec';
+    export const SIGNAL_STRENGTH: string = 'dBm';
+    export const RPM: string = 'rpm';
+    export const ENGINE_DEGREES: string = '°C';
+    export const NEAREST_SLEEVE_ID: string = 'id';
+    export const TAIL_ID: string = 'id';
+    export const UAV_TYPE_VALUE: string = 'enum';
+  }
 }
