@@ -5,7 +5,7 @@ import { ClientConstants } from '../../common';
 import { EnumUtil } from '../../common/utils';
 
 const { LocationValidation } = ClientConstants.ValidationConstants;
-const { EMPTY_STRING, DEFAULT_NUMBER } = ClientConstants.FormDefaults;
+const { EMPTY_STRING } = ClientConstants.FormDefaults;
 
 @Component({
   selector: 'app-mission-component',
@@ -55,17 +55,17 @@ export class MissionComponentComponent implements OnInit {
 
   private createLocationFormGroup(): FormGroup {
     return new FormGroup({
-      latitude: new FormControl(DEFAULT_NUMBER, [
+      latitude: new FormControl(null, [
         Validators.required,
         Validators.min(LocationValidation.LATITUDE_MIN),
         Validators.max(LocationValidation.LATITUDE_MAX),
       ]),
-      longitude: new FormControl(DEFAULT_NUMBER, [
+      longitude: new FormControl(null, [
         Validators.required,
         Validators.min(LocationValidation.LONGITUDE_MIN),
         Validators.max(LocationValidation.LONGITUDE_MAX),
       ]),
-      altitude: new FormControl(DEFAULT_NUMBER, [Validators.required]),
+      altitude: new FormControl(null, [Validators.required]),
     });
   }
 
