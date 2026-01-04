@@ -77,6 +77,15 @@ export namespace ClientConstants {
     }
   }
 
+  export namespace SidebarConstants {
+    export const COLLAPSED_WIDTH: number = 64;
+    export const EXPANDED_WIDTH: number = 240;
+    export const LOGO_SIZE_COLLAPSED: number = 48;
+    export const LOGO_SIZE_EXPANDED: number = 180;
+    export const TRANSITION_DURATION_MS: number = 300;
+    export const LOGO_PATH: string = 'images/logo.png';
+  }
+
   export namespace TelemetryUnits {
     export const DRAG_COEFFICIENT: string = 'coeff';
     export const LIFT_COEFFICIENT: string = 'coeff';

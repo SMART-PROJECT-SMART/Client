@@ -1,0 +1,42 @@
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Router } from '@angular/router';
+import type { NavigationItem } from '../../models';
+import { ClientConstants } from '../../common';
+
+const { SidebarConstants } = ClientConstants;
+
+@Component({
+  selector: 'app-sidebar',
+  standalone: false,
+  templateUrl: './sidebar.component.html',
+  styleUrl: './sidebar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class SidebarComponent {
+  public readonly isExpanded = signal<boolean>(false);
+  public readonly logoPath: string = SidebarConstants.LOGO_PATH;
+  public readonly collapsedWidth: number = SidebarConstants.COLLAPSED_WIDTH;
+  public readonly expandedWidth: number = SidebarConstants.EXPANDED_WIDTH;
+
+  public readonly navigationItems: NavigationItem[] = [
+    {
+      label: 'Assignment Page',
+      icon: 'assignment',
+      route: '/assignment-page',
+    },
+  ];
+
+  constructor(private readonly router: Router) {}
+
+  public toggleSidebar(): void {
+    this.isExpanded.update((value) => !value);
+  }
+
+  public navigateTo(route: string): void {
+    this.router.navigate([route]);
+  }
+
+  public isActive(route: string): boolean {
+    return this.router.url === route;
+  }
+}

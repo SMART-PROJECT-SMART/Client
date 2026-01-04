@@ -6,9 +6,11 @@ $color-accent: #ce93d8;
 $color-background-primary: #000000;
 $color-background-secondary: #1a1a1a;
 $color-background-card: #2a2a2a;
+$color-background-dark: #121212;
 
 $color-text-primary: #ffffff;
 $color-text-secondary: #b0b0b0;
+$color-text-light: #e0e0e0;
 
 $color-error: #f44336;
 $color-success: #4caf50;
@@ -28,6 +30,7 @@ $border-width-thin: 1px;
 $border-width-medium: 2px;
 
 $z-index-delete-button: 10;
+$z-index-sidebar: 50;
 $z-index-modal: 100;
 $z-index-tooltip: 200;
 
