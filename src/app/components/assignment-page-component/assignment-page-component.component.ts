@@ -113,7 +113,6 @@ export class AssignmentPageComponentComponent implements OnDestroy {
 
   private resetToManagementStage(): void {
     this.currentStage.set(AssignmentStage.MANAGEMENT);
-    this.assignmentResult.set(null);
   }
 
   private handleError(userMessage: string, error: unknown): void {
