@@ -4,6 +4,7 @@ import type { Location } from './location.model';
 
 export interface Mission {
   id: string;
+  title: string;
   requiredUAVType: UAVType;
   priority: Priority;
   location: Location;

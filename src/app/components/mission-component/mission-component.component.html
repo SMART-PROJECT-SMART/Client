@@ -10,10 +10,10 @@
     </button>
     <form [formGroup]="missionForm" class="mission-form">
       <mat-form-field appearance="outline">
-        <mat-label>Mission ID</mat-label>
-        <input matInput formControlName="missionId" aria-label="Mission ID" />
-        @if (missionForm.get('missionId')?.invalid && missionForm.get('missionId')?.touched) {
-          <mat-error>Mission ID is required</mat-error>
+        <mat-label>Mission Title</mat-label>
+        <input matInput formControlName="title" aria-label="Mission Title" />
+        @if (missionForm.get('title')?.invalid && missionForm.get('title')?.touched) {
+          <mat-error>Mission title is required</mat-error>
         }
       </mat-form-field>
       <mat-form-field appearance="outline">

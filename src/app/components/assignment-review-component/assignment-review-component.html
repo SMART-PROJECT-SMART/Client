@@ -18,7 +18,7 @@
         [class.modified]="isAssignmentModified(pairing.mission.id)">
         <mat-card-content>
           <div class="card-header">
-            <h3>{{ pairing.mission.id }}</h3>
+            <h3>{{ pairing.mission.title }}</h3>
             @if (isAssignmentModified(pairing.mission.id)) {
               <mat-icon class="modified-icon" color="warn">edit</mat-icon>
             }

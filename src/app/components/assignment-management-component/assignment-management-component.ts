@@ -33,6 +33,7 @@ export class AssignmentManagementComponent {
       const formValue = component.missionForm.value;
       return {
         id: formValue.missionId!,
+        title: formValue.title!,
         requiredUAVType: formValue.requiredUAVType!,
         priority: formValue.priority!,
         location: formValue.location!,
