@@ -12,14 +12,14 @@
   </div>
 
   <div class="assignments-container">
-    @for (assignment of algorithmResult().assignments; track trackByMissionId($index, assignment)) {
+    @for (pairing of algorithmResult().pairings; track trackByMissionId($index, pairing)) {
       <mat-card
         class="assignment-card"
-        [class.modified]="isAssignmentModified(assignment.mission.id)">
+        [class.modified]="isAssignmentModified(pairing.mission.id)">
         <mat-card-content>
           <div class="card-header">
-            <h3>{{ assignment.mission.id }}</h3>
-            @if (isAssignmentModified(assignment.mission.id)) {
+            <h3>{{ pairing.mission.id }}</h3>
+            @if (isAssignmentModified(pairing.mission.id)) {
               <mat-icon class="modified-icon" color="warn">edit</mat-icon>
             }
           </div>
@@ -28,13 +28,13 @@
             <mat-form-field appearance="outline">
               <mat-label>Assigned UAV</mat-label>
               <mat-select
-                [value]="editedAssignments().get(assignment.mission.id)!.uav.tailId"
-                (selectionChange)="onUavChange(assignment.mission.id, $event.value)"
+                [value]="selectedTailIds().get(pairing.mission.id) ?? pairing.tailId"
+                (selectionChange)="onUavChange(pairing.mission.id, $event.value)"
                 aria-label="Select UAV">
                 @for (uav of availableUavs(); track uav.tailId) {
                   <mat-option [value]="uav.tailId">
                     UAV-{{ uav.tailId }} ({{ EnumUtil.getUAVTypeDisplay(uav.uavType) }})
-                    @if (uav.tailId === assignment.uav.tailId) {
+                    @if (uav.tailId === pairing.tailId) {
                       <span class="suggested-badge">Suggested</span>
                     }
                   </mat-option>
@@ -44,35 +44,35 @@
           </div>
 
           <fieldset class="collapsible-section">
-            <legend (click)="toggleMissionDetails(assignment.mission.id)" class="collapsible-legend">
+            <legend (click)="toggleMissionDetails(pairing.mission.id)" class="collapsible-legend">
               <mat-icon class="expand-icon">
-                {{ isMissionExpanded(assignment.mission.id) ? 'expand_less' : 'expand_more' }}
+                {{ isMissionExpanded(pairing.mission.id) ? 'expand_less' : 'expand_more' }}
               </mat-icon>
               Mission Details
             </legend>
-            @if (isMissionExpanded(assignment.mission.id)) {
+            @if (isMissionExpanded(pairing.mission.id)) {
               <div class="mission-details">
                 <div class="detail-item">
                   <span class="detail-label">Priority:</span>
-                  <span class="detail-value">{{ EnumUtil.getPriorityDisplay(assignment.mission.missionPriority) }}</span>
+                  <span class="detail-value">{{ EnumUtil.getPriorityDisplay(pairing.mission.missionPriority) }}</span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Required UAV Type:</span>
-                  <span class="detail-value">{{ EnumUtil.getUAVTypeDisplay(assignment.mission.requiredUAVType) }}</span>
+                  <span class="detail-value">{{ EnumUtil.getUAVTypeDisplay(pairing.mission.requiredUAVType) }}</span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Location:</span>
                   <span class="detail-value">
-                    Lat: {{ assignment.mission.location.latitude }}°,
-                    Lon: {{ assignment.mission.location.longitude }}°,
-                    Alt: {{ assignment.mission.location.altitude }} m
+                    Lat: {{ pairing.mission.location.latitude }}°,
+                    Lon: {{ pairing.mission.location.longitude }}°,
+                    Alt: {{ pairing.mission.location.altitude }} m
                   </span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Time Window:</span>
                   <span class="detail-value">
-                    {{ assignment.mission.timeWindow.start | date:'short' }} -
-                    {{ assignment.mission.timeWindow.end | date:'short' }}
+                    {{ pairing.timeWindow.start | date:'short' }} -
+                    {{ pairing.timeWindow.end | date:'short' }}
                   </span>
                 </div>
               </div>
@@ -80,15 +80,15 @@
           </fieldset>
 
           <fieldset class="collapsible-section">
-            <legend (click)="toggleTelemetry(assignment.mission.id)" class="collapsible-legend">
+            <legend (click)="toggleTelemetry(pairing.mission.id)" class="collapsible-legend">
               <mat-icon class="expand-icon">
-                {{ isTelemetryExpanded(assignment.mission.id) ? 'expand_less' : 'expand_more' }}
+                {{ isTelemetryExpanded(pairing.mission.id) ? 'expand_less' : 'expand_more' }}
               </mat-icon>
               UAV Telemetry
             </legend>
-            @if (isTelemetryExpanded(assignment.mission.id)) {
+            @if (isTelemetryExpanded(pairing.mission.id)) {
               <div class="telemetry-grid">
-                @for (entry of getTelemetryEntries(editedAssignments().get(assignment.mission.id)!.uav); track entry[0]) {
+                @for (entry of getTelemetryEntries(getUavForPairing(pairing)); track entry[0]) {
                   <div class="telemetry-item">
                     <span class="telemetry-label">{{ EnumUtil.getTelemetryFieldDisplay(entry[0]) }}:</span>
                     <span class="telemetry-value">{{ entry[1] }} {{ TelemetryUtil.getUnit(entry[0]) }}</span>

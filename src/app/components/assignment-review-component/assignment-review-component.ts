@@ -1,14 +1,14 @@
 import { Component, input, output, signal, OnInit, WritableSignal } from '@angular/core';
 import type {
   AssignmentAlgorithmRo,
-  UavToMission,
+  MissionAssignmentPairing,
   MissionToUavAssignment,
   UAV,
   ApplyAssignmentRo,
 } from '../../models';
 import { TelemetryField } from '../../common/enums';
 import { ClientConstants } from '../../common';
-import { TelemetryUtil, EnumUtil } from '../../common/utils';
+import { TelemetryUtil, EnumUtil, AssignmentUtil } from '../../common/utils';
 
 const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
 
@@ -27,10 +27,11 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly backLabel: string = BACK_LABEL;
   public readonly applyLabel: string = APPLY_LABEL;
   public readonly TelemetryField = TelemetryField;
+  public readonly AssignmentUtil = AssignmentUtil;
   public readonly TelemetryUtil = TelemetryUtil;
   public readonly EnumUtil = EnumUtil;
 
-  public readonly editedAssignments: WritableSignal<Map<string, UavToMission>> = signal<Map<string, UavToMission>>(new Map());
+  public readonly selectedTailIds: WritableSignal<Map<string, number>> = signal<Map<string, number>>(new Map());
   public readonly expandedMissions: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
   public readonly expandedTelemetry: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
 
@@ -39,13 +40,9 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public onUavChange(missionId: string, uavTailId: number): void {
-    const currentAssignment: UavToMission | undefined = this.editedAssignments().get(missionId);
-    if (!currentAssignment) return;
-
-    const selectedUav: UAV | undefined = this.findUavByTailId(uavTailId);
-    if (!selectedUav) return;
-
-    this.updateAssignment(missionId, currentAssignment, selectedUav);
+    const newMap: Map<string, number> = new Map(this.selectedTailIds());
+    newMap.set(missionId, uavTailId);
+    this.selectedTailIds.set(newMap);
   }
 
   public toggleMissionDetails(missionId: string): void {
@@ -65,9 +62,9 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public isAssignmentModified(missionId: string): boolean {
-    const originalAssignment: UavToMission | undefined = this.findOriginalAssignment(missionId);
-    const editedAssignment: UavToMission | undefined = this.editedAssignments().get(missionId);
-    return originalAssignment?.uav.tailId !== editedAssignment?.uav.tailId;
+    const originalPairing = this.algorithmResult().pairings.find(p => p.mission.id === missionId);
+    const selectedTailId = this.selectedTailIds().get(missionId);
+    return originalPairing?.tailId !== selectedTailId;
   }
 
   public onBack(): void {
@@ -75,13 +72,17 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public onApply(): void {
-    const suggestedAssignments: MissionToUavAssignment[] = this.mapToMissionToUavAssignments(
-      this.algorithmResult().assignments
-    );
+    const suggestedAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(p => ({
+      mission: p.mission,
+      uavTailId: p.tailId,
+      startTime: p.timeWindow.start,
+    }));
 
-    const actualAssignments: MissionToUavAssignment[] = this.mapToMissionToUavAssignments(
-      Array.from(this.editedAssignments().values())
-    );
+    const actualAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(p => ({
+      mission: p.mission,
+      uavTailId: this.selectedTailIds().get(p.mission.id) ?? p.tailId,
+      startTime: p.timeWindow.start,
+    }));
 
     this.apply.emit({ suggested: suggestedAssignments, actual: actualAssignments });
   }
@@ -90,31 +91,23 @@ export class AssignmentReviewComponent implements OnInit {
     return Object.entries(uav.telemetryData) as [TelemetryField, number][];
   }
 
-  public trackByMissionId(_index: number, assignment: UavToMission): string {
-    return assignment.mission.id;
+  public trackByMissionId(_index: number, pairing: MissionAssignmentPairing): string {
+    return pairing.mission.id;
+  }
+
+  public getUavForPairing(pairing: MissionAssignmentPairing): UAV {
+    const tailId = this.selectedTailIds().get(pairing.mission.id) ?? pairing.tailId;
+    return AssignmentUtil.buildUavFromTelemetry(tailId, this.algorithmResult().uavTelemetryData[tailId]);
   }
 
   private initializeEditedAssignments(): void {
-    const initialMap: Map<string, UavToMission> = new Map<string, UavToMission>();
-    this.algorithmResult().assignments.forEach((assignment: UavToMission) => {
-      initialMap.set(assignment.mission.id, assignment);
+    const initialMap: Map<string, number> = new Map<string, number>();
+
+    this.algorithmResult().pairings.forEach((pairing: MissionAssignmentPairing) => {
+      initialMap.set(pairing.mission.id, pairing.tailId);
     });
-    this.editedAssignments.set(initialMap);
-  }
 
-  private findUavByTailId(uavTailId: number): UAV | undefined {
-    return this.availableUavs().find((uav: UAV) => uav.tailId === uavTailId);
-  }
-
-  private updateAssignment(missionId: string, currentAssignment: UavToMission, selectedUav: UAV): void {
-    const updatedAssignment: UavToMission = {
-      ...currentAssignment,
-      uav: selectedUav,
-    };
-
-    const newMap: Map<string, UavToMission> = new Map(this.editedAssignments());
-    newMap.set(missionId, updatedAssignment);
-    this.editedAssignments.set(newMap);
+    this.selectedTailIds.set(initialMap);
   }
 
   private toggleExpansion(expansionSignal: WritableSignal<Set<string>>, id: string): void {
@@ -125,17 +118,5 @@ export class AssignmentReviewComponent implements OnInit {
       expanded.add(id);
     }
     expansionSignal.set(expanded);
-  }
-
-  private findOriginalAssignment(missionId: string): UavToMission | undefined {
-    return this.algorithmResult().assignments.find((assignment: UavToMission) => assignment.mission.id === missionId);
-  }
-
-  private mapToMissionToUavAssignments(assignments: UavToMission[]): MissionToUavAssignment[] {
-    return assignments.map((assignment: UavToMission): MissionToUavAssignment => ({
-      mission: assignment.mission,
-      uavTailId: assignment.uav.tailId,
-      startTime: assignment.timeWindow.start,
-    }));
   }
 }

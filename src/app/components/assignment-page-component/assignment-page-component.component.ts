@@ -10,7 +10,7 @@ import type {
 } from '../../models';
 import { AssignmentStage } from '../../common/enums';
 import { AssignmentOrchestratorService } from '../../services/assignment/assignment-orchestrator.service';
-import { ClientConstants } from '../../common';
+import { ClientConstants, AssignmentUtil } from '../../common';
 
 const { Messages } = ClientConstants.MissionServiceAPI;
 
@@ -40,11 +40,7 @@ export class AssignmentPageComponentComponent implements OnDestroy {
   public readonly availableUavs = computed<UAV[]>(() => {
     const result: AssignmentAlgorithmRo | null = this.assignmentResult();
     if (!result) return [];
-    const uavMap: Map<number, UAV> = new Map<number, UAV>();
-    result.assignments.forEach((assignment) => {
-      uavMap.set(assignment.uav.tailId, assignment.uav);
-    });
-    return Array.from(uavMap.values());
+    return AssignmentUtil.extractAllUavsFromTelemetry(result.uavTelemetryData);
   });
 
   public onMissionsSubmit(missions: Mission[]): void {

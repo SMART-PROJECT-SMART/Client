@@ -1,6 +1,8 @@
-import { UavToMission } from '../uavToMission.model';
+import type { MissionAssignmentPairing } from '../missionAssignmentPairing.model';
+import type { TelemetryField } from '../../common/enums';
 
 export interface AssignmentAlgorithmRo {
-  assignments: UavToMission[];
+  pairings: MissionAssignmentPairing[];
+  uavTelemetryData: Record<number, Record<TelemetryField, number>>;
   fitnessScore: number;
 }

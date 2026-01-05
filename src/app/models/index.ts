@@ -1,5 +1,6 @@
 export type { Location } from './location.model';
 export type { Mission } from './mission.model';
+export type { MissionAssignmentPairing } from './missionAssignmentPairing.model';
 export type { MissionToUavAssignment } from './missionToUavAssignment.model';
 export type { NavigationItem } from './navigation-item.model';
 export type { TimeWindow } from './timeWindow.model';
