@@ -40,7 +40,7 @@ export class EnumUtil {
       [TelemetryField.Rpm]: 'RPM',
       [TelemetryField.EngineDegrees]: 'Engine Temperature',
       [TelemetryField.NearestSleeveId]: 'Nearest Sleeve ID',
-      [TelemetryField.TailId]: 'Tail ID',
+      [TelemetryField.TailId]: 'Tail Number',
       [TelemetryField.UAVTypeValue]: 'UAV Type Value',
     };
     return displayMap[field];

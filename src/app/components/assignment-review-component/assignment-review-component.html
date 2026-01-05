@@ -54,7 +54,7 @@
               <div class="mission-details">
                 <div class="detail-item">
                   <span class="detail-label">Priority:</span>
-                  <span class="detail-value">{{ EnumUtil.getPriorityDisplay(pairing.mission.missionPriority) }}</span>
+                  <span class="detail-value">{{ EnumUtil.getPriorityDisplay(pairing.mission.priority) }}</span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">Required UAV Type:</span>
@@ -63,9 +63,9 @@
                 <div class="detail-item">
                   <span class="detail-label">Location:</span>
                   <span class="detail-value">
-                    Lat: {{ pairing.mission.location.latitude }}°,
-                    Lon: {{ pairing.mission.location.longitude }}°,
-                    Alt: {{ pairing.mission.location.altitude }} m
+                    Lat: {{ pairing.mission.location.latitude }} (°),
+                    Lon: {{ pairing.mission.location.longitude }} (°),
+                    Alt: {{ pairing.mission.location.altitude }} (m)
                   </span>
                 </div>
                 <div class="detail-item">

@@ -29,6 +29,7 @@ export class TelemetryUtil {
       [TelemetryField.TailId]: TelemetryUnits.TAIL_ID,
       [TelemetryField.UAVTypeValue]: TelemetryUnits.UAV_TYPE_VALUE,
     };
-    return unitMap[field];
+    const unit = unitMap[field];
+    return unit ? `(${unit})` : '';
   }
 }

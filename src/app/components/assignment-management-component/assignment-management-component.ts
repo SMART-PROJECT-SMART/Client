@@ -34,7 +34,7 @@ export class AssignmentManagementComponent {
       return {
         id: formValue.missionId!,
         requiredUAVType: formValue.requiredUAVType!,
-        missionPriority: formValue.priority!,
+        priority: formValue.priority!,
         location: formValue.location!,
         timeWindow: formValue.timeWindow!,
       } as Mission;
