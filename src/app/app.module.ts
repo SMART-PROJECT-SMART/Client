@@ -12,7 +12,7 @@ import { AssignmentManagementComponent } from './pages/assignment/components/ass
 import { AssignmentReviewComponent } from './pages/assignment/components/assignment-review/assignment-review-component.component';
 import { MissionComponentComponent } from './pages/assignment/components/mission/mission-component.component';
 import { HomePageComponent } from './pages/home/home-page/home-page-component.component';
-import { LiveViewPageComponentComponent } from './pages/live-view/live-view-page/live-view-page-component.component';
+import { LiveViewPageComponent } from './pages/live-view/live-view-page/live-view-page-component.component';
 import { CesiumViewer } from './pages/live-view/components/cesium-viewer/cesium-viewer.component';
 import { SidebarComponent } from './common/components/sidebar/sidebar-component.component';
 import { AssignmentPageComponentComponent } from './pages/assignment/assignment-page/assignment-page-component.component';
@@ -26,7 +26,7 @@ import { AssignmentPageComponentComponent } from './pages/assignment/assignment-
     AssignmentReviewComponent,
     SidebarComponent,
     HomePageComponent,
-    LiveViewPageComponentComponent,
+    LiveViewPageComponent,
     CesiumViewer,
   ],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
