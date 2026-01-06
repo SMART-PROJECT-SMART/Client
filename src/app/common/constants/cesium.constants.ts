@@ -1,6 +1,6 @@
 export class CesiumConstants {
   public static readonly ION_ACCESS_TOKEN =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3M2ZiOTI1My03YjdmLTRlZjItOWQ0MS0yN2IxYWNiZWU1MDQiLCJpZCI6MzMwMTQyMSwiaWF0IjoxNzMzNzU1OTYyfQ.X72bwNfS3N7uuYWb_aNIUtpn8sCQb8R5-jP0XQMxHcc';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NDNlZTYzYS00Y2JkLTRhYmEtYmRhMC02NTc3NmFiODc0N2IiLCJpZCI6MzMwMTQyLCJpYXQiOjE3Njc2ODg0MzZ9.3mjcPnO_RKNgQsOaEpVAHiLdWMyBeUjno_eNYfXpnBI';
   public static readonly BASE_URL = '/cesium/';
   public static readonly TILE_SERVER_URL = 'http://localhost/tiles/{z}/{x}/{y}.jpg';
 

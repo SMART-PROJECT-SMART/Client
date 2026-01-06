@@ -14,6 +14,7 @@ import { AssignmentReviewComponent } from './components/assignment-review-compon
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
 import { LiveViewPageComponentComponent } from './components/live-view-page-component/live-view-page-component.component';
+import { CesiumViewer } from './components/cesium-viewer/cesium-viewer.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { LiveViewPageComponentComponent } from './components/live-view-page-comp
     SidebarComponent,
     HomeComponent,
     LiveViewPageComponentComponent,
+    CesiumViewer,
   ],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],

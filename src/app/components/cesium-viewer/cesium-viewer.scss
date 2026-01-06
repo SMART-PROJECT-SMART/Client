@@ -1,0 +1,22 @@
+@use '../../../styles/constants' as *;
+
+.cesium-viewer-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.cesium-container {
+  width: 100%;
+  height: 100%;
+}
+
+.controls-overlay {
+  position: absolute;
+  top: $spacing-lg;
+  left: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  z-index: $z-index-modal;
+}
