@@ -4,7 +4,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { AppRoutingModule } from './app-routing-module';
+import { AppRoutingModule } from './app-routing.module';
 import { App } from './app';
 import { MissionComponentComponent } from './components/mission-component/mission-component.component';
 import { MatModule } from './modules/mat.module';
@@ -13,6 +13,7 @@ import { AssignmentManagementComponent } from './components/assignment-managemen
 import { AssignmentReviewComponent } from './components/assignment-review-component/assignment-review-component.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
+import { LiveViewPageComponentComponent } from './components/live-view-page-component/live-view-page-component.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { HomeComponent } from './components/home/home.component';
     AssignmentReviewComponent,
     SidebarComponent,
     HomeComponent,
+    LiveViewPageComponentComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],

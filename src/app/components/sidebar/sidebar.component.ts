@@ -26,6 +26,7 @@ export class SidebarComponent {
       icon: 'assignment',
       route: '/assignment-page',
     },
+    { label: 'Live View Page', icon: 'map', route: '/live-view-page' },
   ];
 
   constructor(private readonly router: Router) {}
