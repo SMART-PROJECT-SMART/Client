@@ -10,14 +10,13 @@ import type { GeographicPosition } from '../../models/cesium';
   providedIn: 'root',
 })
 export class CesiumService {
-  private viewer: Cesium.Viewer | null = null;
+  private viewer!: Cesium.Viewer;
   private customImageryProvider: Cesium.UrlTemplateImageryProvider | null = null;
   private uavEntities = signal<Map<number, Cesium.Entity>>(new Map());
 
   constructor(
     private readonly configService: CesiumConfigService,
     private readonly cameraService: CesiumCameraService,
-    private readonly imageryService: CesiumImageryService,
     private readonly uavService: CesiumUAVService
   ) {}
 
@@ -31,13 +30,12 @@ export class CesiumService {
     this.viewer = new Cesium.Viewer(containerId, viewerOptions);
 
     this.setupViewer();
-    await this.loadInitialContent();
     this.cameraService.setInitialView(this.viewer);
 
     return this.viewer;
   }
 
-  public getViewer(): Cesium.Viewer | null {
+  public getViewer(): Cesium.Viewer {
     return this.viewer;
   }
 
@@ -49,16 +47,6 @@ export class CesiumService {
   public flyToPosition(position: GeographicPosition): void {
     if (!this.viewer) return;
     this.cameraService.flyToPosition(this.viewer, position);
-  }
-
-  public useCustomMap(): void {
-    if (!this.viewer || !this.customImageryProvider) return;
-    this.imageryService.switchToCustomMap(this.viewer, this.customImageryProvider);
-  }
-
-  public async useDefaultImagery(): Promise<void> {
-    if (!this.viewer) return;
-    await this.imageryService.switchToDefaultImagery(this.viewer);
   }
 
   public addUAV(uavId: number, position: GeographicPosition): void {
@@ -139,17 +127,6 @@ export class CesiumService {
     const creditContainer = this.viewer.cesiumWidget.creditContainer as HTMLElement;
     if (creditContainer) {
       creditContainer.style.display = 'none';
-    }
-  }
-
-  private async loadInitialContent(): Promise<void> {
-    if (!this.viewer) return;
-
-    try {
-      const tileset = await Cesium.Cesium3DTileset.fromIonAssetId(96188);
-      this.viewer.scene.primitives.add(tileset);
-    } catch (error) {
-      console.error('Failed to load building tileset:', error);
     }
   }
 }

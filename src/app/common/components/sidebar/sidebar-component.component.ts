@@ -22,11 +22,11 @@ export class SidebarComponent {
   public readonly navigationItems: NavigationItem[] = [
     { label: 'Home', icon: 'home', route: '/' },
     {
-      label: 'Assignment Page',
+      label: 'Assignment',
       icon: 'assignment',
       route: '/assignment-page',
     },
-    { label: 'Live View Page', icon: 'map', route: '/live-view-page' },
+    { label: 'Live View', icon: 'map', route: '/live-view-page' },
   ];
 
   constructor(private readonly router: Router) {}
