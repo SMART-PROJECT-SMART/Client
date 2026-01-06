@@ -8,8 +8,8 @@ const { SidebarConstants } = ClientConstants;
 @Component({
   selector: 'app-sidebar',
   standalone: false,
-  templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss',
+  templateUrl: './sidebar-component.component.html',
+  styleUrl: './sidebar-component.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {

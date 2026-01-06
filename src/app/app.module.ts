@@ -11,8 +11,8 @@ import { MatModule } from './modules/mat.module';
 import { AssignmentPageComponentComponent } from './components/assignment-page-component/assignment-page-component.component';
 import { AssignmentManagementComponent } from './components/assignment-management-component/assignment-management-component.component';
 import { AssignmentReviewComponent } from './components/assignment-review-component/assignment-review-component.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { HomeComponent } from './components/home/home.component';
+import { SidebarComponent } from './components/sidebar-component/sidebar-component.component';
+import { HomePageComponent } from './components/home-page-component/home-page-component.component';
 import { LiveViewPageComponentComponent } from './components/live-view-page-component/live-view-page-component.component';
 import { CesiumViewer } from './components/cesium-viewer/cesium-viewer.component';
 
@@ -24,7 +24,7 @@ import { CesiumViewer } from './components/cesium-viewer/cesium-viewer.component
     AssignmentManagementComponent,
     AssignmentReviewComponent,
     SidebarComponent,
-    HomeComponent,
+    HomePageComponent,
     LiveViewPageComponentComponent,
     CesiumViewer,
   ],
