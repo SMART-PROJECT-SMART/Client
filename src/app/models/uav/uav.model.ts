@@ -1,4 +1,4 @@
-import type { UAVType, TelemetryField } from '../common/enums';
+import type { UAVType, TelemetryField } from '../../common/enums';
 
 export interface UAV {
   tailId: number;

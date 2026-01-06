@@ -1,4 +1,4 @@
-import type { MissionToUavAssignment } from '../missionToUavAssignment.model';
+import type { MissionToUavAssignment } from '../mission/missionToUavAssignment.model';
 
 export interface ApplyAssignmentRo {
   suggested: MissionToUavAssignment[];
