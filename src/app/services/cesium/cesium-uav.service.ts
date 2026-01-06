@@ -7,23 +7,22 @@ import type { GeographicPosition } from '../../models/cesium';
   providedIn: 'root',
 })
 export class CesiumUAVService {
-  public addStaticUAV(
-    viewer: Cesium.Viewer,
-    longitude: number,
-    latitude: number,
-    height: number
-  ): Cesium.Entity {
-    const position = Cesium.Cartesian3.fromDegrees(longitude, latitude, height);
+  public createUAV(viewer: Cesium.Viewer, uavId: number, position: GeographicPosition): Cesium.Entity {
+    const cartesianPosition = Cesium.Cartesian3.fromDegrees(
+      position.longitude,
+      position.latitude,
+      position.height
+    );
+
     const heading = Cesium.Math.toRadians(CesiumConstants.UAV_MODEL_ROTATION_DEGREES);
-    const pitch = 0;
-    const roll = 0;
     const orientation = Cesium.Transforms.headingPitchRollQuaternion(
-      position,
-      new Cesium.HeadingPitchRoll(heading, pitch, roll)
+      cartesianPosition,
+      new Cesium.HeadingPitchRoll(heading, 0, 0)
     );
 
     return viewer.entities.add({
-      position: position,
+      id: `uav-${uavId}`,
+      position: cartesianPosition,
       orientation: orientation,
       model: {
         uri: CesiumConstants.UAV_MODEL_PATH,
@@ -34,13 +33,38 @@ export class CesiumUAVService {
     });
   }
 
-  public removeUAV(viewer: Cesium.Viewer, entity: Cesium.Entity | null): void {
-    if (entity) {
-      viewer.entities.remove(entity);
-    }
+  public updateUAVPosition(entity: Cesium.Entity, position: GeographicPosition): void {
+    const cartesianPosition = Cesium.Cartesian3.fromDegrees(
+      position.longitude,
+      position.latitude,
+      position.height
+    );
+
+    entity.position = new Cesium.ConstantPositionProperty(cartesianPosition);
+
+    const heading = Cesium.Math.toRadians(CesiumConstants.UAV_MODEL_ROTATION_DEGREES);
+    const orientation = Cesium.Transforms.headingPitchRollQuaternion(
+      cartesianPosition,
+      new Cesium.HeadingPitchRoll(heading, 0, 0)
+    );
+    entity.orientation = new Cesium.ConstantProperty(orientation);
   }
 
-  public createUAVAtPosition(viewer: Cesium.Viewer, position: GeographicPosition): Cesium.Entity {
-    return this.addStaticUAV(viewer, position.longitude, position.latitude, position.height);
+  public removeUAV(viewer: Cesium.Viewer, entity: Cesium.Entity): void {
+    viewer.entities.remove(entity);
+  }
+
+  public removeAllUAVs(viewer: Cesium.Viewer): void {
+    const entitiesToRemove: Cesium.Entity[] = [];
+
+    viewer.entities.values.forEach((entity) => {
+      if (entity.id && typeof entity.id === 'string' && entity.id.startsWith('uav-')) {
+        entitiesToRemove.push(entity);
+      }
+    });
+
+    entitiesToRemove.forEach((entity) => {
+      viewer.entities.remove(entity);
+    });
   }
 }

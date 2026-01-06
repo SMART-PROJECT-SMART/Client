@@ -24,6 +24,6 @@ export class CesiumViewer implements OnInit, OnDestroy {
     }
   }
   public ngOnDestroy(): void {
-    this.cesiumService.removeUAV();
+    this.cesiumService.removeAllUAVs();
   }
 }

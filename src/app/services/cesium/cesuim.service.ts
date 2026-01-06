@@ -12,7 +12,7 @@ import type { GeographicPosition } from '../../models/cesium';
 export class CesiumService {
   private viewer: Cesium.Viewer | null = null;
   private customImageryProvider: Cesium.UrlTemplateImageryProvider | null = null;
-  private uavEntity = signal<Cesium.Entity | null>(null);
+  private uavEntities = signal<Map<number, Cesium.Entity>>(new Map());
 
   constructor(
     private readonly configService: CesiumConfigService,
@@ -61,10 +61,14 @@ export class CesiumService {
     await this.imageryService.switchToDefaultImagery(this.viewer);
   }
 
-  public addUAVAtPosition(position: GeographicPosition): void {
+  public addUAV(uavId: number, position: GeographicPosition): void {
     if (!this.viewer) return;
-    const entity = this.uavService.createUAVAtPosition(this.viewer, position);
-    this.uavEntity.set(entity);
+
+    const entity = this.uavService.createUAV(this.viewer, uavId, position);
+    const currentMap = new Map(this.uavEntities());
+    currentMap.set(uavId, entity);
+    this.uavEntities.set(currentMap);
+
     this.cameraService.flyToUAV(
       this.viewer,
       position.longitude,
@@ -73,10 +77,50 @@ export class CesiumService {
     );
   }
 
-  public removeUAV(): void {
+  public updateUAV(uavId: number, position: GeographicPosition): void {
     if (!this.viewer) return;
-    this.uavService.removeUAV(this.viewer, this.uavEntity());
-    this.uavEntity.set(null);
+
+    const entity = this.uavEntities().get(uavId);
+    if (entity) {
+      this.uavService.updateUAVPosition(entity, position);
+    } else {
+      this.addUAV(uavId, position);
+    }
+  }
+
+  public updateMultipleUAVs(updates: Map<number, GeographicPosition>): void {
+    if (!this.viewer) return;
+
+    updates.forEach((position, uavId) => {
+      this.updateUAV(uavId, position);
+    });
+  }
+
+  public removeUAV(uavId: number): void {
+    if (!this.viewer) return;
+
+    const entity = this.uavEntities().get(uavId);
+    if (entity) {
+      this.uavService.removeUAV(this.viewer, entity);
+      const currentMap = new Map(this.uavEntities());
+      currentMap.delete(uavId);
+      this.uavEntities.set(currentMap);
+    }
+  }
+
+  public removeAllUAVs(): void {
+    if (!this.viewer) return;
+
+    this.uavService.removeAllUAVs(this.viewer);
+    this.uavEntities.set(new Map());
+  }
+
+  public getUAVEntity(uavId: number): Cesium.Entity | undefined {
+    return this.uavEntities().get(uavId);
+  }
+
+  public getAllUAVs(): Map<number, Cesium.Entity> {
+    return this.uavEntities();
   }
 
   private validateDomElement(elementId: string): void {
