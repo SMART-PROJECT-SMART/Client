@@ -65,7 +65,12 @@ export class CesiumService {
     if (!this.viewer) return;
     const entity = this.uavService.createUAVAtPosition(this.viewer, position);
     this.uavEntity.set(entity);
-    this.cameraService.flyToUAV(this.viewer, position.longitude, position.latitude, position.height);
+    this.cameraService.flyToUAV(
+      this.viewer,
+      position.longitude,
+      position.latitude,
+      position.height
+    );
   }
 
   public removeUAV(): void {

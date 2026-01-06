@@ -17,6 +17,7 @@ export class CesiumViewer implements OnInit, OnDestroy {
     try {
       await this.cesiumService.initializeViewer('cesium-container');
       this.isInitialized.set(true);
+      this.cesiumService.zoomToIsrael();
     } catch (error) {
       console.error('Failed to initialize Cesium viewer:', error);
     }
@@ -24,17 +25,5 @@ export class CesiumViewer implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.cesiumService.removeUAV();
-  }
-
-  public onZoomToIsrael(): void {
-    this.cesiumService.zoomToIsrael();
-  }
-
-  public async onUseDefaultImagery(): Promise<void> {
-    await this.cesiumService.useDefaultImagery();
-  }
-
-  public onUseCustomMap(): void {
-    this.cesiumService.useCustomMap();
   }
 }
