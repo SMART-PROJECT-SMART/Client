@@ -1,9 +1,13 @@
+import { Injectable } from '@angular/core';
 import * as Cesium from 'cesium';
-import { CesiumConstants } from '../../../common/constants/cesium.constants';
-import type { GeographicPosition } from '../../../models/cesium';
+import { CesiumConstants } from '../../common/constants/cesium.constants';
+import type { GeographicPosition } from '../../models/cesium';
 
-export class CesiumCameraHelper {
-  public static setInitialView(viewer: Cesium.Viewer): void {
+@Injectable({
+  providedIn: 'root',
+})
+export class CesiumCameraService {
+  public setInitialView(viewer: Cesium.Viewer): void {
     viewer.camera.setView({
       destination: Cesium.Cartesian3.fromDegrees(
         CesiumConstants.ISRAEL_CENTER_LONGITUDE,
@@ -13,7 +17,7 @@ export class CesiumCameraHelper {
     });
   }
 
-  public static zoomToIsrael(viewer: Cesium.Viewer): void {
+  public zoomToIsrael(viewer: Cesium.Viewer): void {
     viewer.camera.flyTo({
       destination: Cesium.Cartesian3.fromDegrees(
         CesiumConstants.ISRAEL_CENTER_LONGITUDE,
@@ -24,7 +28,7 @@ export class CesiumCameraHelper {
     });
   }
 
-  public static flyToPosition(viewer: Cesium.Viewer, position: GeographicPosition): void {
+  public flyToPosition(viewer: Cesium.Viewer, position: GeographicPosition): void {
     viewer.camera.flyTo({
       destination: Cesium.Cartesian3.fromDegrees(
         position.longitude,
@@ -35,7 +39,7 @@ export class CesiumCameraHelper {
     });
   }
 
-  public static flyToUAV(
+  public flyToUAV(
     viewer: Cesium.Viewer,
     longitude: number,
     latitude: number,

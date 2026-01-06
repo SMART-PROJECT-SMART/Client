@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as Cesium from 'cesium';
 import { CesiumConstants } from '../../common/constants/cesium.constants';
-import type { CesiumViewerConfig } from '../../configuration/cesium';
 import type { CustomImageryProviderConfig } from '../../configuration/cesium';
 
 declare global {
@@ -40,8 +39,7 @@ export class CesiumConfigService {
   public getViewerOptions(
     imageryProvider?: Cesium.ImageryProvider | false
   ): Cesium.Viewer.ConstructorOptions {
-    const config: CesiumViewerConfig = {
-      imageryProvider: imageryProvider,
+    const options: Cesium.Viewer.ConstructorOptions = {
       baseLayerPicker: false,
       geocoder: false,
       homeButton: false,
@@ -50,13 +48,19 @@ export class CesiumConfigService {
       timeline: false,
       animation: false,
       navigationHelpButton: false,
-      terrainProvider: Cesium.Terrain.fromWorldTerrain(),
-      skyBox: undefined,
+      terrain: Cesium.Terrain.fromWorldTerrain(),
       fullscreenButton: false,
       vrButton: false,
       infoBox: false,
     };
 
-    return config as Cesium.Viewer.ConstructorOptions;
+    if (imageryProvider !== undefined) {
+      options.baseLayer =
+        imageryProvider === false
+          ? false
+          : Cesium.ImageryLayer.fromProviderAsync(Promise.resolve(imageryProvider));
+    }
+
+    return options;
   }
 }
