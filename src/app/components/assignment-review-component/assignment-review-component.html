@@ -41,6 +41,17 @@
                 }
               </mat-select>
             </mat-form-field>
+
+            <div class="uav-info">
+              <div class="info-item">
+                <span class="info-label">Tail Number:</span>
+                <span class="info-value">{{ getUavForPairing(pairing).tailId }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">UAV Type:</span>
+                <span class="info-value">{{ EnumUtil.getUAVTypeDisplay(getUavForPairing(pairing).uavType) }}</span>
+              </div>
+            </div>
           </div>
 
           <fieldset class="collapsible-section">

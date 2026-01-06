@@ -9,8 +9,8 @@ import { App } from './app';
 import { MissionComponentComponent } from './components/mission-component/mission-component.component';
 import { MatModule } from './modules/mat.module';
 import { AssignmentPageComponentComponent } from './components/assignment-page-component/assignment-page-component.component';
-import { AssignmentManagementComponent } from './components/assignment-management-component/assignment-management-component';
-import { AssignmentReviewComponent } from './components/assignment-review-component/assignment-review-component';
+import { AssignmentManagementComponent } from './components/assignment-management-component/assignment-management-component.component';
+import { AssignmentReviewComponent } from './components/assignment-review-component/assignment-review-component.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HomeComponent } from './components/home/home.component';
 

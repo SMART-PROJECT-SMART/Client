@@ -6,4 +6,10 @@ import { Component, signal } from '@angular/core';
   standalone: false,
   styleUrl: './app.scss',
 })
-export class App {}
+export class App {
+  public readonly isSidebarExpanded = signal<boolean>(false);
+
+  public onSidebarExpansionChange(isExpanded: boolean): void {
+    this.isSidebarExpanded.set(isExpanded);
+  }
+}

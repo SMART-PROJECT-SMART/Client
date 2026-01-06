@@ -88,7 +88,8 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public getTelemetryEntries(uav: UAV): [TelemetryField, number][] {
-    return Object.entries(uav.telemetryData) as [TelemetryField, number][];
+    return (Object.entries(uav.telemetryData) as [TelemetryField, number][])
+      .filter(([field]) => field !== TelemetryField.UAVTypeValue && field !== TelemetryField.TailId);
   }
 
   public trackByMissionId(_index: number, pairing: MissionAssignmentPairing): string {

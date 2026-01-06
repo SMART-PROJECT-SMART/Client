@@ -18,10 +18,8 @@ export class AssignmentManagementComponent {
   public readonly submitLabel: string = SUBMIT_LABEL;
   public missionIds: number[] = [];
 
-  private nextMissionId: number = 0;
-
   public onAddMission(): void {
-    this.missionIds.push(this.nextMissionId++);
+    this.missionIds.push(this.missionIds.length);
   }
 
   public onRemoveMission(missionId: number): void {

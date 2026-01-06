@@ -78,6 +78,30 @@
   }
 }
 
+.uav-info {
+  display: flex;
+  gap: $spacing-lg;
+  margin-top: $spacing-md;
+}
+
+.info-item {
+  display: flex;
+  gap: $spacing-sm;
+  align-items: center;
+}
+
+.info-label {
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+  font-weight: 500;
+}
+
+.info-value {
+  color: $color-text-primary;
+  font-size: $font-size-md;
+  font-weight: 600;
+}
+
 .suggested-badge {
   color: $color-accent;
   font-size: $font-size-sm;

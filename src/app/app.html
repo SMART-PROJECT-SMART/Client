@@ -1,6 +1,6 @@
 <div class="app-container">
-  <app-sidebar></app-sidebar>
-  <main class="main-content">
+  <app-sidebar (expansionChange)="onSidebarExpansionChange($event)"></app-sidebar>
+  <main class="main-content" [class.sidebar-expanded]="isSidebarExpanded()">
     <router-outlet></router-outlet>
   </main>
 </div>
