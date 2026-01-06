@@ -5,11 +5,11 @@ import type {
   MissionToUavAssignment,
   UAV,
   ApplyAssignmentRo,
-} from '../../models';
-import { TelemetryField } from '../../common/enums';
-import { ClientConstants } from '../../common';
-import { TelemetryUtil, EnumUtil, AssignmentUtil } from '../../common/utils';
-import { ApplyAssignmentDto } from '../../models/dto/applyAssignmentDto.dto';
+} from '../../../../models';
+import { TelemetryField } from '../../../../common/enums';
+import { ClientConstants } from '../../../../common';
+import { TelemetryUtil, EnumUtil, AssignmentUtil } from '../../../../common/utils';
+import { ApplyAssignmentDto } from '../../../../models/dto/applyAssignmentDto.dto';
 
 const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
 

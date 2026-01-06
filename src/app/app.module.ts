@@ -6,15 +6,16 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { App } from './app';
-import { MissionComponentComponent } from './components/mission-component/mission-component.component';
 import { MatModule } from './modules/mat.module';
-import { AssignmentPageComponentComponent } from './components/assignment-page-component/assignment-page-component.component';
-import { AssignmentManagementComponent } from './components/assignment-management-component/assignment-management-component.component';
-import { AssignmentReviewComponent } from './components/assignment-review-component/assignment-review-component.component';
-import { SidebarComponent } from './components/sidebar-component/sidebar-component.component';
-import { HomePageComponent } from './components/home-page-component/home-page-component.component';
-import { LiveViewPageComponentComponent } from './components/live-view-page-component/live-view-page-component.component';
-import { CesiumViewer } from './components/cesium-viewer/cesium-viewer.component';
+
+import { AssignmentManagementComponent } from './pages/assignment/components/assignment-management/assignment-management-component.component';
+import { AssignmentReviewComponent } from './pages/assignment/components/assignment-review/assignment-review-component.component';
+import { MissionComponentComponent } from './pages/assignment/components/mission/mission-component.component';
+import { HomePageComponent } from './pages/home/home-page/home-page-component.component';
+import { LiveViewPageComponentComponent } from './pages/live-view/live-view-page/live-view-page-component.component';
+import { CesiumViewer } from './pages/live-view/components/cesium-viewer/cesium-viewer.component';
+import { SidebarComponent } from './common/components/sidebar/sidebar-component.component';
+import { AssignmentPageComponentComponent } from './pages/assignment/assignment-page/assignment-page-component.component';
 
 @NgModule({
   declarations: [

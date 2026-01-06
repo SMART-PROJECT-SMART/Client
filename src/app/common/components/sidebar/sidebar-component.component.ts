@@ -1,7 +1,7 @@
 import { Component, signal, output, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import type { NavigationItem } from '../../models';
-import { ClientConstants } from '../../common';
+import type { NavigationItem } from '../../../models';
+import { ClientConstants } from '../../../common';
 
 const { SidebarConstants } = ClientConstants;
 

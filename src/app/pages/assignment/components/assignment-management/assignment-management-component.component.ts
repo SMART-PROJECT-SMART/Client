@@ -1,7 +1,7 @@
 import { Component, output, viewChildren, input, OnInit, computed, signal, effect } from '@angular/core';
-import { ClientConstants } from '../../common';
-import { MissionComponentComponent } from '../mission-component/mission-component.component';
-import type { Mission } from '../../models';
+import { ClientConstants } from '../../../../common';
+import { MissionComponentComponent } from '../mission/mission-component.component';
+import type { Mission } from '../../../../models';
 
 const { ADD_MISSION_LABEL, SUBMIT_LABEL } = ClientConstants.AssignmentPageConstants;
 

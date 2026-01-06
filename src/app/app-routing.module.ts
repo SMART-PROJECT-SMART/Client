@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomePageComponent } from './components/home-page-component/home-page-component.component';
-import { AssignmentPageComponentComponent } from './components/assignment-page-component/assignment-page-component.component';
-import { LiveViewPageComponentComponent } from './components/live-view-page-component/live-view-page-component.component';
+import { HomePageComponent } from './pages/home/home-page/home-page-component.component';
+import { AssignmentPageComponentComponent } from './pages/assignment/assignment-page/assignment-page-component.component';
+import { LiveViewPageComponentComponent } from './pages/live-view/live-view-page/live-view-page-component.component';
 
 const routes: Routes = [
   { path: '', component: HomePageComponent },

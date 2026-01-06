@@ -6,6 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './live-view-page-component.component.html',
   styleUrl: './live-view-page-component.component.scss',
 })
-export class LiveViewPageComponentComponent {
-
-}
+export class LiveViewPageComponentComponent {}

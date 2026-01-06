@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
-import { CesiumService } from '../../services/cesium/cesuim.service';
-import { TelemetryField } from '../../common/enums';
+import { CesiumService } from '../../../../services/cesium/cesuim.service';
+import { TelemetryField } from '../../../../common/enums';
 
 @Component({
   selector: 'app-cesium-viewer',

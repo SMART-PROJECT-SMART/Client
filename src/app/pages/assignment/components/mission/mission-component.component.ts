@@ -1,10 +1,10 @@
 import { Component, output, input, OnInit, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UAVType, Priority } from '../../common/enums';
-import { ClientConstants } from '../../common';
-import { EnumUtil } from '../../common/utils';
-import { timeWindowValidator } from '../../common/validators';
-import type { Mission } from '../../models';
+import { UAVType, Priority } from '../../../../common/enums';
+import { ClientConstants } from '../../../../common';
+import { EnumUtil } from '../../../../common/utils';
+import { timeWindowValidator } from '../../../../common/validators';
+import type { Mission } from '../../../../models';
 
 const { LocationValidation } = ClientConstants.ValidationConstants;
 const { EMPTY_STRING } = ClientConstants.FormDefaults;
