@@ -1,0 +1,27 @@
+@if (isLoading()) {
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>{{ messages.PROCESSING_MESSAGE }}</p>
+  </div>
+} @else if (errorMessage()) {
+  <div class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ errorMessage() }}</p>
+    <button mat-raised-button color="primary" (click)="onBackToManagement()">Back to Management</button>
+  </div>
+} @else {
+  <app-assignment-management-component
+    [style.display]="currentStage() === AssignmentStage.MANAGEMENT ? 'block' : 'none'"
+    (missionsSubmit)="onMissionsSubmit($event)">
+  </app-assignment-management-component>
+
+  @if (assignmentResult()) {
+    <app-assignment-review-component
+      [style.display]="currentStage() === AssignmentStage.REVIEW ? 'block' : 'none'"
+      [algorithmResult]="assignmentResult()!"
+      [availableUavs]="availableUavs()"
+      (back)="onBackToManagement()"
+      (apply)="onApplyAssignment($event)">
+    </app-assignment-review-component>
+  }
+}

@@ -4,8 +4,12 @@ import { Component, signal } from '@angular/core';
   selector: 'app-root',
   templateUrl: './app.html',
   standalone: false,
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {
-  protected readonly title = signal('client');
+  public readonly isSidebarExpanded = signal<boolean>(false);
+
+  public onSidebarExpansionChange(isExpanded: boolean): void {
+    this.isSidebarExpanded.set(isExpanded);
+  }
 }
