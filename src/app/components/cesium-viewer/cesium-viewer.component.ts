@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CesiumService } from '../../services/cesium/cesuim.service';
+import { TelemetryField } from '../../common/enums';
 
 @Component({
   selector: 'app-cesium-viewer',
@@ -22,7 +23,6 @@ export class CesiumViewer implements OnInit, OnDestroy {
       console.error('Failed to initialize Cesium viewer:', error);
     }
   }
-
   public ngOnDestroy(): void {
     this.cesiumService.removeUAV();
   }

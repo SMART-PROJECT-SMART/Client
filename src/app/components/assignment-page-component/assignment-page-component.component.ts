@@ -43,6 +43,16 @@ export class AssignmentPageComponentComponent implements OnDestroy {
     return AssignmentUtil.extractAllUavsFromTelemetry(result.uavTelemetryData);
   });
 
+  public readonly hasValidResult = computed<boolean>(() => {
+    const result = this.assignmentResult();
+    return result !== null && result.pairings.length > 0;
+  });
+
+  public readonly hasEmptyResult = computed<boolean>(() => {
+    const result = this.assignmentResult();
+    return result !== null && result.pairings.length === 0;
+  });
+
   public onMissionsSubmit(missions: Mission[]): void {
     this.missions.set(missions);
     this.setLoadingState(true);
@@ -63,6 +73,10 @@ export class AssignmentPageComponentComponent implements OnDestroy {
 
   public onBackToManagement(): void {
     this.resetToManagementStage();
+  }
+
+  public onViewResults(): void {
+    this.currentStage.set(AssignmentStage.REVIEW);
   }
 
   public onApplyAssignment(event: ApplyAssignmentRo): void {

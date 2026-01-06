@@ -2,6 +2,7 @@
 
 .loading-container,
 .error-container,
+.empty-result-container,
 .review-stage {
   display: flex;
   flex-direction: column;
@@ -12,10 +13,17 @@
   padding: $spacing-lg;
 }
 
-.error-container {
+.error-container,
+.empty-result-container {
   mat-icon {
     font-size: $icon-size-xxl;
     width: $icon-size-xxl;
     height: $icon-size-xxl;
   }
+}
+
+.view-results-container {
+  display: flex;
+  justify-content: center;
+  padding: $spacing-lg;
 }

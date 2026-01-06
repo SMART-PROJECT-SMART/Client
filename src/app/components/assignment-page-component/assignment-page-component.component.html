@@ -1,27 +1,44 @@
 @if (isLoading()) {
-  <div class="loading-container">
-    <mat-spinner></mat-spinner>
-    <p>{{ messages.PROCESSING_MESSAGE }}</p>
-  </div>
+<div class="loading-container">
+  <mat-spinner></mat-spinner>
+  <p>{{ messages.PROCESSING_MESSAGE }}</p>
+</div>
 } @else if (errorMessage()) {
-  <div class="error-container">
-    <mat-icon color="warn">error</mat-icon>
-    <p>{{ errorMessage() }}</p>
-    <button mat-raised-button color="primary" (click)="onBackToManagement()">Back to Management</button>
-  </div>
+<div class="error-container">
+  <mat-icon color="warn">error</mat-icon>
+  <p>{{ errorMessage() }}</p>
+  <button mat-raised-button color="primary" (click)="onBackToManagement()">
+    Back to Management
+  </button>
+</div>
 } @else {
+<div class="assignment-page-content">
   <app-assignment-management-component
     [style.display]="currentStage() === AssignmentStage.MANAGEMENT ? 'block' : 'none'"
-    (missionsSubmit)="onMissionsSubmit($event)">
+    [missions]="missions()"
+    [hasResult]="assignmentResult() !== null"
+    (missionsSubmit)="onMissionsSubmit($event)"
+    (viewResults)="onViewResults()"
+  >
   </app-assignment-management-component>
 
-  @if (assignmentResult()) {
-    <app-assignment-review-component
-      [style.display]="currentStage() === AssignmentStage.REVIEW ? 'block' : 'none'"
-      [algorithmResult]="assignmentResult()!"
-      [availableUavs]="availableUavs()"
-      (back)="onBackToManagement()"
-      (apply)="onApplyAssignment($event)">
-    </app-assignment-review-component>
+  @if (hasEmptyResult() && currentStage() === AssignmentStage.REVIEW) {
+  <div class="empty-result-container">
+    <mat-icon color="warn">info</mat-icon>
+    <p>Assignment cannot be made with the current missions and available UAVs</p>
+    <button mat-raised-button color="primary" (click)="onBackToManagement()">
+      Modify Missions
+    </button>
+  </div>
+  } @if (hasValidResult()) {
+  <app-assignment-review-component
+    [style.display]="currentStage() === AssignmentStage.REVIEW ? 'block' : 'none'"
+    [algorithmResult]="assignmentResult()!"
+    [availableUavs]="availableUavs()"
+    (back)="onBackToManagement()"
+    (apply)="onApplyAssignment($event)"
+  >
+  </app-assignment-review-component>
   }
+</div>
 }
