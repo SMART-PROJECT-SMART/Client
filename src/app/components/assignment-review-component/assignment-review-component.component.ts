@@ -9,6 +9,7 @@ import type {
 import { TelemetryField } from '../../common/enums';
 import { ClientConstants } from '../../common';
 import { TelemetryUtil, EnumUtil, AssignmentUtil } from '../../common/utils';
+import { ApplyAssignmentDto } from '../../models/dto/applyAssignmentDto.dto';
 
 const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
 
@@ -31,7 +32,9 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly TelemetryUtil = TelemetryUtil;
   public readonly EnumUtil = EnumUtil;
 
-  public readonly selectedTailIds: WritableSignal<Map<string, number>> = signal<Map<string, number>>(new Map());
+  public readonly selectedTailIds: WritableSignal<Map<string, number>> = signal<
+    Map<string, number>
+  >(new Map());
   public readonly expandedMissions: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
   public readonly expandedTelemetry: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
 
@@ -62,7 +65,7 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public isAssignmentModified(missionId: string): boolean {
-    const originalPairing = this.algorithmResult().pairings.find(p => p.mission.id === missionId);
+    const originalPairing = this.algorithmResult().pairings.find((p) => p.mission.id === missionId);
     const selectedTailId = this.selectedTailIds().get(missionId);
     return originalPairing?.tailId !== selectedTailId;
   }
@@ -72,24 +75,29 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public onApply(): void {
-    const suggestedAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(p => ({
-      mission: p.mission,
-      uavTailId: p.tailId,
-      startTime: p.timeWindow.start,
-    }));
+    const suggestedAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(
+      (p) => ({
+        mission: p.mission,
+        uavTailId: p.tailId,
+        startTime: p.timeWindow.start,
+      })
+    );
 
-    const actualAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(p => ({
-      mission: p.mission,
-      uavTailId: this.selectedTailIds().get(p.mission.id) ?? p.tailId,
-      startTime: p.timeWindow.start,
-    }));
-
-    this.apply.emit({ suggested: suggestedAssignments, actual: actualAssignments });
+    const actualAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(
+      (p) => ({
+        mission: p.mission,
+        uavTailId: this.selectedTailIds().get(p.mission.id) ?? p.tailId,
+        startTime: p.timeWindow.start,
+      })
+    );
+    const Ro: ApplyAssignmentRo = { suggested: suggestedAssignments, actual: actualAssignments };
+    this.apply.emit(Ro);
   }
 
   public getTelemetryEntries(uav: UAV): [TelemetryField, number][] {
-    return (Object.entries(uav.telemetryData) as [TelemetryField, number][])
-      .filter(([field]) => field !== TelemetryField.UAVTypeValue && field !== TelemetryField.TailId);
+    return (Object.entries(uav.telemetryData) as [TelemetryField, number][]).filter(
+      ([field]) => field !== TelemetryField.UAVTypeValue && field !== TelemetryField.TailId
+    );
   }
 
   public trackByMissionId(_index: number, pairing: MissionAssignmentPairing): string {
@@ -98,7 +106,10 @@ export class AssignmentReviewComponent implements OnInit {
 
   public getUavForPairing(pairing: MissionAssignmentPairing): UAV {
     const tailId = this.selectedTailIds().get(pairing.mission.id) ?? pairing.tailId;
-    return AssignmentUtil.buildUavFromTelemetry(tailId, this.algorithmResult().uavTelemetryData[tailId]);
+    return AssignmentUtil.buildUavFromTelemetry(
+      tailId,
+      this.algorithmResult().uavTelemetryData[tailId]
+    );
   }
 
   private initializeEditedAssignments(): void {

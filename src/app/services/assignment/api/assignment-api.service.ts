@@ -24,7 +24,6 @@ export class AssignmentApiService {
     dto: AssignmentSuggestionDto
   ): Observable<AssignmentRequestAcceptedRo> {
     const url: string = Endpoints.CREATE_ASSIGNMENT_SUGGESTION;
-    console.log('[API] POST', url, 'Body:', dto);
     return this.httpClient.post<AssignmentRequestAcceptedRo>(url, dto).pipe(
       tap((response: AssignmentRequestAcceptedRo) => console.log('[API] Response:', response))
     );
@@ -32,7 +31,6 @@ export class AssignmentApiService {
 
   public checkAssignmentStatus(assignmentId: string): Observable<AssignmentStatusRo> {
     const url: string = `${Endpoints.CHECK_ASSIGNMENT_STATUS}/${assignmentId}/status`;
-    console.log('[API] GET', url);
     return this.httpClient.get<AssignmentStatusRo>(url).pipe(
       tap((response: AssignmentStatusRo) => console.log('[API] Response:', response))
     );
@@ -40,18 +38,12 @@ export class AssignmentApiService {
 
   public getAssignmentResult(assignmentId: string): Observable<AssignmentAlgorithmRo> {
     const url: string = `${Endpoints.GET_ASSIGNMENT_RESULT}/${assignmentId}`;
-    console.log('[API] GET', url);
-    return this.httpClient.get<AssignmentAlgorithmRo>(url).pipe(
-      tap((response: AssignmentAlgorithmRo) => console.log('[API] Response:', response))
-    );
+    return this.httpClient.get<AssignmentAlgorithmRo>(url);
   }
 
   public applyAssignment(dto: ApplyAssignmentDto): Observable<void> {
     const url: string = Endpoints.APPLY_ASSIGNMENT;
-    console.log('[API] POST', url, 'Body:', dto);
-    return this.httpClient.post<void>(url, dto).pipe(
-      tap(() => console.log('[API] Apply assignment successful'))
-    );
+    return this.httpClient.post<void>(url, dto);
   }
 
   public getActiveMission(tailId: number): Observable<Mission | null> {
