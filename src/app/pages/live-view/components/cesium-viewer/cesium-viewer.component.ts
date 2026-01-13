@@ -11,6 +11,7 @@ import { LtsSignalRService } from '../../../../services/lts/lts-signalr.service'
 import { TelemetryField } from '../../../../common/enums';
 import type { TelemetryBroadcastDto, UAVTelemetryData } from '../../../../models';
 import type { UAVUpdateData } from '../../../../models/cesium';
+import { TelemetryDataHelper } from '../../../../services/helpers/telemetryData/telemetryData.helper';
 
 @Component({
   selector: 'app-cesium-viewer',
@@ -48,24 +49,8 @@ export class CesiumViewer implements OnInit, OnDestroy {
 
   private updateUAVsFromTelemetry(telemetry: TelemetryBroadcastDto): void {
     telemetry.uavData.forEach((uavData: UAVTelemetryData) => {
-      const updateData: UAVUpdateData = this.extractUpdateData(uavData);
+      const updateData: UAVUpdateData = TelemetryDataHelper.extractUpdateData(uavData);
       this.cesiumService.updateUAV(uavData.tailId, updateData);
     });
-  }
-
-  private extractUpdateData(uavData: UAVTelemetryData): UAVUpdateData {
-    const fields = uavData.fields;
-    return {
-      position: {
-        latitude: fields[TelemetryField.Latitude] || 0,
-        longitude: fields[TelemetryField.Longitude] || 0,
-        height: fields[TelemetryField.Altitude] || 0,
-      },
-      orientation: {
-        yaw: fields[TelemetryField.YawDeg] || 0,
-        pitch: fields[TelemetryField.PitchDeg] || 0,
-        roll: fields[TelemetryField.RollDeg] || 0,
-      },
-    };
   }
 }
