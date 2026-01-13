@@ -28,30 +28,17 @@ export class CesiumViewer implements OnInit, OnDestroy {
   ) {
     effect(() => {
       const telemetry: TelemetryBroadcastDto | null = this.ltsService.latestTelemetry();
-      console.log('[Cesium] Effect triggered - telemetry:', telemetry, 'isInitialized:', this.isInitialized());
       if (telemetry && this.isInitialized()) {
-        console.log('[Cesium] Updating UAVs from telemetry...');
         this.updateUAVsFromTelemetry(telemetry);
       }
     });
   }
 
   public async ngOnInit(): Promise<void> {
-    try {
-      console.log('[Cesium] Initializing Cesium viewer...');
-      await this.cesiumService.initializeViewer('cesium-container');
-      this.isInitialized.set(true);
-      console.log('[Cesium] Cesium viewer initialized');
-
-      this.cesiumService.zoomToIsrael();
-      console.log('[Cesium] Zoomed to Israel');
-
-      console.log('[Cesium] Connecting to LTS for all UAVs...');
-      await this.ltsService.connectToAllUAVs();
-      console.log('[Cesium] Connected to LTS');
-    } catch (error) {
-      console.error('[Cesium] Failed to initialize Cesium viewer or connect to LTS:', error);
-    }
+    await this.cesiumService.initializeViewer('cesium-container');
+    this.isInitialized.set(true);
+    this.cesiumService.zoomToIsrael();
+    await this.ltsService.connectToAllUAVs();
   }
 
   public async ngOnDestroy(): Promise<void> {
@@ -60,13 +47,9 @@ export class CesiumViewer implements OnInit, OnDestroy {
   }
 
   private updateUAVsFromTelemetry(telemetry: TelemetryBroadcastDto): void {
-    console.log('[Cesium] Processing', telemetry.uavData.length, 'UAVs');
     telemetry.uavData.forEach((uavData: UAVTelemetryData) => {
       const updateData: UAVUpdateData = this.extractUpdateData(uavData);
-      console.log('[Cesium] Updating UAV', uavData.tailId, 'with data:', updateData);
-      console.log('[Cesium] About to call cesiumService.updateUAV...');
       this.cesiumService.updateUAV(uavData.tailId, updateData);
-      console.log('[Cesium] Called cesiumService.updateUAV');
     });
   }
 

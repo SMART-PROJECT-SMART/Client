@@ -52,28 +52,20 @@ export class CesiumService {
   public addUAV(uavId: number, updateData: UAVUpdateData): void {
     if (!this.viewer) return;
 
-    console.log('[CesiumService] Creating UAV entity', uavId, 'at position:', updateData.position);
     const entity = this.uavService.createUAV(this.viewer, uavId, updateData);
-    console.log('[CesiumService] UAV entity created:', entity);
 
     const currentMap = new Map(this.uavEntities());
     currentMap.set(uavId, entity);
     this.uavEntities.set(currentMap);
-    console.log('[CesiumService] UAV added to map, total UAVs:', currentMap.size);
   }
 
   public updateUAV(uavId: number, updateData: UAVUpdateData): void {
-    if (!this.viewer) {
-      console.error('[CesiumService] Viewer not initialized');
-      return;
-    }
+    if (!this.viewer) return;
 
     const entity = this.uavEntities().get(uavId);
     if (entity) {
-      console.log('[CesiumService] Updating existing UAV', uavId);
       this.uavService.updateUAV(uavId, updateData);
     } else {
-      console.log('[CesiumService] Creating new UAV', uavId);
       this.addUAV(uavId, updateData);
     }
   }

@@ -8,64 +8,48 @@ import type { UAVUpdateData } from '../../models/cesium';
 })
 export class CesiumUAVService {
   private readonly uavPositionProperties = new Map<number, Cesium.SampledPositionProperty>();
-  private readonly uavOrientationProperties = new Map<number, Cesium.SampledProperty>();
-  public createUAV(
-    viewer: Cesium.Viewer,
-    uavId: number,
-    updateData: UAVUpdateData
-  ): Cesium.Entity {
-    console.log('[UAVService] Creating UAV', uavId, 'with position:', updateData.position, 'orientation:', updateData.orientation);
+  private readonly lastPositions = new Map<number, { lat: number; lon: number }>();
+  private viewer?: Cesium.Viewer;
 
+  public createUAV(viewer: Cesium.Viewer, uavId: number, updateData: UAVUpdateData): Cesium.Entity {
+    this.viewer = viewer;
     const positionProperty = new Cesium.SampledPositionProperty();
-    const orientationProperty = new Cesium.SampledProperty(Cesium.Quaternion);
 
     positionProperty.setInterpolationOptions({
-      interpolationAlgorithm: Cesium.LagrangePolynomialApproximation,
+      interpolationAlgorithm: Cesium.LinearApproximation,
       interpolationDegree: CesiumConstants.POSITION_INTERPOLATION_DEGREE,
     });
 
     positionProperty.forwardExtrapolationType = Cesium.ExtrapolationType.HOLD;
     positionProperty.forwardExtrapolationDuration = CesiumConstants.EXTRAPOLATION_DURATION_SECONDS;
 
-    orientationProperty.setInterpolationOptions({
-      interpolationAlgorithm: Cesium.LinearApproximation,
-      interpolationDegree: CesiumConstants.ORIENTATION_INTERPOLATION_DEGREE,
-    });
+    const now = Cesium.JulianDate.now();
+    const time = Cesium.JulianDate.addSeconds(
+      now,
+      CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
+      new Cesium.JulianDate()
+    );
 
-    orientationProperty.forwardExtrapolationType = Cesium.ExtrapolationType.HOLD;
-    orientationProperty.forwardExtrapolationDuration = CesiumConstants.EXTRAPOLATION_DURATION_SECONDS;
-
-    const time = Cesium.JulianDate.now();
     const cartesian = Cesium.Cartesian3.fromDegrees(
       updateData.position.longitude,
       updateData.position.latitude,
       updateData.position.height
     );
 
-    console.log('[UAVService] Cartesian position:', cartesian);
-
     positionProperty.addSample(time, cartesian);
 
-    const heading = Cesium.Math.toRadians(updateData.orientation.yaw + CesiumConstants.UAV_MODEL_HEADING_OFFSET_DEGREES);
+    this.uavPositionProperties.set(uavId, positionProperty);
+
+    const heading = Cesium.Math.toRadians(updateData.orientation.yaw);
     const pitch = Cesium.Math.toRadians(updateData.orientation.pitch);
     const roll = Cesium.Math.toRadians(updateData.orientation.roll);
-
     const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
     const quaternion = Cesium.Transforms.headingPitchRollQuaternion(cartesian, hpr);
-
-    console.log('[UAVService] Quaternion:', quaternion);
-
-    orientationProperty.addSample(time, quaternion);
-
-    this.uavPositionProperties.set(uavId, positionProperty);
-    this.uavOrientationProperties.set(uavId, orientationProperty);
-
-    console.log('[UAVService] Stored properties for UAV', uavId);
 
     return viewer.entities.add({
       id: `uav-${uavId}`,
       position: positionProperty,
-      orientation: orientationProperty,
+      orientation: new Cesium.ConstantProperty(quaternion),
       model: {
         uri: CesiumConstants.UAV_MODEL_PATH,
         minimumPixelSize: CesiumConstants.UAV_MODEL_MINIMUM_PIXEL_SIZE,
@@ -85,44 +69,38 @@ export class CesiumUAVService {
   }
 
   public updateUAV(uavId: number, updateData: UAVUpdateData): void {
-    console.log('[UAVService] updateUAV called for UAV', uavId);
-
     const positionProperty = this.uavPositionProperties.get(uavId);
-    const orientationProperty = this.uavOrientationProperties.get(uavId);
-
-    console.log('[UAVService] Position property:', positionProperty, 'Orientation property:', orientationProperty);
-
-    if (!positionProperty || !orientationProperty) {
-      console.warn('[UAVService] Properties not found for UAV', uavId, '- cannot update');
+    const entity = this.viewer?.entities.getById(`uav-${uavId}`);
+    if (!positionProperty || !this.viewer || !entity) {
       return;
     }
 
-    console.log('[UAVService] Adding sample for UAV', uavId, 'with position:', updateData.position, 'orientation:', updateData.orientation);
+    const now = Cesium.JulianDate.now();
+    const time = Cesium.JulianDate.addSeconds(
+      now,
+      CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
+      new Cesium.JulianDate()
+    );
 
-    const time = Cesium.JulianDate.now();
     const cartesian = Cesium.Cartesian3.fromDegrees(
       updateData.position.longitude,
       updateData.position.latitude,
       updateData.position.height
     );
-
     positionProperty.addSample(time, cartesian);
 
-    const heading = Cesium.Math.toRadians(updateData.orientation.yaw + CesiumConstants.UAV_MODEL_HEADING_OFFSET_DEGREES);
+    const heading = Cesium.Math.toRadians(updateData.orientation.yaw + 90);
     const pitch = Cesium.Math.toRadians(updateData.orientation.pitch);
     const roll = Cesium.Math.toRadians(updateData.orientation.roll);
-
     const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
     const quaternion = Cesium.Transforms.headingPitchRollQuaternion(cartesian, hpr);
+    entity.orientation = new Cesium.ConstantProperty(quaternion);
 
-    orientationProperty.addSample(time, quaternion);
-
-    this.removeOldSamples(positionProperty, orientationProperty, time);
+    this.removeOldSamples(positionProperty, time);
   }
 
   private removeOldSamples(
     positionProperty: Cesium.SampledPositionProperty,
-    orientationProperty: Cesium.SampledProperty,
     currentTime: Cesium.JulianDate
   ): void {
     const oldTime = Cesium.JulianDate.addSeconds(
@@ -137,7 +115,6 @@ export class CesiumUAVService {
     });
 
     positionProperty.removeSamples(removalInterval);
-    orientationProperty.removeSamples(removalInterval);
   }
 
   public removeUAV(viewer: Cesium.Viewer, entity: Cesium.Entity): void {
