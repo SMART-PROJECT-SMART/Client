@@ -1,4 +1,4 @@
-import type { MissionAssignmentPairing } from '../missionAssignmentPairing.model';
+import type { MissionAssignmentPairing } from '../mission/missionAssignmentPairing.model';
 import type { TelemetryField } from '../../common/enums';
 
 export interface AssignmentAlgorithmRo {

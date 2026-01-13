@@ -1,4 +1,4 @@
-import { Mission } from '../mission.model';
+import { Mission } from '../mission/mission.model';
 
 export interface AssignmentSuggestionDto {
   missions: Mission[];

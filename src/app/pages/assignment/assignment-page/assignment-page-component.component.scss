@@ -1,0 +1,29 @@
+@use '../../../../styles/constants' as *;
+
+.loading-container,
+.error-container,
+.empty-result-container,
+.review-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: $spacing-lg;
+  padding: $spacing-lg;
+}
+
+.error-container,
+.empty-result-container {
+  mat-icon {
+    font-size: $icon-size-xxl;
+    width: $icon-size-xxl;
+    height: $icon-size-xxl;
+  }
+}
+
+.view-results-container {
+  display: flex;
+  justify-content: center;
+  padding: $spacing-lg;
+}
