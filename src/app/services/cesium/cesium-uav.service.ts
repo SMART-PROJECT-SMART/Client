@@ -47,11 +47,11 @@ export class CesiumUAVService {
     });
   }
 
-  public updateUAVPosition(entity: Cesium.Entity, telemetryData: UAVTelemetryData): void {
+  public updateUAVPosition(entity: Cesium.Entity, position: GeographicPosition): void {
     const cartesianPosition = Cesium.Cartesian3.fromDegrees(
-      telemetryData.fields.Longitude,
-      telemetryData.fields.Latitude,
-      telemetryData.fields.Altitude
+      position.longitude,
+      position.latitude,
+      position.height
     );
 
     entity.position = new Cesium.ConstantPositionProperty(cartesianPosition);
