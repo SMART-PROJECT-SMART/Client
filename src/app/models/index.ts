@@ -14,3 +14,6 @@ export type { AssignmentRequestAcceptedRo } from './Ro/assignmentRequestAccepted
 export type { AssignmentStatusRo } from './Ro/assignmentStatusRo.ro';
 export type { AssignmentAlgorithmRo } from './Ro/assignmentAlgorithmRo.ro';
 export type { ApplyAssignmentRo } from './Ro/applyAssignmentRo.ro';
+
+export type { Violation } from './assignment/violation.model';
+export type { ValidationResult } from './assignment/validationResult.model';

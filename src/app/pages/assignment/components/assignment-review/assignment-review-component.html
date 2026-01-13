@@ -5,11 +5,38 @@
       <button mat-raised-button (click)="onBack()" aria-label="Back to management">
         {{ backLabel }}
       </button>
-      <button mat-raised-button color="primary" (click)="onApply()" aria-label="Apply assignments">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onApply()"
+        [disabled]="!canApplyAssignment()"
+        aria-label="Apply assignments">
         {{ applyLabel }}
       </button>
     </div>
   </div>
+
+  @if (!validationResult().isValid) {
+    <div class="violations-section">
+      <div class="violations-header">
+        <mat-icon class="warning-icon" color="warn">warning</mat-icon>
+        <h3>Assignment Violations</h3>
+      </div>
+      <div class="violations-list">
+        @for (violation of validationResult().violations; track violation.missionId + violation.violationType) {
+          <div class="violation-item">
+            <mat-icon class="violation-icon" color="warn">
+              {{ violation.violationType === ViolationType.TypeMismatch ? 'block' : 'schedule' }}
+            </mat-icon>
+            <div class="violation-content">
+              <span class="violation-title">{{ violation.missionTitle }}</span>
+              <span class="violation-description">{{ violation.description }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
 
   <div class="assignments-container">
     @for (pairing of algorithmResult().pairings; track trackByMissionId($index, pairing)) {

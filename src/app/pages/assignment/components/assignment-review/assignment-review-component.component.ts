@@ -1,15 +1,18 @@
-import { Component, input, output, signal, OnInit, WritableSignal } from '@angular/core';
+import { Component, input, output, signal, OnInit, WritableSignal, computed, Signal } from '@angular/core';
 import type {
   AssignmentAlgorithmRo,
   MissionAssignmentPairing,
   MissionToUavAssignment,
   UAV,
   ApplyAssignmentRo,
+  ValidationResult,
+  Violation,
 } from '../../../../models';
-import { TelemetryField } from '../../../../common/enums';
+import { TelemetryField, ViolationType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { TelemetryUtil, EnumUtil, AssignmentUtil } from '../../../../common/utils';
 import { ApplyAssignmentDto } from '../../../../models/dto/applyAssignmentDto.dto';
+import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
 
 const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
 
@@ -20,6 +23,8 @@ const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
   styleUrl: './assignment-review-component.scss',
 })
 export class AssignmentReviewComponent implements OnInit {
+  private readonly validatorService: AssignmentValidatorService = new AssignmentValidatorService();
+
   public readonly algorithmResult = input.required<AssignmentAlgorithmRo>();
   public readonly availableUavs = input.required<UAV[]>();
   public readonly back = output<void>();
@@ -28,6 +33,7 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly backLabel: string = BACK_LABEL;
   public readonly applyLabel: string = APPLY_LABEL;
   public readonly TelemetryField = TelemetryField;
+  public readonly ViolationType = ViolationType;
   public readonly AssignmentUtil = AssignmentUtil;
   public readonly TelemetryUtil = TelemetryUtil;
   public readonly EnumUtil = EnumUtil;
@@ -37,6 +43,18 @@ export class AssignmentReviewComponent implements OnInit {
   >(new Map());
   public readonly expandedMissions: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
   public readonly expandedTelemetry: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
+
+  public readonly validationResult: Signal<ValidationResult> = computed(() => {
+    return this.validatorService.validateAssignments(
+      this.algorithmResult().pairings,
+      this.selectedTailIds(),
+      this.algorithmResult().uavTelemetryData
+    );
+  });
+
+  public readonly canApplyAssignment: Signal<boolean> = computed(() => {
+    return this.validationResult().isValid;
+  });
 
   public ngOnInit(): void {
     this.initializeEditedAssignments();
