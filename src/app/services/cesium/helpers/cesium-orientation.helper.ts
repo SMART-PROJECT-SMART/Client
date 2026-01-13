@@ -1,3 +1,4 @@
+import { CesiumConstants } from '../../../common/constants/cesium.constants';
 import { UAVUpdateData } from '../../../models/cesium';
 import * as Cesium from 'cesium';
 
@@ -6,7 +7,9 @@ export class CesiumOrientationHelper {
     updateData: UAVUpdateData,
     cartesian: Cesium.Cartesian3
   ): Cesium.Quaternion {
-    const heading = Cesium.Math.toRadians(updateData.orientation.yaw + 90);
+    const heading = Cesium.Math.toRadians(
+      updateData.orientation.yaw + CesiumConstants.UAV_MODEL_YAW_ANGLE_CORRECTION_DEGREES
+    );
     const pitch = Cesium.Math.toRadians(updateData.orientation.pitch);
     const roll = Cesium.Math.toRadians(updateData.orientation.roll);
     const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
