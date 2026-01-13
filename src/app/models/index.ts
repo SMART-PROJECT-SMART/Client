@@ -17,3 +17,8 @@ export type { ApplyAssignmentRo } from './Ro/applyAssignmentRo.ro';
 
 export type { Violation } from './assignment/violation.model';
 export type { ValidationResult } from './assignment/validationResult.model';
+
+export type { UAVTelemetryData } from './lts/uavTelemetryData.model';
+export type { TelemetryBroadcastDto } from './lts/telemetryBroadcastDto.model';
+export type { UAVWantedFields } from './lts/uavWantedFields.model';
+export type { UpdateWantedFieldsDto } from './lts/updateWantedFieldsDto.model';
