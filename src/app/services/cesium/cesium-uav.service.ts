@@ -2,24 +2,27 @@ import { Injectable } from '@angular/core';
 import * as Cesium from 'cesium';
 import { CesiumConstants } from '../../common/constants/cesium.constants';
 import type { UAVUpdateData } from '../../models/cesium';
+import { CesiumOrientationHelper } from './helpers/cesium-orientation.helper';
+import { CesiumInterpolationConfig } from '../../configuration/cesium/cesium-interpolation-config.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CesiumUAVService {
   private readonly uavPositionProperties = new Map<number, Cesium.SampledPositionProperty>();
-  private readonly lastPositions = new Map<number, { lat: number; lon: number }>();
   private viewer?: Cesium.Viewer;
-
+  private interpolationConfig: CesiumInterpolationConfig;
+  constructor() {
+    this.interpolationConfig = {
+      interpolationAlgorithm: Cesium.LinearApproximation,
+      interpolationDegree: CesiumConstants.POSITION_INTERPOLATION_DEGREE,
+    };
+  }
   public createUAV(viewer: Cesium.Viewer, uavId: number, updateData: UAVUpdateData): Cesium.Entity {
     this.viewer = viewer;
     const positionProperty = new Cesium.SampledPositionProperty();
 
-    positionProperty.setInterpolationOptions({
-      interpolationAlgorithm: Cesium.LinearApproximation,
-      interpolationDegree: CesiumConstants.POSITION_INTERPOLATION_DEGREE,
-    });
-
+    positionProperty.setInterpolationOptions(this.interpolationConfig);
     positionProperty.forwardExtrapolationType = Cesium.ExtrapolationType.HOLD;
     positionProperty.forwardExtrapolationDuration = CesiumConstants.EXTRAPOLATION_DURATION_SECONDS;
 
@@ -39,12 +42,10 @@ export class CesiumUAVService {
     positionProperty.addSample(time, cartesian);
 
     this.uavPositionProperties.set(uavId, positionProperty);
-
-    const heading = Cesium.Math.toRadians(updateData.orientation.yaw);
-    const pitch = Cesium.Math.toRadians(updateData.orientation.pitch);
-    const roll = Cesium.Math.toRadians(updateData.orientation.roll);
-    const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-    const quaternion = Cesium.Transforms.headingPitchRollQuaternion(cartesian, hpr);
+    const quaternion = CesiumOrientationHelper.calculateHeadingPitchRollQuaternion(
+      updateData,
+      cartesian
+    );
 
     return viewer.entities.add({
       id: `uav-${uavId}`,
@@ -56,6 +57,7 @@ export class CesiumUAVService {
         maximumScale: CesiumConstants.UAV_MODEL_MAXIMUM_SCALE,
         scale: CesiumConstants.UAV_MODEL_SCALE,
       },
+      //remove later
       ellipse: {
         semiMinorAxis: 5000,
         semiMajorAxis: 5000,
@@ -88,13 +90,9 @@ export class CesiumUAVService {
       updateData.position.height
     );
     positionProperty.addSample(time, cartesian);
-
-    const heading = Cesium.Math.toRadians(updateData.orientation.yaw + 90);
-    const pitch = Cesium.Math.toRadians(updateData.orientation.pitch);
-    const roll = Cesium.Math.toRadians(updateData.orientation.roll);
-    const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-    const quaternion = Cesium.Transforms.headingPitchRollQuaternion(cartesian, hpr);
-    entity.orientation = new Cesium.ConstantProperty(quaternion);
+    entity.orientation = new Cesium.ConstantProperty(
+      CesiumOrientationHelper.calculateQuaternion(updateData, cartesian)
+    );
 
     this.removeOldSamples(positionProperty, time);
   }
