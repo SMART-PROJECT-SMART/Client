@@ -89,7 +89,9 @@ export class CesiumUAVService {
       updateData.position.latitude,
       updateData.position.height
     );
+
     positionProperty.addSample(time, cartesian);
+
     entity.orientation = new Cesium.ConstantProperty(
       CesiumOrientationHelper.calculateQuaternion(updateData, cartesian)
     );
