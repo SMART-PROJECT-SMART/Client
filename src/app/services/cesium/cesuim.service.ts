@@ -4,7 +4,7 @@ import { CesiumConfigService } from './cesium-config.service';
 import { CesiumCameraService } from './cesium-camera.service';
 import { CesiumImageryService } from './cesium-imagery.service';
 import { CesiumUAVService } from './cesium-uav.service';
-import type { GeographicPosition } from '../../models/cesium';
+import type { GeographicPosition, UAVUpdateData } from '../../models/cesium';
 
 @Injectable({
   providedIn: 'root',
@@ -49,38 +49,40 @@ export class CesiumService {
     this.cameraService.flyToPosition(this.viewer, position);
   }
 
-  public addUAV(uavId: number, position: GeographicPosition): void {
+  public addUAV(uavId: number, updateData: UAVUpdateData): void {
     if (!this.viewer) return;
 
-    const entity = this.uavService.createUAV(this.viewer, uavId, position);
+    console.log('[CesiumService] Creating UAV entity', uavId, 'at position:', updateData.position);
+    const entity = this.uavService.createUAV(this.viewer, uavId, updateData);
+    console.log('[CesiumService] UAV entity created:', entity);
+
     const currentMap = new Map(this.uavEntities());
     currentMap.set(uavId, entity);
     this.uavEntities.set(currentMap);
-
-    this.cameraService.flyToUAV(
-      this.viewer,
-      position.longitude,
-      position.latitude,
-      position.height
-    );
+    console.log('[CesiumService] UAV added to map, total UAVs:', currentMap.size);
   }
 
-  public updateUAV(uavId: number, position: GeographicPosition): void {
-    if (!this.viewer) return;
+  public updateUAV(uavId: number, updateData: UAVUpdateData): void {
+    if (!this.viewer) {
+      console.error('[CesiumService] Viewer not initialized');
+      return;
+    }
 
     const entity = this.uavEntities().get(uavId);
     if (entity) {
-      this.uavService.updateUAVPosition(entity, position);
+      console.log('[CesiumService] Updating existing UAV', uavId);
+      this.uavService.updateUAV(uavId, updateData);
     } else {
-      this.addUAV(uavId, position);
+      console.log('[CesiumService] Creating new UAV', uavId);
+      this.addUAV(uavId, updateData);
     }
   }
 
-  public updateMultipleUAVs(updates: Map<number, GeographicPosition>): void {
+  public updateMultipleUAVs(updates: Map<number, UAVUpdateData>): void {
     if (!this.viewer) return;
 
-    updates.forEach((position, uavId) => {
-      this.updateUAV(uavId, position);
+    updates.forEach((updateData, uavId) => {
+      this.updateUAV(uavId, updateData);
     });
   }
 
@@ -121,8 +123,10 @@ export class CesiumService {
   private setupViewer(): void {
     if (!this.viewer) return;
 
-    this.viewer.scene.requestRenderMode = true;
-    this.viewer.scene.maximumRenderTimeChange = Infinity;
+    this.viewer.scene.requestRenderMode = false;
+    this.viewer.clock.shouldAnimate = true;
+    this.viewer.clock.clockRange = Cesium.ClockRange.UNBOUNDED;
+    this.viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK;
 
     const creditContainer = this.viewer.cesiumWidget.creditContainer as HTMLElement;
     if (creditContainer) {

@@ -10,7 +10,7 @@ import { CesiumService } from '../../../../services/cesium/cesuim.service';
 import { LtsSignalRService } from '../../../../services/lts/lts-signalr.service';
 import { TelemetryField } from '../../../../common/enums';
 import type { TelemetryBroadcastDto, UAVTelemetryData } from '../../../../models';
-import type { GeographicPosition } from '../../../../models/cesium';
+import type { UAVUpdateData } from '../../../../models/cesium';
 
 @Component({
   selector: 'app-cesium-viewer',
@@ -28,7 +28,9 @@ export class CesiumViewer implements OnInit, OnDestroy {
   ) {
     effect(() => {
       const telemetry: TelemetryBroadcastDto | null = this.ltsService.latestTelemetry();
+      console.log('[Cesium] Effect triggered - telemetry:', telemetry, 'isInitialized:', this.isInitialized());
       if (telemetry && this.isInitialized()) {
+        console.log('[Cesium] Updating UAVs from telemetry...');
         this.updateUAVsFromTelemetry(telemetry);
       }
     });
@@ -58,18 +60,29 @@ export class CesiumViewer implements OnInit, OnDestroy {
   }
 
   private updateUAVsFromTelemetry(telemetry: TelemetryBroadcastDto): void {
+    console.log('[Cesium] Processing', telemetry.uavData.length, 'UAVs');
     telemetry.uavData.forEach((uavData: UAVTelemetryData) => {
-      const position: GeographicPosition = this.extractPosition(uavData);
-      this.cesiumService.updateUAV(uavData.tailId, position);
+      const updateData: UAVUpdateData = this.extractUpdateData(uavData);
+      console.log('[Cesium] Updating UAV', uavData.tailId, 'with data:', updateData);
+      console.log('[Cesium] About to call cesiumService.updateUAV...');
+      this.cesiumService.updateUAV(uavData.tailId, updateData);
+      console.log('[Cesium] Called cesiumService.updateUAV');
     });
   }
 
-  private extractPosition(uavData: UAVTelemetryData): GeographicPosition {
+  private extractUpdateData(uavData: UAVTelemetryData): UAVUpdateData {
     const fields = uavData.fields;
     return {
-      latitude: fields[TelemetryField.Latitude] || 0,
-      longitude: fields[TelemetryField.Longitude] || 0,
-      height: fields[TelemetryField.Altitude] || 0,
+      position: {
+        latitude: fields[TelemetryField.Latitude] || 0,
+        longitude: fields[TelemetryField.Longitude] || 0,
+        height: fields[TelemetryField.Altitude] || 0,
+      },
+      orientation: {
+        yaw: fields[TelemetryField.YawDeg] || 0,
+        pitch: fields[TelemetryField.PitchDeg] || 0,
+        roll: fields[TelemetryField.RollDeg] || 0,
+      },
     };
   }
 }

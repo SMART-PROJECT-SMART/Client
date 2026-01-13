@@ -10,7 +10,7 @@ export class CesiumConstants {
 
   public static readonly UAV_MODEL_PATH = '/models/UAV.glb';
   public static readonly UAV_MODEL_SCALE = 1.0;
-  public static readonly UAV_MODEL_ROTATION_DEGREES = 180;
+  public static readonly UAV_MODEL_HEADING_OFFSET_DEGREES = 90;
   public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 128;
   public static readonly UAV_MODEL_MAXIMUM_SCALE = 20000;
 
@@ -22,4 +22,10 @@ export class CesiumConstants {
   public static readonly CAMERA_UAV_ROLL = 0;
 
   public static readonly DEFAULT_IMAGERY_ASSET_ID = 2;
+
+  public static readonly POSITION_INTERPOLATION_DEGREE = 2;
+  public static readonly ORIENTATION_INTERPOLATION_DEGREE = 1;
+  public static readonly EXTRAPOLATION_DURATION_SECONDS = 2;
+  public static readonly SAMPLE_RETENTION_SECONDS = 30;
+  public static readonly EPOCH_START_ISO = '1900-01-01';
 }
