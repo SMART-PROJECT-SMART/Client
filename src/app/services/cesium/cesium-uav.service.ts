@@ -2,12 +2,17 @@ import { Injectable } from '@angular/core';
 import * as Cesium from 'cesium';
 import { CesiumConstants } from '../../common/constants/cesium.constants';
 import type { GeographicPosition } from '../../models/cesium';
+import { UAVTelemetryData } from '../../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CesiumUAVService {
-  public createUAV(viewer: Cesium.Viewer, uavId: number, position: GeographicPosition): Cesium.Entity {
+  public createUAV(
+    viewer: Cesium.Viewer,
+    uavId: number,
+    position: GeographicPosition
+  ): Cesium.Entity {
     const cartesianPosition = Cesium.Cartesian3.fromDegrees(
       position.longitude,
       position.latitude,
@@ -30,14 +35,23 @@ export class CesiumUAVService {
         maximumScale: CesiumConstants.UAV_MODEL_MAXIMUM_SCALE,
         scale: CesiumConstants.UAV_MODEL_SCALE,
       },
+      ellipse: {
+        semiMinorAxis: 5000,
+        semiMajorAxis: 5000,
+        height: 0,
+        material: Cesium.Color.RED.withAlpha(0.5),
+        outline: true,
+        outlineColor: Cesium.Color.RED,
+        outlineWidth: 2,
+      },
     });
   }
 
-  public updateUAVPosition(entity: Cesium.Entity, position: GeographicPosition): void {
+  public updateUAVPosition(entity: Cesium.Entity, telemetryData: UAVTelemetryData): void {
     const cartesianPosition = Cesium.Cartesian3.fromDegrees(
-      position.longitude,
-      position.latitude,
-      position.height
+      telemetryData.fields.Longitude,
+      telemetryData.fields.Latitude,
+      telemetryData.fields.Altitude
     );
 
     entity.position = new Cesium.ConstantPositionProperty(cartesianPosition);
