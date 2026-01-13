@@ -66,7 +66,15 @@ export namespace ClientConstants {
       export const RESULT_ERROR: string = 'Failed to fetch assignment result. Please try again.';
       export const APPLY_ERROR: string = 'Failed to apply assignment. Please try again.';
       export const SUCCESS_MESSAGE: string = 'Assignment suggestion completed successfully!';
+      export const APPLY_SUCCESS_MESSAGE: string = 'Assignment applied successfully!';
       export const ASSIGNMENT_RESULT_TITLE: string = 'Assignment Result';
+      export const SNACKBAR_CLOSE_ACTION: string = 'Close';
+    }
+
+    export namespace SnackbarConfig {
+      export const DURATION_MS: number = 5000;
+      export const HORIZONTAL_POSITION: string = 'center';
+      export const VERTICAL_POSITION: string = 'top';
     }
 
     export namespace ErrorMessages {

@@ -7,6 +7,7 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { MatInput } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const MaterialModules = [
   MatCard,
@@ -21,6 +22,7 @@ const MaterialModules = [
   MatOption,
   MatInput,
   MatProgressSpinner,
+  MatSnackBarModule,
 ];
 
 @NgModule({

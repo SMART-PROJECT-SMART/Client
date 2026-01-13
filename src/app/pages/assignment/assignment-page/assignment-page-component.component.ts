@@ -1,6 +1,7 @@
 import { Component, signal, computed, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import type {
   Mission,
   AssignmentAlgorithmRo,
@@ -12,7 +13,7 @@ import { AssignmentStage } from '../../../common/enums';
 import { AssignmentOrchestratorService } from '../../../services/assignment/assignment-orchestrator.service';
 import { ClientConstants, AssignmentUtil } from '../../../common';
 
-const { Messages } = ClientConstants.MissionServiceAPI;
+const { Messages, SnackbarConfig } = ClientConstants.MissionServiceAPI;
 
 @Component({
   selector: 'app-assignment-page-component',
@@ -30,7 +31,10 @@ export class AssignmentPageComponentComponent implements OnDestroy {
   public readonly isLoading = signal<boolean>(false);
   public readonly errorMessage = signal<string | null>(null);
 
-  constructor(private readonly orchestratorService: AssignmentOrchestratorService) {}
+  constructor(
+    private readonly orchestratorService: AssignmentOrchestratorService,
+    private readonly snackBar: MatSnackBar
+  ) {}
 
   public ngOnDestroy(): void {
     this.destroy$.next();
@@ -108,9 +112,15 @@ export class AssignmentPageComponentComponent implements OnDestroy {
   }
 
   private handleApplySuccess(): void {
-    this.resetToManagementStage();
+    this.assignmentResult.set(null);
     this.missions.set([]);
+    this.resetToManagementStage();
     this.setLoadingState(false);
+    this.snackBar.open(Messages.APPLY_SUCCESS_MESSAGE, Messages.SNACKBAR_CLOSE_ACTION, {
+      duration: SnackbarConfig.DURATION_MS,
+      horizontalPosition: SnackbarConfig.HORIZONTAL_POSITION as 'center',
+      verticalPosition: SnackbarConfig.VERTICAL_POSITION as 'top',
+    });
   }
 
   private setLoadingState(isLoading: boolean): void {
