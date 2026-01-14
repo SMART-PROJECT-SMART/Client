@@ -7,7 +7,6 @@ import {
   defaultWantedFields,
 } from '../../common/constants/signalRConstants.constants';
 import { firstValueFrom, Observable, Subject } from 'rxjs';
-import { UAVStoreService } from '../uav/uav-store.service';
 
 const { LTS, Endpoints } = SignalRConstants;
 
@@ -17,7 +16,8 @@ const { LTS, Endpoints } = SignalRConstants;
 export class LtsSignalRService {
   private connection: signalR.HubConnection | null = null;
   private sessionId: string | null = null;
-  constructor(private readonly uavStoreService: UAVStoreService) {
+
+  constructor() {
     this.sessionId = crypto.randomUUID();
   }
   public readonly isConnected: WritableSignal<boolean> = signal<boolean>(false);
@@ -39,10 +39,12 @@ export class LtsSignalRService {
     this.setupEventHandlers();
 
     await this.connection.start();
+    console.log('[LTS] SignalR connection established');
     this.isConnected.set(true);
 
     await firstValueFrom(this.waitForSessionReady());
 
+    console.log('[LTS] Subscribing to UAVs:', uavTailIds, 'with fields:', defaultWantedFields);
     await this.subscribeToUAVs(uavTailIds, defaultWantedFields);
   }
 
@@ -52,11 +54,13 @@ export class LtsSignalRService {
 
   public async disconnect(): Promise<void> {
     if (this.connection) {
+      console.log('[LTS] Disconnecting from LTS...');
       await this.connection.stop();
       this.connection = null;
       this.sessionId = null;
       this.isConnected.set(false);
       this.latestTelemetry.set(null);
+      console.log('[LTS] Disconnected');
     }
   }
 
@@ -64,6 +68,11 @@ export class LtsSignalRService {
     uavTailIds: number[],
     wantedFields: TelemetryField[]
   ): Promise<void> {
+    if (!this.sessionId) {
+      console.error('[LTS] No session ID - not connected');
+      throw new Error('Not connected to LTS. Call connect() first.');
+    }
+
     const uavWantedFields: UAVWantedFields[] = uavTailIds.map((tailId: number) => ({
       tailId: tailId,
       wantedFields: wantedFields,
@@ -74,12 +83,22 @@ export class LtsSignalRService {
     };
 
     const url = `${LTS.BASE_URL}${Endpoints.UPDATE_WANTED_FIELDS}/${this.sessionId}`;
+    console.log('[LTS] Sending subscription request to:', url);
+    console.log('[LTS] Request body:', JSON.stringify(dto, null, 2));
 
     const response: Response = await fetch(url, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dto),
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[LTS] Subscription failed:', response.status, response.statusText, errorText);
+      throw new Error(`Failed to subscribe to UAVs: ${response.statusText}`);
+    }
+
+    console.log('[LTS] Successfully subscribed to UAVs');
   }
 
   public getSessionId(): string | null {
@@ -91,18 +110,20 @@ export class LtsSignalRService {
 
     this.connection.on(LTS.RECEIVE_TELEMETRY_METHOD, (data: TelemetryBroadcastDto) => {
       this.latestTelemetry.set(data);
-      this.uavStoreService.updateActiveUAVs(data);
     });
 
     this.connection.onreconnecting((error) => {
+      console.warn('[LTS] Reconnecting...', error);
       this.isConnected.set(false);
     });
 
     this.connection.onreconnected((connectionId) => {
+      console.log('[LTS] Reconnected:', connectionId);
       this.isConnected.set(true);
     });
 
     this.connection.onclose((error) => {
+      console.log('[LTS] Closed', error);
       this.isConnected.set(false);
     });
   }

@@ -11,7 +11,7 @@ import { UAVStoreService } from '../../../../services/uav/uav-store.service';
 export class UavSelectionComponentComponent {
   constructor(private readonly uavStore: UAVStoreService) {}
   public uavOptions = computed<UAVDisplay[]>(() => {
-    return Array.from(this.uavStore.getAllUAVs().keys()).map((tailId) => ({
+    return Array.from(this.uavStore.getActiveTailIds()).map((tailId) => ({
       tailId: tailId,
     }));
   });

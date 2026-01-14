@@ -1,35 +1,32 @@
 import { Injectable, signal } from '@angular/core';
-import { UAV } from '../../models/uav/uav.model';
-import { TelemetryBroadcastDto, UAVTelemetryData } from '../../models';
-import { TelemetryField } from '../../common/enums';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UAVStoreService {
-  private readonly uavs = signal<Map<number, Record<TelemetryField, number>>>(new Map());
-  public getAllUAVs(): Map<number, Record<TelemetryField, number>> {
-    return this.uavs();
+  private readonly activeUavIds = signal<Set<number>>(new Set());
+
+  public getActiveTailIds(): Set<number> {
+    return this.activeUavIds();
   }
-  public addIfNotExists(uav: UAVTelemetryData): void {
-    const currentMap = new Map(this.uavs());
-    if (!currentMap.has(uav.tailId)) {
-      currentMap.set(uav.tailId, uav.fields);
-      this.uavs.set(currentMap);
-    }
+
+  public isActive(tailId: number): boolean {
+    return this.activeUavIds().has(tailId);
   }
-  public updateActiveUAVs(uavs: TelemetryBroadcastDto): void {
-    const newMap = new Map<number, Record<TelemetryField, number>>();
-    uavs.uavData.forEach((uavData) => {
-      newMap.set(uavData.tailId, uavData.fields);
-    });
-    this.uavs.set(newMap);
+
+  public add(tailId: number): void {
+    const current = new Set(this.activeUavIds());
+    current.add(tailId);
+    this.activeUavIds.set(current);
   }
-  public removeIfExists(tailId: number): void {
-    const currentMap = new Map(this.uavs());
-    if (currentMap.has(tailId)) {
-      currentMap.delete(tailId);
-      this.uavs.set(currentMap);
-    }
+
+  public remove(tailId: number): void {
+    const current = new Set(this.activeUavIds());
+    current.delete(tailId);
+    this.activeUavIds.set(current);
+  }
+
+  public clear(): void {
+    this.activeUavIds.set(new Set());
   }
 }
