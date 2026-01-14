@@ -1,4 +1,13 @@
-import { Component, input, output, signal, OnInit, WritableSignal, computed, Signal } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  signal,
+  OnInit,
+  WritableSignal,
+  computed,
+  Signal,
+} from '@angular/core';
 import type {
   AssignmentAlgorithmRo,
   MissionAssignmentPairing,
@@ -23,7 +32,7 @@ const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
   styleUrl: './assignment-review-component.scss',
 })
 export class AssignmentReviewComponent implements OnInit {
-  private readonly validatorService: AssignmentValidatorService = new AssignmentValidatorService();
+  constructor(private readonly validatorService: AssignmentValidatorService) {}
 
   public readonly algorithmResult = input.required<AssignmentAlgorithmRo>();
   public readonly availableUavs = input.required<UAV[]>();
