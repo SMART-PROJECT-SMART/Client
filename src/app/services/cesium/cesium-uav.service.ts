@@ -4,6 +4,7 @@ import { CesiumConstants } from '../../common/constants/cesium.constants';
 import type { UAVUpdateData } from '../../models/cesium';
 import { CesiumOrientationHelper } from './helpers/cesium-orientation.helper';
 import { CesiumUavHelper } from './helpers/cesium-uav.helper';
+import { UAVStoreService } from '../uav/uav-store.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,7 @@ export class CesiumUAVService {
   private readonly uavPositionProperties = new Map<number, Cesium.SampledPositionProperty>();
   private viewer?: Cesium.Viewer;
 
-  constructor() {}
+  constructor(private readonly uavStoreService: UAVStoreService) {}
 
   public createUAV(viewer: Cesium.Viewer, uavId: number, updateData: UAVUpdateData): Cesium.Entity {
     this.viewer = viewer;

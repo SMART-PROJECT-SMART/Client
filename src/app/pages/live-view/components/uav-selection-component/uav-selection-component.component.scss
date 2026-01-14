@@ -1,0 +1,16 @@
+@use '../../../../../styles/constants' as *;
+
+.uav-selection-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  padding: $spacing-xs;
+}
+
+.uav-selection-header {
+  font-size: $font-size-xl;
+  font-weight: 700;
+  padding: $spacing-md $spacing-xs $spacing-xs $spacing-xs;
+  color: $color-primary-dark;
+  letter-spacing: 0.5px;
+}

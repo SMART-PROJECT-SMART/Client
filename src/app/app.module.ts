@@ -16,6 +16,8 @@ import { LiveViewPageComponent } from './pages/live-view/live-view-page/live-vie
 import { CesiumViewer } from './pages/live-view/components/cesium-viewer/cesium-viewer.component';
 import { SidebarComponent } from './common/components/sidebar/sidebar-component.component';
 import { AssignmentPageComponentComponent } from './pages/assignment/assignment-page/assignment-page-component.component';
+import { UavSelectionComponentComponent } from './pages/live-view/components/uav-selection-component/uav-selection-component.component';
+import { UavOptionComponentComponent } from './pages/live-view/components/uav-option-component/uav-option-component.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,8 @@ import { AssignmentPageComponentComponent } from './pages/assignment/assignment-
     HomePageComponent,
     LiveViewPageComponent,
     CesiumViewer,
+    UavSelectionComponentComponent,
+    UavOptionComponentComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],

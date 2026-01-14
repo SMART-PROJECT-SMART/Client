@@ -1,0 +1,23 @@
+@use '../../../../../styles/constants' as *;
+
+.uav-option-card {
+  position: relative;
+  padding: $spacing-xs;
+  background-color: $color-background-card;
+  border: $border-width-medium solid $color-primary-dark;
+  border-radius: $border-radius-sm;
+  max-width: 600px;
+  transition: border-color 0.3s ease;
+  margin-bottom: $spacing-xs;
+}
+
+.uav-option-header {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  margin-bottom: $spacing-xs;
+}
+
+.uav-option-type {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}

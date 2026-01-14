@@ -1,0 +1,6 @@
+<div class="uav-selection-header">Active UAVs</div>
+<div class="uav-selection-list">
+  @for (option of uavOptions(); track $index) {
+  <app-uav-option-component [uavDisplay]="option"></app-uav-option-component>
+  }
+</div>

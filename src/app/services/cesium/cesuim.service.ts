@@ -5,6 +5,7 @@ import { CesiumCameraService } from './cesium-camera.service';
 import { CesiumImageryService } from './cesium-imagery.service';
 import { CesiumUAVService } from './cesium-uav.service';
 import type { GeographicPosition, UAVUpdateData } from '../../models/cesium';
+import { UAVStoreService } from '../uav/uav-store.service';
 
 @Injectable({
   providedIn: 'root',
