@@ -3,7 +3,7 @@ import * as Cesium from 'cesium';
 import { CesiumConstants } from '../../common/constants/cesium.constants';
 import type { UAVUpdateData } from '../../models/cesium';
 import { CesiumOrientationHelper } from './helpers/cesium-orientation.helper';
-import { CesiumInterpolationConfig } from '../../configuration/cesium/cesium-interpolation-config.config';
+import { CesiumUavHelper } from './helpers/cesium-uav.helper';
 
 @Injectable({
   providedIn: 'root',
@@ -11,38 +11,20 @@ import { CesiumInterpolationConfig } from '../../configuration/cesium/cesium-int
 export class CesiumUAVService {
   private readonly uavPositionProperties = new Map<number, Cesium.SampledPositionProperty>();
   private viewer?: Cesium.Viewer;
-  private interpolationConfig: CesiumInterpolationConfig;
-  constructor() {
-    this.interpolationConfig = {
-      interpolationAlgorithm: Cesium.LinearApproximation,
-      interpolationDegree: CesiumConstants.POSITION_INTERPOLATION_DEGREE,
-    };
-  }
+
+  constructor() {}
+
   public createUAV(viewer: Cesium.Viewer, uavId: number, updateData: UAVUpdateData): Cesium.Entity {
     this.viewer = viewer;
-    const positionProperty = new Cesium.SampledPositionProperty();
-    positionProperty.setInterpolationOptions(this.interpolationConfig);
-    positionProperty.forwardExtrapolationType = Cesium.ExtrapolationType.EXTRAPOLATE;
-    positionProperty.backwardExtrapolationType = Cesium.ExtrapolationType.EXTRAPOLATE;
-    const clockTime = viewer.clock.currentTime;
-    const time = Cesium.JulianDate.addSeconds(
-      clockTime,
-      CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
-      new Cesium.JulianDate()
-    );
-    const cartesian = Cesium.Cartesian3.fromDegrees(
-      updateData.position.longitude,
-      updateData.position.latitude,
-      updateData.position.height
-    );
-    positionProperty.addSample(time, cartesian);
+    const positionProperty = CesiumUavHelper.createSampledPositionProperty(viewer, updateData);
     this.uavPositionProperties.set(uavId, positionProperty);
+    const cartesian = CesiumUavHelper.getCartesian(updateData);
     const quaternion = CesiumOrientationHelper.calculateHeadingPitchRollQuaternion(
       updateData,
       cartesian
     );
     return viewer.entities.add({
-      id: `uav-${uavId}`,
+      id: `${CesiumConstants.UAV_ENTITY_PREFIX_NAME}${uavId}`,
       position: positionProperty,
       orientation: new Cesium.ConstantProperty(quaternion),
       model: {
@@ -56,25 +38,20 @@ export class CesiumUAVService {
 
   public updateUAV(uavId: number, updateData: UAVUpdateData): void {
     const positionProperty = this.uavPositionProperties.get(uavId);
-    const entity = this.viewer?.entities.getById(`uav-${uavId}`);
-    if (!positionProperty || !this.viewer || !entity) {
+    if (!positionProperty || !this.viewer) {
       return;
     }
-
-    const clockTime = this.viewer.clock.currentTime;
-    const time = Cesium.JulianDate.addSeconds(
-      clockTime,
-      CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
-      new Cesium.JulianDate()
+    const entity = this.viewer.entities.getById(
+      `${CesiumConstants.UAV_ENTITY_PREFIX_NAME}${uavId}`
     );
-    const cartesian = Cesium.Cartesian3.fromDegrees(
-      updateData.position.longitude,
-      updateData.position.latitude,
-      updateData.position.height
+    if (!entity) {
+      return;
+    }
+    const cartesian = CesiumUavHelper.addSampleToPositionProperty(
+      this.viewer,
+      positionProperty,
+      updateData
     );
-
-    positionProperty.addSample(time, cartesian);
-
     entity.orientation = new Cesium.ConstantProperty(
       CesiumOrientationHelper.calculateQuaternion(updateData, cartesian)
     );
@@ -86,13 +63,11 @@ export class CesiumUAVService {
 
   public removeAllUAVs(viewer: Cesium.Viewer): void {
     const entitiesToRemove: Cesium.Entity[] = [];
-
     viewer.entities.values.forEach((entity) => {
-      if (entity.id && typeof entity.id === 'string' && entity.id.startsWith('uav-')) {
+      if (entity.id.startsWith(CesiumConstants.UAV_ENTITY_PREFIX_NAME)) {
         entitiesToRemove.push(entity);
       }
     });
-
     entitiesToRemove.forEach((entity) => {
       viewer.entities.remove(entity);
     });
