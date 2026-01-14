@@ -21,42 +21,26 @@ export class CesiumUAVService {
   public createUAV(viewer: Cesium.Viewer, uavId: number, updateData: UAVUpdateData): Cesium.Entity {
     this.viewer = viewer;
     const positionProperty = new Cesium.SampledPositionProperty();
-
     positionProperty.setInterpolationOptions(this.interpolationConfig);
     positionProperty.forwardExtrapolationType = Cesium.ExtrapolationType.EXTRAPOLATE;
     positionProperty.backwardExtrapolationType = Cesium.ExtrapolationType.EXTRAPOLATE;
-
     const clockTime = viewer.clock.currentTime;
-    const systemNow = Cesium.JulianDate.now();
     const time = Cesium.JulianDate.addSeconds(
       clockTime,
       CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
       new Cesium.JulianDate()
     );
-
-    console.log(`[UAV ${uavId}] CREATE`, {
-      clock: Cesium.JulianDate.toIso8601(clockTime).substring(11, 23),
-      system: Cesium.JulianDate.toIso8601(systemNow).substring(11, 23),
-      sample: Cesium.JulianDate.toIso8601(time).substring(11, 23),
-      buffer: Cesium.JulianDate.secondsDifference(time, clockTime).toFixed(2),
-      clockVsSystem: Cesium.JulianDate.secondsDifference(clockTime, systemNow).toFixed(2),
-      pos: `${updateData.position.latitude.toFixed(4)},${updateData.position.longitude.toFixed(4)}`,
-    });
-
     const cartesian = Cesium.Cartesian3.fromDegrees(
       updateData.position.longitude,
       updateData.position.latitude,
       updateData.position.height
     );
-
     positionProperty.addSample(time, cartesian);
-
     this.uavPositionProperties.set(uavId, positionProperty);
     const quaternion = CesiumOrientationHelper.calculateHeadingPitchRollQuaternion(
       updateData,
       cartesian
     );
-
     return viewer.entities.add({
       id: `uav-${uavId}`,
       position: positionProperty,
@@ -78,34 +62,11 @@ export class CesiumUAVService {
     }
 
     const clockTime = this.viewer.clock.currentTime;
-    const systemNow = Cesium.JulianDate.now();
     const time = Cesium.JulianDate.addSeconds(
       clockTime,
       CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
       new Cesium.JulianDate()
     );
-
-    const currentPos = positionProperty.getValue(clockTime);
-    const sampleCount = (positionProperty as any)._property?._times?.length || 0;
-
-    // Get first and last sample times for debugging
-    const times = (positionProperty as any)._property?._times;
-    const firstSample = times && times.length > 0 ? Cesium.JulianDate.toIso8601(times[0]).substring(11, 23) : 'none';
-    const lastSample = times && times.length > 0 ? Cesium.JulianDate.toIso8601(times[times.length - 1]).substring(11, 23) : 'none';
-
-    console.log(`[UAV ${uavId}] UPDATE`, {
-      clock: Cesium.JulianDate.toIso8601(clockTime).substring(11, 23),
-      system: Cesium.JulianDate.toIso8601(systemNow).substring(11, 23),
-      newSample: Cesium.JulianDate.toIso8601(time).substring(11, 23),
-      buffer: Cesium.JulianDate.secondsDifference(time, clockTime).toFixed(2),
-      clockVsSystem: Cesium.JulianDate.secondsDifference(clockTime, systemNow).toFixed(2),
-      hasPos: !!currentPos,
-      samples: sampleCount,
-      firstSample,
-      lastSample,
-      pos: `${updateData.position.latitude.toFixed(4)},${updateData.position.longitude.toFixed(4)}`,
-    });
-
     const cartesian = Cesium.Cartesian3.fromDegrees(
       updateData.position.longitude,
       updateData.position.latitude,
