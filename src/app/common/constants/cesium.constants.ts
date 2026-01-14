@@ -27,7 +27,7 @@ export class CesiumConstants {
   public static readonly ORIENTATION_INTERPOLATION_DEGREE = 1;
   public static readonly EXTRAPOLATION_DURATION_SECONDS = 2;
   public static readonly SAMPLE_RETENTION_SECONDS = 30;
-  public static readonly SAMPLE_TIME_BUFFER_SECONDS = 1.5;
+  public static readonly SAMPLE_TIME_BUFFER_SECONDS = 3;
   public static readonly EPOCH_START_ISO = '1900-01-01';
 
   public static readonly UAV_MODEL_YAW_ANGLE_CORRECTION_DEGREES = 90;

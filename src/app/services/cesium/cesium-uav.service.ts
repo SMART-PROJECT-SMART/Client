@@ -25,6 +25,8 @@ export class CesiumUAVService {
     positionProperty.setInterpolationOptions(this.interpolationConfig);
     positionProperty.forwardExtrapolationType = Cesium.ExtrapolationType.HOLD;
     positionProperty.forwardExtrapolationDuration = CesiumConstants.EXTRAPOLATION_DURATION_SECONDS;
+    positionProperty.backwardExtrapolationType = Cesium.ExtrapolationType.HOLD;
+    positionProperty.backwardExtrapolationDuration = CesiumConstants.EXTRAPOLATION_DURATION_SECONDS;
 
     const now = Cesium.JulianDate.now();
     const time = Cesium.JulianDate.addSeconds(
@@ -56,16 +58,6 @@ export class CesiumUAVService {
         minimumPixelSize: CesiumConstants.UAV_MODEL_MINIMUM_PIXEL_SIZE,
         maximumScale: CesiumConstants.UAV_MODEL_MAXIMUM_SCALE,
         scale: CesiumConstants.UAV_MODEL_SCALE,
-      },
-      //remove later
-      ellipse: {
-        semiMinorAxis: 5000,
-        semiMajorAxis: 5000,
-        height: 0,
-        material: Cesium.Color.RED.withAlpha(0.5),
-        outline: true,
-        outlineColor: Cesium.Color.RED,
-        outlineWidth: 2,
       },
     });
   }
