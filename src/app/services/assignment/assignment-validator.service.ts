@@ -1,10 +1,10 @@
-import type {
-  MissionAssignmentPairing,
-  ValidationResult,
-  Violation,
-} from '../../models';
+import type { MissionAssignmentPairing, ValidationResult, Violation } from '../../models';
 import { ViolationType, UAVType, TelemetryField } from '../../common/enums';
+import { Injectable } from '@angular/core';
 
+@Injectable({
+  providedIn: 'root',
+})
 export class AssignmentValidatorService {
   public validateAssignments(
     pairings: MissionAssignmentPairing[],
@@ -53,7 +53,10 @@ export class AssignmentValidatorService {
     selectedTailIds: Map<string, number>,
     violations: Violation[]
   ): void {
-    const uavSchedules: Map<number, Array<{ missionId: string; missionTitle: string; start: Date; end: Date }>> = new Map();
+    const uavSchedules: Map<
+      number,
+      Array<{ missionId: string; missionTitle: string; start: Date; end: Date }>
+    > = new Map();
 
     for (const pairing of pairings) {
       const selectedTailId: number = selectedTailIds.get(pairing.mission.id) ?? pairing.tailId;
@@ -71,7 +74,14 @@ export class AssignmentValidatorService {
       };
 
       for (const existingMission of schedule) {
-        if (this.hasTimeOverlap(newMission.start, newMission.end, existingMission.start, existingMission.end)) {
+        if (
+          this.hasTimeOverlap(
+            newMission.start,
+            newMission.end,
+            existingMission.start,
+            existingMission.end
+          )
+        ) {
           violations.push({
             violationType: ViolationType.TimeOverlap,
             missionId: pairing.mission.id,
