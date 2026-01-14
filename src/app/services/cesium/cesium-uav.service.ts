@@ -23,17 +23,25 @@ export class CesiumUAVService {
     const positionProperty = new Cesium.SampledPositionProperty();
 
     positionProperty.setInterpolationOptions(this.interpolationConfig);
-    positionProperty.forwardExtrapolationType = Cesium.ExtrapolationType.HOLD;
-    positionProperty.forwardExtrapolationDuration = CesiumConstants.EXTRAPOLATION_DURATION_SECONDS;
-    positionProperty.backwardExtrapolationType = Cesium.ExtrapolationType.HOLD;
-    positionProperty.backwardExtrapolationDuration = CesiumConstants.EXTRAPOLATION_DURATION_SECONDS;
+    positionProperty.forwardExtrapolationType = Cesium.ExtrapolationType.EXTRAPOLATE;
+    positionProperty.backwardExtrapolationType = Cesium.ExtrapolationType.EXTRAPOLATE;
 
-    const now = Cesium.JulianDate.now();
+    const clockTime = viewer.clock.currentTime;
+    const systemNow = Cesium.JulianDate.now();
     const time = Cesium.JulianDate.addSeconds(
-      now,
+      clockTime,
       CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
       new Cesium.JulianDate()
     );
+
+    console.log(`[UAV ${uavId}] CREATE`, {
+      clock: Cesium.JulianDate.toIso8601(clockTime).substring(11, 23),
+      system: Cesium.JulianDate.toIso8601(systemNow).substring(11, 23),
+      sample: Cesium.JulianDate.toIso8601(time).substring(11, 23),
+      buffer: Cesium.JulianDate.secondsDifference(time, clockTime).toFixed(2),
+      clockVsSystem: Cesium.JulianDate.secondsDifference(clockTime, systemNow).toFixed(2),
+      pos: `${updateData.position.latitude.toFixed(4)},${updateData.position.longitude.toFixed(4)}`,
+    });
 
     const cartesian = Cesium.Cartesian3.fromDegrees(
       updateData.position.longitude,
@@ -69,12 +77,34 @@ export class CesiumUAVService {
       return;
     }
 
-    const now = Cesium.JulianDate.now();
+    const clockTime = this.viewer.clock.currentTime;
+    const systemNow = Cesium.JulianDate.now();
     const time = Cesium.JulianDate.addSeconds(
-      now,
+      clockTime,
       CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
       new Cesium.JulianDate()
     );
+
+    const currentPos = positionProperty.getValue(clockTime);
+    const sampleCount = (positionProperty as any)._property?._times?.length || 0;
+
+    // Get first and last sample times for debugging
+    const times = (positionProperty as any)._property?._times;
+    const firstSample = times && times.length > 0 ? Cesium.JulianDate.toIso8601(times[0]).substring(11, 23) : 'none';
+    const lastSample = times && times.length > 0 ? Cesium.JulianDate.toIso8601(times[times.length - 1]).substring(11, 23) : 'none';
+
+    console.log(`[UAV ${uavId}] UPDATE`, {
+      clock: Cesium.JulianDate.toIso8601(clockTime).substring(11, 23),
+      system: Cesium.JulianDate.toIso8601(systemNow).substring(11, 23),
+      newSample: Cesium.JulianDate.toIso8601(time).substring(11, 23),
+      buffer: Cesium.JulianDate.secondsDifference(time, clockTime).toFixed(2),
+      clockVsSystem: Cesium.JulianDate.secondsDifference(clockTime, systemNow).toFixed(2),
+      hasPos: !!currentPos,
+      samples: sampleCount,
+      firstSample,
+      lastSample,
+      pos: `${updateData.position.latitude.toFixed(4)},${updateData.position.longitude.toFixed(4)}`,
+    });
 
     const cartesian = Cesium.Cartesian3.fromDegrees(
       updateData.position.longitude,
@@ -87,26 +117,6 @@ export class CesiumUAVService {
     entity.orientation = new Cesium.ConstantProperty(
       CesiumOrientationHelper.calculateQuaternion(updateData, cartesian)
     );
-
-    this.removeOldSamples(positionProperty, time);
-  }
-
-  private removeOldSamples(
-    positionProperty: Cesium.SampledPositionProperty,
-    currentTime: Cesium.JulianDate
-  ): void {
-    const oldTime = Cesium.JulianDate.addSeconds(
-      currentTime,
-      -CesiumConstants.SAMPLE_RETENTION_SECONDS,
-      new Cesium.JulianDate()
-    );
-
-    const removalInterval = new Cesium.TimeInterval({
-      start: Cesium.JulianDate.fromIso8601(CesiumConstants.EPOCH_START_ISO),
-      stop: oldTime,
-    });
-
-    positionProperty.removeSamples(removalInterval);
   }
 
   public removeUAV(viewer: Cesium.Viewer, entity: Cesium.Entity): void {

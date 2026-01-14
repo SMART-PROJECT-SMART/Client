@@ -109,11 +109,7 @@ export class LtsSignalRService {
   private setupEventHandlers(): void {
     if (!this.connection) return;
 
-    console.log('[LTS] Setting up event handlers...');
-    console.log('[LTS] Listening for method:', LTS.RECEIVE_TELEMETRY_METHOD);
-
     this.connection.on(LTS.RECEIVE_TELEMETRY_METHOD, (data: TelemetryBroadcastDto) => {
-      console.log('[LTS] Received telemetry data:', data);
       this.latestTelemetry.set(data);
     });
 
@@ -123,12 +119,12 @@ export class LtsSignalRService {
     });
 
     this.connection.onreconnected((connectionId) => {
-      console.log('[LTS] Reconnected with connection ID:', connectionId);
+      console.log('[LTS] Reconnected:', connectionId);
       this.isConnected.set(true);
     });
 
     this.connection.onclose((error) => {
-      console.log('[LTS] Connection closed', error);
+      console.log('[LTS] Closed', error);
       this.isConnected.set(false);
     });
   }
