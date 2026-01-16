@@ -1,0 +1,69 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2>Mission Summary</h2>
+    <button mat-icon-button (click)="onClose()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="summary-content">
+    <div class="summary-section">
+      <h3>
+        <mat-icon>info</mat-icon>
+        Basic Information
+      </h3>
+      <div class="summary-row">
+        <span class="label">Title</span>
+        <span class="value">{{ mission.title }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">UAV Type</span>
+        <span class="value">{{ EnumUtil.getUAVTypeDisplay(mission.requiredUAVType) }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Priority</span>
+        <span class="value priority-badge" [attr.data-priority]="mission.priority">
+          {{ EnumUtil.getPriorityDisplay(mission.priority) }}
+        </span>
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <h3>
+        <mat-icon>schedule</mat-icon>
+        Time Window
+      </h3>
+      <div class="summary-row">
+        <span class="label">Start</span>
+        <span class="value">{{ formattedStartTime }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">End</span>
+        <span class="value">{{ formattedEndTime }}</span>
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <h3>
+        <mat-icon>location_on</mat-icon>
+        Location
+      </h3>
+      <div class="summary-row">
+        <span class="label">Latitude</span>
+        <span class="value">{{ mission.location.latitude }}°</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Longitude</span>
+        <span class="value">{{ mission.location.longitude }}°</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Altitude</span>
+        <span class="value">{{ mission.location.altitude }} m</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-raised-button color="primary" (click)="onClose()">Close</button>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+@use '../../../../../styles/constants' as *;
+
+.dialog-container {
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    margin: 0;
+    font-size: $font-size-xl;
+    font-weight: 600;
+    color: $color-text-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+  }
+}
+
+.edit-tabs {
+  padding: 0 $spacing-md;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+}
+
+.location-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-md;
+
+  input[type='number'] {
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border-top: $border-width-thin solid $color-border-default;
+}
+
+::ng-deep {
+  .mat-mdc-tab-labels {
+    border-bottom: $border-width-thin solid $color-border-default;
+  }
+
+  .mat-mdc-tab {
+    color: $color-text-secondary;
+
+    &.mdc-tab--active {
+      color: $color-primary-light;
+    }
+  }
+
+  .mat-mdc-tab-body-content {
+    overflow: hidden;
+  }
+}

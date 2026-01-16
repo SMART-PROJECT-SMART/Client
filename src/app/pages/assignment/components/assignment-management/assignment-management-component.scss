@@ -23,12 +23,113 @@
 
 .missions-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 380px));
   gap: $spacing-md;
   overflow-y: auto;
   padding: $spacing-xs;
+  align-content: start;
 }
 
 .submit-btn {
   min-width: 120px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-lg;
+  height: 100%;
+  min-height: 400px;
+  background-color: $color-background-card;
+  border-radius: $border-radius-md;
+  border: $border-width-medium dashed $color-border-default;
+}
+
+.empty-icon {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  color: $color-text-muted;
+}
+
+.empty-text {
+  text-align: center;
+
+  h3 {
+    margin: 0 0 $spacing-sm 0;
+    font-size: $font-size-xl;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+
+  p {
+    margin: 0;
+    font-size: $font-size-md;
+    color: $color-text-secondary;
+  }
+}
+
+.empty-action {
+  margin-top: $spacing-md;
+}
+
+.mission-card {
+  background-color: $color-background-card;
+  border: $border-width-thin solid $color-border-default;
+  transition: $transition-normal;
+  padding: $spacing-md;
+
+  &:hover {
+    border-color: $color-primary;
+    box-shadow: $shadow-md;
+  }
+
+  ::ng-deep .mat-mdc-card-header {
+    padding: 0 0 $spacing-sm 0;
+  }
+
+  ::ng-deep .mdc-card__actions {
+    padding: $spacing-sm 0 0 0;
+    min-height: auto;
+  }
+
+  mat-card-title {
+    font-size: $font-size-xxl;
+    font-weight: 700;
+    color: $color-text-primary;
+    margin: 0;
+  }
+
+  mat-card-subtitle {
+    font-size: $font-size-lg;
+    color: $color-primary;
+    margin: $spacing-xs 0 0 0;
+  }
+
+  mat-card-content {
+    padding: 0;
+  }
+}
+
+.mission-info {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-md;
+  color: $color-text-light;
+
+  mat-icon {
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+    color: $color-text-secondary;
+  }
 }

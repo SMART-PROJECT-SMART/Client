@@ -1,0 +1,110 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2>Edit Mission: {{ missionTitle }}</h2>
+    <button mat-icon-button (click)="onCancel()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-tab-group class="edit-tabs">
+    <mat-tab label="Basic Info">
+      <form [formGroup]="basicInfoForm" class="tab-content">
+        <mat-form-field appearance="outline">
+          <mat-label>Mission Title</mat-label>
+          <input matInput formControlName="title" />
+          @if (basicInfoForm.get('title')?.hasError('required') && basicInfoForm.get('title')?.touched) {
+            <mat-error>Mission title is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Required UAV Type</mat-label>
+          <mat-select formControlName="requiredUAVType">
+            @for (type of uavTypes; track type) {
+              <mat-option [value]="type">{{ EnumUtil.getUAVTypeDisplay(type) }}</mat-option>
+            }
+          </mat-select>
+          @if (basicInfoForm.get('requiredUAVType')?.hasError('required') && basicInfoForm.get('requiredUAVType')?.touched) {
+            <mat-error>UAV Type is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Priority</mat-label>
+          <mat-select formControlName="priority">
+            @for (level of priorities; track level) {
+              <mat-option [value]="level">{{ EnumUtil.getPriorityDisplay(level) }}</mat-option>
+            }
+          </mat-select>
+          @if (basicInfoForm.get('priority')?.hasError('required') && basicInfoForm.get('priority')?.touched) {
+            <mat-error>Priority is required</mat-error>
+          }
+        </mat-form-field>
+      </form>
+    </mat-tab>
+
+    <mat-tab label="Time Window">
+      <form [formGroup]="timeWindowForm" class="tab-content">
+        <mat-form-field appearance="outline">
+          <mat-label>Start Time</mat-label>
+          <input matInput type="datetime-local" formControlName="start" />
+          @if (timeWindowForm.get('start')?.hasError('required') && timeWindowForm.get('start')?.touched) {
+            <mat-error>Start time is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>End Time</mat-label>
+          <input matInput type="datetime-local" formControlName="end" />
+          @if (timeWindowForm.get('end')?.hasError('required') && timeWindowForm.get('end')?.touched) {
+            <mat-error>End time is required</mat-error>
+          }
+          @if (timeWindowForm.hasError('timeWindowInvalid') && timeWindowForm.touched) {
+            <mat-error>End time must be after start time</mat-error>
+          }
+        </mat-form-field>
+      </form>
+    </mat-tab>
+
+    <mat-tab label="Location">
+      <form [formGroup]="locationForm" class="tab-content">
+        <div class="location-fields">
+          <mat-form-field appearance="outline">
+            <mat-label>Latitude (°)</mat-label>
+            <input matInput type="number" formControlName="latitude" />
+            @if (locationForm.get('latitude')?.hasError('required') && locationForm.get('latitude')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+            @if (locationForm.get('latitude')?.hasError('min') || locationForm.get('latitude')?.hasError('max')) {
+              <mat-error>Must be between -90° and 90°</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Longitude (°)</mat-label>
+            <input matInput type="number" formControlName="longitude" />
+            @if (locationForm.get('longitude')?.hasError('required') && locationForm.get('longitude')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+            @if (locationForm.get('longitude')?.hasError('min') || locationForm.get('longitude')?.hasError('max')) {
+              <mat-error>Must be between -180° and 180°</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Altitude (m)</mat-label>
+            <input matInput type="number" formControlName="altitude" />
+            @if (locationForm.get('altitude')?.hasError('required') && locationForm.get('altitude')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </form>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSave()">Save Changes</button>
+  </div>
+</div>

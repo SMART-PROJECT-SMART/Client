@@ -1,0 +1,94 @@
+@use '../../../../../styles/constants' as *;
+
+.dialog-container {
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    margin: 0;
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+}
+
+.mission-stepper {
+  padding: $spacing-md;
+  background: transparent;
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-lg 0;
+}
+
+.location-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-md;
+
+  input[type='number'] {
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  padding-top: $spacing-md;
+  border-top: $border-width-thin solid $color-border-default;
+  margin-top: $spacing-md;
+}
+
+::ng-deep {
+  .mat-horizontal-stepper-header-container {
+    padding: 0 $spacing-md;
+  }
+
+  .mat-step-header {
+    .mat-step-icon {
+      background-color: $color-background-elevated;
+      color: $color-text-secondary;
+    }
+
+    .mat-step-icon-selected,
+    .mat-step-icon-state-done {
+      background-color: $color-primary;
+      color: $color-text-primary;
+    }
+
+    .mat-step-label {
+      color: $color-text-secondary;
+    }
+
+    .mat-step-label-active {
+      color: $color-text-primary;
+    }
+
+    .mat-step-label-selected {
+      color: $color-primary-light;
+      font-weight: 600;
+    }
+  }
+
+  .mat-horizontal-content-container {
+    padding: 0;
+  }
+}

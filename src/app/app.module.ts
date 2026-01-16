@@ -11,6 +11,9 @@ import { MatModule } from './modules/mat.module';
 import { AssignmentManagementComponent } from './pages/assignment/components/assignment-management/assignment-management-component.component';
 import { AssignmentReviewComponent } from './pages/assignment/components/assignment-review/assignment-review-component.component';
 import { MissionComponentComponent } from './pages/assignment/components/mission/mission-component.component';
+import { MissionCreateDialogComponent } from './pages/assignment/components/mission-create-dialog/mission-create-dialog.component';
+import { MissionEditDialogComponent } from './pages/assignment/components/mission-edit-dialog/mission-edit-dialog.component';
+import { MissionSummaryDialogComponent } from './pages/assignment/components/mission-summary-dialog/mission-summary-dialog.component';
 import { HomePageComponent } from './pages/home/home-page/home-page-component.component';
 import { LiveViewPageComponent } from './pages/live-view/live-view-page/live-view-page-component.component';
 import { CesiumViewer } from './pages/live-view/components/cesium-viewer/cesium-viewer.component';
@@ -23,6 +26,9 @@ import { UavOptionComponentComponent } from './pages/live-view/components/uav-op
   declarations: [
     App,
     MissionComponentComponent,
+    MissionCreateDialogComponent,
+    MissionEditDialogComponent,
+    MissionSummaryDialogComponent,
     AssignmentPageComponentComponent,
     AssignmentManagementComponent,
     AssignmentReviewComponent,
