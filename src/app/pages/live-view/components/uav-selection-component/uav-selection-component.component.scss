@@ -1,16 +1,106 @@
 @use '../../../../../styles/constants' as *;
 
-.uav-selection-list {
+$panel-width: 280px;
+$toggle-width: 32px;
+
+.uav-selection-panel {
+  position: relative;
+  display: flex;
+  height: 100%;
+  background-color: $color-background-secondary;
+  transition: width 0.3s ease;
+  width: $panel-width + $toggle-width;
+
+  &.collapsed {
+    width: $toggle-width;
+
+    .panel-content {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+}
+
+.collapse-toggle {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: $toggle-width;
+  height: 64px;
+  background-color: $color-background-card;
+  border: none;
+  border-radius: 0 $border-radius-sm $border-radius-sm 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-primary;
+  transition: background-color 0.2s ease;
+  z-index: 1;
+
+  &:hover {
+    background-color: $color-primary-dark;
+  }
+
+  mat-icon {
+    font-size: $icon-size-md;
+  }
+}
+
+.panel-content {
+  margin-left: $toggle-width;
+  width: $panel-width;
+  height: 100%;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
   display: flex;
   flex-direction: column;
-  gap: $spacing-xs;
-  padding: $spacing-xs;
 }
 
 .uav-selection-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
   font-size: $font-size-xl;
   font-weight: 700;
-  padding: $spacing-md $spacing-xs $spacing-xs $spacing-xs;
-  color: $color-primary-dark;
-  letter-spacing: 0.5px;
+  padding: $spacing-md;
+  color: $color-text-primary;
+  background-color: $color-background-card;
+  border-bottom: $border-width-thin solid $color-primary-dark;
+
+  .header-icon {
+    color: $color-primary;
+  }
+
+  .uav-count {
+    margin-left: auto;
+    background-color: $color-primary;
+    color: $color-text-primary;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: $border-radius-lg;
+    min-width: 24px;
+    text-align: center;
+  }
+}
+
+.uav-selection-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding: $spacing-sm;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+  text-align: center;
 }

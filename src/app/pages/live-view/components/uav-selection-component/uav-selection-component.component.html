@@ -1,6 +1,19 @@
-<div class="uav-selection-header">Active UAVs</div>
-<div class="uav-selection-list">
-  @for (option of uavOptions(); track $index) {
-  <app-uav-option-component [uavDisplay]="option"></app-uav-option-component>
-  }
+<div class="uav-selection-panel" [class.collapsed]="isCollapsed()">
+  <button class="collapse-toggle" (click)="toggleCollapse()">
+    <mat-icon>{{ isCollapsed() ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+  </button>
+  <div class="panel-content">
+    <div class="uav-selection-header">
+      <mat-icon class="header-icon">flight</mat-icon>
+      <span>Active UAVs</span>
+      <span class="uav-count">{{ uavOptions().length }}</span>
+    </div>
+    <div class="uav-selection-list">
+      @for (option of uavOptions(); track option.tailId) {
+        <app-uav-option-component [uavDisplay]="option"></app-uav-option-component>
+      } @empty {
+        <div class="empty-state">No active UAVs</div>
+      }
+    </div>
+  </div>
 </div>
