@@ -68,37 +68,86 @@
 
     <mat-tab label="Location">
       <form [formGroup]="locationForm" class="tab-content">
-        <div class="location-fields">
-          <mat-form-field appearance="outline">
-            <mat-label>Latitude (°)</mat-label>
-            <input matInput type="number" formControlName="latitude" />
-            @if (locationForm.get('latitude')?.hasError('required') && locationForm.get('latitude')?.touched) {
-              <mat-error>Required</mat-error>
-            }
-            @if (locationForm.get('latitude')?.hasError('min') || locationForm.get('latitude')?.hasError('max')) {
-              <mat-error>Must be between -90° and 90°</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Longitude (°)</mat-label>
-            <input matInput type="number" formControlName="longitude" />
-            @if (locationForm.get('longitude')?.hasError('required') && locationForm.get('longitude')?.touched) {
-              <mat-error>Required</mat-error>
-            }
-            @if (locationForm.get('longitude')?.hasError('min') || locationForm.get('longitude')?.hasError('max')) {
-              <mat-error>Must be between -180° and 180°</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Altitude (m)</mat-label>
-            <input matInput type="number" formControlName="altitude" />
-            @if (locationForm.get('altitude')?.hasError('required') && locationForm.get('altitude')?.touched) {
-              <mat-error>Required</mat-error>
-            }
-          </mat-form-field>
+        <div class="location-mode-toggle">
+          <button
+            mat-stroked-button
+            type="button"
+            [class.active]="locationMode() === LocationMode.BASE"
+            (click)="onModeChange(LocationMode.BASE)">
+            <mat-icon>military_tech</mat-icon>
+            Select Base
+          </button>
+          <button
+            mat-stroked-button
+            type="button"
+            [class.active]="locationMode() === LocationMode.MANUAL"
+            (click)="onModeChange(LocationMode.MANUAL)">
+            <mat-icon>edit_location</mat-icon>
+            Manual Entry
+          </button>
         </div>
+
+        @if (locationMode() === LocationMode.BASE) {
+          <div class="base-selection">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Military Base</mat-label>
+              <mat-select (selectionChange)="onBaseSelect($event.value)" [value]="selectedBase()">
+                @for (base of militaryBases; track base.name) {
+                  <mat-option [value]="base">{{ base.name }} ({{ base.type }})</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            @if (selectedBase()) {
+              <div class="base-preview">
+                <div class="preview-row">
+                  <span class="preview-label">Latitude:</span>
+                  <span class="preview-value">{{ selectedBase()?.latitude }}°</span>
+                </div>
+                <div class="preview-row">
+                  <span class="preview-label">Longitude:</span>
+                  <span class="preview-value">{{ selectedBase()?.longitude }}°</span>
+                </div>
+                <div class="preview-row">
+                  <span class="preview-label">Altitude:</span>
+                  <span class="preview-value">{{ selectedBase()?.altitude }}m</span>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="location-fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Latitude (°)</mat-label>
+              <input matInput type="number" formControlName="latitude" />
+              @if (locationForm.get('latitude')?.hasError('required') && locationForm.get('latitude')?.touched) {
+                <mat-error>Required</mat-error>
+              }
+              @if (locationForm.get('latitude')?.hasError('min') || locationForm.get('latitude')?.hasError('max')) {
+                <mat-error>Invalid latitude</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Longitude (°)</mat-label>
+              <input matInput type="number" formControlName="longitude" />
+              @if (locationForm.get('longitude')?.hasError('required') && locationForm.get('longitude')?.touched) {
+                <mat-error>Required</mat-error>
+              }
+              @if (locationForm.get('longitude')?.hasError('min') || locationForm.get('longitude')?.hasError('max')) {
+                <mat-error>Invalid longitude</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Altitude (m)</mat-label>
+              <input matInput type="number" formControlName="altitude" />
+              @if (locationForm.get('altitude')?.hasError('required') && locationForm.get('altitude')?.touched) {
+                <mat-error>Required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        }
       </form>
     </mat-tab>
   </mat-tab-group>

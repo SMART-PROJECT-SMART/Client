@@ -1,4 +1,5 @@
 export type { Location } from './geographic/location.model';
+export type { MilitaryBase } from './militaryBase.model';
 export type { Mission } from './mission/mission.model';
 export type { MissionAssignmentPairing } from './mission/missionAssignmentPairing.model';
 export type { MissionToUavAssignment } from './mission/missionToUavAssignment.model';
