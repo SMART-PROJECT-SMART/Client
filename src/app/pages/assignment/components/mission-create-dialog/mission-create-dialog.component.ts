@@ -8,7 +8,7 @@ import { EnumUtil } from '../../../../common/utils';
 import { timeWindowValidator } from '../../../../common/validators';
 import type { Mission } from '../../../../models';
 
-const { LocationValidation } = ClientConstants.ValidationConstants;
+const { MissionBounds } = ClientConstants.ValidationConstants;
 
 @Component({
   selector: 'app-mission-create-dialog',
@@ -44,13 +44,13 @@ export class MissionCreateDialogComponent {
   public readonly locationForm = new FormGroup({
     latitude: new FormControl<number | null>(null, [
       Validators.required,
-      Validators.min(LocationValidation.LATITUDE_MIN),
-      Validators.max(LocationValidation.LATITUDE_MAX),
+      Validators.min(MissionBounds.LATITUDE_MIN),
+      Validators.max(MissionBounds.LATITUDE_MAX),
     ]),
     longitude: new FormControl<number | null>(null, [
       Validators.required,
-      Validators.min(LocationValidation.LONGITUDE_MIN),
-      Validators.max(LocationValidation.LONGITUDE_MAX),
+      Validators.min(MissionBounds.LONGITUDE_MIN),
+      Validators.max(MissionBounds.LONGITUDE_MAX),
     ]),
     altitude: new FormControl<number | null>(null, [Validators.required]),
   });

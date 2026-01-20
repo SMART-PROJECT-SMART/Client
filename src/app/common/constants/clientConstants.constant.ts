@@ -7,6 +7,13 @@ export namespace ClientConstants {
       export const LONGITUDE_MAX: number = 180;
     }
 
+    export namespace MissionBounds {
+      export const LATITUDE_MIN: number = 29.5;
+      export const LATITUDE_MAX: number = 33.3;
+      export const LONGITUDE_MIN: number = 34.2;
+      export const LONGITUDE_MAX: number = 35.9;
+    }
+
     export namespace TimeValidation {
       export const HOURS_MIN: number = 0;
       export const HOURS_MAX: number = 23;
