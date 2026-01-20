@@ -33,7 +33,7 @@ export class AssignmentPageComponentComponent implements OnDestroy {
 
   constructor(
     private readonly orchestratorService: AssignmentOrchestratorService,
-    private readonly snackBar: MatSnackBar
+    private readonly snackBar: MatSnackBar,
   ) {}
 
   public ngOnDestroy(): void {
@@ -59,15 +59,15 @@ export class AssignmentPageComponentComponent implements OnDestroy {
 
   public onMissionsSubmit(missions: Mission[]): void {
     this.missions.set(missions);
-    this.setLoadingState(true);
-    this.clearError();
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
 
     this.orchestratorService
       .submitMissionsAndPoll(missions)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (result: AssignmentAlgorithmRo) => {
-          this.handleAssignmentSuccess(result);
+          this.handleMissionSubmitSuccess(result);
         },
         error: (error: unknown) => {
           this.handleError(Messages.SUBMIT_ERROR, error);
@@ -76,7 +76,7 @@ export class AssignmentPageComponentComponent implements OnDestroy {
   }
 
   public onBackToManagement(): void {
-    this.resetToManagementStage();
+    this.currentStage.set(AssignmentStage.MANAGEMENT);
   }
 
   public onViewResults(): void {
@@ -84,8 +84,8 @@ export class AssignmentPageComponentComponent implements OnDestroy {
   }
 
   public onApplyAssignment(event: ApplyAssignmentRo): void {
-    this.setLoadingState(true);
-    this.clearError();
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
 
     const dto: ApplyAssignmentDto = {
       suggestedAssignments: event.suggested,
@@ -105,17 +105,17 @@ export class AssignmentPageComponentComponent implements OnDestroy {
       });
   }
 
-  private handleAssignmentSuccess(result: AssignmentAlgorithmRo): void {
-    this.assignmentResult.set(result);
-    this.setLoadingState(false);
+  private handleMissionSubmitSuccess(successResult: AssignmentAlgorithmRo): void {
+    this.assignmentResult.set(successResult);
+    this.isLoading.set(false);
     this.currentStage.set(AssignmentStage.REVIEW);
   }
 
   private handleApplySuccess(): void {
     this.assignmentResult.set(null);
     this.missions.set([]);
-    this.resetToManagementStage();
-    this.setLoadingState(false);
+    this.currentStage.set(AssignmentStage.MANAGEMENT);
+    this.isLoading.set(false);
     this.snackBar.open(Messages.APPLY_SUCCESS_MESSAGE, Messages.SNACKBAR_CLOSE_ACTION, {
       duration: SnackbarConfig.DURATION_MS,
       horizontalPosition: SnackbarConfig.HORIZONTAL_POSITION as 'center',
@@ -123,20 +123,8 @@ export class AssignmentPageComponentComponent implements OnDestroy {
     });
   }
 
-  private setLoadingState(isLoading: boolean): void {
-    this.isLoading.set(isLoading);
-  }
-
-  private clearError(): void {
-    this.errorMessage.set(null);
-  }
-
-  private resetToManagementStage(): void {
-    this.currentStage.set(AssignmentStage.MANAGEMENT);
-  }
-
   private handleError(userMessage: string, error: unknown): void {
-    this.setLoadingState(false);
+    this.isLoading.set(false);
     this.errorMessage.set(userMessage);
   }
 }
