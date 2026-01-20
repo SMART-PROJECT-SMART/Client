@@ -17,9 +17,9 @@ import type {
   ValidationResult,
   Violation,
 } from '../../../../models';
-import { TelemetryField, ViolationType } from '../../../../common/enums';
+import { TelemetryField, ViolationType, PlatformType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
-import { TelemetryUtil, EnumUtil, AssignmentUtil } from '../../../../common/utils';
+import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../common/utils';
 import { ApplyAssignmentDto } from '../../../../models/dto/applyAssignmentDto.dto';
 import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
 
@@ -43,9 +43,11 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly applyLabel: string = APPLY_LABEL;
   public readonly TelemetryField = TelemetryField;
   public readonly ViolationType = ViolationType;
+  public readonly PlatformType = PlatformType;
   public readonly AssignmentUtil = AssignmentUtil;
   public readonly TelemetryUtil = TelemetryUtil;
   public readonly EnumUtil = EnumUtil;
+  public readonly ImageUtil = ImageUtil;
 
   public readonly selectedTailIds: WritableSignal<Map<string, number>> = signal<
     Map<string, number>
@@ -123,8 +125,17 @@ export class AssignmentReviewComponent implements OnInit {
 
   public getTelemetryEntries(uav: UAV): [TelemetryField, number][] {
     return (Object.entries(uav.telemetryData) as [TelemetryField, number][]).filter(
-      ([field]) => field !== TelemetryField.UAVTypeValue && field !== TelemetryField.TailId
+      ([field]) =>
+        field !== TelemetryField.UAVTypeValue &&
+        field !== TelemetryField.TailId &&
+        field !== TelemetryField.PlatformType
     );
+  }
+
+  public getPlatformType(uav: UAV): PlatformType {
+    const platformValue = uav.telemetryData[TelemetryField.PlatformType];
+    const platformTypes = Object.values(PlatformType);
+    return platformTypes[platformValue] ?? PlatformType.Hermes900;
   }
 
   public trackByMissionId(_index: number, pairing: MissionAssignmentPairing): string {

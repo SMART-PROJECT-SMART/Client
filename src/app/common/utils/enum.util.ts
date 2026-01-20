@@ -1,4 +1,4 @@
-import { Priority, UAVType, TelemetryField } from '../enums';
+import { Priority, UAVType, TelemetryField, PlatformType } from '../enums';
 
 export class EnumUtil {
   public static getPriorityDisplay(priority: Priority): string {
@@ -42,7 +42,18 @@ export class EnumUtil {
       [TelemetryField.NearestSleeveId]: 'Nearest Sleeve ID',
       [TelemetryField.TailId]: 'Tail Number',
       [TelemetryField.UAVTypeValue]: 'UAV Type Value',
+      [TelemetryField.PlatformType]: 'Platform Type',
     };
     return displayMap[field];
+  }
+
+  public static getPlatformTypeDisplay(platformType: PlatformType): string {
+    const displayMap: Record<PlatformType, string> = {
+      [PlatformType.Hermes900]: 'Hermes 900',
+      [PlatformType.HeronTP]: 'Heron TP',
+      [PlatformType.Hermes450]: 'Hermes 450',
+      [PlatformType.Searcher]: 'Searcher',
+    };
+    return displayMap[platformType];
   }
 }

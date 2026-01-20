@@ -4,3 +4,4 @@ export * from './priority.enum';
 export * from './telemetryField.enum';
 export * from './uavType.enum';
 export * from './violationType.enum';
+export * from './platformType.enum';

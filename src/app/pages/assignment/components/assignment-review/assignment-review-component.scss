@@ -41,6 +41,7 @@
   border-radius: $border-radius-md;
   padding: $spacing-md;
   transition: border-color 0.3s ease;
+  max-width: 800px;
 
   &.modified {
     border-color: $color-warning;
@@ -52,10 +53,20 @@
   }
 }
 
+.card-layout {
+  display: flex;
+  gap: $spacing-lg;
+}
+
+.card-main {
+  flex: 1;
+  min-width: 0;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: $spacing-md;
 
   h3 {
@@ -63,6 +74,35 @@
     font-size: $font-size-lg;
     margin: 0;
   }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.platform-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm;
+  border-left: $border-width-thin solid $color-primary-dark;
+  padding-left: $spacing-lg;
+}
+
+.platform-image {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+}
+
+.platform-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
 }
 
 .modified-icon {
@@ -74,14 +114,15 @@
 
   mat-form-field {
     width: 100%;
-    max-width: 400px;
+    max-width: 300px;
   }
 }
 
 .uav-info {
   display: flex;
-  gap: $spacing-lg;
-  margin-top: $spacing-md;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-top: $spacing-sm;
 }
 
 .info-item {

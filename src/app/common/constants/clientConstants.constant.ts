@@ -54,7 +54,8 @@ export namespace ClientConstants {
     }
 
     export namespace Endpoints {
-      export const CREATE_ASSIGNMENT_SUGGESTION: string = '/api/assignment/create-assignment-suggestion';
+      export const CREATE_ASSIGNMENT_SUGGESTION: string =
+        '/api/assignment/create-assignment-suggestion';
       export const APPLY_ASSIGNMENT: string = '/api/assignment/apply-assignment';
       export const GET_ASSIGNMENT_RESULT: string = '/api/assignmentresult';
       export const CHECK_ASSIGNMENT_STATUS: string = '/api/assignmentresult';
@@ -101,6 +102,10 @@ export namespace ClientConstants {
     export const LOGO_PATH: string = 'images/logo.png';
   }
 
+  export namespace ImagePaths {
+    export const PLATFORM_IMAGES: string = 'images/platforms';
+  }
+
   export namespace TelemetryUnits {
     export const DRAG_COEFFICIENT: string = 'coeff';
     export const LIFT_COEFFICIENT: string = 'coeff';
@@ -124,5 +129,6 @@ export namespace ClientConstants {
     export const NEAREST_SLEEVE_ID: string = 'id';
     export const TAIL_ID: string = 'id';
     export const UAV_TYPE_VALUE: string = 'enum';
+    export const PLATFORM_TYPE: string = 'enum';
   }
 }

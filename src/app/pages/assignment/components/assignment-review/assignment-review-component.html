@@ -44,39 +44,58 @@
         class="assignment-card"
         [class.modified]="isAssignmentModified(pairing.mission.id)">
         <mat-card-content>
-          <div class="card-header">
-            <h3>{{ pairing.mission.title }}</h3>
-            @if (isAssignmentModified(pairing.mission.id)) {
-              <mat-icon class="modified-icon" color="warn">edit</mat-icon>
-            }
-          </div>
-
-          <div class="uav-assignment">
-            <mat-form-field appearance="outline">
-              <mat-label>Assigned UAV</mat-label>
-              <mat-select
-                [value]="selectedTailIds().get(pairing.mission.id) ?? pairing.tailId"
-                (selectionChange)="onUavChange(pairing.mission.id, $event.value)"
-                aria-label="Select UAV">
-                @for (uav of availableUavs(); track uav.tailId) {
-                  <mat-option [value]="uav.tailId">
-                    UAV-{{ uav.tailId }} ({{ EnumUtil.getUAVTypeDisplay(uav.uavType) }})
-                    @if (uav.tailId === pairing.tailId) {
-                      <span class="suggested-badge">Suggested</span>
-                    }
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-
-            <div class="uav-info">
-              <div class="info-item">
-                <span class="info-label">Tail Number:</span>
-                <span class="info-value">{{ getUavForPairing(pairing).tailId }}</span>
+          <div class="card-layout">
+            <div class="card-main">
+              <div class="card-header">
+                <div class="header-left">
+                  <h3>{{ pairing.mission.title }}</h3>
+                  @if (isAssignmentModified(pairing.mission.id)) {
+                    <mat-icon class="modified-icon" color="warn">edit</mat-icon>
+                  }
+                </div>
               </div>
-              <div class="info-item">
-                <span class="info-label">UAV Type:</span>
-                <span class="info-value">{{ EnumUtil.getUAVTypeDisplay(getUavForPairing(pairing).uavType) }}</span>
+
+              <div class="uav-assignment">
+                <mat-form-field appearance="outline">
+                  <mat-label>Assigned UAV</mat-label>
+                  <mat-select
+                    [value]="selectedTailIds().get(pairing.mission.id) ?? pairing.tailId"
+                    (selectionChange)="onUavChange(pairing.mission.id, $event.value)"
+                    aria-label="Select UAV">
+                    @for (uav of availableUavs(); track uav.tailId) {
+                      <mat-option [value]="uav.tailId">
+                        UAV-{{ uav.tailId }} ({{ EnumUtil.getUAVTypeDisplay(uav.uavType) }})
+                        @if (uav.tailId === pairing.tailId) {
+                          <span class="suggested-badge">Suggested</span>
+                        }
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="platform-section">
+              <img
+                class="platform-image"
+                [src]="ImageUtil.getPlatformImagePath(getPlatformType(getUavForPairing(pairing)))"
+                [alt]="EnumUtil.getPlatformTypeDisplay(getPlatformType(getUavForPairing(pairing)))"
+              />
+              <div class="platform-info">
+                <div class="uav-info">
+                  <div class="info-item">
+                    <span class="info-label">Platform:</span>
+                    <span class="info-value">{{ EnumUtil.getPlatformTypeDisplay(getPlatformType(getUavForPairing(pairing))) }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Tail ID:</span>
+                    <span class="info-value">{{ getUavForPairing(pairing).tailId }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">UAV Type:</span>
+                    <span class="info-value">{{ EnumUtil.getUAVTypeDisplay(getUavForPairing(pairing).uavType) }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

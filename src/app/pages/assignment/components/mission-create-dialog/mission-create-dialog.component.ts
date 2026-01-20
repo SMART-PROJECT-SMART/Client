@@ -26,6 +26,7 @@ export class MissionCreateDialogComponent {
   public readonly uavTypes: UAVType[] = Object.values(UAVType);
   public readonly priorities: Priority[] = Object.values(Priority);
   public readonly EnumUtil = EnumUtil;
+  public readonly MissionBounds = MissionBounds;
 
   public readonly basicInfoForm = new FormGroup({
     title: new FormControl('', [Validators.required]),

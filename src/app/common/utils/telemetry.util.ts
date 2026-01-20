@@ -28,6 +28,7 @@ export class TelemetryUtil {
       [TelemetryField.NearestSleeveId]: TelemetryUnits.NEAREST_SLEEVE_ID,
       [TelemetryField.TailId]: TelemetryUnits.TAIL_ID,
       [TelemetryField.UAVTypeValue]: TelemetryUnits.UAV_TYPE_VALUE,
+      [TelemetryField.PlatformType]: TelemetryUnits.PLATFORM_TYPE,
     };
     const unit = unitMap[field];
     return unit ? `(${unit})` : '';

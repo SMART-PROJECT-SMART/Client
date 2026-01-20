@@ -21,4 +21,5 @@ export enum TelemetryField {
   NearestSleeveId = 'NearestSleeveId',
   TailId = 'TailId',
   UAVTypeValue = 'UAVTypeValue',
+  PlatformType = 'PlatformType',
 }
