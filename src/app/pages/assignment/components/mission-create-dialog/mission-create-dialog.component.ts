@@ -1,12 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { UAVType, Priority, LocationMode } from '../../../../common/enums';
-import { ClientConstants, MILITARY_BASES } from '../../../../common';
+import { UAVType, Priority } from '../../../../common/enums';
+import { ClientConstants } from '../../../../common';
 import { EnumUtil } from '../../../../common/utils';
 import { timeWindowValidator } from '../../../../common/validators';
-import type { Mission, MilitaryBase } from '../../../../models';
+import type { Mission } from '../../../../models';
 
 const { MissionBounds } = ClientConstants.ValidationConstants;
 
@@ -25,11 +25,7 @@ const { MissionBounds } = ClientConstants.ValidationConstants;
 export class MissionCreateDialogComponent {
   public readonly uavTypes: UAVType[] = Object.values(UAVType);
   public readonly priorities: Priority[] = Object.values(Priority);
-  public readonly militaryBases: MilitaryBase[] = MILITARY_BASES;
   public readonly EnumUtil = EnumUtil;
-  public readonly LocationMode = LocationMode;
-  public readonly locationMode = signal<LocationMode>(LocationMode.BASE);
-  public readonly selectedBase = signal<MilitaryBase | null>(null);
 
   public readonly basicInfoForm = new FormGroup({
     title: new FormControl('', [Validators.required]),
@@ -60,23 +56,6 @@ export class MissionCreateDialogComponent {
   });
 
   constructor(private readonly dialogRef: MatDialogRef<MissionCreateDialogComponent>) {}
-
-  public onModeChange(mode: LocationMode): void {
-    this.locationMode.set(mode);
-    if (mode === LocationMode.MANUAL) {
-      this.selectedBase.set(null);
-      this.locationForm.reset();
-    }
-  }
-
-  public onBaseSelect(base: MilitaryBase): void {
-    this.selectedBase.set(base);
-    this.locationForm.patchValue({
-      latitude: base.latitude,
-      longitude: base.longitude,
-      altitude: base.altitude,
-    });
-  }
 
   public onCancel(): void {
     this.dialogRef.close();

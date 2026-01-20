@@ -1,11 +1,11 @@
-import { Component, Inject, signal } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { UAVType, Priority, LocationMode } from '../../../../common/enums';
-import { ClientConstants, MILITARY_BASES } from '../../../../common';
+import { UAVType, Priority } from '../../../../common/enums';
+import { ClientConstants } from '../../../../common';
 import { EnumUtil } from '../../../../common/utils';
 import { timeWindowValidator } from '../../../../common/validators';
-import type { Mission, MilitaryBase } from '../../../../models';
+import type { Mission } from '../../../../models';
 
 const { MissionBounds } = ClientConstants.ValidationConstants;
 
@@ -22,12 +22,8 @@ export interface MissionEditDialogData {
 export class MissionEditDialogComponent {
   public readonly uavTypes: UAVType[] = Object.values(UAVType);
   public readonly priorities: Priority[] = Object.values(Priority);
-  public readonly militaryBases: MilitaryBase[] = MILITARY_BASES;
   public readonly EnumUtil = EnumUtil;
-  public readonly LocationMode = LocationMode;
   public readonly missionTitle: string;
-  public readonly locationMode = signal<LocationMode>(LocationMode.MANUAL);
-  public readonly selectedBase = signal<MilitaryBase | null>(null);
 
   public readonly basicInfoForm: FormGroup;
   public readonly timeWindowForm: FormGroup;
@@ -66,22 +62,6 @@ export class MissionEditDialogComponent {
         Validators.max(MissionBounds.LONGITUDE_MAX),
       ]),
       altitude: new FormControl<number>(mission.location.altitude, [Validators.required]),
-    });
-  }
-
-  public onModeChange(mode: LocationMode): void {
-    this.locationMode.set(mode);
-    if (mode === LocationMode.MANUAL) {
-      this.selectedBase.set(null);
-    }
-  }
-
-  public onBaseSelect(base: MilitaryBase): void {
-    this.selectedBase.set(base);
-    this.locationForm.patchValue({
-      latitude: base.latitude,
-      longitude: base.longitude,
-      altitude: base.altitude,
     });
   }
 
