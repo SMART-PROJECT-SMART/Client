@@ -20,7 +20,6 @@ export class SidebarComponent {
   public readonly expandedWidth: number = SidebarConstants.EXPANDED_WIDTH;
 
   public readonly navigationItems: NavigationItem[] = [
-    { label: 'Home', icon: 'home', route: '/' },
     {
       label: 'Assignment',
       icon: 'assignment',

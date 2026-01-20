@@ -14,7 +14,6 @@ import { MissionComponentComponent } from './pages/assignment/components/mission
 import { MissionCreateDialogComponent } from './pages/assignment/components/mission-create-dialog/mission-create-dialog.component';
 import { MissionEditDialogComponent } from './pages/assignment/components/mission-edit-dialog/mission-edit-dialog.component';
 import { MissionSummaryDialogComponent } from './pages/assignment/components/mission-summary-dialog/mission-summary-dialog.component';
-import { HomePageComponent } from './pages/home/home-page/home-page-component.component';
 import { LiveViewPageComponent } from './pages/live-view/live-view-page/live-view-page-component.component';
 import { CesiumViewer } from './pages/live-view/components/cesium-viewer/cesium-viewer.component';
 import { SidebarComponent } from './common/components/sidebar/sidebar-component.component';
@@ -33,7 +32,6 @@ import { UavOptionComponentComponent } from './pages/live-view/components/uav-op
     AssignmentManagementComponent,
     AssignmentReviewComponent,
     SidebarComponent,
-    HomePageComponent,
     LiveViewPageComponent,
     CesiumViewer,
     UavSelectionComponentComponent,
