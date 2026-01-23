@@ -1,5 +1,6 @@
-import { Component, output, input, OnInit, computed, signal } from '@angular/core';
+import { Component, output, input, OnInit, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { take } from 'rxjs';
 import { ClientConstants } from '../../../../common';
 import { EnumUtil } from '../../../../common/utils';
 import { MissionCreateDialogComponent } from '../mission-create-dialog/mission-create-dialog.component';
@@ -8,12 +9,14 @@ import { MissionSummaryDialogComponent } from '../mission-summary-dialog/mission
 import type { Mission, TimeWindow } from '../../../../models';
 
 const { ADD_MISSION_LABEL, SUBMIT_LABEL } = ClientConstants.AssignmentPageConstants;
+const { MISSION_DIALOG_WIDTH, MISSION_SUMMARY_DIALOG_WIDTH, PANEL_CLASS } = ClientConstants.DialogConfig;
 
 @Component({
   selector: 'app-assignment-management-component',
   standalone: false,
   templateUrl: './assignment-management-component.html',
   styleUrl: './assignment-management-component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentManagementComponent implements OnInit {
   public readonly missions = input<Mission[]>([]);
@@ -50,11 +53,11 @@ export class AssignmentManagementComponent implements OnInit {
 
   public onAddMission(): void {
     const dialogRef = this.dialog.open(MissionCreateDialogComponent, {
-      width: '600px',
-      panelClass: 'mission-dialog',
+      width: MISSION_DIALOG_WIDTH,
+      panelClass: PANEL_CLASS,
     });
 
-    dialogRef.afterClosed().subscribe((result: Mission | undefined) => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe((result: Mission | undefined) => {
       if (result) {
         this.missionList.update((list) => [...list, result]);
         this.hasModifications.set(true);
@@ -64,12 +67,12 @@ export class AssignmentManagementComponent implements OnInit {
 
   public onEditMission(mission: Mission): void {
     const dialogRef = this.dialog.open(MissionEditDialogComponent, {
-      width: '600px',
-      panelClass: 'mission-dialog',
+      width: MISSION_DIALOG_WIDTH,
+      panelClass: PANEL_CLASS,
       data: { mission },
     });
 
-    dialogRef.afterClosed().subscribe((result: Mission | undefined) => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe((result: Mission | undefined) => {
       if (result) {
         this.missionList.update((list) =>
           list.map((m) => (m.id === result.id ? result : m))
@@ -81,8 +84,8 @@ export class AssignmentManagementComponent implements OnInit {
 
   public onViewSummary(mission: Mission): void {
     this.dialog.open(MissionSummaryDialogComponent, {
-      width: '500px',
-      panelClass: 'mission-dialog',
+      width: MISSION_SUMMARY_DIALOG_WIDTH,
+      panelClass: PANEL_CLASS,
       data: { mission },
     });
   }

@@ -44,14 +44,39 @@
         class="assignment-card"
         [class.modified]="isAssignmentModified(pairing.mission.id)">
         <mat-card-content>
+          <div class="card-header">
+            <div class="header-left">
+              <h3><span class="title-label">Mission Title:</span> {{ pairing.mission.title }}</h3>
+              @if (isAssignmentModified(pairing.mission.id)) {
+                <mat-icon class="modified-icon" color="warn">edit</mat-icon>
+              }
+            </div>
+          </div>
+
+          @let currentUav = uavByMissionId().get(pairing.mission.id)!;
+          @let platformType = getPlatformType(currentUav);
           <div class="card-layout">
-            <div class="card-main">
-              <div class="card-header">
-                <div class="header-left">
-                  <h3>{{ pairing.mission.title }}</h3>
-                  @if (isAssignmentModified(pairing.mission.id)) {
-                    <mat-icon class="modified-icon" color="warn">edit</mat-icon>
-                  }
+            <div class="platform-visual">
+              <img
+                class="platform-image"
+                [src]="ImageUtil.getPlatformImagePath(platformType)"
+                [alt]="EnumUtil.getPlatformTypeDisplay(platformType)"
+              />
+            </div>
+
+            <div class="card-info">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">Platform:</span>
+                  <span class="info-value">{{ EnumUtil.getPlatformTypeDisplay(platformType) }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Tail ID:</span>
+                  <span class="info-value">{{ currentUav.tailId }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">UAV Type:</span>
+                  <span class="info-value">{{ EnumUtil.getUAVTypeDisplay(currentUav.uavType) }}</span>
                 </div>
               </div>
 
@@ -72,30 +97,6 @@
                     }
                   </mat-select>
                 </mat-form-field>
-              </div>
-            </div>
-
-            <div class="platform-section">
-              <img
-                class="platform-image"
-                [src]="ImageUtil.getPlatformImagePath(getPlatformType(getUavForPairing(pairing)))"
-                [alt]="EnumUtil.getPlatformTypeDisplay(getPlatformType(getUavForPairing(pairing)))"
-              />
-              <div class="platform-info">
-                <div class="uav-info">
-                  <div class="info-item">
-                    <span class="info-label">Platform:</span>
-                    <span class="info-value">{{ EnumUtil.getPlatformTypeDisplay(getPlatformType(getUavForPairing(pairing))) }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="info-label">Tail ID:</span>
-                    <span class="info-value">{{ getUavForPairing(pairing).tailId }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="info-label">UAV Type:</span>
-                    <span class="info-value">{{ EnumUtil.getUAVTypeDisplay(getUavForPairing(pairing).uavType) }}</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -145,7 +146,7 @@
             </legend>
             @if (isTelemetryExpanded(pairing.mission.id)) {
               <div class="telemetry-grid">
-                @for (entry of getTelemetryEntries(getUavForPairing(pairing)); track entry[0]) {
+                @for (entry of getTelemetryEntries(currentUav); track entry[0]) {
                   <div class="telemetry-item">
                     <span class="telemetry-label">{{ EnumUtil.getTelemetryFieldDisplay(entry[0]) }}:</span>
                     <span class="telemetry-value">{{ entry[1] }} {{ TelemetryUtil.getUnit(entry[0]) }}</span>

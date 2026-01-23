@@ -1,4 +1,4 @@
-import { Component, signal, computed, OnDestroy } from '@angular/core';
+import { Component, signal, computed, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -20,6 +20,7 @@ const { Messages, SnackbarConfig } = ClientConstants.MissionServiceAPI;
   standalone: false,
   templateUrl: './assignment-page-component.component.html',
   styleUrl: './assignment-page-component.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentPageComponentComponent implements OnDestroy {
   private readonly destroy$ = new Subject<void>();

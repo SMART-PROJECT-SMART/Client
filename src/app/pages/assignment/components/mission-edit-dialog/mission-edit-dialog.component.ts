@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UAVType, Priority } from '../../../../common/enums';
@@ -18,6 +18,7 @@ export interface MissionEditDialogData {
   standalone: false,
   templateUrl: './mission-edit-dialog.component.html',
   styleUrl: './mission-edit-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MissionEditDialogComponent {
   public readonly uavTypes: UAVType[] = Object.values(UAVType);

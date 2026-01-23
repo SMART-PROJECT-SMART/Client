@@ -1,4 +1,4 @@
-import { Component, input, InputFunction, InputSignal } from '@angular/core';
+import { Component, input, InputSignal, ChangeDetectionStrategy } from '@angular/core';
 import { UAVDisplay } from '../../../../models/uav/uavDisplay.model';
 
 @Component({
@@ -6,8 +6,8 @@ import { UAVDisplay } from '../../../../models/uav/uavDisplay.model';
   standalone: false,
   templateUrl: './uav-option-component.component.html',
   styleUrl: './uav-option-component.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UavOptionComponentComponent {
-  constructor() {}
   public uavDisplay: InputSignal<UAVDisplay> = input.required<UAVDisplay>();
 }

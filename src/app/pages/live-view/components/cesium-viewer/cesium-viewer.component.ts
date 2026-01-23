@@ -6,7 +6,7 @@ import {
   effect,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CesiumService } from '../../../../services/cesium/cesuim.service';
+import { CesiumService } from '../../../../services/cesium/cesium.service';
 import { LtsSignalRService } from '../../../../services/lts/lts-signalr.service';
 import { TelemetryField } from '../../../../common/enums';
 import type { TelemetryBroadcastDto, UAVTelemetryData } from '../../../../models';

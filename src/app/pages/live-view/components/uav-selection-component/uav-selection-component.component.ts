@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { UAVDisplay } from '../../../../models/uav/uavDisplay.model';
 import { UAVStoreService } from '../../../../services/uav/uav-store.service';
 
@@ -7,6 +7,7 @@ import { UAVStoreService } from '../../../../services/uav/uav-store.service';
   standalone: false,
   templateUrl: './uav-selection-component.component.html',
   styleUrl: './uav-selection-component.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UavSelectionComponentComponent {
   public isCollapsed = signal(false);

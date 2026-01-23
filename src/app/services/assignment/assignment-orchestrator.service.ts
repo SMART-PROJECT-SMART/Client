@@ -34,7 +34,6 @@ export class AssignmentOrchestratorService {
     return this.assignmentApiService.createAssignmentSuggestion(dto).pipe(
       switchMap((response) => this.pollUntilComplete(response.assignmentId)),
       catchError((error) => {
-        console.error(ErrorMessages.SUBMIT_MISSIONS_ERROR, error);
         return throwError(() => error);
       })
     );
@@ -43,7 +42,6 @@ export class AssignmentOrchestratorService {
   public applyAssignment(dto: ApplyAssignmentDto): Observable<void> {
     return this.assignmentApiService.applyAssignment(dto).pipe(
       catchError((error) => {
-        console.error(ErrorMessages.APPLY_ASSIGNMENT_ERROR, error);
         return throwError(() => error);
       })
     );
@@ -57,7 +55,6 @@ export class AssignmentOrchestratorService {
       take(1),
       switchMap(() => this.fetchResult(assignmentId)),
       catchError((error) => {
-        console.error(ErrorMessages.POLL_STATUS_ERROR, error);
         return throwError(() => error);
       })
     );

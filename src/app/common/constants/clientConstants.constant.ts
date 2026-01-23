@@ -106,6 +106,12 @@ export namespace ClientConstants {
     export const PLATFORM_IMAGES: string = 'images/platforms';
   }
 
+  export namespace DialogConfig {
+    export const MISSION_DIALOG_WIDTH: string = '600px';
+    export const MISSION_SUMMARY_DIALOG_WIDTH: string = '500px';
+    export const PANEL_CLASS: string = 'mission-dialog';
+  }
+
   export namespace TelemetryUnits {
     export const DRAG_COEFFICIENT: string = 'coeff';
     export const LIFT_COEFFICIENT: string = 'coeff';

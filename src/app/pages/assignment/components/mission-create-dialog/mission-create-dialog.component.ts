@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
@@ -15,6 +15,7 @@ const { MissionBounds } = ClientConstants.ValidationConstants;
   standalone: false,
   templateUrl: './mission-create-dialog.component.html',
   styleUrl: './mission-create-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: STEPPER_GLOBAL_OPTIONS,

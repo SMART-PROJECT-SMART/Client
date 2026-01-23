@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EnumUtil } from '../../../../common/utils';
 import type { Mission } from '../../../../models';
@@ -12,6 +12,7 @@ export interface MissionSummaryDialogData {
   standalone: false,
   templateUrl: './mission-summary-dialog.component.html',
   styleUrl: './mission-summary-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MissionSummaryDialogComponent {
   public readonly mission: Mission;
