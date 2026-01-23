@@ -22,3 +22,5 @@ export type { UAVTelemetryData } from './lts/uavTelemetryData.model';
 export type { TelemetryBroadcastDto } from './lts/telemetryBroadcastDto.model';
 export type { UAVWantedFields } from './lts/uavWantedFields.model';
 export type { UpdateWantedFieldsDto } from './lts/updateWantedFieldsDto.model';
+
+export type { MissionFormGroups } from './forms/mission-form-groups.interface';

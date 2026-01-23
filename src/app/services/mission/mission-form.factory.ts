@@ -1,16 +1,10 @@
 import { Injectable } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ClientConstants } from '../constants/clientConstants.constant';
-import { timeWindowValidator } from '../validators';
-import type { Mission } from '../../models';
+import { ClientConstants } from '../../common/constants/clientConstants.constant';
+import { timeWindowValidator } from '../../common/validators';
+import type { Mission, MissionFormGroups } from '../../models';
 
-const { MissionBounds } = ClientConstants.ValidationConstants;
-
-export interface MissionFormGroups {
-  basicInfoForm: FormGroup;
-  timeWindowForm: FormGroup;
-  locationForm: FormGroup;
-}
+const { LocationValidation } = ClientConstants.ValidationConstants;
 
 @Injectable({
   providedIn: 'root',
@@ -57,13 +51,13 @@ export class MissionFormFactory {
     return new FormGroup({
       latitude: new FormControl<number | null>(mission?.location.latitude ?? null, [
         Validators.required,
-        Validators.min(MissionBounds.LATITUDE_MIN),
-        Validators.max(MissionBounds.LATITUDE_MAX),
+        Validators.min(LocationValidation.LATITUDE_MIN),
+        Validators.max(LocationValidation.LATITUDE_MAX),
       ]),
       longitude: new FormControl<number | null>(mission?.location.longitude ?? null, [
         Validators.required,
-        Validators.min(MissionBounds.LONGITUDE_MIN),
-        Validators.max(MissionBounds.LONGITUDE_MAX),
+        Validators.min(LocationValidation.LONGITUDE_MIN),
+        Validators.max(LocationValidation.LONGITUDE_MAX),
       ]),
       altitude: new FormControl<number | null>(mission?.location.altitude ?? null, [Validators.required]),
     });
