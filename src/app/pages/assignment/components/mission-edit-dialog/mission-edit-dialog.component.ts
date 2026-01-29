@@ -44,13 +44,15 @@ export class MissionEditDialogComponent {
       priority: new FormControl(mission.priority, [Validators.required]),
     });
 
-    this.timeWindowForm = new FormGroup(
-      {
-        start: new FormControl(this.formatDateForInput(mission.timeWindow.start), [Validators.required]),
-        end: new FormControl(this.formatDateForInput(mission.timeWindow.end), [Validators.required]),
-      },
-      { validators: timeWindowValidator() }
-    );
+    const startDate = new Date(mission.timeWindow.start);
+    const endDate = new Date(mission.timeWindow.end);
+
+    this.timeWindowForm = new FormGroup({
+      startDate: new FormControl<Date>(startDate, [Validators.required]),
+      startTime: new FormControl(this.formatTimeForInput(startDate), [Validators.required]),
+      endDate: new FormControl<Date>(endDate, [Validators.required]),
+      endTime: new FormControl(this.formatTimeForInput(endDate), [Validators.required]),
+    });
 
     this.locationForm = new FormGroup({
       latitude: new FormControl<number>(mission.location.latitude, [
@@ -77,14 +79,23 @@ export class MissionEditDialogComponent {
       return;
     }
 
+    const startDateTime = this.combineDateAndTime(
+      this.timeWindowForm.value.startDate!,
+      this.timeWindowForm.value.startTime!
+    );
+    const endDateTime = this.combineDateAndTime(
+      this.timeWindowForm.value.endDate!,
+      this.timeWindowForm.value.endTime!
+    );
+
     const updatedMission: Mission = {
       id: this.data.mission.id,
       title: this.basicInfoForm.value.title!,
       requiredUAVType: this.basicInfoForm.value.requiredUAVType as UAVType,
       priority: this.basicInfoForm.value.priority as Priority,
       timeWindow: {
-        start: new Date(this.timeWindowForm.value.start!),
-        end: new Date(this.timeWindowForm.value.end!),
+        start: startDateTime,
+        end: endDateTime,
       },
       location: {
         latitude: this.locationForm.value.latitude!,
@@ -96,14 +107,17 @@ export class MissionEditDialogComponent {
     this.dialogRef.close(updatedMission);
   }
 
-  private formatDateForInput(date: Date): string {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  private formatTimeForInput(date: Date): string {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  private combineDateAndTime(date: Date, time: string): Date {
+    const [hours, minutes] = time.split(':').map(Number);
+    const combined = new Date(date);
+    combined.setHours(hours, minutes, 0, 0);
+    return combined;
   }
 
   private isFormInvalid(): boolean {

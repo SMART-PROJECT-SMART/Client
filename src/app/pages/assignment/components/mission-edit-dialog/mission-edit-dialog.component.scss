@@ -35,6 +35,19 @@
   padding: $spacing-lg;
 }
 
+.datetime-row {
+  display: flex;
+  gap: $spacing-md;
+
+  .date-field {
+    flex: 2;
+  }
+
+  .time-field {
+    flex: 1;
+  }
+}
+
 .location-fields {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

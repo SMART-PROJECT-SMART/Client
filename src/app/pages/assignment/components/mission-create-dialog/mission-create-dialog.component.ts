@@ -35,13 +35,12 @@ export class MissionCreateDialogComponent {
     priority: new FormControl('', [Validators.required]),
   });
 
-  public readonly timeWindowForm = new FormGroup(
-    {
-      start: new FormControl('', [Validators.required]),
-      end: new FormControl('', [Validators.required]),
-    },
-    { validators: timeWindowValidator() }
-  );
+  public readonly timeWindowForm = new FormGroup({
+    startDate: new FormControl<Date | null>(null, [Validators.required]),
+    startTime: new FormControl('', [Validators.required]),
+    endDate: new FormControl<Date | null>(null, [Validators.required]),
+    endTime: new FormControl('', [Validators.required]),
+  });
 
   public readonly locationForm = new FormGroup({
     latitude: new FormControl<number | null>(null, [
@@ -68,14 +67,23 @@ export class MissionCreateDialogComponent {
       return;
     }
 
+    const startDateTime = this.combineDateAndTime(
+      this.timeWindowForm.value.startDate!,
+      this.timeWindowForm.value.startTime!
+    );
+    const endDateTime = this.combineDateAndTime(
+      this.timeWindowForm.value.endDate!,
+      this.timeWindowForm.value.endTime!
+    );
+
     const mission: Mission = {
       id: crypto.randomUUID(),
       title: this.basicInfoForm.value.title!,
       requiredUAVType: this.basicInfoForm.value.requiredUAVType as UAVType,
       priority: this.basicInfoForm.value.priority as Priority,
       timeWindow: {
-        start: new Date(this.timeWindowForm.value.start!),
-        end: new Date(this.timeWindowForm.value.end!),
+        start: startDateTime,
+        end: endDateTime,
       },
       location: {
         latitude: this.locationForm.value.latitude!,
@@ -85,6 +93,13 @@ export class MissionCreateDialogComponent {
     };
 
     this.dialogRef.close(mission);
+  }
+
+  private combineDateAndTime(date: Date, time: string): Date {
+    const [hours, minutes] = time.split(':').map(Number);
+    const combined = new Date(date);
+    combined.setHours(hours, minutes, 0, 0);
+    return combined;
   }
 
   private isFormInvalid(): boolean {
