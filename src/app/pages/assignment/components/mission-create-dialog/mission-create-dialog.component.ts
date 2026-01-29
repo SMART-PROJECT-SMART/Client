@@ -4,7 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { UAVType, Priority } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
-import { EnumUtil } from '../../../../common/utils';
+import { EnumUtil, DateTimeUtil } from '../../../../common/utils';
 import { timeWindowValidator } from '../../../../common/validators';
 import type { Mission } from '../../../../models';
 
@@ -67,11 +67,11 @@ export class MissionCreateDialogComponent {
       return;
     }
 
-    const startDateTime = this.combineDateAndTime(
+    const startDateTime = DateTimeUtil.combineDateAndTime(
       this.timeWindowForm.value.startDate!,
       this.timeWindowForm.value.startTime!
     );
-    const endDateTime = this.combineDateAndTime(
+    const endDateTime = DateTimeUtil.combineDateAndTime(
       this.timeWindowForm.value.endDate!,
       this.timeWindowForm.value.endTime!
     );
@@ -93,13 +93,6 @@ export class MissionCreateDialogComponent {
     };
 
     this.dialogRef.close(mission);
-  }
-
-  private combineDateAndTime(date: Date, time: string): Date {
-    const [hours, minutes] = time.split(':').map(Number);
-    const combined = new Date(date);
-    combined.setHours(hours, minutes, 0, 0);
-    return combined;
   }
 
   private isFormInvalid(): boolean {

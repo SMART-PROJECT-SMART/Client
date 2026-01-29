@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UAVType, Priority } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
-import { EnumUtil } from '../../../../common/utils';
+import { EnumUtil, DateTimeUtil } from '../../../../common/utils';
 import { timeWindowValidator } from '../../../../common/validators';
 import type { Mission } from '../../../../models';
 
@@ -49,9 +49,9 @@ export class MissionEditDialogComponent {
 
     this.timeWindowForm = new FormGroup({
       startDate: new FormControl<Date>(startDate, [Validators.required]),
-      startTime: new FormControl(this.formatTimeForInput(startDate), [Validators.required]),
+      startTime: new FormControl(DateTimeUtil.formatTimeForInput(startDate), [Validators.required]),
       endDate: new FormControl<Date>(endDate, [Validators.required]),
-      endTime: new FormControl(this.formatTimeForInput(endDate), [Validators.required]),
+      endTime: new FormControl(DateTimeUtil.formatTimeForInput(endDate), [Validators.required]),
     });
 
     this.locationForm = new FormGroup({
@@ -79,11 +79,11 @@ export class MissionEditDialogComponent {
       return;
     }
 
-    const startDateTime = this.combineDateAndTime(
+    const startDateTime = DateTimeUtil.combineDateAndTime(
       this.timeWindowForm.value.startDate!,
       this.timeWindowForm.value.startTime!
     );
-    const endDateTime = this.combineDateAndTime(
+    const endDateTime = DateTimeUtil.combineDateAndTime(
       this.timeWindowForm.value.endDate!,
       this.timeWindowForm.value.endTime!
     );
@@ -105,19 +105,6 @@ export class MissionEditDialogComponent {
     };
 
     this.dialogRef.close(updatedMission);
-  }
-
-  private formatTimeForInput(date: Date): string {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
-  }
-
-  private combineDateAndTime(date: Date, time: string): Date {
-    const [hours, minutes] = time.split(':').map(Number);
-    const combined = new Date(date);
-    combined.setHours(hours, minutes, 0, 0);
-    return combined;
   }
 
   private isFormInvalid(): boolean {
