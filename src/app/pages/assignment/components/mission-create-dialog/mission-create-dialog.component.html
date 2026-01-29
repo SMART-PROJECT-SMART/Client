@@ -86,7 +86,7 @@
               <mat-error>Required</mat-error>
             }
             @if (locationForm.get('latitude')?.hasError('min') || locationForm.get('latitude')?.hasError('max')) {
-              <mat-error>Must be between {{ MissionBounds.LATITUDE_MIN }}° and {{ MissionBounds.LATITUDE_MAX }}°</mat-error>
+              <mat-error>Must be between {{ LocationValidation.LATITUDE_MIN }}° and {{ LocationValidation.LATITUDE_MAX }}°</mat-error>
             }
           </mat-form-field>
 
@@ -97,7 +97,7 @@
               <mat-error>Required</mat-error>
             }
             @if (locationForm.get('longitude')?.hasError('min') || locationForm.get('longitude')?.hasError('max')) {
-              <mat-error>Must be between {{ MissionBounds.LONGITUDE_MIN }}° and {{ MissionBounds.LONGITUDE_MAX }}°</mat-error>
+              <mat-error>Must be between {{ LocationValidation.LONGITUDE_MIN }}° and {{ LocationValidation.LONGITUDE_MAX }}°</mat-error>
             }
           </mat-form-field>
 

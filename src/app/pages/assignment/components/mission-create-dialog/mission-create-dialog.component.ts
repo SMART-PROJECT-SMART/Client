@@ -8,7 +8,7 @@ import { EnumUtil } from '../../../../common/utils';
 import { timeWindowValidator } from '../../../../common/validators';
 import type { Mission } from '../../../../models';
 
-const { MissionBounds } = ClientConstants.ValidationConstants;
+const { LocationValidation } = ClientConstants.ValidationConstants;
 
 @Component({
   selector: 'app-mission-create-dialog',
@@ -27,7 +27,7 @@ export class MissionCreateDialogComponent {
   public readonly uavTypes: UAVType[] = Object.values(UAVType);
   public readonly priorities: Priority[] = Object.values(Priority);
   public readonly EnumUtil = EnumUtil;
-  public readonly MissionBounds = MissionBounds;
+  public readonly LocationValidation = LocationValidation;
 
   public readonly basicInfoForm = new FormGroup({
     title: new FormControl('', [Validators.required]),
@@ -46,13 +46,13 @@ export class MissionCreateDialogComponent {
   public readonly locationForm = new FormGroup({
     latitude: new FormControl<number | null>(null, [
       Validators.required,
-      Validators.min(MissionBounds.LATITUDE_MIN),
-      Validators.max(MissionBounds.LATITUDE_MAX),
+      Validators.min(LocationValidation.LATITUDE_MIN),
+      Validators.max(LocationValidation.LATITUDE_MAX),
     ]),
     longitude: new FormControl<number | null>(null, [
       Validators.required,
-      Validators.min(MissionBounds.LONGITUDE_MIN),
-      Validators.max(MissionBounds.LONGITUDE_MAX),
+      Validators.min(LocationValidation.LONGITUDE_MIN),
+      Validators.max(LocationValidation.LONGITUDE_MAX),
     ]),
     altitude: new FormControl<number | null>(null, [Validators.required]),
   });

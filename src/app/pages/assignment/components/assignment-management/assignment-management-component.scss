@@ -11,7 +11,34 @@
 
 .page-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: $border-width-thin solid $color-border-default;
+}
+
+.header-left {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-md;
+}
+
+.page-title {
+  font-size: $font-size-xxl;
+  font-weight: 700;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.mission-count {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
   gap: $spacing-md;
 }
 

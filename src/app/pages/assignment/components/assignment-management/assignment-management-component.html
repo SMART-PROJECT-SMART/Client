@@ -1,27 +1,32 @@
 <div class="assignment-page">
   <div class="page-header">
-    <button mat-raised-button color="primary" class="add-mission-btn" (click)="onAddMission()">
-      <mat-icon>add</mat-icon>
-      {{ addMissionLabel }}
-    </button>
-    @if (showViewResults()) {
-      <button
-        mat-raised-button
-        color="accent"
-        class="submit-btn"
-        (click)="onViewResults()">
-        View Results
+    <div class="header-left">
+      <h1 class="page-title">Mission Management</h1>
+      <span class="mission-count"
+        >{{ missionList().length }} {{ missionList().length === 1 ? 'mission' : 'missions' }}</span
+      >
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" class="add-mission-btn" (click)="onAddMission()">
+        <mat-icon>add</mat-icon>
+        {{ addMissionLabel }}
       </button>
-    } @else {
-      <button
-        mat-raised-button
-        color="primary"
-        class="submit-btn"
-        [disabled]="isSubmitDisabled()"
-        (click)="onSubmit()">
-        {{ submitLabel }}
-      </button>
-    }
+      @if (showViewResults()) {
+        <button mat-raised-button color="accent" class="submit-btn" (click)="onViewResults()">
+          View Results
+        </button>
+      } @else {
+        <button
+          mat-raised-button
+          color="primary"
+          class="submit-btn"
+          [disabled]="isSubmitDisabled()"
+          (click)="onSubmit()"
+        >
+          {{ submitLabel }}
+        </button>
+      }
+    </div>
   </div>
 
   @if (isEmpty()) {
@@ -42,7 +47,9 @@
         <mat-card class="mission-card">
           <mat-card-header>
             <mat-card-title>{{ mission.title }}</mat-card-title>
-            <mat-card-subtitle>{{ EnumUtil.getUAVTypeDisplay(mission.requiredUAVType) }}</mat-card-subtitle>
+            <mat-card-subtitle>{{
+              EnumUtil.getUAVTypeDisplay(mission.requiredUAVType)
+            }}</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             <div class="mission-info">
@@ -52,7 +59,10 @@
               </div>
               <div class="info-row">
                 <mat-icon>location_on</mat-icon>
-                <span>{{ mission.location.latitude.toFixed(4) }}°, {{ mission.location.longitude.toFixed(4) }}°</span>
+                <span
+                  >{{ mission.location.latitude.toFixed(4) }}°,
+                  {{ mission.location.longitude.toFixed(4) }}°</span
+                >
               </div>
               <div class="info-row">
                 <mat-icon>schedule</mat-icon>
@@ -67,7 +77,12 @@
             <button mat-icon-button matTooltip="Edit Mission" (click)="onEditMission(mission)">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button matTooltip="Delete Mission" color="warn" (click)="onDeleteMission(mission)">
+            <button
+              mat-icon-button
+              matTooltip="Delete Mission"
+              color="warn"
+              (click)="onDeleteMission(mission)"
+            >
               <mat-icon>delete</mat-icon>
             </button>
           </mat-card-actions>
