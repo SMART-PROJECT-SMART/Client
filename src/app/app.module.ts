@@ -20,6 +20,9 @@ import { SidebarComponent } from './common/components/sidebar/sidebar-component.
 import { AssignmentPageComponentComponent } from './pages/assignment/assignment-page/assignment-page-component.component';
 import { UavSelectionComponentComponent } from './pages/live-view/components/uav-selection-component/uav-selection-component.component';
 import { UavOptionComponentComponent } from './pages/live-view/components/uav-option-component/uav-option-component.component';
+import { DeviceManagementPageComponent } from './pages/device-management-page/device-management-page.component';
+import { UavTableComponent } from './pages/device-management-page/components/uav-table/uav-table.component';
+import { SleeveTableComponent } from './pages/device-management-page/components/sleeve-table/sleeve-table.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +39,9 @@ import { UavOptionComponentComponent } from './pages/live-view/components/uav-op
     CesiumViewer,
     UavSelectionComponentComponent,
     UavOptionComponentComponent,
+    DeviceManagementPageComponent,
+    UavTableComponent,
+    SleeveTableComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],

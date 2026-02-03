@@ -1,5 +1,12 @@
 import { NgModule } from '@angular/core';
-import { MatCard, MatCardContent, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardActions } from '@angular/material/card';
+import {
+  MatCard,
+  MatCardContent,
+  MatCardHeader,
+  MatCardTitle,
+  MatCardSubtitle,
+  MatCardActions,
+} from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton, MatButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatError, MatSuffix } from '@angular/material/form-field';
@@ -10,7 +17,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatStepperModule } from '@angular/material/stepper';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTab, MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -42,6 +49,8 @@ const MaterialModules = [
   MatDatepickerModule,
   MatNativeDateModule,
   MatTimepickerModule,
+  MatTabGroup,
+  MatTab,
 ];
 
 @NgModule({
