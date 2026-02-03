@@ -143,4 +143,39 @@ export namespace ClientConstants {
     export const UAV_TYPE_VALUE: string = 'enum';
     export const PLATFORM_TYPE: string = 'enum';
   }
+  export namespace DeviceManagementConstants {
+    export const PAGE_TITLE: string = 'Device Management';
+    export const ADD_UAV_LABEL: string = 'Add UAV';
+    export const ADD_SLEEVE_LABEL: string = 'Add Sleeve';
+    export const DELETE_CONFIRM_TITLE: string = 'Confirm Deletion';
+  }
+  export namespace DeviceValidationConstants {
+    export const PORT_NUMBER_MIN: number = 1024;
+    export const PORT_NUMBER_MAX: number = 65535;
+    export const TAIL_ID_MIN: number = 1;
+    export const TAIL_ID_MAX: number = 9999;
+    export const SLEEVE_NAME_MIN_LENGTH: number = 3;
+    export const SLEEVE_NAME_MAX_LENGTH: number = 50;
+  }
+  export namespace DeviceServiceAPI {
+    export namespace Endpoints {
+      export const BASE_URL: string = 'http://localhost:5026';
+      export const UAV_BASE: string = '/api/uav';
+      export const SLEEVE_BASE: string = '/api/sleeve';
+    }
+    export namespace Messages {
+      export const UAV_CREATE_SUCCESS: string = 'UAV created successfully';
+      export const UAV_UPDATE_SUCCESS: string = 'UAV updated successfully';
+      export const UAV_DELETE_SUCCESS: string = 'UAV deleted successfully';
+      export const SLEEVE_CREATE_SUCCESS: string = 'Sleeve created successfully';
+      export const SLEEVE_UPDATE_SUCCESS: string = 'Sleeve updated successfully';
+      export const SLEEVE_DELETE_SUCCESS: string = 'Sleeve deleted successfully';
+      export const OPERATION_ERROR: string = 'Operation failed. Please try again.';
+    }
+  }
+
+  export namespace TableConfig {
+    export const DEFAULT_PAGE_SIZE: number = 10;
+    export const PAGE_SIZE_OPTIONS: number[] = [5, 10, 25, 50];
+  }
 }
