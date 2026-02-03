@@ -1,14 +1,15 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, viewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatStepper } from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { UAVType, Priority } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { EnumUtil, DateTimeUtil } from '../../../../common/utils';
-import { timeWindowValidator } from '../../../../common/validators';
+import { timeWindowValidator, futureDateValidator, minimumDurationValidator, timeFormatValidator } from '../../../../common/validators';
 import type { Mission } from '../../../../models';
 
-const { LocationValidation } = ClientConstants.ValidationConstants;
+const { LocationValidation, TimeValidation, MissionValidation } = ClientConstants.ValidationConstants;
 
 @Component({
   selector: 'app-mission-create-dialog',
@@ -24,23 +25,30 @@ const { LocationValidation } = ClientConstants.ValidationConstants;
   ],
 })
 export class MissionCreateDialogComponent {
+  public readonly stepper = viewChild.required<MatStepper>('stepper');
+
   public readonly uavTypes: UAVType[] = Object.values(UAVType);
   public readonly priorities: Priority[] = Object.values(Priority);
   public readonly EnumUtil = EnumUtil;
   public readonly LocationValidation = LocationValidation;
 
   public readonly basicInfoForm = new FormGroup({
-    title: new FormControl('', [Validators.required]),
+    title: new FormControl('', [Validators.required, Validators.maxLength(MissionValidation.TITLE_MAX_LENGTH)]),
     requiredUAVType: new FormControl('', [Validators.required]),
     priority: new FormControl('', [Validators.required]),
   });
 
-  public readonly timeWindowForm = new FormGroup({
-    startDate: new FormControl<Date | null>(null, [Validators.required]),
-    startTime: new FormControl('', [Validators.required]),
-    endDate: new FormControl<Date | null>(null, [Validators.required]),
-    endTime: new FormControl('', [Validators.required]),
-  });
+  public readonly timeWindowForm = new FormGroup(
+    {
+      startDate: new FormControl<Date | null>(null, [Validators.required, futureDateValidator()]),
+      startTime: new FormControl<Date | null>(null, [Validators.required, timeFormatValidator()]),
+      endDate: new FormControl<Date | null>(null, [Validators.required]),
+      endTime: new FormControl<Date | null>(null, [Validators.required, timeFormatValidator()]),
+    },
+    {
+      validators: [timeWindowValidator(), minimumDurationValidator(TimeValidation.MINIMUM_MISSION_DURATION_MINUTES)],
+    }
+  );
 
   public readonly locationForm = new FormGroup({
     latitude: new FormControl<number | null>(null, [
@@ -63,7 +71,19 @@ export class MissionCreateDialogComponent {
   }
 
   public onSubmit(): void {
-    if (this.isFormInvalid()) {
+    if (this.basicInfoForm.invalid) {
+      this.stepper().selectedIndex = 0;
+      this.basicInfoForm.markAllAsTouched();
+      return;
+    }
+    if (this.timeWindowForm.invalid) {
+      this.stepper().selectedIndex = 1;
+      this.timeWindowForm.markAllAsTouched();
+      return;
+    }
+    if (this.locationForm.invalid) {
+      this.stepper().selectedIndex = 2;
+      this.locationForm.markAllAsTouched();
       return;
     }
 
@@ -95,7 +115,7 @@ export class MissionCreateDialogComponent {
     this.dialogRef.close(mission);
   }
 
-  private isFormInvalid(): boolean {
+  public isFormInvalid(): boolean {
     return this.basicInfoForm.invalid || this.timeWindowForm.invalid || this.locationForm.invalid;
   }
 }

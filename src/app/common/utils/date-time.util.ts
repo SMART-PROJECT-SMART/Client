@@ -1,8 +1,15 @@
 export class DateTimeUtil {
-  public static combineDateAndTime(date: Date, time: string): Date {
-    const [hours, minutes] = time.split(':').map(Number);
+  public static combineDateAndTime(date: Date, time: string | Date): Date {
     const combined = new Date(date);
-    combined.setHours(hours, minutes, 0, 0);
+
+    if (typeof time === 'string') {
+      const [hours, minutes] = time.split(':').map(Number);
+      combined.setHours(hours, minutes, 0, 0);
+    } else {
+      // time is a Date object from MatTimepicker
+      combined.setHours(time.getHours(), time.getMinutes(), 0, 0);
+    }
+
     return combined;
   }
 

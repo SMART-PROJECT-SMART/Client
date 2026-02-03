@@ -14,6 +14,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTimepickerModule } from '@angular/material/timepicker';
 
 const MaterialModules = [
   MatCard,
@@ -40,6 +41,7 @@ const MaterialModules = [
   MatTooltipModule,
   MatDatepickerModule,
   MatNativeDateModule,
+  MatTimepickerModule,
 ];
 
 @NgModule({

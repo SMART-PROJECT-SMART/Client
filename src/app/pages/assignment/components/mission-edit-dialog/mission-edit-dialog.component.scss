@@ -3,6 +3,7 @@
 .dialog-container {
   min-width: 500px;
   max-width: 600px;
+  background-color: $color-background-secondary;
 }
 
 .dialog-header {
@@ -33,6 +34,19 @@
   flex-direction: column;
   gap: $spacing-md;
   padding: $spacing-lg;
+}
+
+.form-level-error {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: rgba($color-error, 0.1);
+  border-left: 3px solid $color-error;
+  border-radius: $border-radius-sm;
+  color: $color-error;
+  font-size: $font-size-sm;
+  margin-bottom: $spacing-md;
 }
 
 .datetime-row {

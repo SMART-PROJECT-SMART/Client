@@ -21,6 +21,12 @@ export namespace ClientConstants {
       export const MINUTES_MAX: number = 59;
       export const SECONDS_MIN: number = 0;
       export const SECONDS_MAX: number = 59;
+      export const MINIMUM_MISSION_DURATION_MINUTES: number = 30;
+      export const TIME_FORMAT_PATTERN: RegExp = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    }
+
+    export namespace MissionValidation {
+      export const TITLE_MAX_LENGTH: number = 60;
     }
   }
 

@@ -4,10 +4,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UAVType, Priority } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { EnumUtil, DateTimeUtil } from '../../../../common/utils';
-import { timeWindowValidator } from '../../../../common/validators';
+import { timeWindowValidator, futureDateValidator, minimumDurationValidator, timeFormatValidator } from '../../../../common/validators';
 import type { Mission } from '../../../../models';
 
-const { LocationValidation } = ClientConstants.ValidationConstants;
+const { LocationValidation, TimeValidation, MissionValidation } = ClientConstants.ValidationConstants;
 
 export interface MissionEditDialogData {
   mission: Mission;
@@ -39,7 +39,7 @@ export class MissionEditDialogComponent {
     this.missionTitle = mission.title;
 
     this.basicInfoForm = new FormGroup({
-      title: new FormControl(mission.title, [Validators.required]),
+      title: new FormControl(mission.title, [Validators.required, Validators.maxLength(MissionValidation.TITLE_MAX_LENGTH)]),
       requiredUAVType: new FormControl(mission.requiredUAVType, [Validators.required]),
       priority: new FormControl(mission.priority, [Validators.required]),
     });
@@ -47,12 +47,17 @@ export class MissionEditDialogComponent {
     const startDate = new Date(mission.timeWindow.start);
     const endDate = new Date(mission.timeWindow.end);
 
-    this.timeWindowForm = new FormGroup({
-      startDate: new FormControl<Date>(startDate, [Validators.required]),
-      startTime: new FormControl(DateTimeUtil.formatTimeForInput(startDate), [Validators.required]),
-      endDate: new FormControl<Date>(endDate, [Validators.required]),
-      endTime: new FormControl(DateTimeUtil.formatTimeForInput(endDate), [Validators.required]),
-    });
+    this.timeWindowForm = new FormGroup(
+      {
+        startDate: new FormControl<Date>(startDate, [Validators.required, futureDateValidator()]),
+        startTime: new FormControl<Date>(startDate, [Validators.required, timeFormatValidator()]),
+        endDate: new FormControl<Date>(endDate, [Validators.required]),
+        endTime: new FormControl<Date>(endDate, [Validators.required, timeFormatValidator()]),
+      },
+      {
+        validators: [timeWindowValidator(), minimumDurationValidator(TimeValidation.MINIMUM_MISSION_DURATION_MINUTES)],
+      }
+    );
 
     this.locationForm = new FormGroup({
       latitude: new FormControl<number>(mission.location.latitude, [

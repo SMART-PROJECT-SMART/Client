@@ -1,11 +1,17 @@
 @use '../../../../../styles/constants' as *;
 
-.dialog-container {
-  min-width: 500px;
-  max-width: 600px;
+::ng-deep .mat-mdc-dialog-surface {
+  background-color: $color-background-secondary !important;
+}
+
+mat-dialog-content {
+  padding: 0 !important;
+  overflow: visible !important;
+  min-height: 400px;
 }
 
 .dialog-header {
+  background-color: $color-background-secondary;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -20,9 +26,26 @@
   }
 }
 
+.dialog-content {
+  background-color: $color-background-secondary;
+  padding: $spacing-md;
+}
+
 .mission-stepper {
   padding: $spacing-md;
   background: transparent;
+}
+
+.step-label {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  mat-icon {
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+  }
 }
 
 .step-content {
@@ -30,6 +53,19 @@
   flex-direction: column;
   gap: $spacing-md;
   padding: $spacing-lg 0;
+}
+
+.form-level-error {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: rgba($color-error, 0.1);
+  border-left: 3px solid $color-error;
+  border-radius: $border-radius-sm;
+  color: $color-error;
+  font-size: $font-size-sm;
+  margin-bottom: $spacing-md;
 }
 
 .datetime-row {
@@ -70,6 +106,14 @@
   margin-top: $spacing-md;
 }
 
+.stepper-icon-done {
+  color: #66bb6a;
+}
+
+.stepper-icon-error {
+  color: #ef5350;
+}
+
 ::ng-deep {
   .mat-horizontal-stepper-header-container {
     padding: 0 $spacing-md;
@@ -81,9 +125,18 @@
       color: $color-text-secondary;
     }
 
-    .mat-step-icon-selected,
+    .mat-step-icon-selected {
+      background-color: #ff9800 !important;
+      color: $color-text-primary;
+    }
+
     .mat-step-icon-state-done {
-      background-color: $color-primary;
+      background-color: #66bb6a !important;
+      color: $color-text-primary;
+    }
+
+    .mat-step-icon-state-error {
+      background-color: #ef5350 !important;
       color: $color-text-primary;
     }
 

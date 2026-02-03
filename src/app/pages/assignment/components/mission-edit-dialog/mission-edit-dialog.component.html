@@ -15,6 +15,9 @@
           @if (basicInfoForm.get('title')?.hasError('required') && basicInfoForm.get('title')?.touched) {
             <mat-error>Mission title is required</mat-error>
           }
+          @if (basicInfoForm.get('title')?.hasError('maxlength') && basicInfoForm.get('title')?.touched) {
+            <mat-error>Maximum 60 characters</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -45,25 +48,45 @@
 
     <mat-tab label="Time Window">
       <form [formGroup]="timeWindowForm" class="tab-content">
+        @if (timeWindowForm.hasError('timeWindowInvalid') && timeWindowForm.touched) {
+          <div class="form-level-error">
+            <mat-icon>error</mat-icon>
+            <span>End time must be after start time</span>
+          </div>
+        }
+        @if (timeWindowForm.hasError('minimumDuration') && timeWindowForm.touched) {
+          <div class="form-level-error">
+            <mat-icon>error</mat-icon>
+            <span>Mission must be at least {{ timeWindowForm.getError('minimumDuration').required }} minutes long</span>
+          </div>
+        }
+
         <div class="datetime-row">
           <mat-form-field appearance="outline" class="date-field">
             <mat-label>Start Date</mat-label>
             <input matInput [matDatepicker]="startDatePicker" formControlName="startDate" />
             <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #startDatePicker></mat-datepicker>
+            @if (timeWindowForm.get('startDate')?.hasError('required') && timeWindowForm.get('startDate')?.touched) {
+              <mat-error>Start date is required</mat-error>
+            }
+            @if (timeWindowForm.get('startDate')?.hasError('pastDate') && timeWindowForm.get('startDate')?.touched) {
+              <mat-error>Must be a future date</mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline" class="time-field">
             <mat-label>Start Time</mat-label>
-            <input matInput type="time" formControlName="startTime" />
-            <mat-icon matSuffix>schedule</mat-icon>
+            <input matInput [matTimepicker]="startTimePicker" formControlName="startTime" />
+            <mat-timepicker-toggle matIconSuffix [for]="startTimePicker"></mat-timepicker-toggle>
+            <mat-timepicker #startTimePicker></mat-timepicker>
+            @if (timeWindowForm.get('startTime')?.hasError('required') && timeWindowForm.get('startTime')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+            @if (timeWindowForm.get('startTime')?.hasError('invalidTimeFormat') && timeWindowForm.get('startTime')?.touched) {
+              <mat-error>Invalid time format</mat-error>
+            }
           </mat-form-field>
         </div>
-        @if (timeWindowForm.get('startDate')?.hasError('required') && timeWindowForm.get('startDate')?.touched) {
-          <mat-error>Start date is required</mat-error>
-        }
-        @if (timeWindowForm.get('startTime')?.hasError('required') && timeWindowForm.get('startTime')?.touched) {
-          <mat-error>Start time is required</mat-error>
-        }
 
         <div class="datetime-row">
           <mat-form-field appearance="outline" class="date-field">
@@ -71,22 +94,23 @@
             <input matInput [matDatepicker]="endDatePicker" formControlName="endDate" />
             <mat-datepicker-toggle matIconSuffix [for]="endDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #endDatePicker></mat-datepicker>
+            @if (timeWindowForm.get('endDate')?.hasError('required') && timeWindowForm.get('endDate')?.touched) {
+              <mat-error>End date is required</mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline" class="time-field">
             <mat-label>End Time</mat-label>
-            <input matInput type="time" formControlName="endTime" />
-            <mat-icon matSuffix>schedule</mat-icon>
+            <input matInput [matTimepicker]="endTimePicker" formControlName="endTime" />
+            <mat-timepicker-toggle matIconSuffix [for]="endTimePicker"></mat-timepicker-toggle>
+            <mat-timepicker #endTimePicker></mat-timepicker>
+            @if (timeWindowForm.get('endTime')?.hasError('required') && timeWindowForm.get('endTime')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+            @if (timeWindowForm.get('endTime')?.hasError('invalidTimeFormat') && timeWindowForm.get('endTime')?.touched) {
+              <mat-error>Invalid time format</mat-error>
+            }
           </mat-form-field>
         </div>
-        @if (timeWindowForm.get('endDate')?.hasError('required') && timeWindowForm.get('endDate')?.touched) {
-          <mat-error>End date is required</mat-error>
-        }
-        @if (timeWindowForm.get('endTime')?.hasError('required') && timeWindowForm.get('endTime')?.touched) {
-          <mat-error>End time is required</mat-error>
-        }
-        @if (timeWindowForm.hasError('timeWindowInvalid') && timeWindowForm.touched) {
-          <mat-error>End time must be after start time</mat-error>
-        }
       </form>
     </mat-tab>
 

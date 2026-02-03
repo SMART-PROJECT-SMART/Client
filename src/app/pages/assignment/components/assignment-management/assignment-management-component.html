@@ -8,7 +8,7 @@
     </div>
     <div class="header-actions">
       <button mat-raised-button color="primary" class="add-mission-btn" (click)="onAddMission()">
-        <mat-icon>add</mat-icon>
+        <mat-icon>add_circle</mat-icon>
         {{ addMissionLabel }}
       </button>
       @if (showViewResults()) {
@@ -31,13 +31,11 @@
 
   @if (isEmpty()) {
     <div class="empty-state">
-      <mat-icon class="empty-icon">assignment</mat-icon>
-      <div class="empty-text">
-        <h3>No Missions Yet</h3>
-        <p>Create your first mission to get started</p>
-      </div>
-      <button mat-raised-button color="primary" class="empty-action" (click)="onAddMission()">
-        <mat-icon>add</mat-icon>
+      <mat-icon class="empty-icon">radar</mat-icon>
+      <h2>No Missions Yet</h2>
+      <p>Create your first mission to get started</p>
+      <button mat-raised-button color="primary" (click)="onAddMission()">
+        <mat-icon>add_circle</mat-icon>
         Add Mission
       </button>
     </div>
