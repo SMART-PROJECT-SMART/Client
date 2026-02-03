@@ -1,0 +1,129 @@
+import { Injectable, signal } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import { SleeveRo } from '../../models/Ro/sleeveRo.ro';
+import { CreateUAVDto } from '../../models/dto/createUAV.dto';
+import { UpdateUAVDto } from '../../models/dto/updateUAVDto.dto';
+import { CreateSleeveDto } from '../../models/dto/createSleeveDto.dto';
+import { UpdateSleeveDto } from '../../models/dto/updateSleeveDto.dto';
+import { UAVRo } from '../../models/Ro/uavRO.ro';
+import { DeviceManagerApiService } from './api/device-manager-api.service';
+
+@Injectable({ providedIn: 'root' })
+export class DeviceManagerStorageService {
+  private readonly uavs = signal<UAVRo[]>([]);
+  private readonly sleeves = signal<SleeveRo[]>([]);
+  private readonly isLoading = signal<boolean>(false);
+
+  public readonly uavList = this.uavs.asReadonly();
+  public readonly sleeveList = this.sleeves.asReadonly();
+  public readonly loading = this.isLoading.asReadonly();
+
+  constructor(private readonly apiService: DeviceManagerApiService) {}
+
+  public loadUAVs(): Observable<UAVRo[]> {
+    this.isLoading.set(true);
+    return this.apiService.getAllUAVs().pipe(
+      tap((uavs) => {
+        this.uavs.set(uavs);
+        this.isLoading.set(false);
+      }),
+      catchError((error) => {
+        this.isLoading.set(false);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  public createUAV(dto: CreateUAVDto): Observable<void> {
+    this.isLoading.set(true);
+    return this.apiService.createUAV(dto).pipe(
+      tap(() => {
+        this.loadUAVs().subscribe();
+      }),
+      catchError((error) => {
+        this.isLoading.set(false);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  public updateUAV(tailId: number, dto: UpdateUAVDto): Observable<void> {
+    this.isLoading.set(true);
+    return this.apiService.updateUAV(tailId, dto).pipe(
+      tap(() => {
+        this.loadUAVs().subscribe();
+      }),
+      catchError((error) => {
+        this.isLoading.set(false);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  public deleteUAV(tailId: number): Observable<void> {
+    this.isLoading.set(true);
+    return this.apiService.deleteUAV(tailId).pipe(
+      tap(() => {
+        this.loadUAVs().subscribe();
+      }),
+      catchError((error) => {
+        this.isLoading.set(false);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  public loadSleeves(): Observable<SleeveRo[]> {
+    this.isLoading.set(true);
+    return this.apiService.getAllSleeves().pipe(
+      tap((sleeves) => {
+        this.sleeves.set(sleeves);
+        this.isLoading.set(false);
+      }),
+      catchError((error) => {
+        this.isLoading.set(false);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  public createSleeve(dto: CreateSleeveDto): Observable<void> {
+    this.isLoading.set(true);
+    return this.apiService.createSleeve(dto).pipe(
+      tap(() => {
+        this.loadSleeves().subscribe();
+      }),
+      catchError((error) => {
+        this.isLoading.set(false);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  public updateSleeve(sleeveName: string, dto: UpdateSleeveDto): Observable<void> {
+    this.isLoading.set(true);
+    return this.apiService.updateSleeve(sleeveName, dto).pipe(
+      tap(() => {
+        this.loadSleeves().subscribe();
+      }),
+      catchError((error) => {
+        this.isLoading.set(false);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  public deleteSleeve(sleeveName: string): Observable<void> {
+    this.isLoading.set(true);
+    return this.apiService.deleteSleeve(sleeveName).pipe(
+      tap(() => {
+        this.loadSleeves().subscribe();
+      }),
+      catchError((error) => {
+        this.isLoading.set(false);
+        return throwError(() => error);
+      }),
+    );
+  }
+}
