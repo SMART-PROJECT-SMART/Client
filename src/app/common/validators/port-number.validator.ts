@@ -1,6 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { ClientConstants } from '../constants/clientConstants.constant';
-import { min } from 'rxjs';
 
 export function portNumberValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {

@@ -16,5 +16,17 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
+  },
+  "/api/uav": {
+    "target": "http://127.0.0.1:5026",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/api/sleeve": {
+    "target": "http://127.0.0.1:5026",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 }

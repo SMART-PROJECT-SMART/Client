@@ -1,5 +1,3 @@
-import { portNumberValidator } from './port-number.validator';
-import { uniqueTailIdValidator } from './unique-tail-id.validator';
 export { futureDateValidator } from './future-date.validator';
 export { minimumDurationValidator } from './minimum-duration.validator';
 export { timeFormatValidator } from './time-format.validator';

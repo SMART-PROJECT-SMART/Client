@@ -22,6 +22,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTimepickerModule } from '@angular/material/timepicker';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatChipsModule } from '@angular/material/chips';
 
 const MaterialModules = [
   MatCard,
@@ -51,6 +55,10 @@ const MaterialModules = [
   MatTimepickerModule,
   MatTabGroup,
   MatTab,
+  MatTableModule,
+  MatPaginatorModule,
+  MatSortModule,
+  MatChipsModule,
 ];
 
 @NgModule({

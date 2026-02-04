@@ -159,7 +159,6 @@ export namespace ClientConstants {
   }
   export namespace DeviceServiceAPI {
     export namespace Endpoints {
-      export const BASE_URL: string = 'http://localhost:5026';
       export const UAV_BASE: string = '/api/uav';
       export const SLEEVE_BASE: string = '/api/sleeve';
     }
