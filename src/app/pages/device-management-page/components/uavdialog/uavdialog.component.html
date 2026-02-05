@@ -21,19 +21,21 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Platform Type</mat-label>
-      <mat-select formControlName="platformType">
-        @for (type of platformTypes; track type) {
-          <mat-option [value]="type">{{ EnumUtil.getPlatformTypeDisplay(type) }}</mat-option>
+    @if (!isEditMode) {
+      <mat-form-field appearance="outline">
+        <mat-label>Platform Type</mat-label>
+        <mat-select formControlName="platformType">
+          @for (type of platformTypes; track type) {
+            <mat-option [value]="type">{{ EnumUtil.getPlatformTypeDisplay(type) }}</mat-option>
+          }
+        </mat-select>
+        @if (
+          uavForm.get('platformType')?.hasError('required') && uavForm.get('platformType')?.touched
+        ) {
+          <mat-error>Platform Type is required</mat-error>
         }
-      </mat-select>
-      @if (
-        uavForm.get('platformType')?.hasError('required') && uavForm.get('platformType')?.touched
-      ) {
-        <mat-error>Platform Type is required</mat-error>
-      }
-    </mat-form-field>
+      </mat-form-field>
+    }
 
     <mat-form-field appearance="outline">
       <mat-label>Base Location</mat-label>

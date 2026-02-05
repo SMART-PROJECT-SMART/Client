@@ -33,15 +33,15 @@ export class UAVDialogComponent {
   public readonly DeviceValidationConstants = DeviceValidationConstants;
 
   public readonly uavForm = new FormGroup({
-    tailId: new FormControl<number | null>(
-      { value: this.data.uav?.tailId ?? null, disabled: this.isEditMode },
-      [
-        Validators.required,
-        Validators.min(DeviceValidationConstants.TAIL_ID_MIN),
-        Validators.max(DeviceValidationConstants.TAIL_ID_MAX),
-      ],
+    tailId: new FormControl<number | null>(this.data.uav?.tailId ?? null, [
+      Validators.required,
+      Validators.min(DeviceValidationConstants.TAIL_ID_MIN),
+      Validators.max(DeviceValidationConstants.TAIL_ID_MAX),
+    ]),
+    platformType: new FormControl<string>(
+      { value: this.data.uav?.platformType ?? '', disabled: this.isEditMode },
+      [Validators.required],
     ),
-    platformType: new FormControl<string>(this.data.uav?.platformType ?? '', [Validators.required]),
     baseLocation: new FormControl<string>(this.getInitialBaseLocation(), [Validators.required]),
   });
 
@@ -63,8 +63,8 @@ export class UAVDialogComponent {
 
     if (this.isEditMode) {
       const dto: UpdateUAVDto = {
-        tailId: this.data.uav!.tailId,
-        platformType: this.uavForm.value.platformType as PlatformType,
+        tailId: this.uavForm.value.tailId!,
+        platformType: this.data.uav!.platformType,
         baseLocation,
       };
       this.dialogRef.close(dto);

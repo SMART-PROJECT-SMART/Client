@@ -28,14 +28,17 @@ export class SleeveDialogComponent {
   public readonly isEditMode = this.data.mode === 'edit';
   public readonly LocationValidation = LocationValidation;
   public readonly DeviceValidationConstants = DeviceValidationConstants;
-  public readonly ports = signal<number[]>(this.data.sleeve ? [...this.data.sleeve.portNumbers] : []);
+  public readonly ports = signal<number[]>(
+    this.data.sleeve ? [...this.data.sleeve.portNumbers] : [],
+  );
   public readonly portInput = new FormControl<number | null>(null);
 
   public readonly sleeveForm = new FormGroup({
-    name: new FormControl<string>(
-      { value: this.data.sleeve?.name ?? '', disabled: this.isEditMode },
-      [Validators.required, Validators.minLength(DeviceValidationConstants.SLEEVE_NAME_MIN_LENGTH), Validators.maxLength(DeviceValidationConstants.SLEEVE_NAME_MAX_LENGTH)],
-    ),
+    name: new FormControl<string>(this.data.sleeve?.name ?? '', [
+      Validators.required,
+      Validators.minLength(DeviceValidationConstants.SLEEVE_NAME_MIN_LENGTH),
+      Validators.maxLength(DeviceValidationConstants.SLEEVE_NAME_MAX_LENGTH),
+    ]),
     latitude: new FormControl<number | null>(this.data.sleeve?.location.latitude ?? null, [
       Validators.required,
       Validators.min(LocationValidation.LATITUDE_MIN),
@@ -60,7 +63,10 @@ export class SleeveDialogComponent {
       this.portInput.setErrors({ required: true });
       return;
     }
-    if (value < DeviceValidationConstants.PORT_NUMBER_MIN || value > DeviceValidationConstants.PORT_NUMBER_MAX) {
+    if (
+      value < DeviceValidationConstants.PORT_NUMBER_MIN ||
+      value > DeviceValidationConstants.PORT_NUMBER_MAX
+    ) {
       this.portInput.setErrors({ outOfRange: true });
       return;
     }
