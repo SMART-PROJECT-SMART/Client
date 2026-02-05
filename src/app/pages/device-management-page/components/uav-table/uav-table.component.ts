@@ -22,8 +22,8 @@ const { DeviceServiceAPI, TableConfig, BaseLocationConfig } = ClientConstants;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UavTableComponent implements OnInit {
-  public readonly sort = viewChild.required<MatSort>(MatSort);
-  public readonly paginator = viewChild.required<MatPaginator>(MatPaginator);
+  public readonly sort = viewChild<MatSort>(MatSort);
+  public readonly paginator = viewChild<MatPaginator>(MatPaginator);
 
   public readonly displayedColumns: string[] = [
     'tailId',
@@ -42,20 +42,25 @@ export class UavTableComponent implements OnInit {
     effect(() => {
       this.dataSource.data = this.deviceManager.uavList();
     });
+    effect(() => {
+      const sort = this.sort();
+      if (sort) this.dataSource.sort = sort;
+    });
+    effect(() => {
+      const paginator = this.paginator();
+      if (paginator) this.dataSource.paginator = paginator;
+    });
   }
 
   public ngOnInit(): void {
-    setTimeout(() => {
-      this.dataSource.sort = this.sort();
-      this.dataSource.paginator = this.paginator();
-      this.dataSource.filterPredicate = (data: UAVRo, filter: string) => {
-        const searchStr = filter.toLowerCase();
-        return (
-          data.tailId.toString().includes(searchStr) ||
-          data.platformType.toLowerCase().includes(searchStr)
-        );
-      };
-    });
+    this.dataSource.data = this.deviceManager.uavList();
+    this.dataSource.filterPredicate = (data: UAVRo, filter: string) => {
+      const searchStr = filter.toLowerCase();
+      return (
+        data.tailId.toString().includes(searchStr) ||
+        data.platformType.toLowerCase().includes(searchStr)
+      );
+    };
   }
 
   public onSearch(event: Event): void {

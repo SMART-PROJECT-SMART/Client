@@ -21,10 +21,16 @@ const { DeviceServiceAPI, TableConfig } = ClientConstants;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SleeveTableComponent implements OnInit {
-  public readonly sort = viewChild.required<MatSort>(MatSort);
-  public readonly paginator = viewChild.required<MatPaginator>(MatPaginator);
+  public readonly sort = viewChild<MatSort>(MatSort);
+  public readonly paginator = viewChild<MatPaginator>(MatPaginator);
 
-  public readonly displayedColumns: string[] = ['name', 'location', 'portNumbers', 'assignedToTailId', 'actions'];
+  public readonly displayedColumns: string[] = [
+    'name',
+    'location',
+    'portNumbers',
+    'assignedToTailId',
+    'actions',
+  ];
   public readonly dataSource = new MatTableDataSource<SleeveRo>([]);
   public readonly pageSizeOptions = TableConfig.PAGE_SIZE_OPTIONS;
 
@@ -36,20 +42,25 @@ export class SleeveTableComponent implements OnInit {
     effect(() => {
       this.dataSource.data = this.deviceManager.sleeveList();
     });
+    effect(() => {
+      const sort = this.sort();
+      if (sort) this.dataSource.sort = sort;
+    });
+    effect(() => {
+      const paginator = this.paginator();
+      if (paginator) this.dataSource.paginator = paginator;
+    });
   }
 
   public ngOnInit(): void {
-    setTimeout(() => {
-      this.dataSource.sort = this.sort();
-      this.dataSource.paginator = this.paginator();
-      this.dataSource.filterPredicate = (data: SleeveRo, filter: string) => {
-        const searchStr = filter.toLowerCase();
-        return (
-          data.name.toLowerCase().includes(searchStr) ||
-          data.portNumbers.some((p) => p.toString().includes(searchStr))
-        );
-      };
-    });
+    this.dataSource.data = this.deviceManager.sleeveList();
+    this.dataSource.filterPredicate = (data: SleeveRo, filter: string) => {
+      const searchStr = filter.toLowerCase();
+      return (
+        data.name.toLowerCase().includes(searchStr) ||
+        data.portNumbers.some((p) => p.toString().includes(searchStr))
+      );
+    };
   }
 
   public onSearch(event: Event): void {
@@ -68,10 +79,13 @@ export class SleeveTableComponent implements OnInit {
       .pipe(take(1))
       .subscribe((result) => {
         if (!result) return;
-        this.deviceManager.createSleeve(result).pipe(take(1)).subscribe({
-          next: () => this.showToast(DeviceServiceAPI.Messages.SLEEVE_CREATE_SUCCESS),
-          error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
-        });
+        this.deviceManager
+          .createSleeve(result)
+          .pipe(take(1))
+          .subscribe({
+            next: () => this.showToast(DeviceServiceAPI.Messages.SLEEVE_CREATE_SUCCESS),
+            error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
+          });
       });
   }
 
@@ -82,10 +96,13 @@ export class SleeveTableComponent implements OnInit {
       .pipe(take(1))
       .subscribe((result) => {
         if (!result) return;
-        this.deviceManager.updateSleeve(sleeve.name, result).pipe(take(1)).subscribe({
-          next: () => this.showToast(DeviceServiceAPI.Messages.SLEEVE_UPDATE_SUCCESS),
-          error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
-        });
+        this.deviceManager
+          .updateSleeve(sleeve.name, result)
+          .pipe(take(1))
+          .subscribe({
+            next: () => this.showToast(DeviceServiceAPI.Messages.SLEEVE_UPDATE_SUCCESS),
+            error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
+          });
       });
   }
 
@@ -102,18 +119,29 @@ export class SleeveTableComponent implements OnInit {
       .pipe(take(1))
       .subscribe((confirmed: boolean) => {
         if (!confirmed) return;
-        this.deviceManager.deleteSleeve(sleeve.name).pipe(take(1)).subscribe({
-          next: () => this.showToast(DeviceServiceAPI.Messages.SLEEVE_DELETE_SUCCESS),
-          error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
-        });
+        this.deviceManager
+          .deleteSleeve(sleeve.name)
+          .pipe(take(1))
+          .subscribe({
+            next: () => this.showToast(DeviceServiceAPI.Messages.SLEEVE_DELETE_SUCCESS),
+            error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
+          });
       });
   }
 
-  public formatLocation(location: { latitude: number; longitude: number; altitude: number }): string {
+  public formatLocation(location: {
+    latitude: number;
+    longitude: number;
+    altitude: number;
+  }): string {
     return `${location.latitude.toFixed(4)}°, ${location.longitude.toFixed(4)}°, ${location.altitude}m`;
   }
 
   private showToast(message: string): void {
-    this.snackBar.open(message, 'Close', { duration: 5000, horizontalPosition: 'center', verticalPosition: 'top' });
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+    });
   }
 }
