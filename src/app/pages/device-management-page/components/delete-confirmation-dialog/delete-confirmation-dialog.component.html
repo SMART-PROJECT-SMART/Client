@@ -1,0 +1,17 @@
+<div class="dialog-header">
+  <h2>{{ data.title }}</h2>
+  <button mat-icon-button (click)="onCancel()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="dialog-content">
+  <mat-icon class="warning-icon">warning</mat-icon>
+  <p class="message">{{ data.message }}</p>
+  <p class="warning-text">This action cannot be undone.</p>
+</div>
+
+<div class="dialog-actions">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="warn" (click)="onConfirm()">Delete</button>
+</div>

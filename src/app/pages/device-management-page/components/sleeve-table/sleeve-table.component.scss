@@ -1,5 +1,11 @@
 @use '../../../../../styles/constants' as *;
 
+:host {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .table-container {
   display: flex;
   flex-direction: column;
@@ -7,6 +13,7 @@
   padding: $spacing-lg;
   gap: $spacing-md;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .table-header {
@@ -15,6 +22,7 @@
   align-items: center;
   gap: $spacing-md;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .header-left {
@@ -51,9 +59,15 @@
 
 .table-wrapper {
   flex: 1;
+  min-height: 0;
   overflow: auto;
   border: $border-width-thin solid $color-border-default;
   border-radius: $border-radius-md;
+}
+
+::ng-deep mat-paginator {
+  flex-shrink: 0;
+  min-height: 56px;
 }
 
 .device-table {
@@ -111,9 +125,25 @@
   font-style: italic;
 }
 
-.actions-cell {
-  display: flex;
-  gap: $spacing-xs;
+::ng-deep .mat-column-actions {
+  width: 120px;
+  min-width: 120px;
+  text-align: right;
+  overflow: visible;
+
+  .mat-mdc-icon-button {
+    mat-icon {
+      font-family: 'Material Icons';
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      overflow: visible;
+    }
+  }
+
+  button + button {
+    margin-left: $spacing-xs;
+  }
 }
 
 .loading-state,

@@ -24,3 +24,10 @@ export type { UAVWantedFields } from './lts/uavWantedFields.model';
 export type { UpdateWantedFieldsDto } from './lts/updateWantedFieldsDto.model';
 
 export type { MissionFormGroups } from './forms/mission-form-groups.interface';
+
+export type { UAVRo } from './Ro/uavRO.ro';
+export type { SleeveRo } from './Ro/sleeveRo.ro';
+export type { CreateUAVDto } from './dto/createUAV.dto';
+export type { UpdateUAVDto } from './dto/updateUAVDto.dto';
+export type { CreateSleeveDto } from './dto/createSleeveDto.dto';
+export type { UpdateSleeveDto } from './dto/updateSleeveDto.dto';

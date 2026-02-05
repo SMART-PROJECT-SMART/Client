@@ -23,6 +23,9 @@ import { UavOptionComponentComponent } from './pages/live-view/components/uav-op
 import { DeviceManagementPageComponent } from './pages/device-management-page/device-management-page.component';
 import { UavTableComponent } from './pages/device-management-page/components/uav-table/uav-table.component';
 import { SleeveTableComponent } from './pages/device-management-page/components/sleeve-table/sleeve-table.component';
+import { UAVDialogComponent } from './pages/device-management-page/components/uavdialog/uavdialog.component';
+import { SleeveDialogComponent } from './pages/device-management-page/components/sleeve-dialog/sleeve-dialog.component';
+import { DeleteConfirmationDialogComponent } from './pages/device-management-page/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +45,9 @@ import { SleeveTableComponent } from './pages/device-management-page/components/
     DeviceManagementPageComponent,
     UavTableComponent,
     SleeveTableComponent,
+    UAVDialogComponent,
+    SleeveDialogComponent,
+    DeleteConfirmationDialogComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],

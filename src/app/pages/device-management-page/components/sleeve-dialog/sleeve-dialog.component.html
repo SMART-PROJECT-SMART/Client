@@ -1,0 +1,100 @@
+<div class="dialog-header">
+  <h2>{{ isEditMode ? 'Edit Sleeve' : 'Add New Sleeve' }}</h2>
+  <button mat-icon-button (click)="onCancel()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="dialog-content">
+  <form [formGroup]="sleeveForm" class="form-content">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+      @if (sleeveForm.get('name')?.hasError('required') && sleeveForm.get('name')?.touched) {
+        <mat-error>Name is required</mat-error>
+      }
+      @if (sleeveForm.get('name')?.hasError('minlength')) {
+        <mat-error>Minimum {{ DeviceValidationConstants.SLEEVE_NAME_MIN_LENGTH }} characters</mat-error>
+      }
+      @if (sleeveForm.get('name')?.hasError('maxlength')) {
+        <mat-error>Maximum {{ DeviceValidationConstants.SLEEVE_NAME_MAX_LENGTH }} characters</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="location-fields">
+      <mat-form-field appearance="outline">
+        <mat-label>Latitude (°)</mat-label>
+        <input matInput type="number" formControlName="latitude" />
+        @if (sleeveForm.get('latitude')?.hasError('required') && sleeveForm.get('latitude')?.touched) {
+          <mat-error>Required</mat-error>
+        }
+        @if (sleeveForm.get('latitude')?.hasError('min') || sleeveForm.get('latitude')?.hasError('max')) {
+          <mat-error>Must be between {{ LocationValidation.LATITUDE_MIN }}° and {{ LocationValidation.LATITUDE_MAX }}°</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Longitude (°)</mat-label>
+        <input matInput type="number" formControlName="longitude" />
+        @if (sleeveForm.get('longitude')?.hasError('required') && sleeveForm.get('longitude')?.touched) {
+          <mat-error>Required</mat-error>
+        }
+        @if (sleeveForm.get('longitude')?.hasError('min') || sleeveForm.get('longitude')?.hasError('max')) {
+          <mat-error>Must be between {{ LocationValidation.LONGITUDE_MIN }}° and {{ LocationValidation.LONGITUDE_MAX }}°</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Altitude (m)</mat-label>
+        <input matInput type="number" formControlName="altitude" />
+        @if (sleeveForm.get('altitude')?.hasError('required') && sleeveForm.get('altitude')?.touched) {
+          <mat-error>Required</mat-error>
+        }
+        @if (sleeveForm.get('altitude')?.hasError('min')) {
+          <mat-error>Must be 0 or greater</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="port-section">
+      <label class="section-label">Port Numbers</label>
+      <div class="port-input-row">
+        <mat-form-field appearance="outline" class="port-input-field">
+          <mat-label>Port Number</mat-label>
+          <input matInput type="number" [formControl]="portInput" (input)="onPortInputChange()" (keyup.enter)="addPort()" placeholder="1024-65535" />
+          @if (portInput.hasError('required') && portInput.touched) {
+            <mat-error>Port number is required</mat-error>
+          }
+          @if (portInput.hasError('outOfRange') && portInput.touched) {
+            <mat-error>Must be between {{ DeviceValidationConstants.PORT_NUMBER_MIN }} and {{ DeviceValidationConstants.PORT_NUMBER_MAX }}</mat-error>
+          }
+          @if (portInput.hasError('duplicate') && portInput.touched) {
+            <mat-error>Port already added</mat-error>
+          }
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="addPort()">Add</button>
+      </div>
+
+      @if (ports().length > 0) {
+        <mat-chip-set class="port-chips">
+          @for (port of ports(); track port) {
+            <mat-chip removable (removed)="removePort(port)">
+              {{ port }}
+              <mat-icon matChipRemoveIcon>cancel</mat-icon>
+            </mat-chip>
+          }
+        </mat-chip-set>
+      }
+      @if (ports().length === 0 && sleeveForm.touched) {
+        <span class="ports-required-error">At least one port number is required</span>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button mat-button (click)="onCancel()">Cancel</button>
+      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="sleeveForm.invalid || ports().length === 0">
+        {{ isEditMode ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</div>

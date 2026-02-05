@@ -32,13 +32,13 @@ export class SleeveTableComponent implements OnInit {
     public readonly deviceManager: DeviceManagerStorageService,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar,
-  ) {}
-
-  public ngOnInit(): void {
+  ) {
     effect(() => {
       this.dataSource.data = this.deviceManager.sleeveList();
     });
+  }
 
+  public ngOnInit(): void {
     setTimeout(() => {
       this.dataSource.sort = this.sort();
       this.dataSource.paginator = this.paginator();

@@ -6,7 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { take } from 'rxjs/operators';
 import { DeviceManagerStorageService } from '../../../../services/devices/device-manager-storage.service';
-import { UAVDialogComponent } from '../uav-dialog/uav-dialog.component';
+import { UAVDialogComponent } from '../uavdialog/uavdialog.component';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { UAVRo } from '../../../../models/Ro/uavRO.ro';
 import { ClientConstants } from '../../../../common';
@@ -32,13 +32,13 @@ export class UavTableComponent implements OnInit {
     public readonly deviceManager: DeviceManagerStorageService,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar,
-  ) {}
-
-  public ngOnInit(): void {
+  ) {
     effect(() => {
       this.dataSource.data = this.deviceManager.uavList();
     });
+  }
 
+  public ngOnInit(): void {
     setTimeout(() => {
       this.dataSource.sort = this.sort();
       this.dataSource.paginator = this.paginator();
