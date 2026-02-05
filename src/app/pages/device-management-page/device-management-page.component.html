@@ -5,7 +5,8 @@
   <mat-tab-group
     [selectedIndex]="selectedTabIndex()"
     (selectedIndexChange)="onTabChange($event)"
-    preserveContent>
+    preserveContent
+  >
     <mat-tab label="Sleeve Management"><app-sleeve-table></app-sleeve-table></mat-tab>
     <mat-tab label="UAV Management"><app-uav-table></app-uav-table></mat-tab>
   </mat-tab-group>
