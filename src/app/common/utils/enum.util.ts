@@ -1,4 +1,4 @@
-import { Priority, UAVType, TelemetryField, PlatformType } from '../enums';
+import { Priority, UAVType, TelemetryField, PlatformType, BaseLocation } from '../enums';
 
 export class EnumUtil {
   public static getPriorityDisplay(priority: Priority): string {
@@ -47,13 +47,31 @@ export class EnumUtil {
     return displayMap[field];
   }
 
-  public static getPlatformTypeDisplay(platformType: PlatformType): string {
+  public static getPlatformTypeDisplay(platformType: PlatformType | number): string {
+    const platformValues = Object.values(PlatformType);
+    const resolvedType =
+      typeof platformType === 'number' ? platformValues[platformType] : platformType;
+
     const displayMap: Record<PlatformType, string> = {
       [PlatformType.Hermes900]: 'Hermes 900',
       [PlatformType.HeronTP]: 'Heron TP',
       [PlatformType.Hermes450]: 'Hermes 450',
       [PlatformType.Searcher]: 'Searcher',
     };
-    return displayMap[platformType];
+    return displayMap[resolvedType as PlatformType] ?? String(platformType);
+  }
+
+  public static getBaseLocationDisplay(baseLocation: BaseLocation): string {
+    const displayMap: Record<BaseLocation, string> = {
+      [BaseLocation.Hatzerim]: 'Hatzerim Airbase',
+      [BaseLocation.TelNof]: 'Tel Nof Airbase',
+      [BaseLocation.RamatDavid]: 'Ramat David Airbase',
+      [BaseLocation.Nevatim]: 'Nevatim Airbase',
+      [BaseLocation.Ramon]: 'Ramon Airbase',
+      [BaseLocation.Hatzor]: 'Hatzor Airbase',
+      [BaseLocation.Palmachim]: 'Palmachim Airbase',
+      [BaseLocation.Ovda]: 'Ovda Airbase',
+    };
+    return displayMap[baseLocation];
   }
 }

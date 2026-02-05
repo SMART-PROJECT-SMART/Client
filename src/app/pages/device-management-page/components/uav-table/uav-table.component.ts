@@ -9,9 +9,10 @@ import { DeviceManagerStorageService } from '../../../../services/devices/device
 import { UAVDialogComponent } from '../uavdialog/uavdialog.component';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { UAVRo } from '../../../../models/Ro/uavRO.ro';
-import { ClientConstants } from '../../../../common';
+import { ClientConstants, EnumUtil } from '../../../../common';
+import { PlatformType, BaseLocation } from '../../../../common/enums';
 
-const { DeviceServiceAPI, TableConfig } = ClientConstants;
+const { DeviceServiceAPI, TableConfig, BaseLocationConfig } = ClientConstants;
 
 @Component({
   selector: 'app-uav-table',
@@ -24,7 +25,12 @@ export class UavTableComponent implements OnInit {
   public readonly sort = viewChild.required<MatSort>(MatSort);
   public readonly paginator = viewChild.required<MatPaginator>(MatPaginator);
 
-  public readonly displayedColumns: string[] = ['tailId', 'platformType', 'baseLocation', 'actions'];
+  public readonly displayedColumns: string[] = [
+    'tailId',
+    'platformType',
+    'baseLocation',
+    'actions',
+  ];
   public readonly dataSource = new MatTableDataSource<UAVRo>([]);
   public readonly pageSizeOptions = TableConfig.PAGE_SIZE_OPTIONS;
 
@@ -68,10 +74,13 @@ export class UavTableComponent implements OnInit {
       .pipe(take(1))
       .subscribe((result) => {
         if (!result) return;
-        this.deviceManager.createUAV(result).pipe(take(1)).subscribe({
-          next: () => this.showToast(DeviceServiceAPI.Messages.UAV_CREATE_SUCCESS),
-          error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
-        });
+        this.deviceManager
+          .createUAV(result)
+          .pipe(take(1))
+          .subscribe({
+            next: () => this.showToast(DeviceServiceAPI.Messages.UAV_CREATE_SUCCESS),
+            error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
+          });
       });
   }
 
@@ -82,10 +91,13 @@ export class UavTableComponent implements OnInit {
       .pipe(take(1))
       .subscribe((result) => {
         if (!result) return;
-        this.deviceManager.updateUAV(uav.tailId, result).pipe(take(1)).subscribe({
-          next: () => this.showToast(DeviceServiceAPI.Messages.UAV_UPDATE_SUCCESS),
-          error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
-        });
+        this.deviceManager
+          .updateUAV(uav.tailId, result)
+          .pipe(take(1))
+          .subscribe({
+            next: () => this.showToast(DeviceServiceAPI.Messages.UAV_UPDATE_SUCCESS),
+            error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
+          });
       });
   }
 
@@ -102,18 +114,37 @@ export class UavTableComponent implements OnInit {
       .pipe(take(1))
       .subscribe((confirmed: boolean) => {
         if (!confirmed) return;
-        this.deviceManager.deleteUAV(uav.tailId).pipe(take(1)).subscribe({
-          next: () => this.showToast(DeviceServiceAPI.Messages.UAV_DELETE_SUCCESS),
-          error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
-        });
+        this.deviceManager
+          .deleteUAV(uav.tailId)
+          .pipe(take(1))
+          .subscribe({
+            next: () => this.showToast(DeviceServiceAPI.Messages.UAV_DELETE_SUCCESS),
+            error: () => this.showToast(DeviceServiceAPI.Messages.OPERATION_ERROR),
+          });
       });
   }
 
-  public formatLocation(location: { latitude: number; longitude: number; altitude: number }): string {
-    return `${location.latitude.toFixed(4)}°, ${location.longitude.toFixed(4)}°, ${location.altitude}m`;
+  public formatLocation(location: {
+    latitude: number;
+    longitude: number;
+    altitude: number;
+  }): string {
+    const baseName = BaseLocationConfig.getBaseFromCoordinates(location);
+    if (baseName) {
+      return EnumUtil.getBaseLocationDisplay(baseName as BaseLocation);
+    }
+    return `${location.latitude.toFixed(4)}°, ${location.longitude.toFixed(4)}°`;
+  }
+
+  public getPlatformTypeDisplay(platformType: PlatformType | number): string {
+    return EnumUtil.getPlatformTypeDisplay(platformType);
   }
 
   private showToast(message: string): void {
-    this.snackBar.open(message, 'Close', { duration: 5000, horizontalPosition: 'center', verticalPosition: 'top' });
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+    });
   }
 }

@@ -177,4 +177,38 @@ export namespace ClientConstants {
     export const DEFAULT_PAGE_SIZE: number = 10;
     export const PAGE_SIZE_OPTIONS: number[] = [5, 10, 25, 50];
   }
+
+  export namespace BaseLocationConfig {
+    export interface Coordinates {
+      latitude: number;
+      longitude: number;
+      altitude: number;
+    }
+
+    export const COORDINATES: Record<string, Coordinates> = {
+      Hatzerim: { latitude: 31.2333, longitude: 34.6625, altitude: 220 },
+      TelNof: { latitude: 31.8394, longitude: 34.8217, altitude: 59 },
+      RamatDavid: { latitude: 32.6656, longitude: 35.1817, altitude: 56 },
+      Nevatim: { latitude: 31.2083, longitude: 35.0122, altitude: 400 },
+      Ramon: { latitude: 30.7761, longitude: 34.6667, altitude: 648 },
+      Hatzor: { latitude: 31.7625, longitude: 34.7272, altitude: 45 },
+      Palmachim: { latitude: 31.8978, longitude: 34.6906, altitude: 10 },
+      Ovda: { latitude: 29.94, longitude: 34.9358, altitude: 455 },
+    };
+
+    export const getCoordinates = (baseLocation: string): Coordinates => COORDINATES[baseLocation];
+
+    export const getBaseFromCoordinates = (coords: Coordinates): string | null => {
+      const tolerance = 0.01;
+      for (const [base, baseCoords] of Object.entries(COORDINATES)) {
+        if (
+          Math.abs(coords.latitude - baseCoords.latitude) < tolerance &&
+          Math.abs(coords.longitude - baseCoords.longitude) < tolerance
+        ) {
+          return base;
+        }
+      }
+      return null;
+    };
+  }
 }

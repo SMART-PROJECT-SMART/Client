@@ -48,12 +48,14 @@
 
         <ng-container matColumnDef="platformType">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Platform Type</th>
-          <td mat-cell *matCellDef="let uav">{{ uav.platformType }}</td>
+          <td mat-cell *matCellDef="let uav">{{ getPlatformTypeDisplay(uav.platformType) }}</td>
         </ng-container>
 
         <ng-container matColumnDef="baseLocation">
           <th mat-header-cell *matHeaderCellDef>Base Location</th>
-          <td mat-cell *matCellDef="let uav" class="location-cell">{{ formatLocation(uav.baseLocation) }}</td>
+          <td mat-cell *matCellDef="let uav" class="location-cell">
+            {{ formatLocation(uav.baseLocation) }}
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="actions">
@@ -69,10 +71,14 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
       </table>
     </div>
 
-    <mat-paginator [pageSizeOptions]="pageSizeOptions" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator
+      [pageSizeOptions]="pageSizeOptions"
+      [pageSize]="10"
+      showFirstLastButtons
+    ></mat-paginator>
   }
 </div>

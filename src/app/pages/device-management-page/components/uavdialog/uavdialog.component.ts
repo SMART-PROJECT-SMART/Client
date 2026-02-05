@@ -1,15 +1,14 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PlatformType } from '../../../../common/enums';
+import { PlatformType, BaseLocation } from '../../../../common/enums';
 import { EnumUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common';
 import type { UAVRo } from '../../../../models/Ro/uavRO.ro';
 import type { CreateUAVDto } from '../../../../models/dto/createUAV.dto';
 import type { UpdateUAVDto } from '../../../../models/dto/updateUAVDto.dto';
 
-const { DeviceValidationConstants, ValidationConstants } = ClientConstants;
-const { LocationValidation } = ValidationConstants;
+const { DeviceValidationConstants, BaseLocationConfig } = ClientConstants;
 
 interface UAVDialogData {
   mode: 'create' | 'edit';
@@ -29,31 +28,29 @@ export class UAVDialogComponent {
 
   public readonly isEditMode = this.data.mode === 'edit';
   public readonly platformTypes = Object.values(PlatformType);
+  public readonly baseLocations = Object.values(BaseLocation);
   public readonly EnumUtil = EnumUtil;
-  public readonly LocationValidation = LocationValidation;
   public readonly DeviceValidationConstants = DeviceValidationConstants;
 
   public readonly uavForm = new FormGroup({
     tailId: new FormControl<number | null>(
       { value: this.data.uav?.tailId ?? null, disabled: this.isEditMode },
-      [Validators.required, Validators.min(DeviceValidationConstants.TAIL_ID_MIN), Validators.max(DeviceValidationConstants.TAIL_ID_MAX)],
+      [
+        Validators.required,
+        Validators.min(DeviceValidationConstants.TAIL_ID_MIN),
+        Validators.max(DeviceValidationConstants.TAIL_ID_MAX),
+      ],
     ),
     platformType: new FormControl<string>(this.data.uav?.platformType ?? '', [Validators.required]),
-    latitude: new FormControl<number | null>(this.data.uav?.baseLocation.latitude ?? null, [
-      Validators.required,
-      Validators.min(LocationValidation.LATITUDE_MIN),
-      Validators.max(LocationValidation.LATITUDE_MAX),
-    ]),
-    longitude: new FormControl<number | null>(this.data.uav?.baseLocation.longitude ?? null, [
-      Validators.required,
-      Validators.min(LocationValidation.LONGITUDE_MIN),
-      Validators.max(LocationValidation.LONGITUDE_MAX),
-    ]),
-    altitude: new FormControl<number | null>(this.data.uav?.baseLocation.altitude ?? null, [
-      Validators.required,
-      Validators.min(0),
-    ]),
+    baseLocation: new FormControl<string>(this.getInitialBaseLocation(), [Validators.required]),
   });
+
+  private getInitialBaseLocation(): string {
+    if (this.data.uav?.baseLocation) {
+      return BaseLocationConfig.getBaseFromCoordinates(this.data.uav.baseLocation) ?? '';
+    }
+    return '';
+  }
 
   public onSubmit(): void {
     if (this.uavForm.invalid) {
@@ -61,11 +58,8 @@ export class UAVDialogComponent {
       return;
     }
 
-    const baseLocation = {
-      latitude: this.uavForm.value.latitude!,
-      longitude: this.uavForm.value.longitude!,
-      altitude: this.uavForm.value.altitude!,
-    };
+    const selectedBase = this.uavForm.value.baseLocation as BaseLocation;
+    const baseLocation = BaseLocationConfig.getCoordinates(selectedBase);
 
     if (this.isEditMode) {
       const dto: UpdateUAVDto = {
