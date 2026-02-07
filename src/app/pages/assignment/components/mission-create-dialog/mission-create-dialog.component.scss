@@ -173,6 +173,7 @@ mat-dialog-content {
   color: #ef5350;
 }
 
+
 ::ng-deep {
   .mat-horizontal-stepper-header-container {
     padding: 0 $spacing-md;
@@ -197,6 +198,12 @@ mat-dialog-content {
     .mat-step-icon-state-error {
       background-color: #ef5350 !important;
       color: $color-text-primary;
+
+      .mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
     }
 
     .mat-step-label {
