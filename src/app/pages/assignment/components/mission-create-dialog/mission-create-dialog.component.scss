@@ -93,6 +93,15 @@ mat-dialog-content {
 
 ::ng-deep {
   .ngx-mat-timepicker-control {
+    .mat-mdc-form-field-infix {
+      width: auto;
+      min-width: 40px;
+    }
+
+    input.mat-mdc-input-element {
+      text-align: center;
+    }
+
     .mdc-text-field--filled:not(.mdc-text-field--disabled) {
       background-color: $color-background-secondary !important;
     }
