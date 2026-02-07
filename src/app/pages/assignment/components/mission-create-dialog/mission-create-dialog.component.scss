@@ -71,7 +71,7 @@ mat-dialog-content {
 .datetime-row {
   display: flex;
   gap: $spacing-md;
-  align-items: flex-start;
+  align-items: flex-end;
 
   .date-field {
     flex: 2;
@@ -91,12 +91,30 @@ mat-dialog-content {
   font-weight: 500;
 }
 
-::ng-deep ngx-mat-timepicker-field {
-  .ngx-mat-timepicker {
-    border: $border-width-thin solid $color-border-default;
-    border-radius: $border-radius-sm;
-    padding: $spacing-xs $spacing-sm;
-    background-color: $color-background-secondary;
+::ng-deep {
+  .ngx-mat-timepicker-control {
+    .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+      background-color: $color-background-secondary !important;
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      background-color: transparent !important;
+    }
+
+    .mdc-line-ripple {
+      display: none;
+    }
+  }
+
+  .ngx-mat-timepicker__toggle {
+    mat-icon,
+    .mat-icon {
+      color: $color-text-primary !important;
+    }
+  }
+
+  .ngx-mat-timepicker-control .arrows-wrap > .arrow svg {
+    fill: $color-text-secondary;
   }
 }
 
