@@ -21,7 +21,7 @@ import { MatTab, MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatTimepickerModule } from '@angular/material/timepicker';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
@@ -53,7 +53,7 @@ const MaterialModules = [
   MatTooltipModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatTimepickerModule,
+  NgxMatTimepickerModule,
   MatTabGroup,
   MatTab,
   MatTableModule,

@@ -6,10 +6,10 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { UAVType, Priority } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { EnumUtil, DateTimeUtil } from '../../../../common/utils';
-import { timeWindowValidator, futureDateValidator, minimumDurationValidator, timeFormatValidator } from '../../../../common/validators';
+import { timeWindowValidator, futureDateValidator } from '../../../../common/validators';
 import type { Mission } from '../../../../models';
 
-const { LocationValidation, TimeValidation, MissionValidation } = ClientConstants.ValidationConstants;
+const { LocationValidation, MissionValidation } = ClientConstants.ValidationConstants;
 
 @Component({
   selector: 'app-mission-create-dialog',
@@ -41,12 +41,12 @@ export class MissionCreateDialogComponent {
   public readonly timeWindowForm = new FormGroup(
     {
       startDate: new FormControl<Date | null>(null, [Validators.required, futureDateValidator()]),
-      startTime: new FormControl<Date | null>(null, [Validators.required, timeFormatValidator()]),
+      startTime: new FormControl<string | null>(null, [Validators.required]),
       endDate: new FormControl<Date | null>(null, [Validators.required]),
-      endTime: new FormControl<Date | null>(null, [Validators.required, timeFormatValidator()]),
+      endTime: new FormControl<string | null>(null, [Validators.required]),
     },
     {
-      validators: [timeWindowValidator(), minimumDurationValidator(TimeValidation.MINIMUM_MISSION_DURATION_MINUTES)],
+      validators: [timeWindowValidator()],
     }
   );
 

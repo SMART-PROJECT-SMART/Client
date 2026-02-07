@@ -4,10 +4,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UAVType, Priority } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { EnumUtil, DateTimeUtil } from '../../../../common/utils';
-import { timeWindowValidator, futureDateValidator, minimumDurationValidator, timeFormatValidator } from '../../../../common/validators';
+import { timeWindowValidator, futureDateValidator } from '../../../../common/validators';
 import type { Mission } from '../../../../models';
 
-const { LocationValidation, TimeValidation, MissionValidation } = ClientConstants.ValidationConstants;
+const { LocationValidation, MissionValidation } = ClientConstants.ValidationConstants;
 
 export interface MissionEditDialogData {
   mission: Mission;
@@ -50,12 +50,12 @@ export class MissionEditDialogComponent {
     this.timeWindowForm = new FormGroup(
       {
         startDate: new FormControl<Date>(startDate, [Validators.required, futureDateValidator()]),
-        startTime: new FormControl<Date>(startDate, [Validators.required, timeFormatValidator()]),
+        startTime: new FormControl<string>(DateTimeUtil.formatTimeForInput(startDate), [Validators.required]),
         endDate: new FormControl<Date>(endDate, [Validators.required]),
-        endTime: new FormControl<Date>(endDate, [Validators.required, timeFormatValidator()]),
+        endTime: new FormControl<string>(DateTimeUtil.formatTimeForInput(endDate), [Validators.required]),
       },
       {
-        validators: [timeWindowValidator(), minimumDurationValidator(TimeValidation.MINIMUM_MISSION_DURATION_MINUTES)],
+        validators: [timeWindowValidator()],
       }
     );
 

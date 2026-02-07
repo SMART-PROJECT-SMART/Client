@@ -71,6 +71,7 @@ mat-dialog-content {
 .datetime-row {
   display: flex;
   gap: $spacing-md;
+  align-items: flex-start;
 
   .date-field {
     flex: 2;
@@ -78,6 +79,24 @@ mat-dialog-content {
 
   .time-field {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+}
+
+.time-label {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+::ng-deep ngx-mat-timepicker-field {
+  .ngx-mat-timepicker {
+    border: $border-width-thin solid $color-border-default;
+    border-radius: $border-radius-sm;
+    padding: $spacing-xs $spacing-sm;
+    background-color: $color-background-secondary;
   }
 }
 
