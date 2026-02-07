@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { FormGroup, FormControl, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlatformType, BaseLocation } from '../../../../common/enums';
 import { EnumUtil } from '../../../../common/utils';
@@ -32,6 +32,15 @@ export class UAVDialogComponent {
   public readonly EnumUtil = EnumUtil;
   public readonly DeviceValidationConstants = DeviceValidationConstants;
 
+  public readonly locationFilter = signal('');
+  public readonly filteredLocations = computed(() => {
+    const filter = this.locationFilter().toLowerCase();
+    if (!filter) return this.baseLocations;
+    return this.baseLocations.filter((loc) =>
+      EnumUtil.getBaseLocationDisplay(loc).toLowerCase().includes(filter),
+    );
+  });
+
   public readonly uavForm = new FormGroup({
     tailId: new FormControl<number | null>(this.data.uav?.tailId ?? null, [
       Validators.required,
@@ -42,7 +51,10 @@ export class UAVDialogComponent {
       { value: this.data.uav?.platformType ?? '', disabled: this.isEditMode },
       [Validators.required],
     ),
-    baseLocation: new FormControl<string>(this.getInitialBaseLocation(), [Validators.required]),
+    baseLocation: new FormControl<string>(this.getInitialBaseLocation(), [
+      Validators.required,
+      this.validBaseLocation,
+    ]),
   });
 
   private getInitialBaseLocation(): string {
@@ -50,6 +62,21 @@ export class UAVDialogComponent {
       return BaseLocationConfig.getBaseFromCoordinates(this.data.uav.baseLocation) ?? '';
     }
     return '';
+  }
+
+  private validBaseLocation(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    const valid = Object.values(BaseLocation).includes(control.value as BaseLocation);
+    return valid ? null : { invalidBase: true };
+  }
+
+  public displayBaseLocation = (value: string): string => {
+    if (!value) return '';
+    return EnumUtil.getBaseLocationDisplay(value as BaseLocation) ?? value;
+  };
+
+  public onLocationInput(event: Event): void {
+    this.locationFilter.set((event.target as HTMLInputElement).value);
   }
 
   public onSubmit(): void {

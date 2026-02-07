@@ -39,15 +39,28 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Base Location</mat-label>
-      <mat-select formControlName="baseLocation">
-        @for (base of baseLocations; track base) {
+      <input
+        matInput
+        formControlName="baseLocation"
+        [matAutocomplete]="locationAuto"
+        (input)="onLocationInput($event)"
+        placeholder="Search base..."
+      />
+      <mat-autocomplete
+        #locationAuto="matAutocomplete"
+        [displayWith]="displayBaseLocation"
+      >
+        @for (base of filteredLocations(); track base) {
           <mat-option [value]="base">{{ EnumUtil.getBaseLocationDisplay(base) }}</mat-option>
         }
-      </mat-select>
+      </mat-autocomplete>
       @if (
         uavForm.get('baseLocation')?.hasError('required') && uavForm.get('baseLocation')?.touched
       ) {
         <mat-error>Base Location is required</mat-error>
+      }
+      @if (uavForm.get('baseLocation')?.hasError('invalidBase') && uavForm.get('baseLocation')?.touched) {
+        <mat-error>Select a valid base location</mat-error>
       }
     </mat-form-field>
 

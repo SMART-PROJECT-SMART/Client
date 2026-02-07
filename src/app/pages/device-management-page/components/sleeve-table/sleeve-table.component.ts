@@ -28,7 +28,6 @@ export class SleeveTableComponent implements OnInit {
     'name',
     'location',
     'portNumbers',
-    'assignedToTailId',
     'actions',
   ];
   public readonly dataSource = new MatTableDataSource<SleeveRo>([]);
@@ -134,7 +133,7 @@ export class SleeveTableComponent implements OnInit {
     longitude: number;
     altitude: number;
   }): string {
-    return `${location.latitude.toFixed(4)}°, ${location.longitude.toFixed(4)}°, ${location.altitude}m`;
+    return `${location.latitude.toFixed(4)}°, ${location.longitude.toFixed(4)}°`;
   }
 
   private showToast(message: string): void {
