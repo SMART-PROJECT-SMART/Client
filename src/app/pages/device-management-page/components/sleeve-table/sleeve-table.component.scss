@@ -50,14 +50,11 @@
 }
 
 .search-field {
-  width: 260px;
+  width: 240px;
 
-  ::ng-deep .mat-mdc-form-field-flex {
-    height: 40px;
-  }
-
-  ::ng-deep input {
-    text-align: center;
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 
@@ -117,16 +114,6 @@
     flex-wrap: wrap;
     gap: $spacing-xs;
   }
-}
-
-.assigned {
-  font-weight: 600;
-  color: $color-text-primary;
-}
-
-.unassigned {
-  color: $color-text-muted;
-  font-style: italic;
 }
 
 ::ng-deep .mat-column-actions {
