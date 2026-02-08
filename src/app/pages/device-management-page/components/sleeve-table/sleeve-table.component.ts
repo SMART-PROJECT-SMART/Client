@@ -73,7 +73,10 @@ export class SleeveTableComponent implements OnInit {
 
   public onAddSleeve(): void {
     this.dialog
-      .open(SleeveDialogComponent, { width: '500px', data: { mode: 'create' } })
+      .open(SleeveDialogComponent, {
+        width: '500px',
+        data: { mode: 'create', existingSleeves: this.deviceManager.sleeveList() }
+      })
       .afterClosed()
       .pipe(take(1))
       .subscribe((result) => {
@@ -90,7 +93,10 @@ export class SleeveTableComponent implements OnInit {
 
   public onEditSleeve(sleeve: SleeveRo): void {
     this.dialog
-      .open(SleeveDialogComponent, { width: '500px', data: { mode: 'edit', sleeve } })
+      .open(SleeveDialogComponent, {
+        width: '500px',
+        data: { mode: 'edit', sleeve, existingSleeves: this.deviceManager.sleeveList() }
+      })
       .afterClosed()
       .pipe(take(1))
       .subscribe((result) => {

@@ -74,7 +74,10 @@ export class UavTableComponent implements OnInit {
 
   public onAddUAV(): void {
     this.dialog
-      .open(UAVDialogComponent, { width: '500px', data: { mode: 'create' } })
+      .open(UAVDialogComponent, {
+        width: '500px',
+        data: { mode: 'create', existingUAVs: this.deviceManager.uavList() }
+      })
       .afterClosed()
       .pipe(take(1))
       .subscribe((result) => {
@@ -91,7 +94,10 @@ export class UavTableComponent implements OnInit {
 
   public onEditUAV(uav: UAVRo): void {
     this.dialog
-      .open(UAVDialogComponent, { width: '500px', data: { mode: 'edit', uav } })
+      .open(UAVDialogComponent, {
+        width: '500px',
+        data: { mode: 'edit', uav, existingUAVs: this.deviceManager.uavList() }
+      })
       .afterClosed()
       .pipe(take(1))
       .subscribe((result) => {

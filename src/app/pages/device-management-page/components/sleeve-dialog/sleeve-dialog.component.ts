@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ClientConstants } from '../../../../common';
 import type { SleeveRo } from '../../../../models/Ro/sleeveRo.ro';
@@ -12,6 +12,7 @@ const { LocationValidation } = ValidationConstants;
 interface SleeveDialogData {
   mode: 'create' | 'edit';
   sleeve?: SleeveRo;
+  existingSleeves?: SleeveRo[];
 }
 
 @Component({
@@ -38,6 +39,7 @@ export class SleeveDialogComponent {
       Validators.required,
       Validators.minLength(DeviceValidationConstants.SLEEVE_NAME_MIN_LENGTH),
       Validators.maxLength(DeviceValidationConstants.SLEEVE_NAME_MAX_LENGTH),
+      this.uniqueNameValidator.bind(this),
     ]),
     latitude: new FormControl<number | null>(this.data.sleeve?.location.latitude ?? null, [
       Validators.required,
@@ -49,11 +51,21 @@ export class SleeveDialogComponent {
       Validators.min(LocationValidation.LONGITUDE_MIN),
       Validators.max(LocationValidation.LONGITUDE_MAX),
     ]),
-    altitude: new FormControl<number | null>(this.data.sleeve?.location.altitude ?? null, [
-      Validators.required,
-      Validators.min(0),
-    ]),
   });
+
+  private uniqueNameValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value || this.isEditMode) return null;
+    const existingSleeves = this.data.existingSleeves ?? [];
+    const duplicate = existingSleeves.some((s) => s.name.toLowerCase() === control.value.toLowerCase());
+    return duplicate ? { duplicateName: true } : null;
+  }
+
+  private isPortUsedByOthers(port: number): boolean {
+    const existingSleeves = this.data.existingSleeves ?? [];
+    return existingSleeves.some((s) =>
+      s.name !== this.data.sleeve?.name && s.portNumbers.includes(port)
+    );
+  }
 
   public addPort(): void {
     const value = Number(this.portInput.value);
@@ -72,6 +84,10 @@ export class SleeveDialogComponent {
     }
     if (this.ports().includes(value)) {
       this.portInput.setErrors({ duplicate: true });
+      return;
+    }
+    if (this.isPortUsedByOthers(value)) {
+      this.portInput.setErrors({ usedByOther: true });
       return;
     }
 
@@ -99,7 +115,7 @@ export class SleeveDialogComponent {
     const location = {
       latitude: this.sleeveForm.value.latitude!,
       longitude: this.sleeveForm.value.longitude!,
-      altitude: this.sleeveForm.value.altitude!,
+      altitude: 0,
     };
 
     if (this.isEditMode) {

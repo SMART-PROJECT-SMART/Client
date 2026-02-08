@@ -19,6 +19,9 @@
           {{ DeviceValidationConstants.TAIL_ID_MAX }}</mat-error
         >
       }
+      @if (uavForm.get('tailId')?.hasError('duplicateTailId')) {
+        <mat-error>A UAV with this Tail ID already exists</mat-error>
+      }
     </mat-form-field>
 
     @if (!isEditMode) {

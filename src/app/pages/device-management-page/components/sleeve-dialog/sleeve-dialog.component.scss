@@ -33,7 +33,7 @@
 
 .location-fields {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: $spacing-md;
 
   input[type='number'] {
@@ -64,10 +64,14 @@
 .port-input-row {
   display: flex;
   gap: $spacing-sm;
-  align-items: flex-end;
+  align-items: flex-start;
 
   .port-input-field {
     flex: 1;
+  }
+
+  .add-port-button {
+    margin-top: 4px;
   }
 }
 

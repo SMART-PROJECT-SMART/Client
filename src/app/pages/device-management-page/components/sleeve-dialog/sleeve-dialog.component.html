@@ -19,6 +19,9 @@
       @if (sleeveForm.get('name')?.hasError('maxlength')) {
         <mat-error>Maximum {{ DeviceValidationConstants.SLEEVE_NAME_MAX_LENGTH }} characters</mat-error>
       }
+      @if (sleeveForm.get('name')?.hasError('duplicateName')) {
+        <mat-error>A sleeve with this name already exists</mat-error>
+      }
     </mat-form-field>
 
     <div class="location-fields">
@@ -43,17 +46,6 @@
           <mat-error>Must be between {{ LocationValidation.LONGITUDE_MIN }}° and {{ LocationValidation.LONGITUDE_MAX }}°</mat-error>
         }
       </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Altitude (m)</mat-label>
-        <input matInput type="number" formControlName="altitude" />
-        @if (sleeveForm.get('altitude')?.hasError('required') && sleeveForm.get('altitude')?.touched) {
-          <mat-error>Required</mat-error>
-        }
-        @if (sleeveForm.get('altitude')?.hasError('min')) {
-          <mat-error>Must be 0 or greater</mat-error>
-        }
-      </mat-form-field>
     </div>
 
     <div class="port-section">
@@ -71,8 +63,11 @@
           @if (portInput.hasError('duplicate') && portInput.touched) {
             <mat-error>Port already added</mat-error>
           }
+          @if (portInput.hasError('usedByOther') && portInput.touched) {
+            <mat-error>Port is already used by another sleeve</mat-error>
+          }
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="addPort()">Add</button>
+        <button mat-raised-button color="primary" (click)="addPort()" class="add-port-button">Add</button>
       </div>
 
       @if (ports().length > 0) {

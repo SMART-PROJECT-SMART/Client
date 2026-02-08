@@ -13,6 +13,7 @@ const { DeviceValidationConstants, BaseLocationConfig } = ClientConstants;
 interface UAVDialogData {
   mode: 'create' | 'edit';
   uav?: UAVRo;
+  existingUAVs?: UAVRo[];
 }
 
 @Component({
@@ -46,6 +47,7 @@ export class UAVDialogComponent {
       Validators.required,
       Validators.min(DeviceValidationConstants.TAIL_ID_MIN),
       Validators.max(DeviceValidationConstants.TAIL_ID_MAX),
+      this.uniqueTailIdValidator.bind(this),
     ]),
     platformType: new FormControl<string | null>(
       { value: this.data.uav?.platformType ?? null, disabled: this.isEditMode },
@@ -68,6 +70,13 @@ export class UAVDialogComponent {
     if (!control.value) return null;
     const valid = Object.values(BaseLocation).includes(control.value as BaseLocation);
     return valid ? null : { invalidBase: true };
+  }
+
+  private uniqueTailIdValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value || this.isEditMode) return null;
+    const existingUAVs = this.data.existingUAVs ?? [];
+    const duplicate = existingUAVs.some((uav) => uav.tailId === control.value);
+    return duplicate ? { duplicateTailId: true } : null;
   }
 
   public displayBaseLocation = (value: string): string => {
