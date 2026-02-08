@@ -47,21 +47,21 @@ export class UAVDialogComponent {
       Validators.min(DeviceValidationConstants.TAIL_ID_MIN),
       Validators.max(DeviceValidationConstants.TAIL_ID_MAX),
     ]),
-    platformType: new FormControl<string>(
-      { value: this.data.uav?.platformType ?? '', disabled: this.isEditMode },
+    platformType: new FormControl<string | null>(
+      { value: this.data.uav?.platformType ?? null, disabled: this.isEditMode },
       [Validators.required],
     ),
-    baseLocation: new FormControl<string>(this.getInitialBaseLocation(), [
+    baseLocation: new FormControl<string | null>(this.getInitialBaseLocation(), [
       Validators.required,
       this.validBaseLocation,
     ]),
   });
 
-  private getInitialBaseLocation(): string {
+  private getInitialBaseLocation(): string | null {
     if (this.data.uav?.baseLocation) {
-      return BaseLocationConfig.getBaseFromCoordinates(this.data.uav.baseLocation) ?? '';
+      return BaseLocationConfig.getBaseFromCoordinates(this.data.uav.baseLocation) ?? null;
     }
-    return '';
+    return null;
   }
 
   private validBaseLocation(control: AbstractControl): ValidationErrors | null {
@@ -91,14 +91,17 @@ export class UAVDialogComponent {
     if (this.isEditMode) {
       const dto: UpdateUAVDto = {
         tailId: this.uavForm.value.tailId!,
-        platformType: this.data.uav!.platformType,
+        platformType: EnumUtil.platformTypeToNumber(this.data.uav!.platformType) as any,
         baseLocation,
       };
       this.dialogRef.close(dto);
     } else {
+      const platformTypeNumber = EnumUtil.platformTypeToNumber(
+        this.uavForm.value.platformType as PlatformType,
+      );
       const dto: CreateUAVDto = {
         tailId: this.uavForm.get('tailId')!.value!,
-        platformType: this.uavForm.value.platformType as PlatformType,
+        platformType: platformTypeNumber as any,
         baseLocation,
       };
       this.dialogRef.close(dto);

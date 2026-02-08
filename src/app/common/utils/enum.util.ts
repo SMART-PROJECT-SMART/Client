@@ -61,6 +61,16 @@ export class EnumUtil {
     return displayMap[resolvedType as PlatformType] ?? String(platformType);
   }
 
+  public static platformTypeToNumber(platformType: PlatformType): number {
+    const mapping: Record<PlatformType, number> = {
+      [PlatformType.Hermes900]: 0,
+      [PlatformType.HeronTP]: 1,
+      [PlatformType.Hermes450]: 2,
+      [PlatformType.Searcher]: 3,
+    };
+    return mapping[platformType];
+  }
+
   public static getBaseLocationDisplay(baseLocation: BaseLocation): string {
     const displayMap: Record<BaseLocation, string> = {
       [BaseLocation.Hatzerim]: 'Hatzerim Airbase',
