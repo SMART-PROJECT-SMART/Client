@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, switchMap, catchError } from 'rxjs/operators';
 import { SleeveRo } from '../../models/Ro/sleeveRo.ro';
 import { CreateUAVDto } from '../../models/dto/createUAV.dto';
 import { UpdateUAVDto } from '../../models/dto/updateUAVDto.dto';
@@ -35,12 +35,10 @@ export class DeviceManagerStorageService {
     );
   }
 
-  public createUAV(dto: CreateUAVDto): Observable<void> {
+  public createUAV(dto: CreateUAVDto): Observable<UAVRo[]> {
     this.isLoading.set(true);
     return this.apiService.createUAV(dto).pipe(
-      tap(() => {
-        this.loadUAVs().subscribe();
-      }),
+      switchMap(() => this.loadUAVs()),
       catchError((error) => {
         this.isLoading.set(false);
         return throwError(() => error);
@@ -48,12 +46,10 @@ export class DeviceManagerStorageService {
     );
   }
 
-  public updateUAV(tailId: number, dto: UpdateUAVDto): Observable<void> {
+  public updateUAV(tailId: number, dto: UpdateUAVDto): Observable<UAVRo[]> {
     this.isLoading.set(true);
     return this.apiService.updateUAV(tailId, dto).pipe(
-      tap(() => {
-        this.loadUAVs().subscribe();
-      }),
+      switchMap(() => this.loadUAVs()),
       catchError((error) => {
         this.isLoading.set(false);
         return throwError(() => error);
@@ -61,12 +57,10 @@ export class DeviceManagerStorageService {
     );
   }
 
-  public deleteUAV(tailId: number): Observable<void> {
+  public deleteUAV(tailId: number): Observable<UAVRo[]> {
     this.isLoading.set(true);
     return this.apiService.deleteUAV(tailId).pipe(
-      tap(() => {
-        this.loadUAVs().subscribe();
-      }),
+      switchMap(() => this.loadUAVs()),
       catchError((error) => {
         this.isLoading.set(false);
         return throwError(() => error);
@@ -88,12 +82,10 @@ export class DeviceManagerStorageService {
     );
   }
 
-  public createSleeve(dto: CreateSleeveDto): Observable<void> {
+  public createSleeve(dto: CreateSleeveDto): Observable<SleeveRo[]> {
     this.isLoading.set(true);
     return this.apiService.createSleeve(dto).pipe(
-      tap(() => {
-        this.loadSleeves().subscribe();
-      }),
+      switchMap(() => this.loadSleeves()),
       catchError((error) => {
         this.isLoading.set(false);
         return throwError(() => error);
@@ -101,12 +93,10 @@ export class DeviceManagerStorageService {
     );
   }
 
-  public updateSleeve(sleeveName: string, dto: UpdateSleeveDto): Observable<void> {
+  public updateSleeve(sleeveName: string, dto: UpdateSleeveDto): Observable<SleeveRo[]> {
     this.isLoading.set(true);
     return this.apiService.updateSleeve(sleeveName, dto).pipe(
-      tap(() => {
-        this.loadSleeves().subscribe();
-      }),
+      switchMap(() => this.loadSleeves()),
       catchError((error) => {
         this.isLoading.set(false);
         return throwError(() => error);
@@ -114,12 +104,10 @@ export class DeviceManagerStorageService {
     );
   }
 
-  public deleteSleeve(sleeveName: string): Observable<void> {
+  public deleteSleeve(sleeveName: string): Observable<SleeveRo[]> {
     this.isLoading.set(true);
     return this.apiService.deleteSleeve(sleeveName).pipe(
-      tap(() => {
-        this.loadSleeves().subscribe();
-      }),
+      switchMap(() => this.loadSleeves()),
       catchError((error) => {
         this.isLoading.set(false);
         return throwError(() => error);
