@@ -79,6 +79,29 @@
   display: flex;
   flex-wrap: wrap;
   gap: $spacing-xs;
+
+  ::ng-deep mat-chip {
+    .mdc-evolution-chip__cell {
+      display: flex;
+      align-items: center;
+    }
+
+    .mdc-evolution-chip__action--primary {
+      display: flex;
+      align-items: center;
+    }
+
+    .mdc-evolution-chip__text-label {
+      display: flex;
+      align-items: center;
+    }
+
+    .mat-mdc-chip-remove {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
 
 .ports-required-error {
