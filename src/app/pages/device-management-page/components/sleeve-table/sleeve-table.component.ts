@@ -11,7 +11,7 @@ import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog
 import { SleeveRo } from '../../../../models/Ro/sleeveRo.ro';
 import { ClientConstants } from '../../../../common';
 
-const { DeviceServiceAPI, TableConfig } = ClientConstants;
+const { DeviceServiceAPI, TableConfig, DialogConfig, SnackbarConfig } = ClientConstants;
 
 @Component({
   selector: 'app-sleeve-table',
@@ -74,7 +74,7 @@ export class SleeveTableComponent implements OnInit {
   public onAddSleeve(): void {
     this.dialog
       .open(SleeveDialogComponent, {
-        width: '500px',
+        width: DialogConfig.DEVICE_DIALOG_WIDTH,
         data: { mode: 'create', existingSleeves: this.deviceManager.sleeveList() }
       })
       .afterClosed()
@@ -94,7 +94,7 @@ export class SleeveTableComponent implements OnInit {
   public onEditSleeve(sleeve: SleeveRo): void {
     this.dialog
       .open(SleeveDialogComponent, {
-        width: '500px',
+        width: DialogConfig.DEVICE_DIALOG_WIDTH,
         data: { mode: 'edit', sleeve, existingSleeves: this.deviceManager.sleeveList() }
       })
       .afterClosed()
@@ -114,7 +114,7 @@ export class SleeveTableComponent implements OnInit {
   public onDeleteSleeve(sleeve: SleeveRo): void {
     this.dialog
       .open(DeleteConfirmationDialogComponent, {
-        width: '400px',
+        width: DialogConfig.CONFIRMATION_DIALOG_WIDTH,
         data: {
           title: 'Delete Sleeve',
           message: `Are you sure you want to delete Sleeve "${sleeve.name}"? This action cannot be undone.`,
@@ -143,10 +143,10 @@ export class SleeveTableComponent implements OnInit {
   }
 
   private showToast(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 5000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
+    this.snackBar.open(message, SnackbarConfig.CLOSE_ACTION, {
+      duration: SnackbarConfig.DURATION_MS,
+      horizontalPosition: SnackbarConfig.HORIZONTAL_POSITION,
+      verticalPosition: SnackbarConfig.VERTICAL_POSITION,
     });
   }
 }

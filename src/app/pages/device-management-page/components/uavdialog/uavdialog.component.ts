@@ -100,17 +100,14 @@ export class UAVDialogComponent {
     if (this.isEditMode) {
       const dto: UpdateUAVDto = {
         tailId: this.uavForm.value.tailId!,
-        platformType: EnumUtil.platformTypeToNumber(this.data.uav!.platformType) as any,
+        platformType: EnumUtil.platformTypeToNumber(this.data.uav!.platformType),
         baseLocation,
       };
       this.dialogRef.close(dto);
     } else {
-      const platformTypeNumber = EnumUtil.platformTypeToNumber(
-        this.uavForm.value.platformType as PlatformType,
-      );
       const dto: CreateUAVDto = {
         tailId: this.uavForm.get('tailId')!.value!,
-        platformType: platformTypeNumber as any,
+        platformType: EnumUtil.platformTypeToNumber(this.uavForm.value.platformType as PlatformType),
         baseLocation,
       };
       this.dialogRef.close(dto);

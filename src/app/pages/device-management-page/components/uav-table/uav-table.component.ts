@@ -12,7 +12,7 @@ import { UAVRo } from '../../../../models/Ro/uavRO.ro';
 import { ClientConstants, EnumUtil } from '../../../../common';
 import { PlatformType, BaseLocation } from '../../../../common/enums';
 
-const { DeviceServiceAPI, TableConfig, BaseLocationConfig } = ClientConstants;
+const { DeviceServiceAPI, TableConfig, BaseLocationConfig, DialogConfig, SnackbarConfig } = ClientConstants;
 
 @Component({
   selector: 'app-uav-table',
@@ -75,7 +75,7 @@ export class UavTableComponent implements OnInit {
   public onAddUAV(): void {
     this.dialog
       .open(UAVDialogComponent, {
-        width: '500px',
+        width: DialogConfig.DEVICE_DIALOG_WIDTH,
         data: { mode: 'create', existingUAVs: this.deviceManager.uavList() }
       })
       .afterClosed()
@@ -95,7 +95,7 @@ export class UavTableComponent implements OnInit {
   public onEditUAV(uav: UAVRo): void {
     this.dialog
       .open(UAVDialogComponent, {
-        width: '500px',
+        width: DialogConfig.DEVICE_DIALOG_WIDTH,
         data: { mode: 'edit', uav, existingUAVs: this.deviceManager.uavList() }
       })
       .afterClosed()
@@ -115,7 +115,7 @@ export class UavTableComponent implements OnInit {
   public onDeleteUAV(uav: UAVRo): void {
     this.dialog
       .open(DeleteConfirmationDialogComponent, {
-        width: '400px',
+        width: DialogConfig.CONFIRMATION_DIALOG_WIDTH,
         data: {
           title: 'Delete UAV',
           message: `Are you sure you want to delete UAV with Tail ID ${uav.tailId}? This action cannot be undone.`,
@@ -152,10 +152,10 @@ export class UavTableComponent implements OnInit {
   }
 
   private showToast(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 5000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
+    this.snackBar.open(message, SnackbarConfig.CLOSE_ACTION, {
+      duration: SnackbarConfig.DURATION_MS,
+      horizontalPosition: SnackbarConfig.HORIZONTAL_POSITION,
+      verticalPosition: SnackbarConfig.VERTICAL_POSITION,
     });
   }
 }

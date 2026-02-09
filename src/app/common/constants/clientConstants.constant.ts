@@ -115,7 +115,16 @@ export namespace ClientConstants {
   export namespace DialogConfig {
     export const MISSION_DIALOG_WIDTH: string = '600px';
     export const MISSION_SUMMARY_DIALOG_WIDTH: string = '500px';
+    export const DEVICE_DIALOG_WIDTH: string = '500px';
+    export const CONFIRMATION_DIALOG_WIDTH: string = '400px';
     export const PANEL_CLASS: string = 'mission-dialog';
+  }
+
+  export namespace SnackbarConfig {
+    export const DURATION_MS = 5000;
+    export const HORIZONTAL_POSITION = 'center' as const;
+    export const VERTICAL_POSITION = 'top' as const;
+    export const CLOSE_ACTION = 'Close';
   }
 
   export namespace TelemetryUnits {
