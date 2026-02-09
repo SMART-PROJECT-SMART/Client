@@ -165,6 +165,7 @@ export namespace ClientConstants {
     export const TAIL_ID_MAX: number = 9999;
     export const SLEEVE_NAME_MIN_LENGTH: number = 3;
     export const SLEEVE_NAME_MAX_LENGTH: number = 50;
+    export const SLEEVE_MIN_PORTS: number = 2;
   }
   export namespace DeviceServiceAPI {
     export namespace Endpoints {

@@ -33,6 +33,7 @@ export class SleeveDialogComponent {
   public readonly ports = signal<number[]>(
     this.data.sleeve ? [...this.data.sleeve.portNumbers] : [],
   );
+  public readonly portsInteracted = signal(false);
   public readonly portInput = new FormControl<number | null>(null);
 
   public readonly sleeveForm = new FormGroup({
@@ -75,6 +76,7 @@ export class SleeveDialogComponent {
     this.ports.update((p) => [...p, Number(this.portInput.value)]);
     this.portInput.setValue(null);
     this.portInput.setErrors(null);
+    this.portsInteracted.set(true);
   }
 
   private validatePort(): Record<string, boolean> | null {
@@ -90,6 +92,7 @@ export class SleeveDialogComponent {
 
   public removePort(portToRemove: number): void {
     this.ports.update((ports) => ports.filter((p) => p !== portToRemove));
+    this.portsInteracted.set(true);
   }
 
   public onPortInputChange(): void {
@@ -102,7 +105,7 @@ export class SleeveDialogComponent {
   }
 
   public onSubmit(): void {
-    if (this.sleeveForm.invalid || this.ports().length === 0) {
+    if (this.sleeveForm.invalid || this.ports().length < DeviceValidationConstants.SLEEVE_MIN_PORTS) {
       this.sleeveForm.markAllAsTouched();
       return;
     }

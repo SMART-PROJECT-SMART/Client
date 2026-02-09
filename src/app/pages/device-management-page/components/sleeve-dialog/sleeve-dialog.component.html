@@ -73,21 +73,21 @@
       @if (ports().length > 0) {
         <mat-chip-set class="port-chips">
           @for (port of ports(); track port) {
-            <mat-chip removable (removed)="removePort(port)">
+            <mat-chip>
               {{ port }}
-              <mat-icon matChipRemoveIcon>cancel</mat-icon>
+              <mat-icon (click)="removePort(port)">cancel</mat-icon>
             </mat-chip>
           }
         </mat-chip-set>
       }
-      @if (ports().length === 0 && sleeveForm.touched) {
-        <span class="ports-required-error">At least one port number is required</span>
+      @if (ports().length < DeviceValidationConstants.SLEEVE_MIN_PORTS && portsInteracted()) {
+        <span class="ports-required-error">At least {{ DeviceValidationConstants.SLEEVE_MIN_PORTS }} port numbers are required</span>
       }
     </div>
 
     <div class="form-actions">
       <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="sleeveForm.invalid || ports().length === 0">
+      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="sleeveForm.invalid || ports().length < DeviceValidationConstants.SLEEVE_MIN_PORTS">
         {{ isEditMode ? 'Update' : 'Create' }}
       </button>
     </div>
