@@ -1,7 +1,8 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { FormGroup, FormControl, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ClientConstants } from '../../../../common';
+import { uniqueSleeveNameValidator } from '../../../../common/validators';
 import type { SleeveRo } from '../../../../models/Ro/sleeveRo.ro';
 import type { CreateSleeveDto } from '../../../../models/dto/createSleeveDto.dto';
 import type { UpdateSleeveDto } from '../../../../models/dto/updateSleeveDto.dto';
@@ -39,7 +40,10 @@ export class SleeveDialogComponent {
       Validators.required,
       Validators.minLength(DeviceValidationConstants.SLEEVE_NAME_MIN_LENGTH),
       Validators.maxLength(DeviceValidationConstants.SLEEVE_NAME_MAX_LENGTH),
-      this.uniqueNameValidator.bind(this),
+      uniqueSleeveNameValidator(
+        (this.data.existingSleeves ?? []).map((s) => s.name),
+        this.isEditMode ? this.data.sleeve?.name : undefined,
+      ),
     ]),
     latitude: new FormControl<number | null>(this.data.sleeve?.location.latitude ?? null, [
       Validators.required,
@@ -53,13 +57,6 @@ export class SleeveDialogComponent {
     ]),
   });
 
-  private uniqueNameValidator(control: AbstractControl): ValidationErrors | null {
-    if (!control.value || this.isEditMode) return null;
-    const existingSleeves = this.data.existingSleeves ?? [];
-    const duplicate = existingSleeves.some((s) => s.name.toLowerCase() === control.value.toLowerCase());
-    return duplicate ? { duplicateName: true } : null;
-  }
-
   private isPortUsedByOthers(port: number): boolean {
     const existingSleeves = this.data.existingSleeves ?? [];
     return existingSleeves.some((s) =>
@@ -68,32 +65,27 @@ export class SleeveDialogComponent {
   }
 
   public addPort(): void {
-    const value = Number(this.portInput.value);
     this.portInput.markAsTouched();
-
-    if (this.portInput.value === null || isNaN(value)) {
-      this.portInput.setErrors({ required: true });
-      return;
-    }
-    if (
-      value < DeviceValidationConstants.PORT_NUMBER_MIN ||
-      value > DeviceValidationConstants.PORT_NUMBER_MAX
-    ) {
-      this.portInput.setErrors({ outOfRange: true });
-      return;
-    }
-    if (this.ports().includes(value)) {
-      this.portInput.setErrors({ duplicate: true });
-      return;
-    }
-    if (this.isPortUsedByOthers(value)) {
-      this.portInput.setErrors({ usedByOther: true });
+    const error = this.validatePort();
+    if (error) {
+      this.portInput.setErrors(error);
       return;
     }
 
-    this.ports.update((p) => [...p, value]);
+    this.ports.update((p) => [...p, Number(this.portInput.value)]);
     this.portInput.setValue(null);
     this.portInput.setErrors(null);
+  }
+
+  private validatePort(): Record<string, boolean> | null {
+    const value = Number(this.portInput.value);
+
+    if (this.portInput.value === null || isNaN(value)) return { required: true };
+    if (value < DeviceValidationConstants.PORT_NUMBER_MIN || value > DeviceValidationConstants.PORT_NUMBER_MAX) return { outOfRange: true };
+    if (this.ports().includes(value)) return { duplicate: true };
+    if (this.isPortUsedByOthers(value)) return { usedByOther: true };
+
+    return null;
   }
 
   public removePort(portToRemove: number): void {
@@ -101,9 +93,12 @@ export class SleeveDialogComponent {
   }
 
   public onPortInputChange(): void {
-    if (this.portInput.errors) {
+    if (this.portInput.value === null) {
       this.portInput.setErrors(null);
+      return;
     }
+    const error = this.validatePort();
+    this.portInput.setErrors(error?.['required'] ? null : error);
   }
 
   public onSubmit(): void {

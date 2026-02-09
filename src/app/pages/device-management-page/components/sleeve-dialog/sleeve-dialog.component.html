@@ -67,7 +67,7 @@
             <mat-error>Port is already used by another sleeve</mat-error>
           }
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="addPort()" class="add-port-button">Add</button>
+        <button mat-raised-button color="primary" (click)="addPort()" class="add-port-button" [disabled]="!portInput.value || portInput.errors">Add</button>
       </div>
 
       @if (ports().length > 0) {

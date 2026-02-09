@@ -1,10 +1,10 @@
-import { AbstractControl, ValidationErrors } from '@angular/forms';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-export function uniqueTailIdValidator(existingTailIds: number[], currentTailId?: number) {
+export function uniqueTailIdValidator(existingTailIds: number[], currentTailId?: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     if (!control.value) return null;
     const tailId = Number(control.value);
-    if (currentTailId && tailId === currentTailId) return null;
-    return existingTailIds.includes(tailId) ? { tailIdExists: { value: tailId } } : null;
+    if (currentTailId !== undefined && tailId === currentTailId) return null;
+    return existingTailIds.includes(tailId) ? { duplicateTailId: true } : null;
   };
 }

@@ -13,7 +13,7 @@ import { DeviceManagerApiService } from './api/device-manager-api.service';
 export class DeviceManagerStorageService {
   private readonly uavs = signal<UAVRo[]>([]);
   private readonly sleeves = signal<SleeveRo[]>([]);
-  private readonly isLoading = signal<boolean>(false);
+  private readonly isLoading = signal<boolean>(true);
 
   public readonly uavList = this.uavs.asReadonly();
   public readonly sleeveList = this.sleeves.asReadonly();

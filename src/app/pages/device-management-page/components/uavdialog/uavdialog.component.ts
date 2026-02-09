@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PlatformType, BaseLocation } from '../../../../common/enums';
 import { EnumUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common';
+import { uniqueTailIdValidator } from '../../../../common/validators';
 import type { UAVRo } from '../../../../models/Ro/uavRO.ro';
 import type { CreateUAVDto } from '../../../../models/dto/createUAV.dto';
 import type { UpdateUAVDto } from '../../../../models/dto/updateUAVDto.dto';
@@ -47,7 +48,10 @@ export class UAVDialogComponent {
       Validators.required,
       Validators.min(DeviceValidationConstants.TAIL_ID_MIN),
       Validators.max(DeviceValidationConstants.TAIL_ID_MAX),
-      this.uniqueTailIdValidator.bind(this),
+      uniqueTailIdValidator(
+        (this.data.existingUAVs ?? []).map((u) => u.tailId),
+        this.isEditMode ? this.data.uav?.tailId : undefined,
+      ),
     ]),
     platformType: new FormControl<string | null>(
       { value: this.data.uav?.platformType ?? null, disabled: this.isEditMode },
@@ -70,13 +74,6 @@ export class UAVDialogComponent {
     if (!control.value) return null;
     const valid = Object.values(BaseLocation).includes(control.value as BaseLocation);
     return valid ? null : { invalidBase: true };
-  }
-
-  private uniqueTailIdValidator(control: AbstractControl): ValidationErrors | null {
-    if (!control.value || this.isEditMode) return null;
-    const existingUAVs = this.data.existingUAVs ?? [];
-    const duplicate = existingUAVs.some((uav) => uav.tailId === control.value);
-    return duplicate ? { duplicateTailId: true } : null;
   }
 
   public displayBaseLocation = (value: string): string => {
