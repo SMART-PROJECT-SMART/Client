@@ -80,6 +80,8 @@
   .ngx-mat-timepicker {
     border: $border-width-thin solid $color-border-default;
     border-radius: $border-radius-sm;
+    display: flex;
+    align-items: center;
   }
 
   .ngx-mat-timepicker-control {
@@ -110,7 +112,7 @@
   }
 
   .ngx-mat-timepicker__toggle {
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
 
     mat-icon,
     .mat-icon {
