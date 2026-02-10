@@ -1,5 +1,7 @@
-import { Component, output, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs/operators';
 import type { NavigationItem } from '../../../models';
 
 @Component({
@@ -18,7 +20,16 @@ export class SidebarComponent {
     { label: 'Device Management', icon: 'devices', route: '/device-management-page' },
   ];
 
-  constructor(private readonly router: Router) {}
+  private readonly router = inject(Router);
+
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((e) => e instanceof NavigationEnd),
+      map(() => this.router.url),
+      startWith(this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
 
   public onNavItemClick(route: string): void {
     this.router.navigate([route]);
@@ -26,6 +37,6 @@ export class SidebarComponent {
   }
 
   public isActive(route: string): boolean {
-    return this.router.url === route;
+    return this.currentUrl() === route;
   }
 }
