@@ -14,18 +14,6 @@
   box-sizing: border-box;
 }
 
-.page-header {
-  padding: $spacing-lg $spacing-lg 0;
-  flex-shrink: 0;
-
-  h1 {
-    margin: 0;
-    font-size: $font-size-xxl;
-    font-weight: 600;
-    color: $color-text-primary;
-  }
-}
-
 ::ng-deep mat-tab-group {
   flex: 1;
   display: flex;

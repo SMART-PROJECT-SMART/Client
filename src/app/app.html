@@ -1,6 +1,18 @@
 <div class="app-container">
-  <app-sidebar (expansionChange)="onSidebarExpansionChange($event)"></app-sidebar>
-  <main class="main-content" [class.sidebar-expanded]="isSidebarExpanded()">
-    <router-outlet></router-outlet>
-  </main>
+  <mat-toolbar class="top-navbar">
+    <button mat-icon-button (click)="sidenav.toggle()" aria-label="Toggle navigation">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <img [src]="logoPath" alt="SMART Logo" class="navbar-logo" />
+    <span class="page-title">{{ pageTitle() }}</span>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav mode="over" class="nav-drawer">
+      <app-sidebar (navItemClicked)="sidenav.close()"></app-sidebar>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>

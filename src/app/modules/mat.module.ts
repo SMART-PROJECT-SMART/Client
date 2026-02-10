@@ -27,6 +27,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 const MaterialModules = [
   MatCard,
@@ -61,6 +63,8 @@ const MaterialModules = [
   MatSortModule,
   MatChipsModule,
   MatAutocompleteModule,
+  MatToolbarModule,
+  MatSidenavModule,
 ];
 
 @NgModule({
