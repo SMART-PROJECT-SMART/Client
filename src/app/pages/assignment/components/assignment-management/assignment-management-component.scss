@@ -3,7 +3,8 @@
 .assignment-page {
   display: grid;
   grid-template-rows: auto 1fr;
-  height: 100%;
+  height: calc(100vh - 64px);
+  box-sizing: border-box;
   padding: $spacing-lg;
   gap: $spacing-lg;
   overflow: hidden;
