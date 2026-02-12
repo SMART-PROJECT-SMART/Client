@@ -13,103 +13,105 @@ import { DeviceManagerApiService } from './api/device-manager-api.service';
 export class DeviceManagerStorageService {
   private readonly uavs = signal<UAVRo[]>([]);
   private readonly sleeves = signal<SleeveRo[]>([]);
-  private readonly isLoading = signal<boolean>(true);
+  private readonly isLoadingUAVs = signal<boolean>(true);
+  private readonly isLoadingSleeves = signal<boolean>(true);
 
   public readonly uavList = this.uavs.asReadonly();
   public readonly sleeveList = this.sleeves.asReadonly();
-  public readonly loading = this.isLoading.asReadonly();
+  public readonly loadingUAVs = this.isLoadingUAVs.asReadonly();
+  public readonly loadingSleeves = this.isLoadingSleeves.asReadonly();
 
   constructor(private readonly apiService: DeviceManagerApiService) {}
 
   public loadUAVs(): Observable<UAVRo[]> {
-    this.isLoading.set(true);
+    this.isLoadingUAVs.set(true);
     return this.apiService.getAllUAVs().pipe(
       tap((uavs) => {
         this.uavs.set(uavs);
-        this.isLoading.set(false);
+        this.isLoadingUAVs.set(false);
       }),
       catchError((error) => {
-        this.isLoading.set(false);
+        this.isLoadingUAVs.set(false);
         return throwError(() => error);
       }),
     );
   }
 
   public createUAV(dto: CreateUAVDto): Observable<UAVRo[]> {
-    this.isLoading.set(true);
+    this.isLoadingUAVs.set(true);
     return this.apiService.createUAV(dto).pipe(
       switchMap(() => this.loadUAVs()),
       catchError((error) => {
-        this.isLoading.set(false);
+        this.isLoadingUAVs.set(false);
         return throwError(() => error);
       }),
     );
   }
 
   public updateUAV(tailId: number, dto: UpdateUAVDto): Observable<UAVRo[]> {
-    this.isLoading.set(true);
+    this.isLoadingUAVs.set(true);
     return this.apiService.updateUAV(tailId, dto).pipe(
       switchMap(() => this.loadUAVs()),
       catchError((error) => {
-        this.isLoading.set(false);
+        this.isLoadingUAVs.set(false);
         return throwError(() => error);
       }),
     );
   }
 
   public deleteUAV(tailId: number): Observable<UAVRo[]> {
-    this.isLoading.set(true);
+    this.isLoadingUAVs.set(true);
     return this.apiService.deleteUAV(tailId).pipe(
       switchMap(() => this.loadUAVs()),
       catchError((error) => {
-        this.isLoading.set(false);
+        this.isLoadingUAVs.set(false);
         return throwError(() => error);
       }),
     );
   }
 
   public loadSleeves(): Observable<SleeveRo[]> {
-    this.isLoading.set(true);
+    this.isLoadingSleeves.set(true);
     return this.apiService.getAllSleeves().pipe(
       tap((sleeves) => {
         this.sleeves.set(sleeves);
-        this.isLoading.set(false);
+        this.isLoadingSleeves.set(false);
       }),
       catchError((error) => {
-        this.isLoading.set(false);
+        this.isLoadingSleeves.set(false);
         return throwError(() => error);
       }),
     );
   }
 
   public createSleeve(dto: CreateSleeveDto): Observable<SleeveRo[]> {
-    this.isLoading.set(true);
+    this.isLoadingSleeves.set(true);
     return this.apiService.createSleeve(dto).pipe(
       switchMap(() => this.loadSleeves()),
       catchError((error) => {
-        this.isLoading.set(false);
+        this.isLoadingSleeves.set(false);
         return throwError(() => error);
       }),
     );
   }
 
   public updateSleeve(sleeveName: string, dto: UpdateSleeveDto): Observable<SleeveRo[]> {
-    this.isLoading.set(true);
+    this.isLoadingSleeves.set(true);
     return this.apiService.updateSleeve(sleeveName, dto).pipe(
       switchMap(() => this.loadSleeves()),
       catchError((error) => {
-        this.isLoading.set(false);
+        this.isLoadingSleeves.set(false);
         return throwError(() => error);
       }),
     );
   }
 
   public deleteSleeve(sleeveName: string): Observable<SleeveRo[]> {
-    this.isLoading.set(true);
+    this.isLoadingSleeves.set(true);
     return this.apiService.deleteSleeve(sleeveName).pipe(
       switchMap(() => this.loadSleeves()),
       catchError((error) => {
-        this.isLoading.set(false);
+        this.isLoadingSleeves.set(false);
         return throwError(() => error);
       }),
     );

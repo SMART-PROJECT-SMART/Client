@@ -23,7 +23,7 @@
     </div>
   </div>
 
-  @if (deviceManager.loading()) {
+  @if (deviceManager.loadingUAVs()) {
     <div class="loading-state">
       <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
       <p>Loading UAVs...</p>
