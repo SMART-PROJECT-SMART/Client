@@ -17,9 +17,7 @@ export class LtsSignalRService {
   private connection: signalR.HubConnection | null = null;
   private sessionId: string | null = null;
 
-  constructor() {
-    this.sessionId = crypto.randomUUID();
-  }
+  constructor() {}
   public readonly isConnected: WritableSignal<boolean> = signal<boolean>(false);
   public readonly latestTelemetry: WritableSignal<TelemetryBroadcastDto | null> =
     signal<TelemetryBroadcastDto | null>(null);
@@ -29,6 +27,7 @@ export class LtsSignalRService {
       await this.disconnect();
     }
 
+    this.sessionId = crypto.randomUUID();
     const hubUrl = `${LTS.BASE_URL}${LTS.HUB_ENDPOINT}?sessionId=${this.sessionId}`;
 
     this.connection = new signalR.HubConnectionBuilder()
