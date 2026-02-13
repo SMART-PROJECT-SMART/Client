@@ -9,7 +9,7 @@
   <form [formGroup]="uavForm" class="form-content">
     <mat-form-field appearance="outline">
       <mat-label>Tail ID</mat-label>
-      <input matInput type="number" formControlName="tailId" (keydown)="'eE+-.'.includes($event.key) && $event.preventDefault()" />
+      <input matInput type="number" formControlName="tailId" appNumericInput [allowDecimal]="false" [allowNegative]="false" />
       @if (uavForm.get('tailId')?.hasError('required') && uavForm.get('tailId')?.touched) {
         <mat-error>Tail ID is required</mat-error>
       }

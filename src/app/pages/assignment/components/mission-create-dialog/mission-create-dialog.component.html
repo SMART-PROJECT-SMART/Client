@@ -136,7 +136,7 @@
         <div class="location-fields">
           <mat-form-field appearance="outline">
             <mat-label>Latitude (°)</mat-label>
-            <input matInput type="number" formControlName="latitude" (keydown)="'eE+'.includes($event.key) && $event.preventDefault()" />
+            <input matInput type="number" formControlName="latitude" appNumericInput />
             @if (locationForm.get('latitude')?.hasError('required') && locationForm.get('latitude')?.touched) {
               <mat-error>Required</mat-error>
             }
@@ -147,7 +147,7 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Longitude (°)</mat-label>
-            <input matInput type="number" formControlName="longitude" (keydown)="'eE+'.includes($event.key) && $event.preventDefault()" />
+            <input matInput type="number" formControlName="longitude" appNumericInput />
             @if (locationForm.get('longitude')?.hasError('required') && locationForm.get('longitude')?.touched) {
               <mat-error>Required</mat-error>
             }
@@ -158,7 +158,7 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Altitude (m)</mat-label>
-            <input matInput type="number" formControlName="altitude" (keydown)="'eE+'.includes($event.key) && $event.preventDefault()" />
+            <input matInput type="number" formControlName="altitude" appNumericInput />
             @if (locationForm.get('altitude')?.hasError('required') && locationForm.get('altitude')?.touched) {
               <mat-error>Required</mat-error>
             }
