@@ -36,11 +36,12 @@ export class LtsSignalRService {
       .build();
 
     this.setupEventHandlers();
+    const sessionReady$ = this.waitForSessionReady();
 
     await this.connection.start();
     this.isConnected.set(true);
 
-    await firstValueFrom(this.waitForSessionReady());
+    await firstValueFrom(sessionReady$);
 
     await this.subscribeToUAVs(uavTailIds, defaultWantedFields);
   }
