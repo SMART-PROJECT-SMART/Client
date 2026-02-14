@@ -1,8 +1,20 @@
-import { Component, ChangeDetectionStrategy, viewChild } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  viewChild,
+  inject,
+  DestroyRef,
+  AfterViewInit,
+  OnDestroy,
+} from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { merge } from 'rxjs';
 import { UAVType, Priority } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { EnumUtil, DateTimeUtil } from '../../../../common/utils';
@@ -24,8 +36,11 @@ const { LocationValidation, MissionValidation } = ClientConstants.ValidationCons
     },
   ],
 })
-export class MissionCreateDialogComponent {
+export class MissionCreateDialogComponent implements AfterViewInit, OnDestroy {
   public readonly stepper = viewChild.required<MatStepper>('stepper');
+  private readonly document = inject(DOCUMENT);
+  private validOverrideStyle: HTMLStyleElement | null = null;
+  private static readonly VALID_OVERRIDE_STYLE_ID = 'mission-stepper-valid-override';
 
   public readonly uavTypes: UAVType[] = Object.values(UAVType);
   public readonly priorities: Priority[] = Object.values(Priority);
@@ -64,7 +79,56 @@ export class MissionCreateDialogComponent {
     altitude: new FormControl<number | null>(null, [Validators.required]),
   });
 
-  constructor(private readonly dialogRef: MatDialogRef<MissionCreateDialogComponent>) {}
+  private readonly dialogRef = inject(MatDialogRef<MissionCreateDialogComponent>);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
+
+  ngAfterViewInit(): void {
+    this.appendValidOverrideStyle();
+  }
+
+  private appendValidOverrideStyle(): void {
+    this.validOverrideStyle?.remove();
+    this.validOverrideStyle = null;
+    const style = this.document.createElement('style');
+    style.id = MissionCreateDialogComponent.VALID_OVERRIDE_STYLE_ID;
+    style.textContent = `
+.mission-stepper.current-step-valid .mat-step-header[aria-selected="true"] .mat-step-icon,
+.mission-stepper.current-step-valid .mat-step-header[aria-selected="true"] .mat-step-icon.mat-step-icon-state-edit,
+.mission-stepper.current-step-valid .mat-step-header[aria-selected="true"] .mat-step-icon.mat-step-icon-state-number {
+  background-color: #66bb6a !important;
+  color: #f5f5f5 !important;
+}
+.mission-stepper.step-1-valid-when-back .mat-horizontal-stepper-header-container .mat-step-header:nth-child(3):not([aria-selected="true"]) .mat-step-icon {
+  background-color: #66bb6a !important;
+  color: #f5f5f5 !important;
+}`;
+    this.document.head.appendChild(style);
+    this.validOverrideStyle = style;
+  }
+
+  ngOnDestroy(): void {
+    this.validOverrideStyle?.remove();
+    this.validOverrideStyle = null;
+  }
+
+  constructor() {
+    merge(
+      this.basicInfoForm.statusChanges,
+      this.timeWindowForm.statusChanges,
+      this.locationForm.statusChanges
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.cdr.markForCheck());
+
+    merge(
+      this.basicInfoForm.valueChanges,
+      this.timeWindowForm.valueChanges,
+      this.locationForm.valueChanges
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.cdr.markForCheck());
+  }
 
   public onCancel(): void {
     this.dialogRef.close();
@@ -117,5 +181,42 @@ export class MissionCreateDialogComponent {
 
   public isFormInvalid(): boolean {
     return this.basicInfoForm.invalid || this.timeWindowForm.invalid || this.locationForm.invalid;
+  }
+
+  public onStepChange(): void {
+    this.cdr.markForCheck();
+    queueMicrotask(() => this.appendValidOverrideStyle());
+  }
+
+  private getCurrentForm(): FormGroup {
+    const idx = this.stepper().selectedIndex;
+    if (idx === 0) return this.basicInfoForm;
+    if (idx === 1) return this.timeWindowForm;
+    return this.locationForm;
+  }
+
+  public isCurrentStepValid(): boolean {
+    return this.getCurrentForm().valid;
+  }
+
+  public isCurrentStepInvalid(): boolean {
+    const form = this.getCurrentForm();
+    return form.invalid && (form.touched || form.dirty);
+  }
+
+  public isCurrentStepEditing(): boolean {
+    return !this.isCurrentStepValid() && !this.isCurrentStepInvalid();
+  }
+
+  public isStep0Complete(): boolean {
+    return this.stepper().selectedIndex >= 1;
+  }
+
+  public isStep1Complete(): boolean {
+    return this.stepper().selectedIndex >= 2;
+  }
+
+  public isStep1ValidWhenBack(): boolean {
+    return this.stepper().selectedIndex === 0 && this.timeWindowForm.valid;
   }
 }

@@ -100,7 +100,8 @@ mat-dialog-content {
 }
 
 .time-input-wrapper {
-  border: $border-width-thin solid var(--mat-form-field-outlined-outline-color, $color-border-default);
+  border: $border-width-thin solid
+    var(--mat-form-field-outlined-outline-color, $color-border-default);
   border-radius: $border-radius-sm;
   display: flex;
   align-items: center;
@@ -165,11 +166,14 @@ mat-dialog-content {
   color: #ef5350;
 }
 
-
 ::ng-deep {
   .mat-horizontal-stepper-header-container {
     padding: 0 $spacing-md;
   }
+
+  $stepper-yellow: #ffc107;
+  $stepper-green: #66bb6a;
+  $stepper-red: #ef5350;
 
   .mat-step-header {
     .mat-step-icon {
@@ -178,17 +182,17 @@ mat-dialog-content {
     }
 
     .mat-step-icon-selected {
-      background-color: #ff9800 !important;
+      background-color: $stepper-yellow !important;
       color: $color-text-primary;
     }
 
     .mat-step-icon-state-done {
-      background-color: #66bb6a !important;
+      background-color: $stepper-green !important;
       color: $color-text-primary;
     }
 
     .mat-step-icon-state-error {
-      background-color: #ef5350 !important;
+      background-color: $stepper-red !important;
       color: $color-text-primary;
 
       .mat-icon {
@@ -209,6 +213,98 @@ mat-dialog-content {
     .mat-step-label-selected {
       color: $color-primary-light;
       font-weight: 600;
+    }
+  }
+
+  :host {
+    .mission-stepper.current-step-valid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon,
+    .mission-stepper.current-step-valid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon.mat-step-icon-state-edit,
+    .mission-stepper.current-step-valid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon.mat-step-icon-state-number {
+      background-color: $stepper-green !important;
+      color: $color-text-primary;
+    }
+
+    .mission-stepper.current-step-invalid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon,
+    .mission-stepper.current-step-invalid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon.mat-step-icon-state-edit,
+    .mission-stepper.current-step-invalid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon.mat-step-icon-state-number {
+      background-color: $stepper-red !important;
+      color: $color-text-primary;
+    }
+  }
+
+  .mission-stepper.step-0-complete
+    .mat-horizontal-stepper-header-container
+    .mat-step-header:nth-child(1):not([aria-selected='true'])
+    .mat-step-icon {
+    background-color: $stepper-green !important;
+    color: $color-text-primary;
+
+    .mat-step-icon-content {
+      position: relative;
+      font-size: 0;
+      line-height: 0;
+
+      > * {
+        visibility: hidden;
+        position: absolute;
+      }
+
+      &::after {
+        content: 'check_circle';
+        font-family: 'Material Icons';
+        font-size: 24px;
+        font-weight: normal;
+        color: $color-text-primary;
+        visibility: visible;
+        display: block;
+        line-height: 1;
+      }
+    }
+  }
+
+  .mission-stepper.step-1-complete
+    .mat-horizontal-stepper-header-container
+    .mat-step-header:nth-child(3):not([aria-selected='true'])
+    .mat-step-icon,
+  .mission-stepper.step-1-valid-when-back
+    .mat-horizontal-stepper-header-container
+    .mat-step-header:nth-child(3):not([aria-selected='true'])
+    .mat-step-icon {
+    background-color: $stepper-green !important;
+    color: $color-text-primary;
+
+    .mat-step-icon-content {
+      position: relative;
+      font-size: 0;
+      line-height: 0;
+
+      > * {
+        visibility: hidden;
+        position: absolute;
+      }
+
+      &::after {
+        content: 'check_circle';
+        font-family: 'Material Icons';
+        font-size: 24px;
+        font-weight: normal;
+        color: $color-text-primary;
+        visibility: visible;
+        display: block;
+        line-height: 1;
+      }
     }
   }
 

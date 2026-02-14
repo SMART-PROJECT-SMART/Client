@@ -249,7 +249,9 @@
 }
 
 .warning-icon {
-  font-size: $icon-size-lg;
+  font-size: $icon-size-md;
+  width: $icon-size-md;
+  height: $icon-size-md;
 }
 
 .violations-list {
@@ -268,7 +270,9 @@
 }
 
 .violation-icon {
-  font-size: $icon-size-md;
+  font-size: $icon-size-sm;
+  width: $icon-size-sm;
+  height: $icon-size-sm;
   flex-shrink: 0;
 }
 

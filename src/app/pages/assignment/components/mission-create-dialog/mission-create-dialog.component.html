@@ -14,7 +14,17 @@
     <mat-icon class="stepper-icon-error">error</mat-icon>
   </ng-template>
 
-  <mat-stepper linear #stepper class="mission-stepper">
+  <mat-stepper
+    linear
+    #stepper
+    class="mission-stepper"
+    [class.current-step-valid]="!isCurrentStepInvalid()"
+    [class.current-step-invalid]="isCurrentStepInvalid()"
+    [class.step-0-complete]="isStep0Complete()"
+    [class.step-1-complete]="isStep1Complete()"
+    [class.step-1-valid-when-back]="isStep1ValidWhenBack()"
+    (selectedIndexChange)="onStepChange()"
+  >
     <mat-step [stepControl]="basicInfoForm">
       <ng-template matStepLabel>
         <div class="step-label">
