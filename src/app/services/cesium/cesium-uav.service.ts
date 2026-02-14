@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import * as Cesium from 'cesium';
 import { CesiumConstants } from '../../common/constants/cesium.constants';
+import { PlatformType } from '../../common/enums/platformType.enum';
 import type { UAVUpdateData } from '../../models/cesium';
 import { CesiumOrientationHelper } from './helpers/cesium-orientation.helper';
 import { CesiumUavHelper } from './helpers/cesium-uav.helper';
+
+const platformTypeValues = Object.values(PlatformType);
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +15,7 @@ export class CesiumUAVService {
   private readonly uavPositionProperties = new Map<number, Cesium.SampledPositionProperty>();
   private viewer?: Cesium.Viewer;
 
-  public createUAV(viewer: Cesium.Viewer, uavId: number, updateData: UAVUpdateData): Cesium.Entity {
+  public createUAV(viewer: Cesium.Viewer, uavId: number, updateData: UAVUpdateData, platformTypeIndex: number): Cesium.Entity {
     this.viewer = viewer;
     const positionProperty = CesiumUavHelper.createSampledPositionProperty(viewer, updateData);
     this.uavPositionProperties.set(uavId, positionProperty);
@@ -21,12 +24,16 @@ export class CesiumUAVService {
       updateData,
       cartesian
     );
+    const platformType = platformTypeValues[platformTypeIndex] as PlatformType | undefined;
+    const modelUri = platformType
+      ? CesiumConstants.UAV_MODEL_PATHS[platformType]
+      : CesiumConstants.UAV_MODEL_PATHS[PlatformType.Hermes900];
     return viewer.entities.add({
       id: `${CesiumConstants.UAV_ENTITY_PREFIX_NAME}${uavId}`,
       position: positionProperty,
       orientation: new Cesium.ConstantProperty(quaternion),
       model: {
-        uri: CesiumConstants.UAV_MODEL_PATH,
+        uri: modelUri,
         minimumPixelSize: CesiumConstants.UAV_MODEL_MINIMUM_PIXEL_SIZE,
         maximumScale: CesiumConstants.UAV_MODEL_MAXIMUM_SCALE,
         scale: CesiumConstants.UAV_MODEL_SCALE,

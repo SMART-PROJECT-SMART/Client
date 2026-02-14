@@ -1,3 +1,5 @@
+import { PlatformType } from '../enums/platformType.enum';
+
 export class CesiumConstants {
   public static readonly ION_ACCESS_TOKEN =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NDNlZTYzYS00Y2JkLTRhYmEtYmRhMC02NTc3NmFiODc0N2IiLCJpZCI6MzMwMTQyLCJpYXQiOjE3Njc2ODg0MzZ9.3mjcPnO_RKNgQsOaEpVAHiLdWMyBeUjno_eNYfXpnBI';
@@ -8,7 +10,12 @@ export class CesiumConstants {
   public static readonly ISRAEL_CENTER_LONGITUDE = 34.8516;
   public static readonly ISRAEL_CENTER_LATITUDE = 31.0461;
 
-  public static readonly UAV_MODEL_PATH = '/models/UAV.glb';
+  public static readonly UAV_MODEL_PATHS: Record<PlatformType, string> = {
+    [PlatformType.Hermes900]: '/models/hermes900.glb',
+    [PlatformType.HeronTP]: '/models/herontp.glb',
+    [PlatformType.Hermes450]: '/models/hermes450.glb',
+    [PlatformType.Searcher]: '/models/searcher.glb',
+  };
   public static readonly UAV_MODEL_SCALE = 1.0;
   public static readonly UAV_MODEL_HEADING_OFFSET_RADIANS = 0;
   public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 128;

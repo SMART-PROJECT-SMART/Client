@@ -10,17 +10,12 @@
     <mat-form-field appearance="outline">
       <mat-label>Tail ID</mat-label>
       <input matInput type="number" formControlName="tailId" appNumericInput [allowDecimal]="false" [allowNegative]="false" />
-      @if (uavForm.get('tailId')?.hasError('required') && uavForm.get('tailId')?.touched) {
-        <mat-error>Tail ID is required</mat-error>
-      }
-      @if (uavForm.get('tailId')?.hasError('min') || uavForm.get('tailId')?.hasError('max')) {
-        <mat-error
-          >Must be between {{ DeviceValidationConstants.TAIL_ID_MIN }} and
-          {{ DeviceValidationConstants.TAIL_ID_MAX }}</mat-error
-        >
-      }
       @if (uavForm.get('tailId')?.hasError('duplicateTailId')) {
         <mat-error>A UAV with this Tail ID already exists</mat-error>
+      } @else if (uavForm.get('tailId')?.hasError('min') || uavForm.get('tailId')?.hasError('max')) {
+        <mat-error>Must be between {{ DeviceValidationConstants.TAIL_ID_MIN }} and {{ DeviceValidationConstants.TAIL_ID_MAX }}</mat-error>
+      } @else if (uavForm.get('tailId')?.hasError('required') && uavForm.get('tailId')?.touched) {
+        <mat-error>Tail ID is required</mat-error>
       }
     </mat-form-field>
 

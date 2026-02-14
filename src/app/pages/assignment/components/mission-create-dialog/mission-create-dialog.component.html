@@ -26,11 +26,10 @@
         <mat-form-field appearance="outline">
           <mat-label>Mission Title</mat-label>
           <input matInput formControlName="title" />
-          @if (basicInfoForm.get('title')?.hasError('required') && basicInfoForm.get('title')?.touched) {
-            <mat-error>Mission title is required</mat-error>
-          }
           @if (basicInfoForm.get('title')?.hasError('maxlength')) {
             <mat-error>Maximum 60 characters</mat-error>
+          } @else if (basicInfoForm.get('title')?.hasError('required') && basicInfoForm.get('title')?.touched) {
+            <mat-error>Mission title is required</mat-error>
           }
         </mat-form-field>
 
@@ -137,22 +136,20 @@
           <mat-form-field appearance="outline">
             <mat-label>Latitude (°)</mat-label>
             <input matInput type="number" formControlName="latitude" appNumericInput />
-            @if (locationForm.get('latitude')?.hasError('required') && locationForm.get('latitude')?.touched) {
-              <mat-error>Required</mat-error>
-            }
             @if (locationForm.get('latitude')?.hasError('min') || locationForm.get('latitude')?.hasError('max')) {
               <mat-error>Must be between {{ LocationValidation.LATITUDE_MIN }}° and {{ LocationValidation.LATITUDE_MAX }}°</mat-error>
+            } @else if (locationForm.get('latitude')?.hasError('required') && locationForm.get('latitude')?.touched) {
+              <mat-error>Required</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Longitude (°)</mat-label>
             <input matInput type="number" formControlName="longitude" appNumericInput />
-            @if (locationForm.get('longitude')?.hasError('required') && locationForm.get('longitude')?.touched) {
-              <mat-error>Required</mat-error>
-            }
             @if (locationForm.get('longitude')?.hasError('min') || locationForm.get('longitude')?.hasError('max')) {
               <mat-error>Must be between {{ LocationValidation.LONGITUDE_MIN }}° and {{ LocationValidation.LONGITUDE_MAX }}°</mat-error>
+            } @else if (locationForm.get('longitude')?.hasError('required') && locationForm.get('longitude')?.touched) {
+              <mat-error>Required</mat-error>
             }
           </mat-form-field>
 

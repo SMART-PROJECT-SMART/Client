@@ -4,7 +4,6 @@ import { CesiumConfigService } from './cesium-config.service';
 import { CesiumCameraService } from './cesium-camera.service';
 import { CesiumUAVService } from './cesium-uav.service';
 import type { GeographicPosition, UAVUpdateData } from '../../models/cesium';
-
 @Injectable({
   providedIn: 'root',
 })
@@ -48,32 +47,32 @@ export class CesiumService {
     this.cameraService.flyToPosition(this.viewer, position);
   }
 
-  public addUAV(uavId: number, updateData: UAVUpdateData): void {
+  public addUAV(uavId: number, updateData: UAVUpdateData, platformTypeIndex: number): void {
     if (!this.viewer) return;
 
-    const entity = this.uavService.createUAV(this.viewer, uavId, updateData);
+    const entity = this.uavService.createUAV(this.viewer, uavId, updateData, platformTypeIndex);
 
     const currentMap = new Map(this.uavEntities());
     currentMap.set(uavId, entity);
     this.uavEntities.set(currentMap);
   }
 
-  public updateUAV(uavId: number, updateData: UAVUpdateData): void {
+  public updateUAV(uavId: number, updateData: UAVUpdateData, platformTypeIndex: number): void {
     if (!this.viewer) return;
 
     const entity = this.uavEntities().get(uavId);
     if (entity) {
       this.uavService.updateUAV(uavId, updateData);
     } else {
-      this.addUAV(uavId, updateData);
+      this.addUAV(uavId, updateData, platformTypeIndex);
     }
   }
 
-  public updateMultipleUAVs(updates: Map<number, UAVUpdateData>): void {
+  public updateMultipleUAVs(updates: Map<number, { updateData: UAVUpdateData; platformTypeIndex: number }>): void {
     if (!this.viewer) return;
 
-    updates.forEach((updateData, uavId) => {
-      this.updateUAV(uavId, updateData);
+    updates.forEach(({ updateData, platformTypeIndex }, uavId) => {
+      this.updateUAV(uavId, updateData, platformTypeIndex);
     });
   }
 

@@ -50,7 +50,8 @@ export class CesiumViewer implements OnInit, OnDestroy {
   private updateUAVsFromTelemetry(telemetry: TelemetryBroadcastDto): void {
     telemetry.uavData.forEach((uavData: UAVTelemetryData) => {
       const updateData: UAVUpdateData = TelemetryDataHelper.extractUpdateData(uavData);
-      this.cesiumService.updateUAV(uavData.tailId, updateData);
+      const platformTypeIndex = uavData.fields[TelemetryField.PlatformType];
+      this.cesiumService.updateUAV(uavData.tailId, updateData, platformTypeIndex);
     });
   }
 }
