@@ -1,20 +1,17 @@
-
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+@use 'styles/constants' as *;
 
 html {
-  @include mat.theme((
-    color: (
-      primary: mat.$violet-palette,
-      tertiary: mat.$violet-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$violet-palette,
+        tertiary: mat.$violet-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
 }
 
 body {
@@ -24,7 +21,49 @@ body {
   font: var(--mat-sys-body-medium);
   margin: 0;
 }
-/* You can add global styles to this file, and also import other style files */
+@import '@danielmoncada/angular-datetime-picker/assets/style/picker.min.css';
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.owl-dt-picker-dark {
+  .owl-dt-container,
+  .owl-dt-container-inner {
+    background-color: $color-background-secondary !important;
+    color: $color-text-primary;
+  }
+  .owl-dt-container-row {
+    border-color: $color-border-default;
+  }
+  .owl-dt-timer,
+  .owl-dt-timer-content {
+    background-color: $color-background-secondary;
+    color: $color-text-primary;
+  }
+  .owl-dt-timer-input {
+    background-color: $color-background-card;
+    color: $color-text-primary;
+    border-color: $color-border-default;
+  }
+  .owl-dt-control-button {
+    color: $color-primary;
+  }
+  .owl-dt-control-button:hover {
+    color: $color-primary-light;
+  }
+  .owl-dt-control-content .owl-dt-control-button-content {
+    color: $color-text-primary;
+  }
+  .owl-dt-dialog-actions {
+    border-color: $color-border-default;
+  }
+  .owl-dt-dialog-actions .owl-dt-dialog-actions-button {
+    color: $color-primary;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}

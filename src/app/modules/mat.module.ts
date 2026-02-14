@@ -29,7 +29,12 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { OverlayModule } from '@angular/cdk/overlay';
-import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import {
+  OwlDateTimeModule,
+  OwlNativeDateTimeModule,
+  OWL_DATE_TIME_FORMATS,
+} from '@danielmoncada/angular-datetime-picker';
+import { OWL_TIME_FORMATS } from '../common/constants/owl-datetime.constants';
 
 const MaterialModules = [
   MatCard,
@@ -66,11 +71,13 @@ const MaterialModules = [
   MatToolbarModule,
   MatSidenavModule,
   OverlayModule,
-  NgxMatTimepickerModule,
+  OwlDateTimeModule,
+  OwlNativeDateTimeModule,
 ];
 
 @NgModule({
   imports: MaterialModules,
   exports: MaterialModules,
+  providers: [{ provide: OWL_DATE_TIME_FORMATS, useValue: OWL_TIME_FORMATS }],
 })
 export class MatModule {}

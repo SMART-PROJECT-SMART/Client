@@ -67,7 +67,7 @@
   }
 
   .time-field {
-    flex: 1;
+    flex: 2;
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
@@ -80,52 +80,36 @@
   font-weight: 500;
 }
 
-::ng-deep {
-  .ngx-mat-timepicker {
-    border: $border-width-thin solid $color-border-default;
-    border-radius: $border-radius-sm;
-    display: flex;
-    align-items: center;
-  }
+.time-input-wrapper {
+  border: $border-width-thin solid var(--mat-form-field-outlined-outline-color, $color-border-default);
+  border-radius: $border-radius-sm;
+  display: flex;
+  align-items: center;
+  background-color: $color-background-secondary;
+  min-height: var(--mat-form-field-container-height, $form-field-container-height-default);
 
-  .ngx-mat-timepicker-control {
-    .mat-mdc-form-field-infix {
-      width: auto;
-      min-width: 40px;
-    }
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: $spacing-sm $spacing-md;
+    border: none;
+    background: transparent;
+    color: $color-text-primary;
+    font: inherit;
+    text-align: center;
+    outline: none;
 
-    .mat-mdc-form-field-subscript-wrapper {
-      display: none;
-    }
-
-    input.mat-mdc-input-element {
-      text-align: center;
-    }
-
-    .mdc-text-field--filled:not(.mdc-text-field--disabled) {
-      background-color: $color-background-secondary !important;
-    }
-
-    .mat-mdc-form-field-focus-overlay {
-      background-color: transparent !important;
-    }
-
-    .mdc-line-ripple {
-      display: none;
+    &::placeholder {
+      color: $color-text-secondary;
     }
   }
 
-  .ngx-mat-timepicker__toggle {
-    margin-bottom: 0 !important;
+  button[mat-icon-button] {
+    margin-bottom: 0;
 
-    mat-icon,
-    .mat-icon {
-      color: $color-text-primary !important;
+    mat-icon {
+      color: $color-text-primary;
     }
-  }
-
-  .ngx-mat-timepicker-control .arrows-wrap > .arrow svg {
-    fill: $color-text-secondary;
   }
 }
 

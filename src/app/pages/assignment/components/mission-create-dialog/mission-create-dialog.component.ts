@@ -41,9 +41,9 @@ export class MissionCreateDialogComponent {
   public readonly timeWindowForm = new FormGroup(
     {
       startDate: new FormControl<Date | null>(null, [Validators.required, futureDateValidator()]),
-      startTime: new FormControl<string | null>(null, [Validators.required]),
+      startTime: new FormControl<Date | null>(null, [Validators.required]),
       endDate: new FormControl<Date | null>(null, [Validators.required]),
-      endTime: new FormControl<string | null>(null, [Validators.required]),
+      endTime: new FormControl<Date | null>(null, [Validators.required]),
     },
     {
       validators: [timeWindowValidator()],

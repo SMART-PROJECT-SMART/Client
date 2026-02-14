@@ -88,7 +88,25 @@
           </mat-form-field>
           <div class="time-field">
             <label class="time-label">Start Time</label>
-            <ngx-mat-timepicker-field [format]="24" formControlName="startTime"></ngx-mat-timepicker-field>
+            <div class="time-input-wrapper">
+              <input
+                type="text"
+                [owlDateTime]="startTimePicker"
+                formControlName="startTime"
+                appTimeInput
+                placeholder="HH:mm"
+              />
+              <button mat-icon-button type="button" [owlDateTimeTrigger]="startTimePicker" aria-label="Open time picker">
+                <mat-icon>schedule</mat-icon>
+              </button>
+              <owl-date-time
+                #startTimePicker
+                [pickerType]="'timer'"
+                [showSecondsTimer]="false"
+                [hour12Timer]="false"
+                panelClass="owl-dt-picker-dark"
+              ></owl-date-time>
+            </div>
           </div>
         </div>
 
@@ -106,7 +124,25 @@
           </mat-form-field>
           <div class="time-field">
             <label class="time-label">End Time</label>
-            <ngx-mat-timepicker-field [format]="24" formControlName="endTime"></ngx-mat-timepicker-field>
+            <div class="time-input-wrapper">
+              <input
+                type="text"
+                [owlDateTime]="endTimePicker"
+                formControlName="endTime"
+                appTimeInput
+                placeholder="HH:mm"
+              />
+              <button mat-icon-button type="button" [owlDateTimeTrigger]="endTimePicker" aria-label="Open time picker">
+                <mat-icon>schedule</mat-icon>
+              </button>
+              <owl-date-time
+                #endTimePicker
+                [pickerType]="'timer'"
+                [showSecondsTimer]="false"
+                [hour12Timer]="false"
+                panelClass="owl-dt-picker-dark"
+              ></owl-date-time>
+            </div>
           </div>
         </div>
 

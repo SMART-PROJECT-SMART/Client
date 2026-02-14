@@ -50,9 +50,9 @@ export class MissionEditDialogComponent {
     this.timeWindowForm = new FormGroup(
       {
         startDate: new FormControl<Date>(startDate, [Validators.required, futureDateValidator()]),
-        startTime: new FormControl<string>(DateTimeUtil.formatTimeForInput(startDate), [Validators.required]),
+        startTime: new FormControl<Date>(startDate, [Validators.required]),
         endDate: new FormControl<Date>(endDate, [Validators.required]),
-        endTime: new FormControl<string>(DateTimeUtil.formatTimeForInput(endDate), [Validators.required]),
+        endTime: new FormControl<Date>(endDate, [Validators.required]),
       },
       {
         validators: [timeWindowValidator()],

@@ -27,6 +27,7 @@ import { UAVDialogComponent } from './pages/device-management-page/components/ua
 import { SleeveDialogComponent } from './pages/device-management-page/components/sleeve-dialog/sleeve-dialog.component';
 import { DeleteConfirmationDialogComponent } from './pages/device-management-page/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { NumericInputDirective } from './common/directives/numeric-input.directive';
+import { TimeInputDirective } from './common/directives/time-input.directive';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,7 @@ import { NumericInputDirective } from './common/directives/numeric-input.directi
     SleeveDialogComponent,
     DeleteConfirmationDialogComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule, NumericInputDirective],
+  imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule, NumericInputDirective, TimeInputDirective],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],
   bootstrap: [App],
 })
