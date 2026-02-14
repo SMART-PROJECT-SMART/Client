@@ -64,7 +64,6 @@ export class CesiumService {
     if (entity) {
       this.uavService.updateUAV(uavId, updateData);
     } else {
-      console.log(`[UAV] First telemetry for UAV ${uavId} | platformTypeIndex: ${platformTypeIndex} | position:`, updateData.position);
       this.addUAV(uavId, updateData, platformTypeIndex);
     }
   }

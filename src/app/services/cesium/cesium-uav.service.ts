@@ -27,8 +27,6 @@ export class CesiumUAVService {
     this.uavPlatformTypes.set(uavId, platformType);
 
     const modelUri = CesiumConstants.UAV_MODEL_PATHS[platformType];
-    console.log(`[UAV] Creating UAV ${uavId} | platformTypeIndex: ${platformTypeIndex} | resolved: ${platformType} | model: ${modelUri}`);
-
     const positionProperty = CesiumUavHelper.createSampledPositionProperty(viewer, updateData);
     this.uavPositionProperties.set(uavId, positionProperty);
     const cartesian = CesiumUavHelper.getCartesian(updateData);
@@ -38,7 +36,7 @@ export class CesiumUAVService {
       cartesian,
       yawCorrection
     );
-    const entity = viewer.entities.add({
+    return viewer.entities.add({
       id: `${CesiumConstants.UAV_ENTITY_PREFIX_NAME}${uavId}`,
       position: positionProperty,
       orientation: new Cesium.ConstantProperty(quaternion),
@@ -49,8 +47,6 @@ export class CesiumUAVService {
         scale: CesiumConstants.UAV_MODEL_SCALE,
       },
     });
-    console.log(`[UAV] Entity created for UAV ${uavId} | entity id: ${entity.id} | model ready: ${!!entity.model}`);
-    return entity;
   }
 
   public updateUAV(uavId: number, updateData: UAVUpdateData): void {
