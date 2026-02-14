@@ -56,9 +56,11 @@ export class UavTableComponent implements OnInit {
     this.dataSource.data = this.deviceManager.uavList();
     this.dataSource.filterPredicate = (data: UAVRo, filter: string) => {
       const searchStr = filter.toLowerCase();
+      const baseName = this.formatLocation(data.baseLocation).toLowerCase();
       return (
         data.tailId.toString().includes(searchStr) ||
-        data.platformType.toLowerCase().includes(searchStr)
+        data.platformType.toLowerCase().includes(searchStr) ||
+        baseName.includes(searchStr)
       );
     };
   }
