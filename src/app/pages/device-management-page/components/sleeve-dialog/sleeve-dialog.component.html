@@ -67,7 +67,7 @@
           @for (port of ports(); track port) {
             <mat-chip>
               {{ port }}
-              <mat-icon (click)="removePort(port)">cancel</mat-icon>
+              <mat-icon class="port-chip-remove-icon" (click)="removePort(port)">cancel</mat-icon>
             </mat-chip>
           }
         </mat-chip-set>

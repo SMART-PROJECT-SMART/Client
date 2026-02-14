@@ -80,6 +80,12 @@
   flex-wrap: wrap;
   gap: $spacing-xs;
 
+  ::ng-deep .port-chip-remove-icon {
+    font-size: $icon-size-sm !important;
+    width: $icon-size-sm !important;
+    height: $icon-size-sm !important;
+  }
+
   ::ng-deep mat-chip {
     .mdc-evolution-chip__cell {
       display: flex;
