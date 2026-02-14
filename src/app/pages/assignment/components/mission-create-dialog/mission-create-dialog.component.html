@@ -18,7 +18,7 @@
     <mat-step [stepControl]="basicInfoForm">
       <ng-template matStepLabel>
         <div class="step-label">
-          <mat-icon>info</mat-icon>
+          <mat-icon></mat-icon>
           <span>Basic Info</span>
         </div>
       </ng-template>
@@ -28,7 +28,9 @@
           <input matInput formControlName="title" />
           @if (basicInfoForm.get('title')?.hasError('maxlength')) {
             <mat-error>Maximum 60 characters</mat-error>
-          } @else if (basicInfoForm.get('title')?.hasError('required') && basicInfoForm.get('title')?.touched) {
+          } @else if (
+            basicInfoForm.get('title')?.hasError('required') && basicInfoForm.get('title')?.touched
+          ) {
             <mat-error>Mission title is required</mat-error>
           }
         </mat-form-field>
@@ -40,7 +42,10 @@
               <mat-option [value]="type">{{ EnumUtil.getUAVTypeDisplay(type) }}</mat-option>
             }
           </mat-select>
-          @if (basicInfoForm.get('requiredUAVType')?.hasError('required') && basicInfoForm.get('requiredUAVType')?.touched) {
+          @if (
+            basicInfoForm.get('requiredUAVType')?.hasError('required') &&
+            basicInfoForm.get('requiredUAVType')?.touched
+          ) {
             <mat-error>UAV Type is required</mat-error>
           }
         </mat-form-field>
@@ -52,14 +57,24 @@
               <mat-option [value]="level">{{ EnumUtil.getPriorityDisplay(level) }}</mat-option>
             }
           </mat-select>
-          @if (basicInfoForm.get('priority')?.hasError('required') && basicInfoForm.get('priority')?.touched) {
+          @if (
+            basicInfoForm.get('priority')?.hasError('required') &&
+            basicInfoForm.get('priority')?.touched
+          ) {
             <mat-error>Priority is required</mat-error>
           }
         </mat-form-field>
 
         <div class="step-actions">
           <button mat-button (click)="onCancel()">Cancel</button>
-          <button mat-raised-button color="primary" matStepperNext [disabled]="basicInfoForm.invalid">Next</button>
+          <button
+            mat-raised-button
+            color="primary"
+            matStepperNext
+            [disabled]="basicInfoForm.invalid"
+          >
+            Next
+          </button>
         </div>
       </form>
     </mat-step>
@@ -67,7 +82,7 @@
     <mat-step [stepControl]="timeWindowForm">
       <ng-template matStepLabel>
         <div class="step-label">
-          <mat-icon>schedule</mat-icon>
+          <mat-icon></mat-icon>
           <span>Time Window</span>
         </div>
       </ng-template>
@@ -80,7 +95,10 @@
             <mat-datepicker #startDatePicker></mat-datepicker>
             @if (timeWindowForm.get('startDate')?.hasError('matDatepickerParse')) {
               <mat-error>Enter a valid date</mat-error>
-            } @else if (timeWindowForm.get('startDate')?.hasError('required') && timeWindowForm.get('startDate')?.touched) {
+            } @else if (
+              timeWindowForm.get('startDate')?.hasError('required') &&
+              timeWindowForm.get('startDate')?.touched
+            ) {
               <mat-error>Required</mat-error>
             } @else if (timeWindowForm.get('startDate')?.hasError('pastDate')) {
               <mat-error>Must be a future date</mat-error>
@@ -96,7 +114,12 @@
                 appTimeInput
                 placeholder="HH:mm"
               />
-              <button mat-icon-button type="button" [owlDateTimeTrigger]="startTimePicker" aria-label="Open time picker">
+              <button
+                mat-icon-button
+                type="button"
+                [owlDateTimeTrigger]="startTimePicker"
+                aria-label="Open time picker"
+              >
                 <mat-icon>schedule</mat-icon>
               </button>
               <owl-date-time
@@ -118,7 +141,10 @@
             <mat-datepicker #endDatePicker></mat-datepicker>
             @if (timeWindowForm.get('endDate')?.hasError('matDatepickerParse')) {
               <mat-error>Enter a valid date</mat-error>
-            } @else if (timeWindowForm.get('endDate')?.hasError('required') && timeWindowForm.get('endDate')?.touched) {
+            } @else if (
+              timeWindowForm.get('endDate')?.hasError('required') &&
+              timeWindowForm.get('endDate')?.touched
+            ) {
               <mat-error>Required</mat-error>
             }
           </mat-form-field>
@@ -132,7 +158,12 @@
                 appTimeInput
                 placeholder="HH:mm"
               />
-              <button mat-icon-button type="button" [owlDateTimeTrigger]="endTimePicker" aria-label="Open time picker">
+              <button
+                mat-icon-button
+                type="button"
+                [owlDateTimeTrigger]="endTimePicker"
+                aria-label="Open time picker"
+              >
                 <mat-icon>schedule</mat-icon>
               </button>
               <owl-date-time
@@ -155,7 +186,14 @@
 
         <div class="step-actions">
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-raised-button color="primary" matStepperNext [disabled]="timeWindowForm.invalid">Next</button>
+          <button
+            mat-raised-button
+            color="primary"
+            matStepperNext
+            [disabled]="timeWindowForm.invalid"
+          >
+            Next
+          </button>
         </div>
       </form>
     </mat-step>
@@ -163,7 +201,7 @@
     <mat-step [stepControl]="locationForm">
       <ng-template matStepLabel>
         <div class="step-label">
-          <mat-icon>map</mat-icon>
+          <mat-icon></mat-icon>
           <span>Location</span>
         </div>
       </ng-template>
@@ -172,9 +210,18 @@
           <mat-form-field appearance="outline">
             <mat-label>Latitude (°)</mat-label>
             <input matInput type="number" formControlName="latitude" appNumericInput />
-            @if (locationForm.get('latitude')?.hasError('min') || locationForm.get('latitude')?.hasError('max')) {
-              <mat-error>Must be between {{ LocationValidation.LATITUDE_MIN }}° and {{ LocationValidation.LATITUDE_MAX }}°</mat-error>
-            } @else if (locationForm.get('latitude')?.hasError('required') && locationForm.get('latitude')?.touched) {
+            @if (
+              locationForm.get('latitude')?.hasError('min') ||
+              locationForm.get('latitude')?.hasError('max')
+            ) {
+              <mat-error
+                >Must be between {{ LocationValidation.LATITUDE_MIN }}° and
+                {{ LocationValidation.LATITUDE_MAX }}°</mat-error
+              >
+            } @else if (
+              locationForm.get('latitude')?.hasError('required') &&
+              locationForm.get('latitude')?.touched
+            ) {
               <mat-error>Required</mat-error>
             }
           </mat-form-field>
@@ -182,9 +229,18 @@
           <mat-form-field appearance="outline">
             <mat-label>Longitude (°)</mat-label>
             <input matInput type="number" formControlName="longitude" appNumericInput />
-            @if (locationForm.get('longitude')?.hasError('min') || locationForm.get('longitude')?.hasError('max')) {
-              <mat-error>Must be between {{ LocationValidation.LONGITUDE_MIN }}° and {{ LocationValidation.LONGITUDE_MAX }}°</mat-error>
-            } @else if (locationForm.get('longitude')?.hasError('required') && locationForm.get('longitude')?.touched) {
+            @if (
+              locationForm.get('longitude')?.hasError('min') ||
+              locationForm.get('longitude')?.hasError('max')
+            ) {
+              <mat-error
+                >Must be between {{ LocationValidation.LONGITUDE_MIN }}° and
+                {{ LocationValidation.LONGITUDE_MAX }}°</mat-error
+              >
+            } @else if (
+              locationForm.get('longitude')?.hasError('required') &&
+              locationForm.get('longitude')?.touched
+            ) {
               <mat-error>Required</mat-error>
             }
           </mat-form-field>
@@ -192,7 +248,10 @@
           <mat-form-field appearance="outline">
             <mat-label>Altitude (m)</mat-label>
             <input matInput type="number" formControlName="altitude" appNumericInput />
-            @if (locationForm.get('altitude')?.hasError('required') && locationForm.get('altitude')?.touched) {
+            @if (
+              locationForm.get('altitude')?.hasError('required') &&
+              locationForm.get('altitude')?.touched
+            ) {
               <mat-error>Required</mat-error>
             }
           </mat-form-field>
@@ -200,7 +259,14 @@
 
         <div class="step-actions">
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="isFormInvalid()">Create Mission</button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onSubmit()"
+            [disabled]="isFormInvalid()"
+          >
+            Create Mission
+          </button>
         </div>
       </form>
     </mat-step>
