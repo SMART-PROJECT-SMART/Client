@@ -28,6 +28,11 @@
   }
 }
 
+.empty-result-container p {
+  font-size: $font-size-xl;
+  margin: 0;
+}
+
 .view-results-container {
   display: flex;
   justify-content: center;
