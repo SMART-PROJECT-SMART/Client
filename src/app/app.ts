@@ -32,4 +32,5 @@ export class App {
     ),
     { initialValue: PAGE_TITLES[this.router.url] ?? 'SMART' },
   );
+
 }

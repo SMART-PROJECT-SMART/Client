@@ -1,5 +1,11 @@
 @use '../../../../styles/constants' as *;
 
+.assignment-page {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .loading-container,
 .error-container,
 .empty-result-container,

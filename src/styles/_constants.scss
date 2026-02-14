@@ -47,6 +47,8 @@ $button-size-sm: 32px;
 $button-size-md: 40px;
 $button-size-lg: 48px;
 
+$layout-hamburger-zone: calc(#{$spacing-md} + #{$button-size-lg});
+
 $font-size-xs: 11px;
 $font-size-sm: 12px;
 $font-size-md: 14px;

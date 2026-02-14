@@ -9,30 +9,25 @@
   overflow: hidden;
 }
 
-.top-navbar {
-  position: relative;
-  background-color: $color-background-dark;
-  border-bottom: $border-width-medium solid $color-primary-dark;
-  flex-shrink: 0;
+.floating-menu-btn {
+  position: fixed;
+  top: $spacing-md;
+  left: $spacing-md;
   z-index: $z-index-sidebar;
-  gap: $spacing-sm;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: $color-text-primary;
+  padding: 0;
+  cursor: pointer;
 
-  .navbar-logo {
-    height: 32px;
-    width: auto;
-    object-fit: contain;
+  &:hover {
+    color: $color-text-secondary;
   }
 
-  .page-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: $font-size-lg;
-    font-weight: 600;
-    color: $color-text-light;
-    letter-spacing: 0.03em;
-    white-space: nowrap;
-    pointer-events: none;
+  &:focus {
+    outline: none;
   }
 }
 
@@ -43,6 +38,6 @@
   .nav-drawer {
     width: 240px;
     background-color: $color-background-dark;
-    border-right: $border-width-medium solid $color-primary-dark;
+    transition: transform $transition-normal cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
