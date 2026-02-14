@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, ViewChild } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs/operators';
+import { MatSidenav } from '@angular/material/sidenav';
 import { ClientConstants } from './common';
 
 const { SidebarConstants } = ClientConstants;
@@ -22,7 +23,17 @@ const PAGE_TITLES: Record<string, string> = {
 export class App {
   public readonly logoPath: string = SidebarConstants.LOGO_PATH;
 
+  @ViewChild('sidenav') private readonly sidenav: MatSidenav | undefined;
+
   private readonly router = inject(Router);
+
+  public toggleMenu(): void {
+    this.sidenav?.toggle();
+  }
+
+  public closeMenu(): void {
+    this.sidenav?.close();
+  }
 
   public readonly pageTitle = toSignal(
     this.router.events.pipe(
