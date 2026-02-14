@@ -31,7 +31,9 @@ export class SleeveDialogComponent {
   public readonly LocationValidation = LocationValidation;
   public readonly DeviceValidationConstants = DeviceValidationConstants;
   public readonly ports = signal<number[]>(
-    this.data.sleeve ? [...this.data.sleeve.portNumbers] : [],
+    this.data.sleeve
+      ? [...this.data.sleeve.portNumbers.slice(0, DeviceValidationConstants.SLEEVE_PORT_COUNT)]
+      : [],
   );
   public readonly portsInteracted = signal(false);
   public readonly portInput = new FormControl<number | null>(null);
@@ -66,6 +68,7 @@ export class SleeveDialogComponent {
   }
 
   public addPort(): void {
+    if (this.ports().length >= DeviceValidationConstants.SLEEVE_PORT_COUNT) return;
     this.portInput.markAsTouched();
     const error = this.validatePort();
     if (error) {
@@ -105,7 +108,7 @@ export class SleeveDialogComponent {
   }
 
   public onSubmit(): void {
-    if (this.sleeveForm.invalid || this.ports().length < DeviceValidationConstants.SLEEVE_MIN_PORTS) {
+    if (this.sleeveForm.invalid || this.ports().length !== DeviceValidationConstants.SLEEVE_PORT_COUNT) {
       this.sleeveForm.markAllAsTouched();
       return;
     }

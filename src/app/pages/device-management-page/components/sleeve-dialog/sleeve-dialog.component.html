@@ -59,7 +59,7 @@
             <mat-error>Port number is required</mat-error>
           }
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="addPort()" class="add-port-button" [disabled]="!portInput.value || portInput.errors">Add</button>
+        <button mat-raised-button color="primary" (click)="addPort()" class="add-port-button" [disabled]="!portInput.value || portInput.errors || ports().length >= DeviceValidationConstants.SLEEVE_PORT_COUNT">Add</button>
       </div>
 
       @if (ports().length > 0) {
@@ -72,14 +72,14 @@
           }
         </mat-chip-set>
       }
-      @if (ports().length < DeviceValidationConstants.SLEEVE_MIN_PORTS && portsInteracted()) {
-        <span class="ports-required-error">At least {{ DeviceValidationConstants.SLEEVE_MIN_PORTS }} port numbers are required</span>
+      @if (ports().length !== DeviceValidationConstants.SLEEVE_PORT_COUNT && portsInteracted()) {
+        <span class="ports-required-error">Exactly {{ DeviceValidationConstants.SLEEVE_PORT_COUNT }} port numbers are required</span>
       }
     </div>
 
     <div class="form-actions">
       <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="sleeveForm.invalid || ports().length < DeviceValidationConstants.SLEEVE_MIN_PORTS">
+      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="sleeveForm.invalid || ports().length !== DeviceValidationConstants.SLEEVE_PORT_COUNT">
         {{ isEditMode ? 'Update' : 'Create' }}
       </button>
     </div>
