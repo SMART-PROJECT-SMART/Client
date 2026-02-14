@@ -37,6 +37,11 @@ export class CesiumConstants {
   public static readonly SAMPLE_TIME_BUFFER_SECONDS = 1.5;
   public static readonly EPOCH_START_ISO = '1900-01-01';
 
-  public static readonly UAV_MODEL_YAW_ANGLE_CORRECTION_DEGREES = 90;
+  public static readonly UAV_MODEL_YAW_CORRECTIONS: Record<PlatformType, number> = {
+    [PlatformType.Hermes900]: 180,
+    [PlatformType.HeronTP]: 0,
+    [PlatformType.Hermes450]: -90,
+    [PlatformType.Searcher]: 270,
+  };
   public static readonly UAV_ENTITY_PREFIX_NAME = 'uav-';
 }

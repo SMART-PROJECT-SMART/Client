@@ -13,22 +13,32 @@ const platformTypeValues = Object.values(PlatformType);
 })
 export class CesiumUAVService {
   private readonly uavPositionProperties = new Map<number, Cesium.SampledPositionProperty>();
+  private readonly uavPlatformTypes = new Map<number, PlatformType>();
   private viewer?: Cesium.Viewer;
+
+  private resolvePlatformType(platformTypeIndex: number): PlatformType {
+    return (platformTypeValues[platformTypeIndex] as PlatformType | undefined)
+      ?? PlatformType.Hermes900;
+  }
 
   public createUAV(viewer: Cesium.Viewer, uavId: number, updateData: UAVUpdateData, platformTypeIndex: number): Cesium.Entity {
     this.viewer = viewer;
+    const platformType = this.resolvePlatformType(platformTypeIndex);
+    this.uavPlatformTypes.set(uavId, platformType);
+
+    const modelUri = CesiumConstants.UAV_MODEL_PATHS[platformType];
+    console.log(`[UAV] Creating UAV ${uavId} | platformTypeIndex: ${platformTypeIndex} | resolved: ${platformType} | model: ${modelUri}`);
+
     const positionProperty = CesiumUavHelper.createSampledPositionProperty(viewer, updateData);
     this.uavPositionProperties.set(uavId, positionProperty);
     const cartesian = CesiumUavHelper.getCartesian(updateData);
+    const yawCorrection = CesiumConstants.UAV_MODEL_YAW_CORRECTIONS[platformType];
     const quaternion = CesiumOrientationHelper.calculateHeadingPitchRollQuaternion(
       updateData,
-      cartesian
+      cartesian,
+      yawCorrection
     );
-    const platformType = platformTypeValues[platformTypeIndex] as PlatformType | undefined;
-    const modelUri = platformType
-      ? CesiumConstants.UAV_MODEL_PATHS[platformType]
-      : CesiumConstants.UAV_MODEL_PATHS[PlatformType.Hermes900];
-    return viewer.entities.add({
+    const entity = viewer.entities.add({
       id: `${CesiumConstants.UAV_ENTITY_PREFIX_NAME}${uavId}`,
       position: positionProperty,
       orientation: new Cesium.ConstantProperty(quaternion),
@@ -39,6 +49,8 @@ export class CesiumUAVService {
         scale: CesiumConstants.UAV_MODEL_SCALE,
       },
     });
+    console.log(`[UAV] Entity created for UAV ${uavId} | entity id: ${entity.id} | model ready: ${!!entity.model}`);
+    return entity;
   }
 
   public updateUAV(uavId: number, updateData: UAVUpdateData): void {
@@ -57,8 +69,10 @@ export class CesiumUAVService {
       positionProperty,
       updateData
     );
+    const platformType = this.uavPlatformTypes.get(uavId) ?? PlatformType.Hermes900;
+    const yawCorrection = CesiumConstants.UAV_MODEL_YAW_CORRECTIONS[platformType];
     entity.orientation = new Cesium.ConstantProperty(
-      CesiumOrientationHelper.calculateQuaternion(updateData, cartesian)
+      CesiumOrientationHelper.calculateQuaternion(updateData, cartesian, yawCorrection)
     );
   }
 
