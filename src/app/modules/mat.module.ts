@@ -21,7 +21,6 @@ import { MatTab, MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
@@ -29,6 +28,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 
 const MaterialModules = [
   MatCard,
@@ -55,7 +56,6 @@ const MaterialModules = [
   MatTooltipModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  NgxMatTimepickerModule,
   MatTabGroup,
   MatTab,
   MatTableModule,
@@ -65,6 +65,8 @@ const MaterialModules = [
   MatAutocompleteModule,
   MatToolbarModule,
   MatSidenavModule,
+  OverlayModule,
+  NgxMatTimepickerModule,
 ];
 
 @NgModule({
