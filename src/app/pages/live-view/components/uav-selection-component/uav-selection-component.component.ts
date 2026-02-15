@@ -10,7 +10,7 @@ import { UAVStoreService } from '../../../../services/uav/uav-store.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UavSelectionComponentComponent {
-  public isCollapsed = signal(false);
+  public isCollapsed = signal(true);
 
   constructor(private readonly uavStore: UAVStoreService) {}
 

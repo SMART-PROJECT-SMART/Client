@@ -8,7 +8,6 @@ $toggle-width: 32px;
   display: flex;
   height: 100%;
   background-color: $color-background-secondary;
-  transition: width 0.3s ease;
   width: $panel-width + $toggle-width;
 
   &.collapsed {
@@ -53,7 +52,6 @@ $toggle-width: 32px;
   width: $panel-width;
   height: 100%;
   overflow: hidden;
-  transition: opacity 0.3s ease;
   display: flex;
   flex-direction: column;
 }

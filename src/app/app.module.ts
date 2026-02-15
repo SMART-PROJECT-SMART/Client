@@ -21,6 +21,7 @@ import { AssignmentPageComponentComponent } from './pages/assignment/assignment-
 import { UavSelectionComponentComponent } from './pages/live-view/components/uav-selection-component/uav-selection-component.component';
 import { UavOptionComponentComponent } from './pages/live-view/components/uav-option-component/uav-option-component.component';
 import { DeviceManagementPageComponent } from './pages/device-management-page/device-management-page.component';
+import { ArchivePageComponent } from './pages/archive-page/archive-page.component';
 import { UavTableComponent } from './pages/device-management-page/components/uav-table/uav-table.component';
 import { SleeveTableComponent } from './pages/device-management-page/components/sleeve-table/sleeve-table.component';
 import { UAVDialogComponent } from './pages/device-management-page/components/uavdialog/uavdialog.component';
@@ -50,6 +51,7 @@ import { TimeInputDirective } from './common/directives/time-input.directive';
     UAVDialogComponent,
     SleeveDialogComponent,
     DeleteConfirmationDialogComponent,
+    ArchivePageComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule, NumericInputDirective, TimeInputDirective],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],

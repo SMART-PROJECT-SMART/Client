@@ -18,6 +18,7 @@ export class SidebarComponent {
     { label: 'Assignment', icon: 'assignment', route: '/assignment-page' },
     { label: 'Live View', icon: 'map', route: '/live-view-page' },
     { label: 'Device Management', icon: 'devices', route: '/device-management-page' },
+    { label: 'Archive', icon: 'archive', route: '/archive' },
   ];
 
   private readonly router = inject(Router);
