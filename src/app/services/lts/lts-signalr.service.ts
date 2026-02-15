@@ -16,6 +16,7 @@ const { LTS, Endpoints } = SignalRConstants;
 export class LtsSignalRService {
   private connection: signalR.HubConnection | null = null;
   private sessionId: string | null = null;
+  private connecting = false;
 
   constructor() {}
   public readonly isConnected: WritableSignal<boolean> = signal<boolean>(false);
@@ -23,27 +24,35 @@ export class LtsSignalRService {
     signal<TelemetryBroadcastDto | null>(null);
 
   public async connect(uavTailIds: number[]): Promise<void> {
-    if (this.connection) {
-      await this.disconnect();
+    if (this.connecting) {
+      return;
     }
+    this.connecting = true;
+    try {
+      if (this.connection) {
+        await this.disconnect();
+      }
 
-    this.sessionId = crypto.randomUUID();
-    const hubUrl = `${LTS.BASE_URL}${LTS.HUB_ENDPOINT}?sessionId=${this.sessionId}`;
+      this.sessionId = crypto.randomUUID();
+      const hubUrl = `${LTS.BASE_URL}${LTS.HUB_ENDPOINT}?sessionId=${this.sessionId}`;
 
-    this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(hubUrl)
-      .withAutomaticReconnect()
-      .build();
+      this.connection = new signalR.HubConnectionBuilder()
+        .withUrl(hubUrl)
+        .withAutomaticReconnect()
+        .build();
 
-    this.setupEventHandlers();
-    const sessionReady$ = this.waitForSessionReady();
+      this.setupEventHandlers();
+      const sessionReady$ = this.waitForSessionReady();
 
-    await this.connection.start();
-    this.isConnected.set(true);
+      await this.connection.start();
+      this.isConnected.set(true);
 
-    await firstValueFrom(sessionReady$);
+      await firstValueFrom(sessionReady$);
 
-    await this.subscribeToUAVs(uavTailIds, defaultWantedFields);
+      await this.subscribeToUAVs(uavTailIds, defaultWantedFields);
+    } finally {
+      this.connecting = false;
+    }
   }
 
   public async connectToAllUAVs(): Promise<void> {
