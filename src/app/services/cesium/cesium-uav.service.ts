@@ -14,11 +14,41 @@ const platformTypeValues = Object.values(PlatformType);
 export class CesiumUAVService {
   private readonly uavPositionProperties = new Map<number, Cesium.SampledPositionProperty>();
   private readonly uavPlatformTypes = new Map<number, PlatformType>();
+  private readonly orientationCurrentByUav = new Map<number, Cesium.Quaternion>();
+  private readonly orientationTargetByUav = new Map<number, Cesium.Quaternion>();
+  private readonly orientationLastUpdateTimeMs = new Map<number, number>();
   private viewer?: Cesium.Viewer;
 
   private resolvePlatformType(platformTypeIndex: number): PlatformType {
     return (platformTypeValues[platformTypeIndex] as PlatformType | undefined)
       ?? PlatformType.Hermes900;
+  }
+
+  private getSmoothedOrientation(uavId: number, result?: Cesium.Quaternion): Cesium.Quaternion | undefined {
+    const current = this.orientationCurrentByUav.get(uavId);
+    const target = this.orientationTargetByUav.get(uavId);
+    if (!current || !target) return current ?? target;
+    const dot = Math.abs(Cesium.Quaternion.dot(current, target));
+    const angleRad = 2 * Math.acos(Math.min(1, dot));
+    const isJump = angleRad >= CesiumConstants.ORIENTATION_JUMP_ANGLE_RADIANS;
+    if (isJump) {
+      const snap = Cesium.Quaternion.clone(target, result ?? new Cesium.Quaternion());
+      this.orientationCurrentByUav.set(uavId, Cesium.Quaternion.clone(target, new Cesium.Quaternion()));
+      return snap;
+    }
+    const now = performance.now();
+    const lastMs = this.orientationLastUpdateTimeMs.get(uavId) ?? now;
+    this.orientationLastUpdateTimeMs.set(uavId, now);
+    const deltaMs = Math.min(now - lastMs, CesiumConstants.ORIENTATION_DELTA_MS_CLAMP);
+    const durationMs = CesiumConstants.ORIENTATION_SMOOTH_DURATION_MS;
+    const blend =
+      durationMs <= 0
+        ? 1
+        : Math.min(1, 1 - Math.exp(-deltaMs / durationMs));
+    const out = result ?? new Cesium.Quaternion();
+    Cesium.Quaternion.slerp(current, target, blend, out);
+    this.orientationCurrentByUav.set(uavId, Cesium.Quaternion.clone(out, new Cesium.Quaternion()));
+    return out;
   }
 
   public createUAV(viewer: Cesium.Viewer, uavId: number, updateData: UAVUpdateData, platformTypeIndex: number): Cesium.Entity {
@@ -36,10 +66,18 @@ export class CesiumUAVService {
       cartesian,
       yawCorrection
     );
+    const quatClone = Cesium.Quaternion.clone(quaternion, new Cesium.Quaternion());
+    this.orientationCurrentByUav.set(uavId, quatClone);
+    this.orientationTargetByUav.set(uavId, Cesium.Quaternion.clone(quaternion, new Cesium.Quaternion()));
+    const orientationProperty = new Cesium.CallbackProperty(
+      (time?: Cesium.JulianDate, result?: Cesium.Quaternion) =>
+        this.getSmoothedOrientation(uavId, result),
+      false
+    );
     return viewer.entities.add({
       id: `${CesiumConstants.UAV_ENTITY_PREFIX_NAME}${uavId}`,
       position: positionProperty,
-      orientation: new Cesium.ConstantProperty(quaternion),
+      orientation: orientationProperty,
       model: {
         uri: modelUri,
         minimumPixelSize: CesiumConstants.UAV_MODEL_MINIMUM_PIXEL_SIZE,
@@ -67,12 +105,18 @@ export class CesiumUAVService {
     );
     const platformType = this.uavPlatformTypes.get(uavId) ?? PlatformType.Hermes900;
     const yawCorrection = CesiumConstants.UAV_MODEL_YAW_CORRECTIONS[platformType];
-    entity.orientation = new Cesium.ConstantProperty(
-      CesiumOrientationHelper.calculateQuaternion(updateData, cartesian, yawCorrection)
-    );
+    const targetQuat = CesiumOrientationHelper.calculateQuaternion(updateData, cartesian, yawCorrection);
+    this.orientationTargetByUav.set(uavId, Cesium.Quaternion.clone(targetQuat, new Cesium.Quaternion()));
   }
 
   public removeUAV(viewer: Cesium.Viewer, entity: Cesium.Entity): void {
+    const id = entity.id;
+    if (typeof id === 'string' && id.startsWith(CesiumConstants.UAV_ENTITY_PREFIX_NAME)) {
+      const uavId = Number(id.slice(CesiumConstants.UAV_ENTITY_PREFIX_NAME.length));
+      this.orientationCurrentByUav.delete(uavId);
+      this.orientationTargetByUav.delete(uavId);
+      this.orientationLastUpdateTimeMs.delete(uavId);
+    }
     viewer.entities.remove(entity);
   }
 
@@ -86,5 +130,8 @@ export class CesiumUAVService {
     entitiesToRemove.forEach((entity) => {
       viewer.entities.remove(entity);
     });
+    this.orientationCurrentByUav.clear();
+    this.orientationTargetByUav.clear();
+    this.orientationLastUpdateTimeMs.clear();
   }
 }
