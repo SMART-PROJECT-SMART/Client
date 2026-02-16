@@ -39,7 +39,7 @@ export class CesiumConstants {
 
   public static readonly UAV_MODEL_YAW_CORRECTIONS: Record<PlatformType, number> = {
     [PlatformType.Hermes900]: 180,
-    [PlatformType.HeronTP]: 0,
+    [PlatformType.HeronTP]: 90,
     [PlatformType.Hermes450]: -90,
     [PlatformType.Searcher]: 270,
   };
@@ -49,4 +49,7 @@ export class CesiumConstants {
   public static readonly ORIENTATION_SMOOTH_DURATION_MS = 450;
   public static readonly ORIENTATION_DELTA_MS_CLAMP = 100;
   public static readonly ORIENTATION_JUMP_ANGLE_RADIANS = 1.5;
+
+  public static readonly POSITION_JUMP_LOG_LAT_LON_DEGREES = 0.02;
+  public static readonly POSITION_JUMP_LOG_HEIGHT_METERS = 10;
 }

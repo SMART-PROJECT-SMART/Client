@@ -17,6 +17,10 @@ export class CesiumUAVService {
   private readonly orientationCurrentByUav = new Map<number, Cesium.Quaternion>();
   private readonly orientationTargetByUav = new Map<number, Cesium.Quaternion>();
   private readonly orientationLastUpdateTimeMs = new Map<number, number>();
+  private readonly lastLoggedPositionByUav = new Map<
+    number,
+    { latitude: number; longitude: number; height: number }
+  >();
   private viewer?: Cesium.Viewer;
 
   private resolvePlatformType(platformTypeIndex: number): PlatformType {
@@ -98,6 +102,26 @@ export class CesiumUAVService {
     if (!entity) {
       return;
     }
+    const pos = updateData.position;
+    const last = this.lastLoggedPositionByUav.get(uavId);
+    const latLonThreshold = CesiumConstants.POSITION_JUMP_LOG_LAT_LON_DEGREES;
+    const heightThreshold = CesiumConstants.POSITION_JUMP_LOG_HEIGHT_METERS;
+    const latJump = last !== undefined && Math.abs(pos.latitude - last.latitude) >= latLonThreshold;
+    const lonJump = last !== undefined && Math.abs(pos.longitude - last.longitude) >= latLonThreshold;
+    const heightJump =
+      last !== undefined && Math.abs(pos.height - last.height) >= heightThreshold;
+    if (latJump || lonJump || heightJump) {
+      console.log('[UAV] large position jump from LTS', {
+        uavId,
+        previous: last,
+        fromLts: pos,
+      });
+    }
+    this.lastLoggedPositionByUav.set(uavId, {
+      latitude: pos.latitude,
+      longitude: pos.longitude,
+      height: pos.height,
+    });
     const cartesian = CesiumUavHelper.addSampleToPositionProperty(
       this.viewer,
       positionProperty,
@@ -116,6 +140,7 @@ export class CesiumUAVService {
       this.orientationCurrentByUav.delete(uavId);
       this.orientationTargetByUav.delete(uavId);
       this.orientationLastUpdateTimeMs.delete(uavId);
+      this.lastLoggedPositionByUav.delete(uavId);
     }
     viewer.entities.remove(entity);
   }
@@ -133,5 +158,6 @@ export class CesiumUAVService {
     this.orientationCurrentByUav.clear();
     this.orientationTargetByUav.clear();
     this.orientationLastUpdateTimeMs.clear();
+    this.lastLoggedPositionByUav.clear();
   }
 }
