@@ -18,9 +18,9 @@ export class CesiumConstants {
   };
   public static readonly UAV_MODEL_SCALE = 1.0;
   public static readonly UAV_MODEL_HEADING_OFFSET_RADIANS = 0;
-  public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 0;
+  public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 128;
   public static readonly UAV_MODEL_MAXIMUM_SCALE = 20000;
-  public static readonly UAV_MODEL_FIXED_PIXEL_SIZE = 250;
+  public static readonly UAV_MODEL_FIXED_PIXEL_SIZE = 400;
   public static readonly UAV_MODEL_APPROX_RADIUS_METERS = 6;
   public static readonly UAV_MODEL_SHADOWS_ENABLED = true;
   public static readonly UAV_MODEL_COLOR_CSS = '#ffffff';

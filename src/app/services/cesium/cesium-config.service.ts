@@ -52,6 +52,7 @@ export class CesiumConfigService {
       fullscreenButton: false,
       vrButton: false,
       infoBox: false,
+      shadows: true,
     };
 
     if (imageryProvider !== undefined) {
