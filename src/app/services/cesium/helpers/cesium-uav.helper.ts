@@ -29,17 +29,8 @@ export class CesiumUavHelper {
       CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
       new Cesium.JulianDate()
     );
-    let heightAboveEllipsoid = updateData.position.height;
-    if (CesiumConstants.UAV_ALTITUDE_AS_AGL) {
-      const carto = Cesium.Cartographic.fromDegrees(
-        updateData.position.longitude,
-        updateData.position.latitude,
-        0
-      );
-      const terrainHeight = viewer.scene.globe.getHeight(carto) ?? 0;
-      heightAboveEllipsoid = terrainHeight + updateData.position.height;
-    }
-    const cartesian = this.getCartesian(updateData, heightAboveEllipsoid);
+    const height = updateData.position.height;
+    const cartesian = this.getCartesian(updateData, height);
     positionProperty.addSample(time, cartesian);
     return cartesian;
   }

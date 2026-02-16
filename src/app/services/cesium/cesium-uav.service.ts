@@ -91,6 +91,12 @@ export class CesiumUAVService {
         minimumPixelSize: CesiumConstants.UAV_MODEL_MINIMUM_PIXEL_SIZE,
         maximumScale: CesiumConstants.UAV_MODEL_MAXIMUM_SCALE,
         scale: scaleProperty,
+        shadows: CesiumConstants.UAV_MODEL_SHADOWS_ENABLED
+          ? Cesium.ShadowMode.ENABLED
+          : Cesium.ShadowMode.DISABLED,
+        heightReference: CesiumConstants.UAV_ALTITUDE_AS_AGL
+          ? Cesium.HeightReference.RELATIVE_TO_GROUND
+          : Cesium.HeightReference.NONE,
       },
     });
   }

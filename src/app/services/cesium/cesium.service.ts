@@ -113,6 +113,7 @@ export class CesiumService {
   private setupViewer(): void {
     if (!this.viewer) return;
 
+    this.viewer.scene.shadowMap.enabled = true;
     this.viewer.scene.requestRenderMode = false;
     this.viewer.clock.shouldAnimate = true;
     this.viewer.clock.clockRange = Cesium.ClockRange.UNBOUNDED;
