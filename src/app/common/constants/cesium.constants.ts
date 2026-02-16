@@ -17,8 +17,9 @@ export class CesiumConstants {
     [PlatformType.Searcher]: '/models/searcher.glb',
   };
   public static readonly UAV_MODEL_SCALE = 1.0;
+  public static readonly UAV_MODEL_MINIMUM_SCALE = 15.0;
   public static readonly UAV_MODEL_HEADING_OFFSET_RADIANS = 0;
-  public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 128;
+  public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 400;
   public static readonly UAV_MODEL_MAXIMUM_SCALE = 20000;
   public static readonly UAV_MODEL_FIXED_PIXEL_SIZE = 400;
   public static readonly UAV_MODEL_APPROX_RADIUS_METERS = 6;

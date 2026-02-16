@@ -106,12 +106,14 @@ export class CesiumUAVService {
 
   private getFixedPixelScale(uavId: number, time?: Cesium.JulianDate): number {
     const positionProperty = this.uavPositionProperties.get(uavId);
-    if (!this.viewer || !positionProperty || !time) {
-      return CesiumConstants.UAV_MODEL_SCALE;
+    const minScale = CesiumConstants.UAV_MODEL_MINIMUM_SCALE;
+    if (!this.viewer || !positionProperty) {
+      return minScale;
     }
-    const position = positionProperty.getValue(time);
+    const effectiveTime = time ?? this.viewer.clock.currentTime;
+    const position = positionProperty.getValue(effectiveTime);
     if (!position) {
-      return CesiumConstants.UAV_MODEL_SCALE;
+      return minScale;
     }
     const r = CesiumConstants.UAV_MODEL_APPROX_RADIUS_METERS;
     const sphere = new Cesium.BoundingSphere(position, r);
@@ -119,11 +121,15 @@ export class CesiumUAVService {
     const w = canvas.width || canvas.clientWidth || 1;
     const h = canvas.height || canvas.clientHeight || 1;
     const metersPerPixel = this.viewer.camera.getPixelSize(sphere, w, h);
-    const targetPx = CesiumConstants.UAV_MODEL_FIXED_PIXEL_SIZE;
-    const scale = (targetPx * metersPerPixel) / (2 * r);
-    const minScale = 0.01;
     const maxScale = CesiumConstants.UAV_MODEL_MAXIMUM_SCALE;
-    return Math.max(minScale, Math.min(maxScale, scale));
+    if (!Number.isFinite(metersPerPixel) || metersPerPixel <= 0) {
+      return minScale;
+    }
+    const targetPx = CesiumConstants.UAV_MODEL_FIXED_PIXEL_SIZE;
+    let scale = (targetPx * metersPerPixel) / (2 * r);
+    if (scale < minScale) scale = minScale;
+    const clamped = Math.min(maxScale, scale);
+    return Number.isFinite(clamped) ? clamped : minScale;
   }
 
   public updateUAV(uavId: number, updateData: UAVUpdateData): void {
