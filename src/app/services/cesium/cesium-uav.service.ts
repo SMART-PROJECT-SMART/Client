@@ -97,6 +97,9 @@ export class CesiumUAVService {
         heightReference: CesiumConstants.UAV_ALTITUDE_AS_AGL
           ? Cesium.HeightReference.RELATIVE_TO_GROUND
           : Cesium.HeightReference.NONE,
+        color: Cesium.Color.fromCssColorString(CesiumConstants.UAV_MODEL_COLOR_CSS),
+        colorBlendMode: Cesium.ColorBlendMode.MIX,
+        colorBlendAmount: CesiumConstants.UAV_MODEL_COLOR_BLEND_AMOUNT,
       },
     });
   }

@@ -23,6 +23,8 @@ export class CesiumConstants {
   public static readonly UAV_MODEL_FIXED_PIXEL_SIZE = 250;
   public static readonly UAV_MODEL_APPROX_RADIUS_METERS = 6;
   public static readonly UAV_MODEL_SHADOWS_ENABLED = true;
+  public static readonly UAV_MODEL_COLOR_CSS = '#ffffff';
+  public static readonly UAV_MODEL_COLOR_BLEND_AMOUNT = 0.7;
 
   public static readonly CAMERA_FLY_DURATION_SECONDS = 2;
   public static readonly CAMERA_UAV_FLY_DURATION_SECONDS = 3;
