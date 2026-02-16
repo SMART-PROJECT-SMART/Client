@@ -9,11 +9,12 @@ export class CesiumUavHelper {
     interpolationDegree: CesiumConstants.POSITION_INTERPOLATION_DEGREE,
   };
 
-  static getCartesian(updateData: UAVUpdateData): Cesium.Cartesian3 {
+  static getCartesian(updateData: UAVUpdateData, heightOverride?: number): Cesium.Cartesian3 {
+    const height = heightOverride ?? updateData.position.height;
     return Cesium.Cartesian3.fromDegrees(
       updateData.position.longitude,
       updateData.position.latitude,
-      updateData.position.height
+      height
     );
   }
 
@@ -28,7 +29,17 @@ export class CesiumUavHelper {
       CesiumConstants.SAMPLE_TIME_BUFFER_SECONDS,
       new Cesium.JulianDate()
     );
-    const cartesian = this.getCartesian(updateData);
+    let heightAboveEllipsoid = updateData.position.height;
+    if (CesiumConstants.UAV_ALTITUDE_AS_AGL) {
+      const carto = Cesium.Cartographic.fromDegrees(
+        updateData.position.longitude,
+        updateData.position.latitude,
+        0
+      );
+      const terrainHeight = viewer.scene.globe.getHeight(carto) ?? 0;
+      heightAboveEllipsoid = terrainHeight + updateData.position.height;
+    }
+    const cartesian = this.getCartesian(updateData, heightAboveEllipsoid);
     positionProperty.addSample(time, cartesian);
     return cartesian;
   }

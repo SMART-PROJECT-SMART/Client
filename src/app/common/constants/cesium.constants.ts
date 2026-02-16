@@ -45,6 +45,8 @@ export class CesiumConstants {
   };
   public static readonly UAV_ENTITY_PREFIX_NAME = 'uav-';
 
+  public static readonly UAV_ALTITUDE_AS_AGL = true;
+
   public static readonly ORIENTATION_SMOOTH_ALPHA = 0.08;
   public static readonly ORIENTATION_SMOOTH_DURATION_MS = 450;
   public static readonly ORIENTATION_DELTA_MS_CLAMP = 100;
