@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import * as Cesium from 'cesium';
+import { CesiumConstants } from '../../common/constants/cesium.constants';
 import { CesiumConfigService } from './cesium-config.service';
 import { CesiumCameraService } from './cesium-camera.service';
 import { CesiumUAVService } from './cesium-uav.service';
@@ -118,6 +119,9 @@ export class CesiumService {
     this.viewer.clock.shouldAnimate = true;
     this.viewer.clock.clockRange = Cesium.ClockRange.UNBOUNDED;
     this.viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK;
+
+    this.viewer.scene.screenSpaceCameraController.minimumZoomDistance =
+      CesiumConstants.CAMERA_MINIMUM_ZOOM_DISTANCE;
 
     const creditContainer = this.viewer.cesiumWidget.creditContainer as HTMLElement;
     if (creditContainer) {
