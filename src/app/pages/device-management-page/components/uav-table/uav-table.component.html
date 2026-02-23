@@ -51,6 +51,11 @@
           <td mat-cell *matCellDef="let uav">{{ getPlatformTypeDisplay(uav.platformType) }}</td>
         </ng-container>
 
+        <ng-container matColumnDef="uavType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>UAV Type</th>
+          <td mat-cell *matCellDef="let uav">{{ getUAVTypeDisplay(uav.platformType) }}</td>
+        </ng-container>
+
         <ng-container matColumnDef="baseLocation">
           <th mat-header-cell *matHeaderCellDef>Base Location</th>
           <td mat-cell *matCellDef="let uav" class="location-cell">

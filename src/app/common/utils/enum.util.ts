@@ -47,6 +47,11 @@ export class EnumUtil {
     return displayMap[field];
   }
 
+  public static getUAVTypeFromPlatform(platformType: PlatformType): UAVType {
+    const armedPlatforms = [PlatformType.Hermes900, PlatformType.HeronTP];
+    return armedPlatforms.includes(platformType) ? UAVType.Armed : UAVType.Surveillance;
+  }
+
   public static getPlatformTypeDisplay(platformType: PlatformType | number): string {
     const platformValues = Object.values(PlatformType);
     const resolvedType =

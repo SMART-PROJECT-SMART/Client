@@ -28,6 +28,7 @@ export class UavTableComponent implements OnInit {
   public readonly displayedColumns: string[] = [
     'tailId',
     'platformType',
+    'uavType',
     'baseLocation',
     'actions',
   ];
@@ -57,9 +58,11 @@ export class UavTableComponent implements OnInit {
     this.dataSource.filterPredicate = (data: UAVRo, filter: string) => {
       const searchStr = filter.toLowerCase();
       const baseName = this.formatLocation(data.baseLocation).toLowerCase();
+      const uavType = this.getUAVTypeDisplay(data.platformType).toLowerCase();
       return (
         data.tailId.toString().includes(searchStr) ||
         data.platformType.toLowerCase().includes(searchStr) ||
+        uavType.includes(searchStr) ||
         baseName.includes(searchStr)
       );
     };
@@ -151,6 +154,10 @@ export class UavTableComponent implements OnInit {
 
   public getPlatformTypeDisplay(platformType: PlatformType | number): string {
     return EnumUtil.getPlatformTypeDisplay(platformType);
+  }
+
+  public getUAVTypeDisplay(platformType: PlatformType): string {
+    return EnumUtil.getUAVTypeDisplay(EnumUtil.getUAVTypeFromPlatform(platformType));
   }
 
   private showToast(message: string): void {
