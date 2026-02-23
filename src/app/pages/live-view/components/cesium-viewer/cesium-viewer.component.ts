@@ -38,7 +38,6 @@ export class CesiumViewer implements OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     await this.cesiumService.initializeViewer('cesium-container');
     this.isInitialized.set(true);
-    this.cesiumService.zoomToIsrael();
     await this.ltsService.connectToAllUAVs();
   }
 

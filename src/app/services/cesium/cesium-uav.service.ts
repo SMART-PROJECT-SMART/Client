@@ -106,7 +106,11 @@ export class CesiumUAVService {
 
   private getFixedPixelScale(uavId: number, time?: Cesium.JulianDate): number {
     const positionProperty = this.uavPositionProperties.get(uavId);
-    const minScale = CesiumConstants.UAV_MODEL_MINIMUM_SCALE;
+    const platformType = this.uavPlatformTypes.get(uavId);
+    const baseScale = platformType !== undefined
+      ? CesiumConstants.UAV_MODEL_BASE_SCALE[platformType] ?? 1
+      : 1;
+    const minScale = CesiumConstants.UAV_MODEL_MINIMUM_SCALE * baseScale;
     if (!this.viewer || !positionProperty || !time) {
       return minScale;
     }
@@ -126,7 +130,7 @@ export class CesiumUAVService {
       return minScale;
     }
     const targetPx = CesiumConstants.UAV_MODEL_FIXED_PIXEL_SIZE;
-    const scale = (targetPx * metersPerPixel) / (2 * r);
+    const scale = (targetPx * metersPerPixel * baseScale) / (2 * r);
     const clamped = Math.max(minScale, Math.min(maxScale, scale));
     return Number.isFinite(clamped) ? clamped : minScale;
   }

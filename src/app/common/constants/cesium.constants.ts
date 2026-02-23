@@ -11,10 +11,10 @@ export class CesiumConstants {
   public static readonly ISRAEL_CENTER_LATITUDE = 31.0461;
 
   public static readonly UAV_MODEL_PATHS: Record<PlatformType, string> = {
-    [PlatformType.Hermes900]: '/models/hermes900.glb',
-    [PlatformType.HeronTP]: '/models/herontp.glb',
-    [PlatformType.Hermes450]: '/models/hermes450.glb',
-    [PlatformType.Searcher]: '/models/searcher.glb',
+    [PlatformType.Hermes900]: '/models/global_hawk.glb',
+    [PlatformType.HeronTP]: '/models/mq-9_reaper.glb',
+    [PlatformType.Hermes450]: '/models/baykar_bayraktar_tb2.glb',
+    [PlatformType.Searcher]: '/models/mq_1_predator.glb',
   };
   public static readonly UAV_MODEL_SCALE = 1.0;
   public static readonly UAV_MODEL_MINIMUM_SCALE = 5.0;
@@ -46,10 +46,17 @@ export class CesiumConstants {
   public static readonly EPOCH_START_ISO = '1900-01-01';
 
   public static readonly UAV_MODEL_YAW_CORRECTIONS: Record<PlatformType, number> = {
-    [PlatformType.Hermes900]: 180,
-    [PlatformType.HeronTP]: 90,
-    [PlatformType.Hermes450]: -90,
-    [PlatformType.Searcher]: 270,
+    [PlatformType.Hermes900]: 0,
+    [PlatformType.HeronTP]: 0,
+    [PlatformType.Hermes450]: 0,
+    [PlatformType.Searcher]: 0,
+  };
+
+  public static readonly UAV_MODEL_BASE_SCALE: Record<PlatformType, number> = {
+    [PlatformType.Hermes900]: 3.0,
+    [PlatformType.HeronTP]: 1.5,
+    [PlatformType.Hermes450]: 2.0,
+    [PlatformType.Searcher]: 3.0,
   };
   public static readonly UAV_ENTITY_PREFIX_NAME = 'uav-';
 
