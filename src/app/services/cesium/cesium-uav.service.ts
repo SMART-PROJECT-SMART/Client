@@ -61,6 +61,12 @@ export class CesiumUAVService {
     this.uavPlatformTypes.set(uavId, platformType);
 
     const modelUri = CesiumConstants.UAV_MODEL_PATHS[platformType];
+    console.log(`[UAV] Creating UAV ${uavId}`, {
+      platformTypeIndex,
+      platformType,
+      modelUri,
+      scale: CesiumConstants.UAV_MODEL_BASE_SCALE[platformType],
+    });
     const positionProperty = CesiumUavHelper.createSampledPositionProperty(viewer, updateData);
     this.uavPositionProperties.set(uavId, positionProperty);
     const cartesian = CesiumUavHelper.getCartesian(updateData);

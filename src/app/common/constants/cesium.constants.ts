@@ -17,8 +17,8 @@ export class CesiumConstants {
     [PlatformType.Searcher]: '/models/mq_1_predator.glb',
   };
   public static readonly UAV_MODEL_HEADING_OFFSET_RADIANS = 0;
-  public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 48;
-  public static readonly UAV_MODEL_MAXIMUM_SCALE = 200;
+  public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 128;
+  public static readonly UAV_MODEL_MAXIMUM_SCALE = 20000;
 
   public static readonly CAMERA_MINIMUM_ZOOM_DISTANCE = 600;
   public static readonly UAV_MODEL_SHADOWS_ENABLED = true;
@@ -51,8 +51,8 @@ export class CesiumConstants {
   public static readonly UAV_MODEL_BASE_SCALE: Record<PlatformType, number> = {
     [PlatformType.Hermes900]: 12.0,
     [PlatformType.HeronTP]: 6.0,
-    [PlatformType.Hermes450]: 8.0,
-    [PlatformType.Searcher]: 12.0,
+    [PlatformType.Hermes450]: 19.0,
+    [PlatformType.Searcher]: 120.0,
   };
   public static readonly UAV_ENTITY_PREFIX_NAME = 'uav-';
 
