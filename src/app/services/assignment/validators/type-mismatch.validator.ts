@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import type { Violation } from '../../../models';
 import { ViolationType, UAVType, TelemetryField } from '../../../common/enums';
+import { EnumUtil } from '../../../common/utils/enum.util';
 import type { AssignmentValidationContext } from './assignment-validation-context.interface';
 import type { AssignmentValidator } from './assignment-validator.interface';
 
@@ -8,8 +9,6 @@ import type { AssignmentValidator } from './assignment-validator.interface';
   providedIn: 'root',
 })
 export class TypeMismatchValidator implements AssignmentValidator {
-  private readonly uavTypesArray: UAVType[] = Object.values(UAVType);
-
   public validate(context: AssignmentValidationContext): Violation[] {
     const violations: Violation[] = [];
 
@@ -34,8 +33,8 @@ export class TypeMismatchValidator implements AssignmentValidator {
       return null;
     }
 
-    const uavTypeValue = uavTelemetry[TelemetryField.UAVTypeValue];
-    const uavType = this.uavTypesArray[uavTypeValue] as UAVType;
+    const platformTypeValue = uavTelemetry[TelemetryField.PlatformType];
+    const uavType = EnumUtil.getUAVTypeFromPlatformNumber(platformTypeValue);
 
     if (uavType !== pairing.mission.requiredUAVType) {
       return {

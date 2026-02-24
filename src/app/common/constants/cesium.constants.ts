@@ -16,15 +16,11 @@ export class CesiumConstants {
     [PlatformType.Hermes450]: '/models/baykar_bayraktar_tb2.glb',
     [PlatformType.Searcher]: '/models/mq_1_predator.glb',
   };
-  public static readonly UAV_MODEL_SCALE = 1.0;
-  public static readonly UAV_MODEL_MINIMUM_SCALE = 5.0;
   public static readonly UAV_MODEL_HEADING_OFFSET_RADIANS = 0;
-  public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 256;
-  public static readonly UAV_MODEL_MAXIMUM_SCALE = 20000;
+  public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 48;
+  public static readonly UAV_MODEL_MAXIMUM_SCALE = 200;
 
   public static readonly CAMERA_MINIMUM_ZOOM_DISTANCE = 600;
-  public static readonly UAV_MODEL_FIXED_PIXEL_SIZE = 400;
-  public static readonly UAV_MODEL_APPROX_RADIUS_METERS = 6;
   public static readonly UAV_MODEL_SHADOWS_ENABLED = true;
   public static readonly UAV_MODEL_COLOR_CSS = '#ffffff';
   public static readonly UAV_MODEL_COLOR_BLEND_AMOUNT = 0.7;
@@ -46,17 +42,17 @@ export class CesiumConstants {
   public static readonly EPOCH_START_ISO = '1900-01-01';
 
   public static readonly UAV_MODEL_YAW_CORRECTIONS: Record<PlatformType, number> = {
-    [PlatformType.Hermes900]: 0,
-    [PlatformType.HeronTP]: 0,
-    [PlatformType.Hermes450]: 0,
-    [PlatformType.Searcher]: 0,
+    [PlatformType.Hermes900]: -90,
+    [PlatformType.HeronTP]: -90,
+    [PlatformType.Hermes450]: -90,
+    [PlatformType.Searcher]: -90,
   };
 
   public static readonly UAV_MODEL_BASE_SCALE: Record<PlatformType, number> = {
-    [PlatformType.Hermes900]: 3.0,
-    [PlatformType.HeronTP]: 1.5,
-    [PlatformType.Hermes450]: 2.0,
-    [PlatformType.Searcher]: 3.0,
+    [PlatformType.Hermes900]: 12.0,
+    [PlatformType.HeronTP]: 6.0,
+    [PlatformType.Hermes450]: 8.0,
+    [PlatformType.Searcher]: 12.0,
   };
   public static readonly UAV_ENTITY_PREFIX_NAME = 'uav-';
 

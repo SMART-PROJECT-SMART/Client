@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { take } from 'rxjs';
 import { ClientConstants } from '../../../../common';
 import { EnumUtil } from '../../../../common/utils';
+import { UAVType, Priority } from '../../../../common/enums';
 import { MissionCreateDialogComponent } from '../mission-create-dialog/mission-create-dialog.component';
 import { MissionEditDialogComponent } from '../mission-edit-dialog/mission-edit-dialog.component';
 import { MissionSummaryDialogComponent } from '../mission-summary-dialog/mission-summary-dialog.component';
@@ -92,6 +93,22 @@ export class AssignmentManagementComponent implements OnInit {
 
   public onDeleteMission(mission: Mission): void {
     this.missionList.update((list) => list.filter((m) => m.id !== mission.id));
+    this.hasModifications.set(true);
+  }
+
+  public onQuickAddTestMissions(): void {
+    const now = new Date();
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+    const timeWindow: TimeWindow = { start: now, end: oneHourLater };
+
+    const testMissions: Mission[] = [
+      { id: crypto.randomUUID(), title: 'Test Surveillance 1', requiredUAVType: UAVType.Surveillance, priority: Priority.Medium, location: { latitude: 31, longitude: 31, altitude: 500000 }, timeWindow },
+      { id: crypto.randomUUID(), title: 'Test Surveillance 2', requiredUAVType: UAVType.Surveillance, priority: Priority.Medium, location: { latitude: 32, longitude: 32, altitude: 500000 }, timeWindow },
+      { id: crypto.randomUUID(), title: 'Test Armed 1', requiredUAVType: UAVType.Armed, priority: Priority.Medium, location: { latitude: 33, longitude: 33, altitude: 500000 }, timeWindow },
+      { id: crypto.randomUUID(), title: 'Test Armed 2', requiredUAVType: UAVType.Armed, priority: Priority.Medium, location: { latitude: 34, longitude: 34, altitude: 500000 }, timeWindow },
+    ];
+
+    this.missionList.update((list) => [...list, ...testMissions]);
     this.hasModifications.set(true);
   }
 

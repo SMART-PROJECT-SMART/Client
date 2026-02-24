@@ -52,6 +52,12 @@ export class EnumUtil {
     return armedPlatforms.includes(platformType) ? UAVType.Armed : UAVType.Surveillance;
   }
 
+  public static getUAVTypeFromPlatformNumber(platformTypeValue: number): UAVType {
+    const platformValues = Object.values(PlatformType);
+    const platformType = platformValues[platformTypeValue] as PlatformType;
+    return this.getUAVTypeFromPlatform(platformType);
+  }
+
   public static getPlatformTypeDisplay(platformType: PlatformType | number): string {
     const platformValues = Object.values(PlatformType);
     const resolvedType =

@@ -1,5 +1,6 @@
 import type { AssignmentAlgorithmRo, MissionAssignmentPairing, UAV, UavToMission } from '../../models';
-import { TelemetryField, UAVType } from '../enums';
+import { TelemetryField } from '../enums';
+import { EnumUtil } from './enum.util';
 
 export class AssignmentUtil {
   public static transformPairingsToAssignments(result: AssignmentAlgorithmRo): UavToMission[] {
@@ -18,8 +19,8 @@ export class AssignmentUtil {
     tailId: number,
     telemetry: Record<TelemetryField, number>
   ): UAV {
-    const uavTypeValue: number = telemetry[TelemetryField.UAVTypeValue];
-    const uavType: UAVType = uavTypeValue === 0 ? UAVType.Surveillance : UAVType.Armed;
+    const platformTypeValue: number = telemetry[TelemetryField.PlatformType];
+    const uavType = EnumUtil.getUAVTypeFromPlatformNumber(platformTypeValue);
 
     return {
       tailId: tailId,
@@ -36,9 +37,9 @@ export class AssignmentUtil {
     Object.keys(uavTelemetryData).forEach((tailIdStr: string) => {
       const tailId: number = parseInt(tailIdStr, 10);
       const telemetry = uavTelemetryData[tailId];
-      const uavTypeValue: number | undefined = telemetry[TelemetryField.UAVTypeValue];
+      const platformTypeValue: number | undefined = telemetry[TelemetryField.PlatformType];
 
-      if (uavTypeValue !== undefined) {
+      if (platformTypeValue !== undefined) {
         uavs.push(this.buildUavFromTelemetry(tailId, telemetry));
       }
     });
