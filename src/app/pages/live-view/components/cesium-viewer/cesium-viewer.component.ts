@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { CesiumService } from '../../../../services/cesium/cesium.service';
 import { LtsSignalRService } from '../../../../services/lts/lts-signalr.service';
-import { UAVStoreService } from '../../../../services/uav/uav-store.service';
 import { TelemetryField } from '../../../../common/enums';
 import type { TelemetryBroadcastDto, UAVTelemetryData } from '../../../../models';
 import type { UAVUpdateData } from '../../../../models/cesium';
@@ -26,8 +25,7 @@ export class CesiumViewer implements OnInit, OnDestroy {
 
   constructor(
     private readonly cesiumService: CesiumService,
-    private readonly ltsService: LtsSignalRService,
-    private readonly uavStore: UAVStoreService
+    private readonly ltsService: LtsSignalRService
   ) {
     effect(() => {
       const telemetry: TelemetryBroadcastDto | null = this.ltsService.latestTelemetry();
@@ -40,6 +38,7 @@ export class CesiumViewer implements OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     await this.cesiumService.initializeViewer('cesium-container');
     this.isInitialized.set(true);
+    this.cesiumService.zoomToIsrael();
     await this.ltsService.connectToAllUAVs();
   }
 
@@ -53,7 +52,6 @@ export class CesiumViewer implements OnInit, OnDestroy {
       const updateData: UAVUpdateData = TelemetryDataHelper.extractUpdateData(uavData);
       const platformTypeIndex = uavData.fields[TelemetryField.PlatformType];
       this.cesiumService.updateUAV(uavData.tailId, updateData, platformTypeIndex);
-      this.uavStore.add(uavData.tailId);
     });
   }
 }
