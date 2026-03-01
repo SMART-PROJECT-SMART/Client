@@ -68,6 +68,21 @@ export class ArchiveDiffDialogComponent {
     this.comparisonRows().some(r => r.changed)
   );
 
+  readonly changedCount = computed(() =>
+    this.comparisonRows().filter(r => r.changed).length
+  );
+
+  readonly totalCount = computed(() =>
+    this.comparisonRows().length
+  );
+
+  readonly formattedDate = computed(() => {
+    const raw = this.data.createdAt;
+    if (!raw) return '';
+    const d = new Date(raw);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  });
+
   close(): void {
     this.dialogRef.close();
   }

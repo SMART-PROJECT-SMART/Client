@@ -1,7 +1,6 @@
 @use '../../../styles/constants' as *;
 
 .diff-container {
-  min-height: 200px;
   overflow: auto;
 }
 
@@ -27,10 +26,33 @@
   }
 }
 
+.summary-banner {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  margin-bottom: $spacing-md;
+  background-color: $color-background-elevated;
+  border-radius: $border-radius-md;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+
+  mat-icon {
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+    color: $color-warning;
+  }
+}
+
 .comparison-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: $font-size-md;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-md;
+  overflow: hidden;
 
   th,
   td {
@@ -48,16 +70,47 @@
     background-color: $color-background-secondary;
   }
 
+  tbody tr {
+    transition: background-color $transition-fast;
+
+    &:nth-child(even) {
+      background-color: rgba(white, 0.02);
+    }
+
+    &:hover {
+      background-color: rgba($color-primary, 0.08);
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+
   td {
     color: $color-text-primary;
   }
 
   .changed-row {
     background-color: rgba($color-warning, 0.05);
+
+    &:hover {
+      background-color: rgba($color-warning, 0.1);
+    }
   }
 
   .changed-cell {
     color: $color-warning;
+    font-weight: 600;
+  }
+
+  .arrow-col {
+    width: 24px;
+    padding: $spacing-sm $spacing-xs;
+    text-align: center;
+  }
+
+  .arrow {
+    color: $color-text-muted;
     font-weight: 600;
   }
 }

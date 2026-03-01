@@ -104,8 +104,9 @@ export class ArchivePageComponent implements OnInit {
 
   openDiffDialog(record: ArchiveAssignmentRo): void {
     this.dialog.open(ArchiveDiffDialogComponent, {
-      width: '90vw',
-      maxWidth: '1000px',
+      width: 'auto',
+      minWidth: '400px',
+      maxWidth: '700px',
       data: record,
     });
   }

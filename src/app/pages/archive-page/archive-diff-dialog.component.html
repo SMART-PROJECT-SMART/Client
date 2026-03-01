@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Suggested vs actual assignments</h2>
+<h2 mat-dialog-title>Assignments — {{ formattedDate() }}</h2>
 <mat-dialog-content class="diff-container">
   @if (!hasChanges()) {
     <div class="no-diff">
@@ -6,12 +6,17 @@
       <p>No differences — suggested and actual assignments are identical.</p>
     </div>
   } @else {
+    <div class="summary-banner">
+      <mat-icon>swap_horiz</mat-icon>
+      <span>{{ changedCount() }} of {{ totalCount() }} {{ totalCount() === 1 ? 'assignment' : 'assignments' }} changed</span>
+    </div>
     <table class="comparison-table">
       <thead>
         <tr>
           <th>Mission</th>
           <th>Type</th>
           <th>Suggested UAV</th>
+          <th class="arrow-col"></th>
           <th>Actual UAV</th>
         </tr>
       </thead>
@@ -23,6 +28,11 @@
             <td [class.changed-cell]="row.changed">
               {{ row.suggestedTailId !== null ? 'Tail ' + row.suggestedTailId : '—' }}
             </td>
+            <td class="arrow-col">
+              @if (row.changed) {
+                <span class="arrow">→</span>
+              }
+            </td>
             <td [class.changed-cell]="row.changed">
               {{ row.actualTailId !== null ? 'Tail ' + row.actualTailId : '—' }}
             </td>
@@ -33,5 +43,5 @@
   }
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-raised-button (click)="close()">Close</button>
+  <button mat-button (click)="close()">Close</button>
 </mat-dialog-actions>
