@@ -95,11 +95,6 @@
     padding: 0 0 $spacing-sm 0;
   }
 
-  ::ng-deep .mdc-card__actions {
-    padding: $spacing-sm 0 0 0;
-    min-height: auto;
-  }
-
   mat-card-title {
     font-size: $font-size-xl;
     font-weight: 600;
@@ -130,5 +125,27 @@
     width: $icon-size-sm;
     height: $icon-size-sm;
     color: $color-text-secondary;
+  }
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px $spacing-sm;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-left: auto;
+
+  &.changed {
+    background-color: rgba($color-warning, 0.15);
+    color: $color-warning;
+  }
+
+  &.match {
+    background-color: rgba($color-success, 0.15);
+    color: $color-success;
   }
 }

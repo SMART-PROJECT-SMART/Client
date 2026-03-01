@@ -1,49 +1,7 @@
 import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import type { ArchiveAssignmentRo, ArchiveMissionToUavAssignmentRo } from '../../models/archive';
-
-interface ComparisonRow {
-  title: string;
-  type: string;
-  suggestedTailId: number | null;
-  actualTailId: number | null;
-  changed: boolean;
-}
-
-function buildComparisonRows(
-  suggested: ArchiveMissionToUavAssignmentRo[],
-  actual: ArchiveMissionToUavAssignmentRo[],
-): ComparisonRow[] {
-  const suggestedMap = new Map<string, ArchiveMissionToUavAssignmentRo>();
-  for (const a of suggested) {
-    suggestedMap.set(a.mission?.title ?? '', a);
-  }
-
-  const actualMap = new Map<string, ArchiveMissionToUavAssignmentRo>();
-  for (const a of actual) {
-    actualMap.set(a.mission?.title ?? '', a);
-  }
-
-  const allTitles = new Set([...suggestedMap.keys(), ...actualMap.keys()]);
-  const rows: ComparisonRow[] = [];
-
-  for (const title of [...allTitles].sort()) {
-    const s = suggestedMap.get(title);
-    const a = actualMap.get(title);
-    const suggestedTailId = s?.uavTailId ?? null;
-    const actualTailId = a?.uavTailId ?? null;
-
-    rows.push({
-      title,
-      type: s?.mission?.requiredUAVType ?? a?.mission?.requiredUAVType ?? '—',
-      suggestedTailId,
-      actualTailId,
-      changed: suggestedTailId !== actualTailId,
-    });
-  }
-
-  return rows;
-}
+import type { ArchiveAssignmentRo } from '../../models/archive';
+import { buildComparisonRows } from './archive-comparison.utils';
 
 @Component({
   selector: 'app-archive-diff-dialog',

@@ -15,6 +15,7 @@ import {
   type ArchiveFilterDialogResult,
 } from './archive-filter-dialog.component';
 import { ArchiveDiffDialogComponent } from './archive-diff-dialog.component';
+import { countChanges } from './archive-comparison.utils';
 
 @Component({
   selector: 'app-archive-page',
@@ -108,6 +109,10 @@ export class ArchivePageComponent implements OnInit {
       maxWidth: '700px',
       data: record,
     });
+  }
+
+  getChangeCount(record: ArchiveAssignmentRo): number {
+    return countChanges(record.suggestedAssignments, record.actualAssignments);
   }
 
   formatCreatedAt(createdAt: string): string {
