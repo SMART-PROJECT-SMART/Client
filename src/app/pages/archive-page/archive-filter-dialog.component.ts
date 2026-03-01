@@ -1,12 +1,15 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { DeviceManagerStorageService } from '../../services/devices/device-manager-storage.service';
 import { UAVType } from '../../common/enums';
-import type { ArchiveFilterCriteria } from '../../models/archive';
 
-export interface ArchiveFilterDialogResult {
-  loadDate?: string | null;
-  criteria: ArchiveFilterCriteria;
+export interface ArchiveFilterData {
+  date: string | null;
+  tailIds: number[];
+  types: string[];
+  titles: string[];
 }
 
 @Component({
@@ -17,45 +20,61 @@ export interface ArchiveFilterDialogResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArchiveFilterDialogComponent {
-  readonly dialogRef = inject(MatDialogRef<ArchiveFilterDialogComponent>);
-  readonly data: { loadDate?: string | null; criteria: ArchiveFilterCriteria } =
-    inject(MAT_DIALOG_DATA, { optional: true }) ?? { criteria: {} };
+  private readonly dialogRef = inject(MatDialogRef<ArchiveFilterDialogComponent>);
+  private readonly deviceStorage = inject(DeviceManagerStorageService);
+  private readonly data: ArchiveFilterData = inject(MAT_DIALOG_DATA, { optional: true }) ?? {
+    date: null,
+    tailIds: [],
+    types: [],
+    titles: [],
+  };
 
+  readonly today = new Date();
   readonly missionTypes = Object.values(UAVType);
+  readonly availableTailIds = computed(() =>
+    this.deviceStorage.uavList().map((u) => u.tailId).sort((a, b) => a - b)
+  );
 
-  readonly form = new FormGroup({
-    loadDate: new FormControl<Date | null>(this.data.loadDate ? new Date(this.data.loadDate + 'T12:00:00') : null),
-    uavTailId: new FormControl<number | null>(this.data.criteria?.uavTailId ?? null),
-    missionType: new FormControl<string | null>(this.data.criteria?.missionType ?? null),
-    missionTitle: new FormControl<string | null>(this.data.criteria?.missionTitle ?? null),
-  });
+  readonly dateControl = new FormControl<Date | null>(
+    this.data.date ? new Date(this.data.date + 'T12:00:00') : null
+  );
+  readonly tailIdControl = new FormControl<number[]>(this.data.tailIds ?? []);
+  readonly typeControl = new FormControl<string[]>(this.data.types ?? []);
+  readonly titles = signal<string[]>([...this.data.titles]);
+
+  addTitle(event: MatChipInputEvent): void {
+    const value = event.value?.trim();
+    if (value) {
+      this.titles.update((t) => [...t, value]);
+    }
+    event.chipInput.clear();
+  }
+
+  removeTitle(index: number): void {
+    this.titles.update((t) => t.filter((_, i) => i !== index));
+  }
 
   apply(): void {
-    const v = this.form.value;
-    const d = v.loadDate;
-    const loadDate =
-      d instanceof Date && !isNaN(d.getTime())
-        ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-        : null;
-    const criteria: ArchiveFilterCriteria = {
-      uavTailId: v.uavTailId ?? undefined,
-      missionType: v.missionType?.trim() || undefined,
-      missionTitle: v.missionTitle?.trim() || undefined,
-    };
-    this.dialogRef.close({ loadDate, criteria } as ArchiveFilterDialogResult);
+    const d = this.dateControl.value;
+    const date = d instanceof Date && !isNaN(d.getTime())
+      ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      : null;
+
+    this.dialogRef.close({
+      date,
+      tailIds: this.tailIdControl.value ?? [],
+      types: this.typeControl.value ?? [],
+      titles: this.titles(),
+    } as ArchiveFilterData);
   }
 
   clear(): void {
-    this.form.reset({
-      loadDate: null,
-      uavTailId: null,
-      missionType: null,
-      missionTitle: null,
-    });
     this.dialogRef.close({
-      loadDate: null,
-      criteria: {},
-    } as ArchiveFilterDialogResult);
+      date: null,
+      tailIds: [],
+      types: [],
+      titles: [],
+    } as ArchiveFilterData);
   }
 
   cancel(): void {

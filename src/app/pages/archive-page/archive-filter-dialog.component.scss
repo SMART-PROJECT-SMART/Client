@@ -1,26 +1,25 @@
 @use '../../../styles/constants' as *;
 
-.full-width {
-  width: 100%;
-  display: block;
+mat-dialog-content {
+  min-width: 320px;
+}
+
+.filter-section {
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .section-label {
   font-size: $font-size-sm;
   font-weight: 600;
-  margin: $spacing-md 0 $spacing-sm 0;
-
-  &:first-of-type {
-    margin-top: 0;
-  }
-}
-
-.dialog-description {
-  margin: 0 0 $spacing-sm 0;
   color: $color-text-secondary;
-  font-size: $font-size-sm;
+  margin: 0 0 $spacing-sm 0;
 }
 
-mat-dialog-content {
-  min-width: 320px;
+.full-width {
+  width: 100%;
+  display: block;
 }

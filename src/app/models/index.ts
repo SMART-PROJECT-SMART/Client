@@ -34,7 +34,6 @@ export type { UpdateSleeveDto } from './dto/updateSleeveDto.dto';
 
 export type {
   ArchiveAssignmentRo,
-  ArchiveFilterCriteria,
   ArchiveMissionRo,
   ArchiveMissionToUavAssignmentRo,
   ArchiveTimeWindow,

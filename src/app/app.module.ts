@@ -29,8 +29,8 @@ import { SleeveDialogComponent } from './pages/device-management-page/components
 import { DeleteConfirmationDialogComponent } from './pages/device-management-page/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { NumericInputDirective } from './common/directives/numeric-input.directive';
 import { TimeInputDirective } from './common/directives/time-input.directive';
-import { ArchiveFilterDialogComponent } from './pages/archive-page/archive-filter-dialog.component';
 import { ArchiveDiffDialogComponent } from './pages/archive-page/archive-diff-dialog.component';
+import { ArchiveFilterDialogComponent } from './pages/archive-page/archive-filter-dialog.component';
 
 @NgModule({
   declarations: [
@@ -54,8 +54,8 @@ import { ArchiveDiffDialogComponent } from './pages/archive-page/archive-diff-di
     SleeveDialogComponent,
     DeleteConfirmationDialogComponent,
     ArchivePageComponent,
-    ArchiveFilterDialogComponent,
     ArchiveDiffDialogComponent,
+    ArchiveFilterDialogComponent,
   ],
   imports: [
     BrowserModule,

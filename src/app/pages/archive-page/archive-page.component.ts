@@ -9,12 +9,10 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ArchiveApiService } from '../../services/archive/archive-api.service';
-import type { ArchiveAssignmentRo, ArchiveFilterCriteria } from '../../models/archive';
-import {
-  ArchiveFilterDialogComponent,
-  type ArchiveFilterDialogResult,
-} from './archive-filter-dialog.component';
+import { DeviceManagerStorageService } from '../../services/devices/device-manager-storage.service';
+import type { ArchiveAssignmentRo } from '../../models/archive';
 import { ArchiveDiffDialogComponent } from './archive-diff-dialog.component';
+import { ArchiveFilterDialogComponent, type ArchiveFilterData } from './archive-filter-dialog.component';
 import { buildComparisonRows, countChanges, type ComparisonRow } from './archive-comparison.utils';
 
 @Component({
@@ -26,20 +24,38 @@ import { buildComparisonRows, countChanges, type ComparisonRow } from './archive
 })
 export class ArchivePageComponent implements OnInit {
   private readonly archiveApi = inject(ArchiveApiService);
+  private readonly deviceStorage = inject(DeviceManagerStorageService);
   private readonly dialog = inject(MatDialog);
 
   readonly assignments = signal<ArchiveAssignmentRo[]>([]);
-  readonly selectedDate = signal<Date | null>(null);
-  readonly filterCriteria = signal<ArchiveFilterCriteria>({});
   readonly loading = signal(false);
+  readonly selectedDate = signal<string | null>(null);
+
+  readonly tailIdFilter = signal<number[]>([]);
+  readonly missionTypeFilter = signal<string[]>([]);
+  readonly missionTitleFilter = signal<string[]>([]);
+
+  readonly activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.tailIdFilter().length > 0) count++;
+    if (this.missionTypeFilter().length > 0) count++;
+    if (this.missionTitleFilter().length > 0) count++;
+    return count;
+  });
+
+  readonly formattedDate = computed(() => {
+    const raw = this.selectedDate();
+    if (!raw) return null;
+    const d = new Date(raw + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  });
 
   readonly filteredRecords = computed(() => {
     const list = this.assignments();
-    const criteria = this.filterCriteria();
-    const uavTailId = criteria.uavTailId;
-    const missionType = criteria.missionType?.trim();
-    const missionTitle = criteria.missionTitle?.trim().toLowerCase();
-    if (uavTailId == null && !missionType && !missionTitle) {
+    const tailIds = this.tailIdFilter();
+    const types = this.missionTypeFilter();
+    const titles = this.missionTitleFilter().map((t) => t.trim().toLowerCase()).filter(Boolean);
+    if (tailIds.length === 0 && types.length === 0 && titles.length === 0) {
       return list;
     }
     return list.filter((record) => {
@@ -47,26 +63,26 @@ export class ArchivePageComponent implements OnInit {
       const actual = record.actualAssignments ?? [];
       const all = [...suggested, ...actual];
       const matchUav =
-        uavTailId == null || all.some((a) => a.uavTailId === uavTailId);
+        tailIds.length === 0 || all.some((a) => tailIds.includes(a.uavTailId));
       const matchType =
-        !missionType ||
-        all.some((a) => (a.mission?.requiredUAVType ?? '') === missionType);
+        types.length === 0 ||
+        all.some((a) => types.includes(a.mission?.requiredUAVType ?? ''));
       const matchTitle =
-        !missionTitle ||
+        titles.length === 0 ||
         all.some((a) =>
-          (a.mission?.title ?? '').toLowerCase().includes(missionTitle)
+          titles.some((t) => (a.mission?.title ?? '').toLowerCase().includes(t))
         );
       return matchUav && matchType && matchTitle;
     });
   });
 
   async ngOnInit(): Promise<void> {
+    firstValueFrom(this.deviceStorage.loadUAVs());
     await this.loadLatest();
   }
 
   async loadLatest(): Promise<void> {
     this.loading.set(true);
-    this.selectedDate.set(null);
     try {
       const one = await firstValueFrom(this.archiveApi.getLatest());
       this.assignments.set(one ? [one] : []);
@@ -77,29 +93,59 @@ export class ArchivePageComponent implements OnInit {
 
   async openFilterDialog(): Promise<void> {
     const ref = this.dialog.open(ArchiveFilterDialogComponent, {
-      width: '420px',
+      width: '400px',
       data: {
-        loadDate: this.selectedDate()?.toISOString().slice(0, 10) ?? null,
-        criteria: this.filterCriteria(),
-      },
+        date: this.selectedDate(),
+        tailIds: this.tailIdFilter(),
+        types: this.missionTypeFilter(),
+        titles: this.missionTitleFilter(),
+      } as ArchiveFilterData,
     });
     const result = await firstValueFrom(ref.afterClosed());
     if (result === undefined) return;
-    if (result.loadDate) {
-      await this.loadByDate(result.loadDate);
+
+    // Load data if date changed
+    if (result.date && result.date !== this.selectedDate()) {
+      this.loading.set(true);
+      try {
+        const list = await firstValueFrom(this.archiveApi.getByDate(result.date));
+        this.assignments.set(list ?? []);
+        this.selectedDate.set(result.date);
+      } finally {
+        this.loading.set(false);
+      }
+    } else if (!result.date && this.selectedDate()) {
+      // Date cleared — reload latest
+      this.selectedDate.set(null);
+      await this.loadLatest();
     }
-    this.filterCriteria.set(result.criteria ?? {});
+
+    this.tailIdFilter.set(result.tailIds);
+    this.missionTypeFilter.set(result.types);
+    this.missionTitleFilter.set(result.titles);
   }
 
-  async loadByDate(date: string): Promise<void> {
-    this.loading.set(true);
-    try {
-      const list = await firstValueFrom(this.archiveApi.getByDate(date));
-      this.assignments.set(list ?? []);
-      this.selectedDate.set(new Date(date + 'T12:00:00'));
-    } finally {
-      this.loading.set(false);
-    }
+  removeDate(): void {
+    this.selectedDate.set(null);
+    this.loadLatest();
+  }
+
+  removeTailId(id: number): void {
+    this.tailIdFilter.update((ids) => ids.filter((v) => v !== id));
+  }
+
+  removeType(type: string): void {
+    this.missionTypeFilter.update((types) => types.filter((v) => v !== type));
+  }
+
+  removeTitleChip(title: string): void {
+    this.missionTitleFilter.update((titles) => titles.filter((v) => v !== title));
+  }
+
+  clearFilters(): void {
+    this.tailIdFilter.set([]);
+    this.missionTypeFilter.set([]);
+    this.missionTitleFilter.set([]);
   }
 
   openDiffDialog(record: ArchiveAssignmentRo): void {

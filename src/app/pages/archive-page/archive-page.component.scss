@@ -1,20 +1,23 @@
 @use '../../../styles/constants' as *;
 
 .archive-page {
-  display: grid;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
   height: calc(100vh - 64px);
   box-sizing: border-box;
   padding: $spacing-lg;
-  gap: $spacing-lg;
   overflow: hidden;
 }
+
+// --- Header row ---
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: $spacing-md;
+  flex-wrap: wrap;
+  flex-shrink: 0;
   padding-bottom: $spacing-md;
   border-bottom: $border-width-thin solid $color-border-default;
 }
@@ -26,24 +29,55 @@
   margin-left: $layout-hamburger-zone;
 }
 
+.page-title {
+  font-size: $font-size-xl;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0;
+}
+
 .record-count {
-  font-size: $font-size-md;
+  font-size: $font-size-sm;
   color: $color-text-secondary;
-  font-weight: 500;
 }
 
 .header-actions {
   display: flex;
-  gap: $spacing-md;
+  gap: $spacing-sm;
+  align-items: center;
 }
+
+.active-filter {
+  color: $color-primary;
+}
+
+// --- Filter chips ---
+
+.filter-chips {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+  padding: $spacing-sm 0;
+  margin-left: $layout-hamburger-zone;
+  flex-shrink: 0;
+}
+
+.clear-all-btn {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+// --- Content area ---
 
 .records-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 360px));
   gap: $spacing-md;
   overflow-y: auto;
-  padding: $spacing-xs;
+  padding: $spacing-md 0 $spacing-xs 0;
   align-content: start;
+  flex: 1;
 }
 
 .empty-state {
@@ -51,11 +85,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex: 1;
   padding: $spacing-xl;
   background: linear-gradient(135deg, rgba($color-primary, 0.05), transparent);
   border: $border-width-medium solid $color-border-default;
   border-radius: $border-radius-lg;
   text-align: center;
+  margin-top: $spacing-md;
 
   .empty-icon {
     font-size: 100px;
@@ -78,6 +114,8 @@
     margin: 0 0 $spacing-lg 0;
   }
 }
+
+// --- Record cards ---
 
 .record-card {
   background-color: $color-background-card;

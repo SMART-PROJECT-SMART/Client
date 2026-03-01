@@ -24,6 +24,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -66,6 +67,7 @@ const MaterialModules = [
   MatTableModule,
   MatPaginatorModule,
   MatSortModule,
+  MatCheckboxModule,
   MatChipsModule,
   MatAutocompleteModule,
   MatToolbarModule,

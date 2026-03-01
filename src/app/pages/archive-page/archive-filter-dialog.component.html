@@ -1,34 +1,54 @@
-<h2 mat-dialog-title>Filter</h2>
+<h2 mat-dialog-title>Filter & Load</h2>
 <mat-dialog-content>
-  <p class="dialog-description">Load a specific date from the archive, then narrow the list by UAV, mission type, or title.</p>
-  <form [formGroup]="form">
-  <h3 class="section-label">Load data</h3>
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Load by date (optional)</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="loadDate" />
-    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
+  <div class="filter-section">
+    <h3 class="section-label">Date</h3>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
+      <mat-label>Load by date</mat-label>
+      <input matInput [matDatepicker]="picker" [formControl]="dateControl" [max]="today" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
 
-  <h3 class="section-label">Filter results (in memory)</h3>
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>UAV tail ID</mat-label>
-    <input matInput type="number" formControlName="uavTailId" placeholder="Optional" />
-  </mat-form-field>
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Mission type</mat-label>
-    <mat-select formControlName="missionType">
-      <mat-option [value]="null">Any</mat-option>
-      @for (t of missionTypes; track t) {
-        <mat-option [value]="t">{{ t }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Mission title (substring)</mat-label>
-    <input matInput formControlName="missionTitle" placeholder="Optional" />
-  </mat-form-field>
-  </form>
+  <div class="filter-section">
+    <h3 class="section-label">Tail ID</h3>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
+      <mat-label>Select UAVs</mat-label>
+      <mat-select [formControl]="tailIdControl" multiple>
+        @for (id of availableTailIds(); track id) {
+          <mat-option [value]="id">Tail {{ id }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="filter-section">
+    <h3 class="section-label">Mission Type</h3>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
+      <mat-label>Select types</mat-label>
+      <mat-select [formControl]="typeControl" multiple>
+        @for (t of missionTypes; track t) {
+          <mat-option [value]="t">{{ t }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="filter-section">
+    <h3 class="section-label">Title</h3>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
+      <mat-label>Add title keywords</mat-label>
+      <mat-chip-grid #chipGrid>
+        @for (title of titles(); track $index) {
+          <mat-chip-row (removed)="removeTitle($index)">
+            {{ title }}
+            <button matChipRemove><mat-icon>cancel</mat-icon></button>
+          </mat-chip-row>
+        }
+      </mat-chip-grid>
+      <input matInput [matChipInputFor]="chipGrid" (matChipInputTokenEnd)="addTitle($event)" placeholder="Type and press Enter" />
+    </mat-form-field>
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancel()">Cancel</button>

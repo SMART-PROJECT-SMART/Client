@@ -4,12 +4,43 @@
       <span class="record-count">{{ filteredRecords().length }} {{ filteredRecords().length === 1 ? 'record' : 'records' }}</span>
     </div>
     <div class="header-actions">
-      <button mat-raised-button color="primary" (click)="openFilterDialog()">
-        <mat-icon>filter_alt</mat-icon>
-        Filter
+      <button mat-icon-button (click)="openFilterDialog()" [class.active-filter]="activeFilterCount() > 0 || selectedDate()">
+        <mat-icon>filter_list</mat-icon>
       </button>
     </div>
   </div>
+
+  @if (activeFilterCount() || selectedDate()) {
+    <div class="filter-chips">
+      @if (formattedDate()) {
+        <mat-chip-row (removed)="removeDate()">
+          {{ formattedDate() }}
+          <button matChipRemove><mat-icon>cancel</mat-icon></button>
+        </mat-chip-row>
+      }
+      @for (id of tailIdFilter(); track id) {
+        <mat-chip-row (removed)="removeTailId(id)">
+          Tail {{ id }}
+          <button matChipRemove><mat-icon>cancel</mat-icon></button>
+        </mat-chip-row>
+      }
+      @for (t of missionTypeFilter(); track t) {
+        <mat-chip-row (removed)="removeType(t)">
+          {{ t }}
+          <button matChipRemove><mat-icon>cancel</mat-icon></button>
+        </mat-chip-row>
+      }
+      @for (t of missionTitleFilter(); track t) {
+        <mat-chip-row (removed)="removeTitleChip(t)">
+          {{ t }}
+          <button matChipRemove><mat-icon>cancel</mat-icon></button>
+        </mat-chip-row>
+      }
+      @if (activeFilterCount()) {
+        <button mat-button class="clear-all-btn" (click)="clearFilters()">Clear filters</button>
+      }
+    </div>
+  }
 
   @if (loading()) {
     <div class="empty-state">
@@ -20,11 +51,7 @@
     <div class="empty-state">
       <mat-icon class="empty-icon">inventory_2</mat-icon>
       <h2>No Records Found</h2>
-      <p>Use the Filter button to load assignment records by date</p>
-      <button mat-raised-button color="primary" (click)="openFilterDialog()">
-        <mat-icon>filter_alt</mat-icon>
-        Filter
-      </button>
+      <p>Open the filter to load records by date</p>
     </div>
   } @else {
     <div class="records-container">
