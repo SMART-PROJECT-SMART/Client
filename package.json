@@ -34,6 +34,8 @@
     "@danielmoncada/angular-datetime-picker": "^21.0.0",
     "@microsoft/signalr": "^10.0.0",
     "cesium": "^1.137.0",
+    "diff-match-patch-ts": "^0.8.0",
+    "ngx-diff": "^11.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

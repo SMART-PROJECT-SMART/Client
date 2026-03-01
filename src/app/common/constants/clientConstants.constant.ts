@@ -43,6 +43,12 @@ export namespace ClientConstants {
     export const NO_ASSIGNMENT_LABEL: string = 'Unassigned';
   }
 
+  export namespace ArchiveAPI {
+    export const BASE = '/api/archive';
+    export const LATEST = `${BASE}/latest`;
+    export const BY_DATE = (date: string) => `${BASE}/by-date/${date}`;
+  }
+
   export namespace MissionServiceAPI {
     export namespace Controllers {
       export const ASSIGNMENT: string = 'assignment';

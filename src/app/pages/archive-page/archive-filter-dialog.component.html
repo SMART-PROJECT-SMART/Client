@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>Filter</h2>
+<mat-dialog-content>
+  <p class="dialog-description">Load a specific date from the archive, then narrow the list by UAV, mission type, or title.</p>
+  <form [formGroup]="form">
+  <h3 class="section-label">Load data</h3>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Load by date (optional)</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="loadDate" />
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <h3 class="section-label">Filter results (in memory)</h3>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>UAV tail ID</mat-label>
+    <input matInput type="number" formControlName="uavTailId" placeholder="Optional" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Mission type</mat-label>
+    <mat-select formControlName="missionType">
+      <mat-option [value]="null">Any</mat-option>
+      @for (t of missionTypes; track t) {
+        <mat-option [value]="t">{{ t }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Mission title (substring)</mat-label>
+    <input matInput formControlName="missionTitle" placeholder="Optional" />
+  </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-button (click)="clear()">Clear</button>
+  <button mat-raised-button color="primary" (click)="apply()">Apply</button>
+</mat-dialog-actions>

@@ -1,3 +1,52 @@
 .archive-page {
   padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.archive-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.archive-loading,
+.archive-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1rem;
+  color: var(--mat-sys-on-surface-variant, #ccc);
+}
+
+.archive-empty mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.archive-table-wrapper {
+  overflow-x: auto;
+}
+
+.archive-table {
+  width: 100%;
+}
+
+.archive-row-clickable {
+  cursor: pointer;
+}
+
+.archive-row-clickable:hover {
+  background: rgba(255, 255, 255, 0.05);
 }

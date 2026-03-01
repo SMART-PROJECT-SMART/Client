@@ -1,3 +1,51 @@
 <div class="archive-page">
-  <h1>Archive</h1>
+  <header class="archive-toolbar">
+    <div class="toolbar-actions">
+      <button mat-raised-button (click)="openFilterDialog()">Filter</button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="archive-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading…</p>
+    </div>
+  } @else if (filteredRecords().length === 0) {
+    <div class="archive-empty">
+      <mat-icon>folder_open</mat-icon>
+      <p>No assignment records. Use Filter to load by date or adjust filters.</p>
+    </div>
+  } @else {
+    <div class="archive-table-wrapper">
+      <table class="archive-table" mat-table [dataSource]="filteredRecords()">
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Date / time</th>
+          <td mat-cell *matCellDef="let record">{{ formatCreatedAt(record.createdAt) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="suggestedCount">
+          <th mat-header-cell *matHeaderCellDef>Suggested</th>
+          <td mat-cell *matCellDef="let record">{{ (record.suggestedAssignments ?? []).length }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actualCount">
+          <th mat-header-cell *matHeaderCellDef>Actual</th>
+          <td mat-cell *matCellDef="let record">{{ (record.actualAssignments ?? []).length }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let record">
+            <button mat-icon-button (click)="openDiffDialog(record)" title="View diff">
+              <mat-icon>compare_arrows</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['createdAt', 'suggestedCount', 'actualCount', 'actions']"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: ['createdAt', 'suggestedCount', 'actualCount', 'actions']"
+          (click)="openDiffDialog(row)"
+          class="archive-row-clickable">
+        </tr>
+      </table>
+    </div>
+  }
 </div>

@@ -1,4 +1,11 @@
 {
+  "/api/archive": {
+    "target": "http://127.0.0.1:5045",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api/archive": "/api/AssignmentRecords" },
+    "logLevel": "debug"
+  },
   "/api/assignment": {
     "target": "http://127.0.0.1:5224",
     "secure": false,

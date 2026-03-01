@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Suggested vs actual assignments</h2>
+<mat-dialog-content class="diff-container">
+  <ngx-side-by-side-diff
+    class="ngx-diff-light-theme"
+    [before]="beforeText()"
+    [after]="afterText()"
+    [lineContextSize]="3">
+  </ngx-side-by-side-diff>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button (click)="close()">Close</button>
+</mat-dialog-actions>

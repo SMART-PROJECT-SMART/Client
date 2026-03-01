@@ -29,6 +29,9 @@ import { SleeveDialogComponent } from './pages/device-management-page/components
 import { DeleteConfirmationDialogComponent } from './pages/device-management-page/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { NumericInputDirective } from './common/directives/numeric-input.directive';
 import { TimeInputDirective } from './common/directives/time-input.directive';
+import { ArchiveFilterDialogComponent } from './pages/archive-page/archive-filter-dialog.component';
+import { ArchiveDiffDialogComponent } from './pages/archive-page/archive-diff-dialog.component';
+import { SideBySideDiffComponent } from 'ngx-diff';
 
 @NgModule({
   declarations: [
@@ -52,8 +55,18 @@ import { TimeInputDirective } from './common/directives/time-input.directive';
     SleeveDialogComponent,
     DeleteConfirmationDialogComponent,
     ArchivePageComponent,
+    ArchiveFilterDialogComponent,
+    ArchiveDiffDialogComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, MatModule, ReactiveFormsModule, NumericInputDirective, TimeInputDirective],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    MatModule,
+    ReactiveFormsModule,
+    NumericInputDirective,
+    TimeInputDirective,
+    SideBySideDiffComponent,
+  ],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],
   bootstrap: [App],
 })

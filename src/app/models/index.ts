@@ -31,3 +31,11 @@ export type { CreateUAVDto } from './dto/createUAV.dto';
 export type { UpdateUAVDto } from './dto/updateUAVDto.dto';
 export type { CreateSleeveDto } from './dto/createSleeveDto.dto';
 export type { UpdateSleeveDto } from './dto/updateSleeveDto.dto';
+
+export type {
+  ArchiveAssignmentRo,
+  ArchiveFilterCriteria,
+  ArchiveMissionRo,
+  ArchiveMissionToUavAssignmentRo,
+  ArchiveTimeWindow,
+} from './archive';

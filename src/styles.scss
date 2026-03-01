@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @use 'styles/constants' as *;
+@use 'ngx-diff/styles/default-theme';
 
 html {
   @include mat.theme(
