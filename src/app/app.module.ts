@@ -31,7 +31,6 @@ import { NumericInputDirective } from './common/directives/numeric-input.directi
 import { TimeInputDirective } from './common/directives/time-input.directive';
 import { ArchiveFilterDialogComponent } from './pages/archive-page/archive-filter-dialog.component';
 import { ArchiveDiffDialogComponent } from './pages/archive-page/archive-diff-dialog.component';
-import { SideBySideDiffComponent } from 'ngx-diff';
 
 @NgModule({
   declarations: [
@@ -65,7 +64,6 @@ import { SideBySideDiffComponent } from 'ngx-diff';
     ReactiveFormsModule,
     NumericInputDirective,
     TimeInputDirective,
-    SideBySideDiffComponent,
   ],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],
   bootstrap: [App],

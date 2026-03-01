@@ -1,12 +1,8 @@
 @use '../../../styles/constants' as *;
 
 .diff-container {
-  min-height: 300px;
+  min-height: 200px;
   overflow: auto;
-}
-
-ngx-side-by-side-diff {
-  width: 100%;
 }
 
 .no-diff {
@@ -31,11 +27,37 @@ ngx-side-by-side-diff {
   }
 }
 
-::ng-deep .ngx-diff-dark-theme {
-  --ngx-diff-insert-color: #{$color-success};
-  --ngx-diff-delete-color: #{$color-error};
-  --ngx-diff-equal-color: #{$color-background-secondary};
-  --ngx-diff-font-color: #{$color-text-primary};
-  --ngx-diff-border-color: #{$color-border-default};
-  --ngx-diff-line-number-font-color: #{$color-text-muted};
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-md;
+
+  th,
+  td {
+    padding: $spacing-sm $spacing-md;
+    text-align: left;
+    border-bottom: $border-width-thin solid $color-border-default;
+  }
+
+  th {
+    font-weight: 600;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: $color-background-secondary;
+  }
+
+  td {
+    color: $color-text-primary;
+  }
+
+  .changed-row {
+    background-color: rgba($color-warning, 0.05);
+  }
+
+  .changed-cell {
+    color: $color-warning;
+    font-weight: 600;
+  }
 }

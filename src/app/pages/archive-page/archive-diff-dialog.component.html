@@ -1,17 +1,35 @@
 <h2 mat-dialog-title>Suggested vs actual assignments</h2>
 <mat-dialog-content class="diff-container">
-  @if (beforeText() === afterText()) {
+  @if (!hasChanges()) {
     <div class="no-diff">
       <mat-icon>check_circle</mat-icon>
       <p>No differences — suggested and actual assignments are identical.</p>
     </div>
   } @else {
-    <ngx-side-by-side-diff
-      class="ngx-diff-dark-theme"
-      [before]="beforeText()"
-      [after]="afterText()"
-      [lineContextSize]="100">
-    </ngx-side-by-side-diff>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Mission</th>
+          <th>Type</th>
+          <th>Suggested UAV</th>
+          <th>Actual UAV</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of comparisonRows(); track row.title) {
+          <tr [class.changed-row]="row.changed">
+            <td>{{ row.title }}</td>
+            <td>{{ row.type }}</td>
+            <td [class.changed-cell]="row.changed">
+              {{ row.suggestedTailId !== null ? 'Tail ' + row.suggestedTailId : '—' }}
+            </td>
+            <td [class.changed-cell]="row.changed">
+              {{ row.actualTailId !== null ? 'Tail ' + row.actualTailId : '—' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
   }
 </mat-dialog-content>
 <mat-dialog-actions align="end">

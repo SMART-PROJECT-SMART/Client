@@ -25,7 +25,7 @@ export class CesiumViewer implements OnInit, OnDestroy {
 
   constructor(
     private readonly cesiumService: CesiumService,
-    private readonly ltsService: LtsSignalRService
+    private readonly ltsService: LtsSignalRService,
   ) {
     effect(() => {
       const telemetry: TelemetryBroadcastDto | null = this.ltsService.latestTelemetry();

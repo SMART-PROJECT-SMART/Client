@@ -2,19 +2,47 @@ import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/c
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import type { ArchiveAssignmentRo, ArchiveMissionToUavAssignmentRo } from '../../models/archive';
 
-function formatAssignmentLine(a: ArchiveMissionToUavAssignmentRo): string {
-  const title = a.mission?.title ?? '—';
-  const type = a.mission?.requiredUAVType ?? '—';
-  return `${title}\t${type}\tTail ${a.uavTailId}`;
+interface ComparisonRow {
+  title: string;
+  type: string;
+  suggestedTailId: number | null;
+  actualTailId: number | null;
+  changed: boolean;
 }
 
-function assignmentLines(list: ArchiveMissionToUavAssignmentRo[]): string {
-  const sorted = [...(list ?? [])].sort((x, y) => {
-    const t = (x.mission?.title ?? '').localeCompare(y.mission?.title ?? '');
-    if (t !== 0) return t;
-    return x.uavTailId - y.uavTailId;
-  });
-  return sorted.map(formatAssignmentLine).join('\n') || '(none)';
+function buildComparisonRows(
+  suggested: ArchiveMissionToUavAssignmentRo[],
+  actual: ArchiveMissionToUavAssignmentRo[],
+): ComparisonRow[] {
+  const suggestedMap = new Map<string, ArchiveMissionToUavAssignmentRo>();
+  for (const a of suggested) {
+    suggestedMap.set(a.mission?.title ?? '', a);
+  }
+
+  const actualMap = new Map<string, ArchiveMissionToUavAssignmentRo>();
+  for (const a of actual) {
+    actualMap.set(a.mission?.title ?? '', a);
+  }
+
+  const allTitles = new Set([...suggestedMap.keys(), ...actualMap.keys()]);
+  const rows: ComparisonRow[] = [];
+
+  for (const title of [...allTitles].sort()) {
+    const s = suggestedMap.get(title);
+    const a = actualMap.get(title);
+    const suggestedTailId = s?.uavTailId ?? null;
+    const actualTailId = a?.uavTailId ?? null;
+
+    rows.push({
+      title,
+      type: s?.mission?.requiredUAVType ?? a?.mission?.requiredUAVType ?? '—',
+      suggestedTailId,
+      actualTailId,
+      changed: suggestedTailId !== actualTailId,
+    });
+  }
+
+  return rows;
 }
 
 @Component({
@@ -32,11 +60,12 @@ export class ArchiveDiffDialogComponent {
     createdAt: '',
   };
 
-  readonly beforeText = computed(() =>
-    assignmentLines(this.data?.suggestedAssignments ?? [])
+  readonly comparisonRows = computed(() =>
+    buildComparisonRows(this.data.suggestedAssignments, this.data.actualAssignments)
   );
-  readonly afterText = computed(() =>
-    assignmentLines(this.data?.actualAssignments ?? [])
+
+  readonly hasChanges = computed(() =>
+    this.comparisonRows().some(r => r.changed)
   );
 
   close(): void {
