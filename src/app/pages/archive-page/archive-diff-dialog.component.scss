@@ -1,7 +1,41 @@
+@use '../../../styles/constants' as *;
+
 .diff-container {
   min-height: 300px;
   overflow: auto;
 }
+
 ngx-side-by-side-diff {
   width: 100%;
+}
+
+.no-diff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+  color: $color-text-secondary;
+
+  mat-icon {
+    font-size: $icon-size-xl;
+    width: $icon-size-xl;
+    height: $icon-size-xl;
+    color: $color-success;
+    margin-bottom: $spacing-md;
+  }
+
+  p {
+    font-size: $font-size-md;
+    margin: 0;
+  }
+}
+
+::ng-deep .ngx-diff-dark-theme {
+  --ngx-diff-insert-color: #{$color-success};
+  --ngx-diff-delete-color: #{$color-error};
+  --ngx-diff-equal-color: #{$color-background-secondary};
+  --ngx-diff-font-color: #{$color-text-primary};
+  --ngx-diff-border-color: #{$color-border-default};
+  --ngx-diff-line-number-font-color: #{$color-text-muted};
 }

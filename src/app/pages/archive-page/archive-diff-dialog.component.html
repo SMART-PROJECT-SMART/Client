@@ -1,11 +1,18 @@
 <h2 mat-dialog-title>Suggested vs actual assignments</h2>
 <mat-dialog-content class="diff-container">
-  <ngx-side-by-side-diff
-    class="ngx-diff-light-theme"
-    [before]="beforeText()"
-    [after]="afterText()"
-    [lineContextSize]="3">
-  </ngx-side-by-side-diff>
+  @if (beforeText() === afterText()) {
+    <div class="no-diff">
+      <mat-icon>check_circle</mat-icon>
+      <p>No differences — suggested and actual assignments are identical.</p>
+    </div>
+  } @else {
+    <ngx-side-by-side-diff
+      class="ngx-diff-dark-theme"
+      [before]="beforeText()"
+      [after]="afterText()"
+      [lineContextSize]="100">
+    </ngx-side-by-side-diff>
+  }
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-raised-button (click)="close()">Close</button>
