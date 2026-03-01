@@ -1,7 +1,7 @@
 import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import type { ArchiveAssignmentRo } from '../../models/archive';
-import { buildComparisonRows } from './archive-comparison.utils';
+import type { ArchiveAssignmentRo } from '../../../../models/archive';
+import { buildComparisonRows } from '../../archive-page/archive-comparison.utils';
 
 @Component({
   selector: 'app-archive-diff-dialog',

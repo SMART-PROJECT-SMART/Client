@@ -1,4 +1,4 @@
-import type { ArchiveMissionToUavAssignmentRo } from '../../models/archive';
+import type { ArchiveMissionToUavAssignmentRo } from '../../../models/archive';
 
 export interface ComparisonRow {
   title: string;

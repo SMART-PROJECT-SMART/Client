@@ -1,4 +1,4 @@
-@use '../../../styles/constants' as *;
+@use '../../../../styles/constants' as *;
 
 .archive-page {
   display: flex;
@@ -27,13 +27,6 @@
   align-items: baseline;
   gap: $spacing-md;
   margin-left: $layout-hamburger-zone;
-}
-
-.page-title {
-  font-size: $font-size-xl;
-  font-weight: 600;
-  color: $color-text-primary;
-  margin: 0;
 }
 
 .record-count {

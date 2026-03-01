@@ -2,15 +2,9 @@ import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@a
 import { FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { DeviceManagerStorageService } from '../../services/devices/device-manager-storage.service';
-import { UAVType } from '../../common/enums';
-
-export interface ArchiveFilterData {
-  date: string | null;
-  tailIds: number[];
-  types: string[];
-  titles: string[];
-}
+import { DeviceManagerStorageService } from '../../../../services/devices/device-manager-storage.service';
+import { UAVType } from '../../../../common/enums';
+import type { ArchiveFilterData } from '../../archive-page/archive-filter-data.model';
 
 @Component({
   selector: 'app-archive-filter-dialog',

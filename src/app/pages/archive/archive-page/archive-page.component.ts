@@ -8,11 +8,12 @@ import {
 } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { ArchiveApiService } from '../../services/archive/archive-api.service';
-import { DeviceManagerStorageService } from '../../services/devices/device-manager-storage.service';
-import type { ArchiveAssignmentRo } from '../../models/archive';
-import { ArchiveDiffDialogComponent } from './archive-diff-dialog.component';
-import { ArchiveFilterDialogComponent, type ArchiveFilterData } from './archive-filter-dialog.component';
+import { ArchiveApiService } from '../../../services/archive/archive-api.service';
+import { DeviceManagerStorageService } from '../../../services/devices/device-manager-storage.service';
+import type { ArchiveAssignmentRo } from '../../../models/archive';
+import { ArchiveDiffDialogComponent } from '../components/archive-diff-dialog/archive-diff-dialog.component';
+import { ArchiveFilterDialogComponent } from '../components/archive-filter-dialog/archive-filter-dialog.component';
+import type { ArchiveFilterData } from './archive-filter-data.model';
 import { buildComparisonRows, countChanges, type ComparisonRow } from './archive-comparison.utils';
 
 @Component({
