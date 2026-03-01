@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { ClientConstants } from '../../common/constants/clientConstants.constant';
 import type { ArchiveAssignmentRo } from '../../models/archive';
 
@@ -11,11 +11,10 @@ const { ArchiveAPI } = ClientConstants;
   providedIn: 'root',
 })
 export class ArchiveApiService {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getLatest(): Observable<ArchiveAssignmentRo | null> {
     return this.http.get<ArchiveAssignmentRo>(ArchiveAPI.LATEST).pipe(
-      map((body) => body ?? null),
       catchError(() => of(null))
     );
   }

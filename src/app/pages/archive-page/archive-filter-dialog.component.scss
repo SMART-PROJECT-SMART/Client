@@ -1,20 +1,26 @@
+@use '../../../styles/constants' as *;
+
 .full-width {
   width: 100%;
   display: block;
 }
+
 .section-label {
-  font-size: 0.875rem;
+  font-size: $font-size-sm;
   font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
+  margin: $spacing-md 0 $spacing-sm 0;
+
   &:first-of-type {
     margin-top: 0;
   }
 }
+
 .dialog-description {
-  margin: 0 0 0.5rem 0;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.875rem;
+  margin: 0 0 $spacing-sm 0;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
 }
+
 mat-dialog-content {
   min-width: 320px;
 }

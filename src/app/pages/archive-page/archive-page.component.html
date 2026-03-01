@@ -29,7 +29,7 @@
   } @else {
     <div class="records-container">
       @for (record of filteredRecords(); track record.createdAt) {
-        <mat-card class="record-card" (click)="openDiffDialog(record)">
+        <mat-card class="record-card" tabindex="0" (click)="openDiffDialog(record)" (keydown.enter)="openDiffDialog(record)">
           <mat-card-header>
             <mat-card-title>{{ formatCreatedAt(record.createdAt) }}</mat-card-title>
           </mat-card-header>

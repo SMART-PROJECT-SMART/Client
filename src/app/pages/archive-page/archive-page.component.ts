@@ -74,7 +74,7 @@ export class ArchivePageComponent implements OnInit {
     }
   }
 
-  openFilterDialog(): void {
+  async openFilterDialog(): Promise<void> {
     const ref = this.dialog.open(ArchiveFilterDialogComponent, {
       width: '420px',
       data: {
@@ -82,13 +82,12 @@ export class ArchivePageComponent implements OnInit {
         criteria: this.filterCriteria(),
       },
     });
-    ref.afterClosed().subscribe((result: ArchiveFilterDialogResult | undefined) => {
-      if (result === undefined) return;
-      if (result.loadDate) {
-        this.loadByDate(result.loadDate);
-      }
-      this.filterCriteria.set(result.criteria ?? {});
-    });
+    const result = await firstValueFrom(ref.afterClosed());
+    if (result === undefined) return;
+    if (result.loadDate) {
+      await this.loadByDate(result.loadDate);
+    }
+    this.filterCriteria.set(result.criteria ?? {});
   }
 
   async loadByDate(date: string): Promise<void> {
