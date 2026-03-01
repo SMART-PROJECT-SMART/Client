@@ -39,7 +39,7 @@
 
 .records-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 380px));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 360px));
   gap: $spacing-md;
   overflow-y: auto;
   padding: $spacing-xs;
@@ -92,40 +92,44 @@
   }
 
   ::ng-deep .mat-mdc-card-header {
-    padding: 0 0 $spacing-sm 0;
+    padding: 0;
   }
 
   mat-card-title {
-    font-size: $font-size-xl;
+    font-size: $font-size-lg;
     font-weight: 600;
     color: $color-text-primary;
     margin: 0;
   }
 
   mat-card-content {
-    padding: 0;
+    padding: $spacing-sm 0 0 0;
   }
 }
 
-.record-info {
+.mission-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-sm;
 }
 
-.info-row {
+.mission-row {
   display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  font-size: $font-size-md;
-  color: $color-text-light;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: $spacing-sm;
+  border-left: $border-width-medium solid $color-border-default;
+}
 
-  mat-icon {
-    font-size: $icon-size-sm;
-    width: $icon-size-sm;
-    height: $icon-size-sm;
-    color: $color-text-secondary;
-  }
+.mission-title {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: $color-text-light;
+}
+
+.mission-detail {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
 }
 
 .status-chip {

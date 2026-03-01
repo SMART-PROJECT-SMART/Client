@@ -15,7 +15,7 @@ import {
   type ArchiveFilterDialogResult,
 } from './archive-filter-dialog.component';
 import { ArchiveDiffDialogComponent } from './archive-diff-dialog.component';
-import { countChanges } from './archive-comparison.utils';
+import { buildComparisonRows, countChanges, type ComparisonRow } from './archive-comparison.utils';
 
 @Component({
   selector: 'app-archive-page',
@@ -115,12 +115,19 @@ export class ArchivePageComponent implements OnInit {
     return countChanges(record.suggestedAssignments, record.actualAssignments);
   }
 
+  getMissionSummaries(record: ArchiveAssignmentRo): ComparisonRow[] {
+    return buildComparisonRows(record.suggestedAssignments, record.actualAssignments);
+  }
+
   formatCreatedAt(createdAt: string): string {
     if (!createdAt) return '—';
     const d = new Date(createdAt);
-    return d.toLocaleString(undefined, {
-      dateStyle: 'short',
-      timeStyle: 'short',
+    return d.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
     });
   }
 }
