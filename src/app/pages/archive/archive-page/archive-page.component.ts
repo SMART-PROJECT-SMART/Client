@@ -94,7 +94,7 @@ export class ArchivePageComponent implements OnInit {
 
   async openFilterDialog(): Promise<void> {
     const ref = this.dialog.open(ArchiveFilterDialogComponent, {
-      width: '400px',
+      width: '340px',
       data: {
         date: this.selectedDate(),
         tailIds: this.tailIdFilter(),

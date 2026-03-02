@@ -12,10 +12,19 @@
     margin: 0;
     color: $color-text-primary;
   }
+
+  ::ng-deep .mat-mdc-icon-button {
+    background-color: transparent !important;
+
+    .mat-mdc-button-persistent-ripple,
+    .mdc-icon-button__ripple {
+      background-color: transparent !important;
+    }
+  }
 }
 
 mat-dialog-content {
-  min-width: 320px;
+  min-width: 280px;
   padding-top: 0;
 }
 
