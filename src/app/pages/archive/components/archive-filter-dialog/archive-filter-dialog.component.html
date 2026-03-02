@@ -34,7 +34,7 @@
 
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Title</mat-label>
-      <mat-chip-grid #chipGrid>
+      <mat-chip-grid #chipGrid aria-label="Title keywords">
         @for (title of titles(); track $index) {
           <mat-chip-row (removed)="removeTitle($index)">
             {{ title }}

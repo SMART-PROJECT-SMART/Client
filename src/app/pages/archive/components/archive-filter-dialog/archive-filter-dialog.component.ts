@@ -32,8 +32,8 @@ export class ArchiveFilterDialogComponent {
   readonly dateControl = new FormControl<Date | null>(
     this.data.date ? new Date(this.data.date + 'T12:00:00') : null
   );
-  readonly tailIdControl = new FormControl<number[]>(this.data.tailIds ?? []);
-  readonly typeControl = new FormControl<string[]>(this.data.types ?? []);
+  readonly tailIdControl = new FormControl<number[]>(this.data.tailIds);
+  readonly typeControl = new FormControl<string[]>(this.data.types);
   readonly titles = signal<string[]>([...this.data.titles]);
 
   addTitle(event: MatChipInputEvent): void {

@@ -74,7 +74,7 @@
     transition: background-color $transition-fast;
 
     &:nth-child(even) {
-      background-color: rgba(white, 0.02);
+      background-color: rgba($color-background-elevated, 0.3);
     }
 
     &:hover {
@@ -90,7 +90,7 @@
     color: $color-text-primary;
   }
 
-  .changed-row {
+  tr.changed-row {
     background-color: rgba($color-warning, 0.05);
 
     &:hover {

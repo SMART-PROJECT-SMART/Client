@@ -1,7 +1,7 @@
-import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import type { ArchiveAssignmentRo } from '../../../../models/archive';
-import { buildComparisonRows } from '../../archive-page/archive-comparison.utils';
+import { buildComparisonRows, type ComparisonRow } from '../../archive-page/archive-comparison.utils';
 
 @Component({
   selector: 'app-archive-diff-dialog',
@@ -11,35 +11,20 @@ import { buildComparisonRows } from '../../archive-page/archive-comparison.utils
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArchiveDiffDialogComponent {
-  readonly dialogRef = inject(MatDialogRef<ArchiveDiffDialogComponent>);
-  readonly data: ArchiveAssignmentRo = inject(MAT_DIALOG_DATA, { optional: true }) ?? {
+  private readonly dialogRef = inject(MatDialogRef<ArchiveDiffDialogComponent>);
+  private readonly data: ArchiveAssignmentRo = inject(MAT_DIALOG_DATA, { optional: true }) ?? {
     suggestedAssignments: [],
     actualAssignments: [],
     createdAt: '',
   };
 
-  readonly comparisonRows = computed(() =>
-    buildComparisonRows(this.data.suggestedAssignments, this.data.actualAssignments)
-  );
-
-  readonly hasChanges = computed(() =>
-    this.comparisonRows().some(r => r.changed)
-  );
-
-  readonly changedCount = computed(() =>
-    this.comparisonRows().filter(r => r.changed).length
-  );
-
-  readonly totalCount = computed(() =>
-    this.comparisonRows().length
-  );
-
-  readonly formattedDate = computed(() => {
-    const raw = this.data.createdAt;
-    if (!raw) return '';
-    const d = new Date(raw);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  });
+  readonly comparisonRows: ComparisonRow[] =
+    buildComparisonRows(this.data.suggestedAssignments, this.data.actualAssignments);
+  readonly changedCount = this.comparisonRows.filter((r) => r.changed).length;
+  readonly totalCount = this.comparisonRows.length;
+  readonly formattedDate = this.data.createdAt
+    ? new Date(this.data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : '';
 
   close(): void {
     this.dialogRef.close();

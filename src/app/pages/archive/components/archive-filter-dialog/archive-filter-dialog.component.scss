@@ -1,11 +1,10 @@
 @use '../../../../../styles/constants' as *;
 
-::ng-deep .mat-mdc-dialog-surface {
+:host ::ng-deep .mat-mdc-dialog-surface {
   background-color: $color-background-secondary !important;
 }
 
 .dialog-header {
-  background-color: $color-background-secondary;
   display: flex;
   justify-content: space-between;
   align-items: center;

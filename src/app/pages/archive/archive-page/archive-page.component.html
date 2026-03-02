@@ -1,7 +1,8 @@
 <div class="archive-page">
   <div class="page-header">
     <div class="header-left">
-      <span class="record-count">{{ filteredRecords().length }} {{ filteredRecords().length === 1 ? 'record' : 'records' }}</span>
+      @let count = displayRecords().length;
+      <span class="record-count">{{ count }} {{ count === 1 ? 'record' : 'records' }}</span>
     </div>
     <div class="header-actions">
       <button mat-raised-button color="primary" (click)="openFilterDialog()">
@@ -12,11 +13,11 @@
   </div>
 
   @if (loading()) {
-    <div class="empty-state">
+    <div class="loading-state">
       <mat-spinner diameter="48"></mat-spinner>
       <p>Loading…</p>
     </div>
-  } @else if (filteredRecords().length === 0) {
+  } @else if (displayRecords().length === 0) {
     <div class="empty-state">
       <mat-icon class="empty-icon">inventory_2</mat-icon>
       <h2>No Records Found</h2>
@@ -24,19 +25,26 @@
     </div>
   } @else {
     <div class="records-container">
-      @for (record of filteredRecords(); track record.createdAt) {
-        <mat-card class="record-card" tabindex="0" (click)="openDiffDialog(record)" (keydown.enter)="openDiffDialog(record)">
+      @for (item of displayRecords(); track item.record.createdAt) {
+        <mat-card
+          class="record-card"
+          tabindex="0"
+          role="button"
+          (click)="openDiffDialog(item.record)"
+          (keydown.enter)="openDiffDialog(item.record)"
+          (keydown.space)="openDiffDialog(item.record)"
+        >
           <mat-card-header>
-            <mat-card-title>{{ formatCreatedAt(record.createdAt) }}</mat-card-title>
-            @if (getChangeCount(record); as changes) {
-              <span class="status-chip changed">{{ changes }} changed</span>
+            <mat-card-title>{{ item.formattedDate }}</mat-card-title>
+            @if (item.changeCount) {
+              <span class="status-chip changed">{{ item.changeCount }} changed</span>
             } @else {
               <span class="status-chip match">Match</span>
             }
           </mat-card-header>
           <mat-card-content>
             <div class="mission-list">
-              @for (row of getMissionSummaries(record); track row.title) {
+              @for (row of item.rows; track row.title) {
                 <div class="mission-row">
                   <span class="mission-title">{{ row.title }}</span>
                   <span class="mission-detail">{{ row.type }} · Tail {{ row.actualTailId ?? row.suggestedTailId }}</span>

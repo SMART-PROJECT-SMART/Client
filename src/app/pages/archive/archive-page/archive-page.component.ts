@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  signal,
-  computed,
-  ChangeDetectionStrategy,
-  inject,
-} from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ArchiveApiService } from '../../../services/archive/archive-api.service';
@@ -14,7 +7,14 @@ import type { ArchiveAssignmentRo } from '../../../models/archive';
 import { ArchiveDiffDialogComponent } from '../components/archive-diff-dialog/archive-diff-dialog.component';
 import { ArchiveFilterDialogComponent } from '../components/archive-filter-dialog/archive-filter-dialog.component';
 import type { ArchiveFilterData } from './archive-filter-data.model';
-import { buildComparisonRows, countChanges, type ComparisonRow } from './archive-comparison.utils';
+import { buildComparisonRows, type ComparisonRow } from './archive-comparison.utils';
+
+interface DisplayRecord {
+  record: ArchiveAssignmentRo;
+  formattedDate: string;
+  rows: ComparisonRow[];
+  changeCount: number;
+}
 
 @Component({
   selector: 'app-archive-page',
@@ -62,9 +62,21 @@ export class ArchivePageComponent implements OnInit {
     });
   });
 
-  async ngOnInit(): Promise<void> {
-    firstValueFrom(this.deviceStorage.loadUAVs());
-    await this.loadLatest();
+  readonly displayRecords = computed<DisplayRecord[]>(() =>
+    this.filteredRecords().map((record) => {
+      const rows = buildComparisonRows(record.suggestedAssignments, record.actualAssignments);
+      return {
+        record,
+        formattedDate: this.formatDate(record.createdAt),
+        rows,
+        changeCount: rows.filter((r) => r.changed).length,
+      };
+    })
+  );
+
+  ngOnInit(): void {
+    firstValueFrom(this.deviceStorage.loadUAVs()).catch(() => {});
+    this.loadLatest();
   }
 
   async loadLatest(): Promise<void> {
@@ -90,25 +102,29 @@ export class ArchivePageComponent implements OnInit {
     const result = await firstValueFrom(ref.afterClosed());
     if (result === undefined) return;
 
-    // Load data if date changed
     if (result.date && result.date !== this.selectedDate()) {
       this.loading.set(true);
       try {
         const list = await firstValueFrom(this.archiveApi.getByDate(result.date));
         this.assignments.set(list ?? []);
         this.selectedDate.set(result.date);
+        this.tailIdFilter.set(result.tailIds);
+        this.missionTypeFilter.set(result.types);
+        this.missionTitleFilter.set(result.titles);
       } finally {
         this.loading.set(false);
       }
     } else if (!result.date && this.selectedDate()) {
-      // Date cleared — reload latest
       this.selectedDate.set(null);
+      this.tailIdFilter.set(result.tailIds);
+      this.missionTypeFilter.set(result.types);
+      this.missionTitleFilter.set(result.titles);
       await this.loadLatest();
+    } else {
+      this.tailIdFilter.set(result.tailIds);
+      this.missionTypeFilter.set(result.types);
+      this.missionTitleFilter.set(result.titles);
     }
-
-    this.tailIdFilter.set(result.tailIds);
-    this.missionTypeFilter.set(result.types);
-    this.missionTitleFilter.set(result.titles);
   }
 
   openDiffDialog(record: ArchiveAssignmentRo): void {
@@ -120,15 +136,7 @@ export class ArchivePageComponent implements OnInit {
     });
   }
 
-  getChangeCount(record: ArchiveAssignmentRo): number {
-    return countChanges(record.suggestedAssignments, record.actualAssignments);
-  }
-
-  getMissionSummaries(record: ArchiveAssignmentRo): ComparisonRow[] {
-    return buildComparisonRows(record.suggestedAssignments, record.actualAssignments);
-  }
-
-  formatCreatedAt(createdAt: string): string {
+  private formatDate(createdAt: string): string {
     if (!createdAt) return '—';
     const d = new Date(createdAt);
     return d.toLocaleString('en-US', {
