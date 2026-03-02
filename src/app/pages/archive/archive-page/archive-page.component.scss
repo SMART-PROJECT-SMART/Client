@@ -40,27 +40,6 @@
   align-items: center;
 }
 
-.active-filter {
-  color: $color-primary;
-}
-
-// --- Filter chips ---
-
-.filter-chips {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  flex-wrap: wrap;
-  padding: $spacing-sm 0;
-  margin-left: $layout-hamburger-zone;
-  flex-shrink: 0;
-}
-
-.clear-all-btn {
-  font-size: $font-size-sm;
-  color: $color-text-muted;
-}
-
 // --- Content area ---
 
 .records-container {

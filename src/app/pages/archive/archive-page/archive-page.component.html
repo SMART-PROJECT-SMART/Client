@@ -11,32 +11,6 @@
     </div>
   </div>
 
-  @if (activeFilterCount()) {
-    <div class="filter-chips">
-      @for (id of tailIdFilter(); track id) {
-        <mat-chip-row (removed)="removeTailId(id)">
-          Tail {{ id }}
-          <button matChipRemove><mat-icon>cancel</mat-icon></button>
-        </mat-chip-row>
-      }
-      @for (t of missionTypeFilter(); track t) {
-        <mat-chip-row (removed)="removeType(t)">
-          {{ t }}
-          <button matChipRemove><mat-icon>cancel</mat-icon></button>
-        </mat-chip-row>
-      }
-      @for (t of missionTitleFilter(); track t) {
-        <mat-chip-row (removed)="removeTitleChip(t)">
-          {{ t }}
-          <button matChipRemove><mat-icon>cancel</mat-icon></button>
-        </mat-chip-row>
-      }
-      @if (activeFilterCount()) {
-        <button mat-button class="clear-all-btn" (click)="clearFilters()">Clear filters</button>
-      }
-    </div>
-  }
-
   @if (loading()) {
     <div class="empty-state">
       <mat-spinner diameter="48"></mat-spinner>

@@ -36,14 +36,6 @@ export class ArchivePageComponent implements OnInit {
   readonly missionTypeFilter = signal<string[]>([]);
   readonly missionTitleFilter = signal<string[]>([]);
 
-  readonly activeFilterCount = computed(() => {
-    let count = 0;
-    if (this.tailIdFilter().length > 0) count++;
-    if (this.missionTypeFilter().length > 0) count++;
-    if (this.missionTitleFilter().length > 0) count++;
-    return count;
-  });
-
   readonly filteredRecords = computed(() => {
     const list = this.assignments();
     const tailIds = this.tailIdFilter();
@@ -117,24 +109,6 @@ export class ArchivePageComponent implements OnInit {
     this.tailIdFilter.set(result.tailIds);
     this.missionTypeFilter.set(result.types);
     this.missionTitleFilter.set(result.titles);
-  }
-
-  removeTailId(id: number): void {
-    this.tailIdFilter.update((ids) => ids.filter((v) => v !== id));
-  }
-
-  removeType(type: string): void {
-    this.missionTypeFilter.update((types) => types.filter((v) => v !== type));
-  }
-
-  removeTitleChip(title: string): void {
-    this.missionTitleFilter.update((titles) => titles.filter((v) => v !== title));
-  }
-
-  clearFilters(): void {
-    this.tailIdFilter.set([]);
-    this.missionTypeFilter.set([]);
-    this.missionTitleFilter.set([]);
   }
 
   openDiffDialog(record: ArchiveAssignmentRo): void {
