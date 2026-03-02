@@ -1,13 +1,19 @@
 @use '../../../../../styles/constants' as *;
 
+::ng-deep .mat-mdc-dialog-surface {
+  background-color: $color-background-secondary !important;
+}
+
 .dialog-header {
+  background-color: $color-background-secondary;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: $spacing-md $spacing-md $spacing-sm $spacing-lg;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
 
   h2 {
-    font-size: $font-size-xl;
+    font-size: $font-size-xxl;
     font-weight: 600;
     margin: 0;
     color: $color-text-primary;
@@ -23,15 +29,17 @@
   }
 }
 
-mat-dialog-content {
+.dialog-content {
   min-width: 280px;
-  padding-top: 0;
+  padding: $spacing-md $spacing-lg;
 }
 
 .dialog-actions {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border-top: $border-width-thin solid $color-border-default;
 }
 
 .filter-fields {

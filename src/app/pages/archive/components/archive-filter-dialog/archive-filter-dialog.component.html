@@ -5,7 +5,7 @@
   </button>
 </div>
 
-<mat-dialog-content>
+<div class="dialog-content">
   <div class="filter-fields">
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Date</mat-label>
@@ -45,11 +45,9 @@
       <input matInput [matChipInputFor]="chipGrid" (matChipInputTokenEnd)="addTitle($event)" placeholder="Add keywords..." />
     </mat-form-field>
   </div>
-</mat-dialog-content>
+</div>
 
-<mat-dialog-actions>
-  <div class="dialog-actions">
-    <button mat-button (click)="clear()">Clear All</button>
-    <button mat-flat-button color="primary" (click)="apply()">Apply</button>
-  </div>
-</mat-dialog-actions>
+<div class="dialog-actions">
+  <button mat-button (click)="clear()">Clear All</button>
+  <button mat-raised-button color="primary" (click)="apply()">Apply</button>
+</div>
