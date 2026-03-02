@@ -4,8 +4,9 @@
       <span class="record-count">{{ filteredRecords().length }} {{ filteredRecords().length === 1 ? 'record' : 'records' }}</span>
     </div>
     <div class="header-actions">
-      <button mat-icon-button (click)="openFilterDialog()" [class.active-filter]="activeFilterCount() > 0 || selectedDate()">
+      <button mat-raised-button color="primary" (click)="openFilterDialog()">
         <mat-icon>filter_list</mat-icon>
+        Filter
       </button>
     </div>
   </div>
