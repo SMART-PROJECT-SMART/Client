@@ -44,13 +44,6 @@ export class ArchivePageComponent implements OnInit {
     return count;
   });
 
-  readonly formattedDate = computed(() => {
-    const raw = this.selectedDate();
-    if (!raw) return null;
-    const d = new Date(raw + 'T12:00:00');
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  });
-
   readonly filteredRecords = computed(() => {
     const list = this.assignments();
     const tailIds = this.tailIdFilter();
@@ -124,11 +117,6 @@ export class ArchivePageComponent implements OnInit {
     this.tailIdFilter.set(result.tailIds);
     this.missionTypeFilter.set(result.types);
     this.missionTitleFilter.set(result.titles);
-  }
-
-  removeDate(): void {
-    this.selectedDate.set(null);
-    this.loadLatest();
   }
 
   removeTailId(id: number): void {

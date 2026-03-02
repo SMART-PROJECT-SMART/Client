@@ -11,14 +11,8 @@
     </div>
   </div>
 
-  @if (activeFilterCount() || selectedDate()) {
+  @if (activeFilterCount()) {
     <div class="filter-chips">
-      @if (formattedDate()) {
-        <mat-chip-row (removed)="removeDate()">
-          {{ formattedDate() }}
-          <button matChipRemove><mat-icon>cancel</mat-icon></button>
-        </mat-chip-row>
-      }
       @for (id of tailIdFilter(); track id) {
         <mat-chip-row (removed)="removeTailId(id)">
           Tail {{ id }}
