@@ -1,43 +1,43 @@
-<h2 mat-dialog-title>Filter & Load</h2>
+<div class="dialog-header">
+  <h2>Filters</h2>
+  <button mat-icon-button (click)="close()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
 <mat-dialog-content>
-  <div class="filter-section">
-    <h3 class="section-label">Date</h3>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
-      <mat-label>Load by date</mat-label>
+  <div class="filter-fields">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+
+      <mat-label>Date</mat-label>
       <input matInput [matDatepicker]="picker" [formControl]="dateControl" [max]="today" />
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
-  </div>
 
-  <div class="filter-section">
-    <h3 class="section-label">Tail ID</h3>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
-      <mat-label>Select UAVs</mat-label>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+
+      <mat-label>Tail ID</mat-label>
       <mat-select [formControl]="tailIdControl" multiple>
         @for (id of availableTailIds(); track id) {
           <mat-option [value]="id">Tail {{ id }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
-  </div>
 
-  <div class="filter-section">
-    <h3 class="section-label">Mission Type</h3>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
-      <mat-label>Select types</mat-label>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+
+      <mat-label>Mission Type</mat-label>
       <mat-select [formControl]="typeControl" multiple>
         @for (t of missionTypes; track t) {
           <mat-option [value]="t">{{ t }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
-  </div>
 
-  <div class="filter-section">
-    <h3 class="section-label">Title</h3>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="full-width">
-      <mat-label>Add title keywords</mat-label>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+
+      <mat-label>Title keywords</mat-label>
       <mat-chip-grid #chipGrid>
         @for (title of titles(); track $index) {
           <mat-chip-row (removed)="removeTitle($index)">
@@ -50,8 +50,10 @@
     </mat-form-field>
   </div>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Cancel</button>
-  <button mat-button (click)="clear()">Clear</button>
-  <button mat-raised-button color="primary" (click)="apply()">Apply</button>
+
+<mat-dialog-actions>
+  <div class="dialog-actions">
+    <button mat-button (click)="clear()">Clear All</button>
+    <button mat-raised-button color="primary" (click)="apply()">Apply</button>
+  </div>
 </mat-dialog-actions>

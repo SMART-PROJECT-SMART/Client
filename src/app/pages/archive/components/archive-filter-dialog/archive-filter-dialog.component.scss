@@ -1,25 +1,37 @@
 @use '../../../../../styles/constants' as *;
 
-mat-dialog-content {
-  min-width: 320px;
-}
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-md $spacing-sm $spacing-lg;
 
-.filter-section {
-  margin-bottom: $spacing-md;
-
-  &:last-child {
-    margin-bottom: 0;
+  h2 {
+    font-size: $font-size-xl;
+    font-weight: 600;
+    margin: 0;
+    color: $color-text-primary;
   }
 }
 
-.section-label {
-  font-size: $font-size-sm;
-  font-weight: 600;
-  color: $color-text-secondary;
-  margin: 0 0 $spacing-sm 0;
+mat-dialog-content {
+  min-width: 320px;
+  padding-top: 0;
 }
 
-.full-width {
+.dialog-actions {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
-  display: block;
+}
+
+.filter-fields {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  mat-form-field {
+    width: 100%;
+    display: block;
+  }
 }

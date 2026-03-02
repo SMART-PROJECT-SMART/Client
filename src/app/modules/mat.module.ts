@@ -9,7 +9,7 @@ import {
 } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton, MatButton } from '@angular/material/button';
-import { MatFormField, MatLabel, MatError, MatSuffix } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatError, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { MatInput } from '@angular/material/input';
@@ -50,6 +50,7 @@ const MaterialModules = [
   MatFormField,
   MatLabel,
   MatError,
+  MatPrefix,
   MatSuffix,
   MatSelect,
   MatOption,

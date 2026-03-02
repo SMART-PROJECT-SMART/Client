@@ -63,15 +63,13 @@ export class ArchiveFilterDialogComponent {
   }
 
   clear(): void {
-    this.dialogRef.close({
-      date: null,
-      tailIds: [],
-      types: [],
-      titles: [],
-    } as ArchiveFilterData);
+    this.dateControl.reset();
+    this.tailIdControl.reset([]);
+    this.typeControl.reset([]);
+    this.titles.set([]);
   }
 
-  cancel(): void {
+  close(): void {
     this.dialogRef.close();
   }
 }
