@@ -1,5 +1,28 @@
 @use '../../../../../styles/constants' as *;
 
+:host ::ng-deep .mat-mdc-dialog-surface {
+  background-color: $color-background-secondary !important;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    margin: 0;
+    color: $color-text-primary;
+  }
+}
+
+.dialog-content {
+  padding: $spacing-md $spacing-lg;
+}
+
 .diff-container {
   overflow: auto;
 }

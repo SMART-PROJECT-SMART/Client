@@ -1,5 +1,10 @@
-<h2 mat-dialog-title>Assignments — {{ formattedDate }}</h2>
-<mat-dialog-content class="diff-container">
+<div class="dialog-header">
+  <h2>Assignments — {{ formattedDate }}</h2>
+  <button mat-icon-button (click)="close()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div class="dialog-content diff-container">
   @if (changedCount === 0) {
     <div class="no-diff">
       <mat-icon>check_circle</mat-icon>
@@ -25,7 +30,7 @@
           <tr [class.changed-row]="row.changed">
             <td>{{ row.title }}</td>
             <td>{{ row.type }}</td>
-            <td [class.changed-cell]="row.changed">
+            <td>
               {{ row.suggestedTailId !== null ? 'Tail ' + row.suggestedTailId : '—' }}
             </td>
             <td class="arrow-col">
@@ -41,7 +46,4 @@
       </tbody>
     </table>
   }
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="close()">Close</button>
-</mat-dialog-actions>
+</div>

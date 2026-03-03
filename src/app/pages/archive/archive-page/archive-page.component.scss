@@ -48,8 +48,15 @@
   gap: $spacing-md;
   overflow-y: auto;
   padding: $spacing-md 0 $spacing-xs 0;
+  align-items: start;
   align-content: start;
   flex: 1;
+}
+
+@supports (grid-template-rows: masonry) {
+  .records-container {
+    grid-template-rows: masonry;
+  }
 }
 
 .loading-state {

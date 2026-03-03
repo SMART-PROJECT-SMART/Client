@@ -42,10 +42,3 @@ export function buildComparisonRows(
 
   return rows;
 }
-
-export function countChanges(
-  suggested: ArchiveMissionToUavAssignmentRo[],
-  actual: ArchiveMissionToUavAssignmentRo[],
-): number {
-  return buildComparisonRows(suggested, actual).filter(r => r.changed).length;
-}
