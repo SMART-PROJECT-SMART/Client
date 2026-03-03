@@ -113,7 +113,7 @@
     color: $color-text-primary;
   }
 
-  tr.changed-row {
+  tbody tr.changed-row {
     background-color: rgba($color-warning, 0.05);
 
     &:hover {
