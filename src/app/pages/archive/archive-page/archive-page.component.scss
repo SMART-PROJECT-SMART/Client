@@ -173,9 +173,9 @@
 }
 
 .priority-badge {
-  padding: 1px $spacing-xs;
-  border-radius: $border-radius-sm;
-  font-size: $font-size-xs;
+  padding: 0 3px;
+  border-radius: 2px;
+  font-size: 10px;
   white-space: nowrap;
 
   &[data-priority='High'] {

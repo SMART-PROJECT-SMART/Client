@@ -23,10 +23,11 @@ export function buildComparisonRows(
     actualMap.set(a.mission?.title ?? '', a);
   }
 
+  const priorityWeight: Record<string, number> = { High: 0, Medium: 1, Low: 2 };
   const allTitles = new Set([...suggestedMap.keys(), ...actualMap.keys()]);
   const rows: ComparisonRow[] = [];
 
-  for (const title of [...allTitles].sort()) {
+  for (const title of allTitles) {
     const s = suggestedMap.get(title);
     const a = actualMap.get(title);
     const suggestedTailId = s?.uavTailId ?? null;
@@ -41,6 +42,11 @@ export function buildComparisonRows(
       changed: suggestedTailId !== actualTailId,
     });
   }
+
+  rows.sort((a, b) =>
+    (priorityWeight[a.priority] ?? 3) - (priorityWeight[b.priority] ?? 3)
+    || a.title.localeCompare(b.title)
+  );
 
   return rows;
 }
