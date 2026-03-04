@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, computed, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy, inject, viewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ArchiveApiService } from '../../../services/archive/archive-api.service';
@@ -9,6 +10,7 @@ import { ArchiveDiffDialogComponent } from '../components/archive-diff-dialog/ar
 import { ArchiveFilterDialogComponent } from '../components/archive-filter-dialog/archive-filter-dialog.component';
 import type { ArchiveFilterData } from './archive-filter-data.model';
 import { buildComparisonRows, type ComparisonRow } from './archive-comparison.utils';
+import { ClientConstants } from '../../../common';
 
 interface DisplayRecord {
   record: ArchiveAssignmentRo;
@@ -83,6 +85,21 @@ export class ArchivePageComponent implements OnInit {
       };
     })
   );
+
+  readonly pageIndex = signal(0);
+  readonly pageSize = signal(ClientConstants.TableConfig.DEFAULT_PAGE_SIZE);
+  readonly pageSizeOptions = ClientConstants.TableConfig.PAGE_SIZE_OPTIONS;
+
+  readonly paginatedRecords = computed(() => {
+    const all = this.displayRecords();
+    const start = this.pageIndex() * this.pageSize();
+    return all.slice(start, start + this.pageSize());
+  });
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+  }
 
   ngOnInit(): void {
     firstValueFrom(this.deviceStorage.loadUAVs()).catch(() => {});

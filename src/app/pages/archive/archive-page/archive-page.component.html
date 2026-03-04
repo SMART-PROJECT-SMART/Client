@@ -4,6 +4,10 @@
     (selectedIndexChange)="onTabChange($event)"
     preserveContent
   >
+    <mat-tab label="Active Missions">
+      <app-active-missions-table></app-active-missions-table>
+    </mat-tab>
+
     <mat-tab label="Assignment Archive">
       <div class="archive-tab-content">
         <div class="page-header">
@@ -32,7 +36,7 @@
           </div>
         } @else {
           <div class="records-container">
-            @for (item of displayRecords(); track item.record.createdAt) {
+            @for (item of paginatedRecords(); track item.record.createdAt) {
               <mat-card
                 class="record-card"
                 tabindex="0"
@@ -72,12 +76,17 @@
               </mat-card>
             }
           </div>
+
+          <mat-paginator
+            [length]="displayRecords().length"
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="pageSizeOptions"
+            [pageIndex]="pageIndex()"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+          ></mat-paginator>
         }
       </div>
-    </mat-tab>
-
-    <mat-tab label="Active Missions">
-      <app-active-missions-table></app-active-missions-table>
     </mat-tab>
   </mat-tab-group>
 </div>
