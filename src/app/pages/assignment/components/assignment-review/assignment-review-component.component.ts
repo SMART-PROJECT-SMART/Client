@@ -122,20 +122,27 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public onApply(): void {
+    const telemetryData = this.algorithmResult().uavTelemetryData;
+
     const suggestedAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(
       (p) => ({
         mission: p.mission,
         uavTailId: p.tailId,
         startTime: p.timeWindow.start,
+        uavTelemetrySnapshot: telemetryData[p.tailId],
       }),
     );
 
     const actualAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(
-      (p) => ({
-        mission: p.mission,
-        uavTailId: this.selectedTailIds().get(p.mission.id) ?? p.tailId,
-        startTime: p.timeWindow.start,
-      }),
+      (p) => {
+        const tailId = this.selectedTailIds().get(p.mission.id) ?? p.tailId;
+        return {
+          mission: p.mission,
+          uavTailId: tailId,
+          startTime: p.timeWindow.start,
+          uavTelemetrySnapshot: telemetryData[tailId],
+        };
+      },
     );
     const assignmentResult: ApplyAssignmentRo = {
       suggested: suggestedAssignments,
