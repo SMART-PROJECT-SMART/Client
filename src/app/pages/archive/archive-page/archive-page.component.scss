@@ -1,9 +1,15 @@
 @use '../../../../styles/constants' as *;
 
+:host {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .archive-page {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
+  height: 100%;
   box-sizing: border-box;
   overflow: hidden;
 }
