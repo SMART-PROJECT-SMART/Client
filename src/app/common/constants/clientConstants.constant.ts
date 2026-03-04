@@ -72,6 +72,7 @@ export namespace ClientConstants {
       export const GET_ASSIGNMENT_RESULT: string = '/api/assignmentresult';
       export const CHECK_ASSIGNMENT_STATUS: string = '/api/assignmentresult';
       export const GET_ACTIVE_MISSION: string = '/api/mission-status/active-mission';
+      export const GET_ALL_ACTIVE_MISSIONS: string = '/api/mission-status/active-missions';
       export const MISSION_COMPLETED: string = '/api/mission-status/mission-completed';
     }
 

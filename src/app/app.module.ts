@@ -31,6 +31,7 @@ import { NumericInputDirective } from './common/directives/numeric-input.directi
 import { TimeInputDirective } from './common/directives/time-input.directive';
 import { ArchiveDiffDialogComponent } from './pages/archive/components/archive-diff-dialog/archive-diff-dialog.component';
 import { ArchiveFilterDialogComponent } from './pages/archive/components/archive-filter-dialog/archive-filter-dialog.component';
+import { ActiveMissionsTableComponent } from './pages/archive/components/active-missions-table/active-missions-table.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { ArchiveFilterDialogComponent } from './pages/archive/components/archive
     ArchivePageComponent,
     ArchiveDiffDialogComponent,
     ArchiveFilterDialogComponent,
+    ActiveMissionsTableComponent,
   ],
   imports: [
     BrowserModule,

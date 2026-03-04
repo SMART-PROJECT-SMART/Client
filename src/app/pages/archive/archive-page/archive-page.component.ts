@@ -3,6 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ArchiveApiService } from '../../../services/archive/archive-api.service';
 import { DeviceManagerStorageService } from '../../../services/devices/device-manager-storage.service';
+import { MissionStatusStorageService } from '../../../services/mission/mission-status-storage.service';
 import type { ArchiveAssignmentRo } from '../../../models/archive';
 import { ArchiveDiffDialogComponent } from '../components/archive-diff-dialog/archive-diff-dialog.component';
 import { ArchiveFilterDialogComponent } from '../components/archive-filter-dialog/archive-filter-dialog.component';
@@ -27,8 +28,10 @@ interface DisplayRecord {
 export class ArchivePageComponent implements OnInit {
   private readonly archiveApi = inject(ArchiveApiService);
   private readonly deviceStorage = inject(DeviceManagerStorageService);
+  private readonly missionStatusStorage = inject(MissionStatusStorageService);
   private readonly dialog = inject(MatDialog);
 
+  readonly selectedTabIndex = signal<number>(0);
   readonly assignments = signal<ArchiveAssignmentRo[]>([]);
   readonly loading = signal(false);
   readonly selectedDate = signal<string | null>(null);
@@ -83,7 +86,12 @@ export class ArchivePageComponent implements OnInit {
 
   ngOnInit(): void {
     firstValueFrom(this.deviceStorage.loadUAVs()).catch(() => {});
+    firstValueFrom(this.missionStatusStorage.loadActiveMissions()).catch(() => {});
     this.loadLatest();
+  }
+
+  onTabChange(index: number): void {
+    this.selectedTabIndex.set(index);
   }
 
   async loadLatest(): Promise<void> {
