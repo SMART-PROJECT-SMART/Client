@@ -5,7 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ActiveMissionRo } from '../../../../models/Ro/activeMissionRo.ro';
 import { MissionStatusStorageService } from '../../../../services/mission/mission-status-storage.service';
 import { ClientConstants, EnumUtil } from '../../../../common';
-import { Priority, UAVType } from '../../../../common/enums';
+import { Priority, UAVType, BaseLocation } from '../../../../common/enums';
 
 const { TableConfig } = ClientConstants;
 
@@ -25,6 +25,7 @@ export class ActiveMissionsTableComponent implements OnInit {
     'missionTitle',
     'priority',
     'requiredUAVType',
+    'location',
     'timeWindow',
   ];
   public readonly dataSource = new MatTableDataSource<ActiveMissionRo>([]);
@@ -52,6 +53,7 @@ export class ActiveMissionsTableComponent implements OnInit {
         case 'missionTitle': return item.mission.title;
         case 'priority': return this.getPriorityWeight(item.mission.priority);
         case 'requiredUAVType': return item.mission.requiredUAVType;
+        case 'location': return item.mission.location.latitude;
         case 'timeWindow': return new Date(item.mission.timeWindow.start).getTime();
         default: return '';
       }
@@ -82,6 +84,14 @@ export class ActiveMissionsTableComponent implements OnInit {
 
   public getUAVTypeDisplay(uavType: UAVType): string {
     return EnumUtil.getUAVTypeDisplay(uavType);
+  }
+
+  public formatLocation(location: { latitude: number; longitude: number; altitude: number }): string {
+    const baseName = ClientConstants.BaseLocationConfig.getBaseFromCoordinates(location);
+    if (baseName) {
+      return EnumUtil.getBaseLocationDisplay(baseName as BaseLocation);
+    }
+    return `${location.latitude.toFixed(4)}°, ${location.longitude.toFixed(4)}°`;
   }
 
   public formatTimeWindow(start: Date, end: Date): string {
