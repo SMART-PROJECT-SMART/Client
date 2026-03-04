@@ -10,7 +10,6 @@
 
 ::ng-deep .mat-mdc-tab-header {
   padding-left: $layout-hamburger-zone;
-  padding-right: $layout-hamburger-zone;
 }
 
 ::ng-deep mat-tab-group {
@@ -93,6 +92,11 @@
   .records-container {
     grid-template-rows: masonry;
   }
+}
+
+::ng-deep mat-paginator {
+  flex-shrink: 0;
+  min-height: 56px;
 }
 
 .loading-state {
