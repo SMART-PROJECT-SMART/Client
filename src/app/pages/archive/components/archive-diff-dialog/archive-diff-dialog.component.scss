@@ -136,4 +136,26 @@
     color: $color-text-muted;
     font-weight: 600;
   }
+
+  .priority-badge {
+    padding: 2px $spacing-sm;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    white-space: nowrap;
+
+    &[data-priority='High'] {
+      background-color: rgba($color-error, 0.2);
+      color: $color-error;
+    }
+
+    &[data-priority='Medium'] {
+      background-color: rgba($color-warning, 0.2);
+      color: $color-warning;
+    }
+
+    &[data-priority='Low'] {
+      background-color: rgba($color-success, 0.2);
+      color: $color-success;
+    }
+  }
 }

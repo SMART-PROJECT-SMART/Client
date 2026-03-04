@@ -3,6 +3,7 @@ import type { ArchiveMissionToUavAssignmentRo } from '../../../models/archive';
 export interface ComparisonRow {
   title: string;
   type: string;
+  priority: string;
   suggestedTailId: number | null;
   actualTailId: number | null;
   changed: boolean;
@@ -34,6 +35,7 @@ export function buildComparisonRows(
     rows.push({
       title,
       type: s?.mission?.requiredUAVType ?? a?.mission?.requiredUAVType ?? '—',
+      priority: s?.mission?.priority ?? a?.mission?.priority ?? '',
       suggestedTailId,
       actualTailId,
       changed: suggestedTailId !== actualTailId,

@@ -33,6 +33,15 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Priority</mat-label>
+      <mat-select [formControl]="priorityControl" multiple>
+        @for (p of priorityLevels; track p) {
+          <mat-option [value]="p">{{ p }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Title</mat-label>
       <mat-chip-grid #chipGrid aria-label="Title keywords">
         @for (title of titles(); track $index) {

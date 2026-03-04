@@ -14,6 +14,7 @@ interface DisplayRecord {
   formattedDate: string;
   rows: ComparisonRow[];
   changeCount: number;
+  totalMissions: number;
 }
 
 @Component({
@@ -35,13 +36,15 @@ export class ArchivePageComponent implements OnInit {
   readonly tailIdFilter = signal<number[]>([]);
   readonly missionTypeFilter = signal<string[]>([]);
   readonly missionTitleFilter = signal<string[]>([]);
+  readonly priorityFilter = signal<string[]>([]);
 
   readonly filteredRecords = computed(() => {
     const list = this.assignments();
     const tailIds = this.tailIdFilter();
     const types = this.missionTypeFilter();
     const titles = this.missionTitleFilter().map((t) => t.trim().toLowerCase()).filter(Boolean);
-    if (tailIds.length === 0 && types.length === 0 && titles.length === 0) {
+    const priorities = this.priorityFilter();
+    if (tailIds.length === 0 && types.length === 0 && titles.length === 0 && priorities.length === 0) {
       return list;
     }
     return list.filter((record) => {
@@ -58,7 +61,10 @@ export class ArchivePageComponent implements OnInit {
         all.some((a) =>
           titles.some((t) => (a.mission?.title ?? '').toLowerCase().includes(t))
         );
-      return matchUav && matchType && matchTitle;
+      const matchPriority =
+        priorities.length === 0 ||
+        all.some((a) => priorities.includes(a.mission?.priority ?? ''));
+      return matchUav && matchType && matchTitle && matchPriority;
     });
   });
 
@@ -70,6 +76,7 @@ export class ArchivePageComponent implements OnInit {
         formattedDate: this.formatDate(record.createdAt),
         rows,
         changeCount: rows.filter((r) => r.changed).length,
+        totalMissions: rows.length,
       };
     })
   );
@@ -97,6 +104,7 @@ export class ArchivePageComponent implements OnInit {
         tailIds: this.tailIdFilter(),
         types: this.missionTypeFilter(),
         titles: this.missionTitleFilter(),
+        priorities: this.priorityFilter(),
       } as ArchiveFilterData,
     });
     const result = await firstValueFrom(ref.afterClosed());
@@ -111,6 +119,7 @@ export class ArchivePageComponent implements OnInit {
         this.tailIdFilter.set(result.tailIds);
         this.missionTypeFilter.set(result.types);
         this.missionTitleFilter.set(result.titles);
+        this.priorityFilter.set(result.priorities);
       } finally {
         this.loading.set(false);
       }
@@ -119,11 +128,13 @@ export class ArchivePageComponent implements OnInit {
       this.tailIdFilter.set(result.tailIds);
       this.missionTypeFilter.set(result.types);
       this.missionTitleFilter.set(result.titles);
+      this.priorityFilter.set(result.priorities);
       await this.loadLatest();
     } else {
       this.tailIdFilter.set(result.tailIds);
       this.missionTypeFilter.set(result.types);
       this.missionTitleFilter.set(result.titles);
+      this.priorityFilter.set(result.priorities);
     }
   }
 

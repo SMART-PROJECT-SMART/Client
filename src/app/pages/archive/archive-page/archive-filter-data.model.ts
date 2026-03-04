@@ -3,4 +3,5 @@ export interface ArchiveFilterData {
   tailIds: number[];
   types: string[];
   titles: string[];
+  priorities: string[];
 }

@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { DeviceManagerStorageService } from '../../../../services/devices/device-manager-storage.service';
-import { UAVType } from '../../../../common/enums';
+import { UAVType, Priority } from '../../../../common/enums';
 import type { ArchiveFilterData } from '../../archive-page/archive-filter-data.model';
 
 @Component({
@@ -21,10 +21,12 @@ export class ArchiveFilterDialogComponent {
     tailIds: [],
     types: [],
     titles: [],
+    priorities: [],
   };
 
   readonly today = new Date();
   readonly missionTypes = Object.values(UAVType);
+  readonly priorityLevels = Object.values(Priority);
   readonly availableTailIds = computed(() =>
     this.deviceStorage.uavList().map((u) => u.tailId).sort((a, b) => a - b)
   );
@@ -34,6 +36,7 @@ export class ArchiveFilterDialogComponent {
   );
   readonly tailIdControl = new FormControl<number[]>(this.data.tailIds);
   readonly typeControl = new FormControl<string[]>(this.data.types);
+  readonly priorityControl = new FormControl<string[]>(this.data.priorities ?? []);
   readonly titles = signal<string[]>([...this.data.titles]);
 
   addTitle(event: MatChipInputEvent): void {
@@ -59,6 +62,7 @@ export class ArchiveFilterDialogComponent {
       tailIds: this.tailIdControl.value ?? [],
       types: this.typeControl.value ?? [],
       titles: this.titles(),
+      priorities: this.priorityControl.value ?? [],
     } as ArchiveFilterData);
   }
 
@@ -66,6 +70,7 @@ export class ArchiveFilterDialogComponent {
     this.dateControl.reset();
     this.tailIdControl.reset([]);
     this.typeControl.reset([]);
+    this.priorityControl.reset([]);
     this.titles.set([]);
   }
 

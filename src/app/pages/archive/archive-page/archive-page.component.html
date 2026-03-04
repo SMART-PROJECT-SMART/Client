@@ -36,6 +36,7 @@
         >
           <mat-card-header>
             <mat-card-title>{{ item.formattedDate }}</mat-card-title>
+            <mat-card-subtitle>{{ item.totalMissions }} {{ item.totalMissions === 1 ? 'mission' : 'missions' }} assigned</mat-card-subtitle>
             @if (item.changeCount) {
               <span class="status-chip changed">{{ item.changeCount }} changed</span>
             } @else {
@@ -43,11 +44,20 @@
             }
           </mat-card-header>
           <mat-card-content>
+            <div class="section-label">Missions</div>
             <div class="mission-list">
               @for (row of item.rows; track row.title) {
                 <div class="mission-row">
-                  <span class="mission-title">{{ row.title }}</span>
-                  <span class="mission-detail">{{ row.type }} · Tail {{ row.actualTailId ?? row.suggestedTailId }}</span>
+                  <div class="mission-row-header">
+                    <span class="mission-title">{{ row.title }}</span>
+                    @if (row.priority) {
+                      <span class="priority-badge" [attr.data-priority]="row.priority">{{ row.priority }}</span>
+                    }
+                  </div>
+                  <span class="mission-detail">
+                    <span class="detail-label">Type:</span> {{ row.type }}
+                    · <span class="detail-label">Assigned UAV:</span> Tail {{ row.actualTailId ?? row.suggestedTailId }}
+                  </span>
                 </div>
               }
             </div>

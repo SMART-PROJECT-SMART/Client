@@ -135,6 +135,12 @@
     margin: 0;
   }
 
+  mat-card-subtitle {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin: 2px 0 0 0;
+  }
+
   mat-card-content {
     padding: $spacing-sm 0 0 0;
   }
@@ -154,10 +160,47 @@
   border-left: $border-width-medium solid $color-border-default;
 }
 
+.mission-row-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
 .mission-title {
   font-size: $font-size-sm;
   font-weight: 500;
   color: $color-text-light;
+}
+
+.priority-badge {
+  padding: 1px $spacing-xs;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xs;
+  white-space: nowrap;
+
+  &[data-priority='High'] {
+    background-color: rgba($color-error, 0.2);
+    color: $color-error;
+  }
+
+  &[data-priority='Medium'] {
+    background-color: rgba($color-warning, 0.2);
+    color: $color-warning;
+  }
+
+  &[data-priority='Low'] {
+    background-color: rgba($color-success, 0.2);
+    color: $color-success;
+  }
+}
+
+.section-label {
+  font-size: $font-size-xs;
+  font-weight: 600;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: $spacing-xs;
 }
 
 .mission-detail {
@@ -165,9 +208,14 @@
   color: $color-text-muted;
 }
 
+.detail-label {
+  color: $color-text-secondary;
+}
+
 .status-chip {
   display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   padding: 2px $spacing-sm;
   border-radius: $border-radius-sm;
   font-size: $font-size-xs;

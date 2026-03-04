@@ -19,6 +19,7 @@
       <thead>
         <tr>
           <th>Mission</th>
+          <th>Priority</th>
           <th>Type</th>
           <th>Suggested UAV</th>
           <th class="arrow-col"></th>
@@ -29,6 +30,13 @@
         @for (row of comparisonRows; track row.title) {
           <tr [class.changed-row]="row.changed">
             <td>{{ row.title }}</td>
+            <td>
+              @if (row.priority) {
+                <span class="priority-badge" [attr.data-priority]="row.priority">{{ row.priority }}</span>
+              } @else {
+                —
+              }
+            </td>
             <td>{{ row.type }}</td>
             <td>
               {{ row.suggestedTailId !== null ? 'Tail ' + row.suggestedTailId : '—' }}
