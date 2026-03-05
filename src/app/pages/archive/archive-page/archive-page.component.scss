@@ -85,19 +85,12 @@
 
 .records-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 360px));
-  gap: $spacing-md;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: $spacing-sm;
   overflow-y: auto;
-  padding: $spacing-md 0 $spacing-xs 0;
-  align-items: start;
+  padding: $spacing-sm 0 $spacing-xs 0;
   align-content: start;
   flex: 1;
-}
-
-@supports (grid-template-rows: masonry) {
-  .records-container {
-    grid-template-rows: masonry;
-  }
 }
 
 ::ng-deep mat-paginator {
@@ -164,6 +157,7 @@
   transition: $transition-normal;
   padding: $spacing-md;
   cursor: pointer;
+  box-sizing: border-box;
 
   &:hover {
     border-color: $color-primary;
@@ -196,6 +190,12 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-sm;
+}
+
+.more-missions {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  padding-left: $spacing-sm;
 }
 
 .mission-row {

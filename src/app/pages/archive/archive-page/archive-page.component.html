@@ -57,7 +57,7 @@
                 <mat-card-content>
                   <div class="section-label">Missions</div>
                   <div class="mission-list">
-                    @for (row of item.rows; track row.title) {
+                    @for (row of item.rows.slice(0, 2); track row.title) {
                       <div class="mission-row">
                         <div class="mission-row-header">
                           <span class="mission-title">{{ row.title }}</span>
@@ -70,6 +70,9 @@
                           · <span class="detail-label">Assigned UAV:</span> Tail {{ row.actualTailId ?? row.suggestedTailId }}
                         </span>
                       </div>
+                    }
+                    @if (item.rows.length > 2) {
+                      <span class="more-missions">+ {{ item.rows.length - 2 }} more</span>
                     }
                   </div>
                 </mat-card-content>
