@@ -167,7 +167,7 @@ export class ArchivePageComponent implements OnInit {
     this.dialog.open(ArchiveDiffDialogComponent, {
       width: 'auto',
       minWidth: '400px',
-      maxWidth: '700px',
+      maxWidth: '900px',
       data: record,
     });
   }

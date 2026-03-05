@@ -126,6 +126,90 @@
     font-weight: 600;
   }
 
+  .expand-col {
+    width: 32px;
+    padding: $spacing-sm $spacing-xs;
+    text-align: center;
+  }
+
+  .expand-icon {
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+    color: $color-text-muted;
+  }
+
+  .expandable-row {
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: -2px;
+    }
+  }
+
+  .telemetry-detail-row {
+    &:hover {
+      background-color: transparent !important;
+    }
+
+    > td {
+      padding: 0 $spacing-md $spacing-md;
+    }
+  }
+
+  .telemetry-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: $border-width-thin solid $color-border-default;
+    border-radius: $border-radius-sm;
+    overflow: hidden;
+    font-size: $font-size-sm;
+
+    th,
+    td {
+      padding: $spacing-xs $spacing-sm;
+      text-align: left;
+      border-bottom: $border-width-thin solid $color-border-default;
+    }
+
+    th {
+      font-weight: 600;
+      color: $color-text-secondary;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background-color: $color-background-elevated;
+      font-size: $font-size-xs;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .param-label {
+      color: $color-text-secondary;
+      font-weight: 500;
+    }
+
+    .param-value {
+      color: $color-text-primary;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .param-unit {
+      color: $color-text-muted;
+      margin-left: 2px;
+    }
+  }
+
+  .no-telemetry {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin: $spacing-sm 0;
+    font-style: italic;
+  }
+
   .arrow-col {
     width: 24px;
     padding: $spacing-sm $spacing-xs;

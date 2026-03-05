@@ -156,7 +156,8 @@ export class AssignmentReviewComponent implements OnInit {
       ([field]) =>
         field !== TelemetryField.UAVTypeValue &&
         field !== TelemetryField.TailId &&
-        field !== TelemetryField.PlatformType,
+        field !== TelemetryField.PlatformType &&
+        field !== TelemetryField.NearestSleeveId,
     );
   }
 

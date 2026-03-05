@@ -15,9 +15,12 @@
       <mat-icon>swap_horiz</mat-icon>
       <span>{{ changedCount }} of {{ totalCount }} {{ totalCount === 1 ? 'assignment' : 'assignments' }} changed</span>
     </div>
+  }
+  @if (comparisonRows.length > 0) {
     <table class="comparison-table">
       <thead>
         <tr>
+          <th></th>
           <th>Mission</th>
           <th>Priority</th>
           <th>Type</th>
@@ -28,7 +31,18 @@
       </thead>
       <tbody>
         @for (row of comparisonRows; track row.title) {
-          <tr [class.changed-row]="row.changed">
+          <tr
+            class="expandable-row"
+            [class.changed-row]="row.changed"
+            (click)="toggleRow(row.title)"
+            (keydown.enter)="toggleRow(row.title)"
+            (keydown.space)="toggleRow(row.title)"
+            tabindex="0">
+            <td class="expand-col">
+              <mat-icon class="expand-icon">
+                {{ isRowExpanded(row.title) ? 'expand_less' : 'expand_more' }}
+              </mat-icon>
+            </td>
             <td>{{ row.title }}</td>
             <td>
               @if (row.priority) {
@@ -50,6 +64,44 @@
               {{ row.actualTailId !== null ? 'Tail ' + row.actualTailId : '—' }}
             </td>
           </tr>
+          @if (isRowExpanded(row.title)) {
+            <tr class="telemetry-detail-row">
+              <td colspan="7">
+                @if (row.suggestedTelemetry || row.actualTelemetry) {
+                  <table class="telemetry-table">
+                    <thead>
+                      <tr>
+                        <th>Parameter</th>
+                        <th>Suggested (Tail {{ row.suggestedTailId ?? '—' }})</th>
+                        <th>Actual (Tail {{ row.actualTailId ?? '—' }})</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (entry of getTelemetryComparisonRows(row.suggestedTelemetry, row.actualTelemetry); track entry.field) {
+                        <tr>
+                          <td class="param-label">{{ entry.label }}</td>
+                          <td class="param-value">
+                            {{ entry.suggestedValue !== null ? entry.suggestedValue : '—' }}
+                            @if (entry.suggestedValue !== null) {
+                              <span class="param-unit">{{ entry.unit }}</span>
+                            }
+                          </td>
+                          <td class="param-value">
+                            {{ entry.actualValue !== null ? entry.actualValue : '—' }}
+                            @if (entry.actualValue !== null) {
+                              <span class="param-unit">{{ entry.unit }}</span>
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                } @else {
+                  <p class="no-telemetry">No telemetry data available</p>
+                }
+              </td>
+            </tr>
+          }
         }
       </tbody>
     </table>

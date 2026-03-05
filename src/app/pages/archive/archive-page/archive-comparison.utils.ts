@@ -7,6 +7,8 @@ export interface ComparisonRow {
   suggestedTailId: number | null;
   actualTailId: number | null;
   changed: boolean;
+  suggestedTelemetry: Record<string, number> | null;
+  actualTelemetry: Record<string, number> | null;
 }
 
 export function buildComparisonRows(
@@ -40,6 +42,8 @@ export function buildComparisonRows(
       suggestedTailId,
       actualTailId,
       changed: suggestedTailId !== actualTailId,
+      suggestedTelemetry: s?.uavTelemetrySnapshot ?? null,
+      actualTelemetry: a?.uavTelemetrySnapshot ?? null,
     });
   }
 
