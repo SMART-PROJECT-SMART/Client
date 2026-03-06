@@ -3,14 +3,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { take } from 'rxjs';
 import { ClientConstants } from '../../../../common';
 import { EnumUtil } from '../../../../common/utils';
-import { UAVType, Priority } from '../../../../common/enums';
 import { MissionCreateDialogComponent } from '../mission-create-dialog/mission-create-dialog.component';
 import { MissionEditDialogComponent } from '../mission-edit-dialog/mission-edit-dialog.component';
 import { MissionSummaryDialogComponent } from '../mission-summary-dialog/mission-summary-dialog.component';
+import { ScenarioSelectDialogComponent } from '../scenario-select-dialog/scenario-select-dialog.component';
 import type { Mission, TimeWindow } from '../../../../models';
 
 const { ADD_MISSION_LABEL, SUBMIT_LABEL } = ClientConstants.AssignmentPageConstants;
-const { MISSION_DIALOG_WIDTH, MISSION_SUMMARY_DIALOG_WIDTH, PANEL_CLASS } = ClientConstants.DialogConfig;
+const { MISSION_DIALOG_WIDTH, MISSION_SUMMARY_DIALOG_WIDTH, SCENARIO_DIALOG_WIDTH, PANEL_CLASS } = ClientConstants.DialogConfig;
 
 @Component({
   selector: 'app-assignment-management-component',
@@ -97,19 +97,17 @@ export class AssignmentManagementComponent implements OnInit {
   }
 
   public onQuickAddTestMissions(): void {
-    const now = new Date();
-    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-    const timeWindow: TimeWindow = { start: now, end: oneHourLater };
+    const dialogRef = this.dialog.open(ScenarioSelectDialogComponent, {
+      width: SCENARIO_DIALOG_WIDTH,
+      panelClass: PANEL_CLASS,
+    });
 
-    const testMissions: Mission[] = [
-      { id: crypto.randomUUID(), title: 'Test Surveillance 1', requiredUAVType: UAVType.Surveillance, priority: Priority.Medium, location: { latitude: 31, longitude: 31, altitude: 500000 }, timeWindow },
-      { id: crypto.randomUUID(), title: 'Test Surveillance 2', requiredUAVType: UAVType.Surveillance, priority: Priority.Medium, location: { latitude: 32, longitude: 32, altitude: 500000 }, timeWindow },
-      { id: crypto.randomUUID(), title: 'Test Armed 1', requiredUAVType: UAVType.Armed, priority: Priority.Medium, location: { latitude: 33, longitude: 33, altitude: 500000 }, timeWindow },
-      { id: crypto.randomUUID(), title: 'Test Armed 2', requiredUAVType: UAVType.Armed, priority: Priority.Medium, location: { latitude: 34, longitude: 34, altitude: 500000 }, timeWindow },
-    ];
-
-    this.missionList.update((list) => [...list, ...testMissions]);
-    this.hasModifications.set(true);
+    dialogRef.afterClosed().pipe(take(1)).subscribe((missions: Mission[] | undefined) => {
+      if (missions?.length) {
+        this.missionList.update((list) => [...list, ...missions]);
+        this.hasModifications.set(true);
+      }
+    });
   }
 
   public onSubmit(): void {

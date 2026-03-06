@@ -74,6 +74,8 @@ export namespace ClientConstants {
       export const GET_ACTIVE_MISSION: string = '/api/mission-status/active-mission';
       export const GET_ALL_ACTIVE_MISSIONS: string = '/api/mission-status/active-missions';
       export const MISSION_COMPLETED: string = '/api/mission-status/mission-completed';
+      export const GET_TEST_SCENARIOS: string = '/api/test/scenarios';
+      export const GET_SCENARIO_MISSIONS: string = '/api/test/scenarios/missions';
     }
 
     export namespace PollingConstants {
@@ -120,6 +122,7 @@ export namespace ClientConstants {
     export const DEVICE_DIALOG_WIDTH: string = '500px';
     export const CONFIRMATION_DIALOG_WIDTH: string = '400px';
     export const PANEL_CLASS: string = 'mission-dialog';
+    export const SCENARIO_DIALOG_WIDTH: string = '600px';
   }
 
   export namespace SnackbarConfig {

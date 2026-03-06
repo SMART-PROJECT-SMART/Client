@@ -25,6 +25,8 @@ export type { UpdateWantedFieldsDto } from './lts/updateWantedFieldsDto.model';
 
 export type { MissionFormGroups } from './forms/mission-form-groups.interface';
 
+export type { TestScenario } from './test/test-scenario.model';
+
 export type { UAVRo } from './Ro/uavRO.ro';
 export type { SleeveRo } from './Ro/sleeveRo.ro';
 export type { CreateUAVDto } from './dto/createUAV.dto';

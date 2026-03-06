@@ -6,6 +6,12 @@
     "pathRewrite": { "^/api/archive": "/api/AssignmentRecords" },
     "logLevel": "debug"
   },
+  "/api/test": {
+    "target": "http://127.0.0.1:5224",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
   "/api/assignment": {
     "target": "http://127.0.0.1:5224",
     "secure": false,
