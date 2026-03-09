@@ -175,10 +175,12 @@
     th {
       font-weight: 600;
       color: $color-text-secondary;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background-color: $color-background-elevated;
-      font-size: $font-size-xs;
+      text-transform: none;
+      letter-spacing: normal;
+      background-color: transparent;
+      font-size: $font-size-sm;
+      white-space: nowrap;
+      border-bottom: $border-width-thin solid $color-border-default;
     }
 
     tbody tr:last-child td {
@@ -188,6 +190,11 @@
     .param-label {
       color: $color-text-secondary;
       font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .param-label-col {
+      white-space: nowrap;
     }
 
     .param-value {
@@ -198,6 +205,38 @@
     .param-unit {
       color: $color-text-muted;
       margin-left: 2px;
+    }
+
+    .compare-header {
+      vertical-align: middle;
+    }
+
+    .compare-select {
+      width: 100%;
+      font-size: $font-size-sm;
+
+      ::ng-deep .mat-mdc-select-trigger {
+        padding: 4px 0;
+      }
+
+      ::ng-deep .mat-mdc-select-value {
+        color: $color-text-primary;
+        font-weight: 500;
+      }
+
+      ::ng-deep .mat-mdc-select-arrow-wrapper {
+        padding-left: 4px;
+      }
+    }
+
+    .uav-indicator {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: $font-size-xs;
+    }
+
+    .suggested-indicator {
+      color: $color-primary;
     }
   }
 

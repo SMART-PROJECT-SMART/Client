@@ -1,4 +1,13 @@
 import type { ArchiveMissionToUavAssignmentRo } from '../../../models/archive';
+import { TelemetryField } from '../../../common/enums';
+import { EnumUtil } from '../../../common/utils';
+
+export interface RelevantUav {
+  tailId: number;
+  isSuggested: boolean;
+  isActual: boolean;
+  telemetry: Record<string, number>;
+}
 
 export interface ComparisonRow {
   title: string;
@@ -9,11 +18,13 @@ export interface ComparisonRow {
   changed: boolean;
   suggestedTelemetry: Record<string, number> | null;
   actualTelemetry: Record<string, number> | null;
+  relevantUavs: RelevantUav[];
 }
 
 export function buildComparisonRows(
   suggested: ArchiveMissionToUavAssignmentRo[],
   actual: ArchiveMissionToUavAssignmentRo[],
+  allUavTelemetryData?: Record<string, Record<string, number>>,
 ): ComparisonRow[] {
   const suggestedMap = new Map<string, ArchiveMissionToUavAssignmentRo>();
   for (const a of suggested) {
@@ -34,16 +45,25 @@ export function buildComparisonRows(
     const a = actualMap.get(title);
     const suggestedTailId = s?.uavTailId ?? null;
     const actualTailId = a?.uavTailId ?? null;
+    const missionType = s?.mission?.requiredUAVType ?? a?.mission?.requiredUAVType ?? '';
+
+    const relevantUavs = buildRelevantUavs(
+      missionType,
+      suggestedTailId,
+      actualTailId,
+      allUavTelemetryData,
+    );
 
     rows.push({
       title,
-      type: s?.mission?.requiredUAVType ?? a?.mission?.requiredUAVType ?? '—',
+      type: missionType || '—',
       priority: s?.mission?.priority ?? a?.mission?.priority ?? '',
       suggestedTailId,
       actualTailId,
       changed: suggestedTailId !== actualTailId,
       suggestedTelemetry: s?.uavTelemetrySnapshot ?? null,
       actualTelemetry: a?.uavTelemetrySnapshot ?? null,
+      relevantUavs,
     });
   }
 
@@ -53,4 +73,44 @@ export function buildComparisonRows(
   );
 
   return rows;
+}
+
+function buildRelevantUavs(
+  missionType: string,
+  suggestedTailId: number | null,
+  actualTailId: number | null,
+  allUavTelemetryData?: Record<string, Record<string, number>>,
+): RelevantUav[] {
+  if (!allUavTelemetryData) {
+    return [];
+  }
+
+  const uavs: RelevantUav[] = [];
+
+  for (const [tailIdStr, telemetry] of Object.entries(allUavTelemetryData)) {
+    const tailId = Number(tailIdStr);
+    const platformTypeValue = telemetry[TelemetryField.PlatformType];
+    const uavType = EnumUtil.getUAVTypeFromPlatformNumber(platformTypeValue);
+
+    if (uavType !== missionType) {
+      continue;
+    }
+
+    uavs.push({
+      tailId,
+      isSuggested: tailId === suggestedTailId,
+      isActual: tailId === actualTailId,
+      telemetry,
+    });
+  }
+
+  uavs.sort((a, b) => {
+    if (a.isSuggested) return -1;
+    if (b.isSuggested) return 1;
+    if (a.isActual) return -1;
+    if (b.isActual) return 1;
+    return a.tailId - b.tailId;
+  });
+
+  return uavs;
 }

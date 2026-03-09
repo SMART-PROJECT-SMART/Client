@@ -147,6 +147,7 @@ export class AssignmentReviewComponent implements OnInit {
     const assignmentResult: ApplyAssignmentRo = {
       suggested: suggestedAssignments,
       actual: actualAssignments,
+      allUavTelemetryData: telemetryData as Record<string, Record<string, number>>,
     };
     this.apply.emit(assignmentResult);
   }

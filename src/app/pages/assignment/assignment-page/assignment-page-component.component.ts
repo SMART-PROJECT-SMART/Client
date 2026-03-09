@@ -91,6 +91,7 @@ export class AssignmentPageComponentComponent implements OnDestroy {
     const dto: ApplyAssignmentDto = {
       suggestedAssignments: event.suggested,
       actualAssignments: event.actual,
+      allUavTelemetryData: event.allUavTelemetryData,
     };
 
     this.orchestratorService

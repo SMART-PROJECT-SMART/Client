@@ -3,4 +3,5 @@ import type { MissionToUavAssignment } from '../mission/missionToUavAssignment.m
 export interface ApplyAssignmentRo {
   suggested: MissionToUavAssignment[];
   actual: MissionToUavAssignment[];
+  allUavTelemetryData?: Record<string, Record<string, number>>;
 }

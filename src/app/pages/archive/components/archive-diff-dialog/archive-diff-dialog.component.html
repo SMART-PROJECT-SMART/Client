@@ -67,26 +67,79 @@
           @if (isRowExpanded(row.title)) {
             <tr class="telemetry-detail-row">
               <td colspan="7">
-                @if (row.suggestedTelemetry || row.actualTelemetry) {
+                @if (row.relevantUavs.length > 0) {
+                  <table class="telemetry-table">
+                    <thead>
+                      <tr>
+                        <th class="param-label-col">Parameter</th>
+                        <th class="suggested-col">
+                          Suggested <span class="uav-indicator suggested-indicator">★</span>
+                          Tail {{ row.suggestedTailId ?? '—' }}
+                        </th>
+                        <th class="compare-header" (click)="$event.stopPropagation()">
+                          <mat-select
+                            class="compare-select"
+                            [value]="getCompareTailId(row)"
+                            (selectionChange)="onCompareUavChange(row.title, $event.value)">
+                            @for (uav of row.relevantUavs; track uav.tailId) {
+                              @if (!uav.isSuggested || uav.isActual) {
+                                <mat-option [value]="uav.tailId">
+                                  Tail {{ uav.tailId }}{{ uav.isActual ? ' ✓ Actual' : '' }}
+                                </mat-option>
+                              }
+                            }
+                          </mat-select>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (entry of getTelemetryFields(row.relevantUavs); track entry.field) {
+                        <tr>
+                          <td class="param-label">{{ entry.label }}</td>
+                          <td class="param-value suggested-col">
+                            @if (getSuggestedUav(row); as sugUav) {
+                              {{ sugUav.telemetry[entry.field] !== undefined ? sugUav.telemetry[entry.field] : '—' }}
+                              @if (sugUav.telemetry[entry.field] !== undefined) {
+                                <span class="param-unit">{{ entry.unit }}</span>
+                              }
+                            } @else {
+                              —
+                            }
+                          </td>
+                          <td class="param-value compare-col">
+                            @if (getCompareUav(row); as cmpUav) {
+                              {{ cmpUav.telemetry[entry.field] !== undefined ? cmpUav.telemetry[entry.field] : '—' }}
+                              @if (cmpUav.telemetry[entry.field] !== undefined) {
+                                <span class="param-unit">{{ entry.unit }}</span>
+                              }
+                            } @else {
+                              —
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                } @else if (row.suggestedTelemetry || row.actualTelemetry) {
                   <table class="telemetry-table">
                     <thead>
                       <tr>
                         <th>Parameter</th>
-                        <th>Suggested (Tail {{ row.suggestedTailId ?? '—' }})</th>
-                        <th>Actual (Tail {{ row.actualTailId ?? '—' }})</th>
+                        <th class="suggested-col">Suggested (Tail {{ row.suggestedTailId ?? '—' }})</th>
+                        <th class="actual-col">Actual (Tail {{ row.actualTailId ?? '—' }})</th>
                       </tr>
                     </thead>
                     <tbody>
-                      @for (entry of getTelemetryComparisonRows(row.suggestedTelemetry, row.actualTelemetry); track entry.field) {
+                      @for (entry of getLegacyTelemetryFields(row.suggestedTelemetry, row.actualTelemetry); track entry.field) {
                         <tr>
                           <td class="param-label">{{ entry.label }}</td>
-                          <td class="param-value">
+                          <td class="param-value suggested-col">
                             {{ entry.suggestedValue !== null ? entry.suggestedValue : '—' }}
                             @if (entry.suggestedValue !== null) {
                               <span class="param-unit">{{ entry.unit }}</span>
                             }
                           </td>
-                          <td class="param-value">
+                          <td class="param-value actual-col">
                             {{ entry.actualValue !== null ? entry.actualValue : '—' }}
                             @if (entry.actualValue !== null) {
                               <span class="param-unit">{{ entry.unit }}</span>
