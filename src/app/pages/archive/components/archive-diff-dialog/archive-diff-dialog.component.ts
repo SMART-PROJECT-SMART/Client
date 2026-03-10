@@ -46,7 +46,8 @@ export class ArchiveDiffDialogComponent {
     : '';
 
   readonly expandedRows = signal<Set<string>>(new Set());
-  readonly selectedCompareUavs = signal<Map<string, number>>(new Map());
+  readonly selectedLeftUavs = signal<Map<string, number>>(new Map());
+  readonly selectedRightUavs = signal<Map<string, number>>(new Map());
 
   isRowExpanded(title: string): boolean {
     return this.expandedRows().has(title);
@@ -62,26 +63,40 @@ export class ArchiveDiffDialogComponent {
     this.expandedRows.set(expanded);
   }
 
-  getSuggestedUav(row: ComparisonRow): RelevantUav | null {
+  getLeftUav(row: ComparisonRow): RelevantUav | null {
+    const selectedTailId = this.selectedLeftUavs().get(row.title);
+    if (selectedTailId !== undefined) {
+      return row.relevantUavs.find((u) => u.tailId === selectedTailId) ?? null;
+    }
     return row.relevantUavs.find((u) => u.isSuggested) ?? null;
   }
 
-  getCompareUav(row: ComparisonRow): RelevantUav | null {
-    const selectedTailId = this.selectedCompareUavs().get(row.title);
+  getRightUav(row: ComparisonRow): RelevantUav | null {
+    const selectedTailId = this.selectedRightUavs().get(row.title);
     if (selectedTailId !== undefined) {
       return row.relevantUavs.find((u) => u.tailId === selectedTailId) ?? null;
     }
     return row.relevantUavs.find((u) => u.isActual) ?? null;
   }
 
-  getCompareTailId(row: ComparisonRow): number | null {
-    return this.selectedCompareUavs().get(row.title) ?? row.actualTailId;
+  getLeftTailId(row: ComparisonRow): number | null {
+    return this.selectedLeftUavs().get(row.title) ?? row.suggestedTailId;
   }
 
-  onCompareUavChange(missionTitle: string, tailId: number): void {
-    const updated = new Map(this.selectedCompareUavs());
+  getRightTailId(row: ComparisonRow): number | null {
+    return this.selectedRightUavs().get(row.title) ?? row.actualTailId;
+  }
+
+  onLeftUavChange(missionTitle: string, tailId: number): void {
+    const updated = new Map(this.selectedLeftUavs());
     updated.set(missionTitle, tailId);
-    this.selectedCompareUavs.set(updated);
+    this.selectedLeftUavs.set(updated);
+  }
+
+  onRightUavChange(missionTitle: string, tailId: number): void {
+    const updated = new Map(this.selectedRightUavs());
+    updated.set(missionTitle, tailId);
+    this.selectedRightUavs.set(updated);
   }
 
   getTelemetryFields(uavs: RelevantUav[]): TelemetryFieldEntry[] {
