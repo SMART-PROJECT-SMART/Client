@@ -8,6 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { App } from './app';
 import { MatModule } from './modules/mat.module';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { GridsterModule } from 'angular-gridster2';
 
 import { AssignmentManagementComponent } from './pages/assignment/components/assignment-management/assignment-management-component.component';
 import { AssignmentReviewComponent } from './pages/assignment/components/assignment-review/assignment-review-component.component';
@@ -72,6 +73,7 @@ import { MissionTelemetryPageComponent } from './pages/archive/components/missio
     NumericInputDirective,
     TimeInputDirective,
     BaseChartDirective,
+    GridsterModule,
   ],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient(), provideCharts(withDefaultRegisterables())],
   bootstrap: [App],
