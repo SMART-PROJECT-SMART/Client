@@ -19,6 +19,7 @@ export interface ComparisonRow {
   suggestedTelemetry: Record<string, number> | null;
   actualTelemetry: Record<string, number> | null;
   relevantUavs: RelevantUav[];
+  missionId: string | null;
 }
 
 export function buildComparisonRows(
@@ -54,6 +55,8 @@ export function buildComparisonRows(
       allUavTelemetryData,
     );
 
+    const mission = a?.mission ?? s?.mission ?? null;
+
     rows.push({
       title,
       type: missionType || '—',
@@ -64,6 +67,7 @@ export function buildComparisonRows(
       suggestedTelemetry: s?.uavTelemetrySnapshot ?? null,
       actualTelemetry: a?.uavTelemetrySnapshot ?? null,
       relevantUavs,
+      missionId: mission?.id ?? null,
     });
   }
 

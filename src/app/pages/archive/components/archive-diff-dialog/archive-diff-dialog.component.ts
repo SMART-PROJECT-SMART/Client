@@ -1,9 +1,10 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import type { ArchiveAssignmentRo } from '../../../../models/archive';
 import { buildComparisonRows, type ComparisonRow, type RelevantUav } from '../../archive-page/archive-comparison.utils';
 import { TelemetryField } from '../../../../common/enums';
 import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
+import { MissionTelemetryDialogComponent, type MissionTelemetryDialogData } from '../mission-telemetry-dialog/mission-telemetry-dialog.component';
 
 const EXCLUDED_TELEMETRY_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -28,6 +29,7 @@ export interface TelemetryFieldEntry {
 })
 export class ArchiveDiffDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<ArchiveDiffDialogComponent>);
+  private readonly dialog = inject(MatDialog);
   private readonly data: ArchiveAssignmentRo = inject(MAT_DIALOG_DATA, { optional: true }) ?? {
     suggestedAssignments: [],
     actualAssignments: [],
@@ -134,6 +136,24 @@ export class ArchiveDiffDialogComponent {
         suggestedValue: suggested?.[field] ?? null,
         actualValue: actual?.[field] ?? null,
       }));
+  }
+
+  openTelemetryDialog(row: ComparisonRow, tailId: number): void {
+    if (!row.missionId) {
+      return;
+    }
+
+    const dialogData: MissionTelemetryDialogData = {
+      missionId: row.missionId,
+      missionTitle: row.title,
+      tailId,
+    };
+
+    this.dialog.open(MissionTelemetryDialogComponent, {
+      data: dialogData,
+      width: '900px',
+      maxHeight: '85vh',
+    });
   }
 
   close(): void {

@@ -230,6 +230,24 @@
     }
   }
 
+  .investigate-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: $spacing-xs $spacing-sm $spacing-sm;
+  }
+
+  .investigate-btn {
+    font-size: $font-size-sm;
+    color: $color-primary-light;
+
+    mat-icon {
+      font-size: $icon-size-sm;
+      width: $icon-size-sm;
+      height: $icon-size-sm;
+      margin-right: $spacing-xs;
+    }
+  }
+
   .no-telemetry {
     font-size: $font-size-sm;
     color: $color-text-muted;
