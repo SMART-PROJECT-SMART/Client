@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { App } from './app';
 import { MatModule } from './modules/mat.module';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { AssignmentManagementComponent } from './pages/assignment/components/assignment-management/assignment-management-component.component';
 import { AssignmentReviewComponent } from './pages/assignment/components/assignment-review/assignment-review-component.component';
@@ -68,8 +69,9 @@ import { ScenarioSelectDialogComponent } from './pages/assignment/components/sce
     ReactiveFormsModule,
     NumericInputDirective,
     TimeInputDirective,
+    BaseChartDirective,
   ],
-  providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],
+  providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient(), provideCharts(withDefaultRegisterables())],
   bootstrap: [App],
 })
 export class AppModule {}
