@@ -194,6 +194,16 @@ export namespace ClientConstants {
     };
   }
 
+  export namespace GridsterDashboard {
+    export const DEFAULT_COLUMNS: number = 2;
+    export const DEFAULT_ITEM_COLS: number = 1;
+    export const DEFAULT_ITEM_ROWS: number = 1;
+    export const FIXED_ROW_HEIGHT: number = 250;
+    export const MARGIN: number = 8;
+    export const MIN_ITEM_COLS: number = 1;
+    export const MIN_ITEM_ROWS: number = 1;
+  }
+
   export namespace DeviceManagementConstants {
     export const PAGE_TITLE: string = 'Device Management';
     export const ADD_UAV_LABEL: string = 'Add UAV';
