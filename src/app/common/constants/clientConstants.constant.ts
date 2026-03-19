@@ -49,6 +49,12 @@ export namespace ClientConstants {
     export const BY_DATE = (date: string) => `${BASE}/by-date/${date}`;
   }
 
+  export namespace TelemetryDataAPI {
+    export const BASE = '/api/telemetry-data';
+    export const BY_MISSION = (missionId: string, tailId: number) =>
+      `${BASE}/by-mission?missionId=${missionId}&tailId=${tailId}`;
+  }
+
   export namespace MissionServiceAPI {
     export namespace Controllers {
       export const ASSIGNMENT: string = 'assignment';

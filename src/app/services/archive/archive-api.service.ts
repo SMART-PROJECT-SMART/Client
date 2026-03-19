@@ -3,9 +3,9 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ClientConstants } from '../../common/constants/clientConstants.constant';
-import type { ArchiveAssignmentRo } from '../../models/archive';
+import type { ArchiveAssignmentRo, MissionTelemetryRo } from '../../models/archive';
 
-const { ArchiveAPI } = ClientConstants;
+const { ArchiveAPI, TelemetryDataAPI } = ClientConstants;
 
 @Injectable({
   providedIn: 'root',
@@ -21,5 +21,14 @@ export class ArchiveApiService {
 
   getByDate(date: string): Observable<ArchiveAssignmentRo[]> {
     return this.http.get<ArchiveAssignmentRo[]>(ArchiveAPI.BY_DATE(date)).pipe(catchError(() => of([])));
+  }
+
+  getMissionTelemetry(
+    missionId: string,
+    tailId: number,
+  ): Observable<MissionTelemetryRo[]> {
+    return this.http.get<MissionTelemetryRo[]>(
+      TelemetryDataAPI.BY_MISSION(missionId, tailId),
+    );
   }
 }
