@@ -164,6 +164,36 @@ export namespace ClientConstants {
     export const PLATFORM_TYPE: string = 'enum';
     export const MISSION_ID: string = 'hash';
   }
+  export namespace ChartConfig {
+    export const COLORS: string[] = [
+      '#ab47bc', '#42a5f5', '#66bb6a', '#ffa726', '#ef5350',
+      '#26c6da', '#ffee58', '#8d6e63', '#78909c', '#ec407a',
+      '#7e57c2', '#29b6f6', '#9ccc65', '#ffca28', '#ff7043',
+      '#26a69a', '#d4e157', '#5c6bc0', '#ff8a65', '#bdbdbd',
+    ];
+    export const BACKGROUND_ALPHA: string = '33';
+    export const POINT_RADIUS: number = 0;
+    export const BORDER_WIDTH: number = 1.5;
+    export const LINE_TENSION: number = 0.3;
+    export const X_AXIS_MAX_TICKS: number = 20;
+    export const Y_AXIS_MAX_TICKS: number = 5;
+    export const TICK_FONT_SIZE: number = 10;
+    export const TICK_COLOR: string = '#c0c0c0';
+    export const GRID_COLOR: string = 'rgba(68, 68, 68, 0.3)';
+    export const CROSSHAIR_COLOR: string = 'rgba(245, 245, 245, 0.4)';
+    export const CROSSHAIR_WIDTH: number = 1;
+  }
+
+  export namespace TimeFormat {
+    export const LOCALE: string = 'en-US';
+    export const OPTIONS: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    };
+  }
+
   export namespace DeviceManagementConstants {
     export const PAGE_TITLE: string = 'Device Management';
     export const ADD_UAV_LABEL: string = 'Add UAV';
