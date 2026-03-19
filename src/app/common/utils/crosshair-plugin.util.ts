@@ -2,11 +2,11 @@ import type { Chart, Plugin } from 'chart.js';
 import type { WritableSignal } from '@angular/core';
 import { ClientConstants } from '../constants/clientConstants.constant';
 
-const { CROSSHAIR_COLOR, CROSSHAIR_WIDTH } = ClientConstants.ChartConfig;
+const { CROSSHAIR_COLOR, CROSSHAIR_WIDTH, CROSSHAIR_PLUGIN_ID } = ClientConstants.ChartConfig;
 
 export function createCrosshairPlugin(crosshairIndex: WritableSignal<number | null>): Plugin<'line'> {
   return {
-    id: 'syncedCrosshair',
+    id: CROSSHAIR_PLUGIN_ID,
     afterEvent: (chart: Chart, args: { event: { type: string; x: number | null } }) => {
       if (args.event.type === 'mousemove' && args.event.x !== null) {
         const xScale = chart.scales['x'];

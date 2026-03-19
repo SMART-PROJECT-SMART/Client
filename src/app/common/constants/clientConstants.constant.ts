@@ -182,6 +182,7 @@ export namespace ClientConstants {
     export const GRID_COLOR: string = 'rgba(68, 68, 68, 0.3)';
     export const CROSSHAIR_COLOR: string = 'rgba(245, 245, 245, 0.4)';
     export const CROSSHAIR_WIDTH: number = 1;
+    export const CROSSHAIR_PLUGIN_ID: string = 'syncedCrosshair';
   }
 
   export namespace TimeFormat {
@@ -192,6 +193,11 @@ export namespace ClientConstants {
       second: '2-digit',
       hour12: false,
     };
+  }
+
+  export namespace TelemetryPageMessages {
+    export const NO_MISSION_ID: string = 'No mission ID provided.';
+    export const LOAD_FAILED: string = 'Failed to load telemetry data.';
   }
 
   export namespace GridsterDashboard {

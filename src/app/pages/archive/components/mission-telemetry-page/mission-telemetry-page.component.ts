@@ -1,8 +1,8 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GridType, CompactType } from 'angular-gridster2';
-import type { GridsterConfig, GridsterItem } from 'angular-gridster2';
-import type { ChartConfiguration, ChartDataset, Chart, Plugin } from 'chart.js';
+import type { GridsterConfig } from 'angular-gridster2';
+import type { ChartConfiguration, ChartDataset, Plugin } from 'chart.js';
 import { TelemetryField } from '../../../../common/enums';
 import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
@@ -19,6 +19,8 @@ const { LOCALE, OPTIONS: TIME_FORMAT_OPTIONS } = ClientConstants.TimeFormat;
 const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
   MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS,
 } = ClientConstants.GridsterDashboard;
+
+const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
 
 const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -85,13 +87,6 @@ export class MissionTelemetryPageComponent implements OnInit {
     resizable: {
       enabled: true,
     },
-    itemResizeCallback: (item: GridsterItem) => {
-      const dashboardItem = item as TelemetryDashboardItem;
-      const chart = this.chartInstances.get(dashboardItem.field);
-      if (chart) {
-        chart.resize();
-      }
-    },
     pushItems: true,
     swap: false,
   };
@@ -108,7 +103,7 @@ export class MissionTelemetryPageComponent implements OnInit {
     this.missionTitle.set(params['title'] ?? '');
 
     if (!this.missionId) {
-      this.errorMessage.set('No mission ID provided.');
+      this.errorMessage.set(NO_MISSION_ID);
       this.loading.set(false);
       return;
     }
@@ -123,7 +118,6 @@ export class MissionTelemetryPageComponent implements OnInit {
 
   removeField(field: TelemetryField): void {
     this.selectedFields.set(this.selectedFields().filter((f) => f !== field));
-    this.chartInstances.delete(field);
     this.rebuildDashboardItems();
   }
 
@@ -237,7 +231,7 @@ export class MissionTelemetryPageComponent implements OnInit {
           this.loading.set(false);
         },
         error: () => {
-          this.errorMessage.set('Failed to load telemetry data.');
+          this.errorMessage.set(LOAD_FAILED);
           this.loading.set(false);
         },
       });
