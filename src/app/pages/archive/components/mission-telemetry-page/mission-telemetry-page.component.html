@@ -43,7 +43,7 @@
           </button>
         }
       </div>
-      <mat-menu #paramMenu="matMenu" class="param-menu">
+      <mat-menu #paramMenu="matMenu">
         @for (field of unselectedFields(); track field) {
           <button mat-menu-item (click)="addField(field)">
             {{ getFieldLabel(field) }}
@@ -52,24 +52,31 @@
       </mat-menu>
     </div>
 
-    <div class="charts-area">
-      @for (config of chartConfigs(); track config.field) {
-        <div class="chart-row">
-          <div class="chart-label-area">
-            <span class="chart-field-name" [style.color]="config.color">{{ config.label }}</span>
-            <span class="chart-field-unit">{{ config.unit }}</span>
-          </div>
-          <div class="chart-canvas-container">
-            <canvas
-              baseChart
-              type="line"
-              [data]="config.data"
-              [options]="config.options"
-              [plugins]="[crosshairPlugin]">
-            </canvas>
-          </div>
-        </div>
-      }
+    <div class="gridster-wrapper">
+      <gridster [options]="gridsterOptions">
+        @for (item of dashboardItems(); track item.field) {
+          <gridster-item [item]="item">
+            <div class="tile-header">
+              <span class="tile-field-name" [style.color]="item.chartConfig.color">
+                {{ item.chartConfig.label }}
+              </span>
+              <span class="tile-field-unit">{{ item.chartConfig.unit }}</span>
+              <mat-icon class="drag-handle">drag_indicator</mat-icon>
+            </div>
+            <div class="tile-chart no-drag"
+                 (mousedown)="$event.stopPropagation()"
+                 (touchstart)="$event.stopPropagation()">
+              <canvas
+                baseChart
+                type="line"
+                [data]="item.chartConfig.data"
+                [options]="item.chartConfig.options"
+                [plugins]="[crosshairPlugin]">
+              </canvas>
+            </div>
+          </gridster-item>
+        }
+      </gridster>
     </div>
   }
 </div>

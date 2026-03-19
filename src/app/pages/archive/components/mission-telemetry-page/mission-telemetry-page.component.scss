@@ -121,56 +121,69 @@
   }
 }
 
-.charts-area {
+.gridster-wrapper {
   flex: 1;
-  overflow-y: auto;
-  padding: $spacing-sm $spacing-md $spacing-md;
+  overflow: hidden;
 }
 
-.chart-row {
-  display: flex;
-  align-items: stretch;
-  background-color: $color-background-secondary;
-  border-bottom: $border-width-thin solid $color-border-default;
-
-  &:first-child {
-    border-radius: $border-radius-md $border-radius-md 0 0;
-  }
-
-  &:last-child {
-    border-bottom: none;
-    border-radius: 0 0 $border-radius-md $border-radius-md;
-  }
-
-  &:only-child {
-    border-radius: $border-radius-md;
-  }
+:host ::ng-deep .gridster-wrapper gridster {
+  background: $color-background-primary !important;
 }
 
-.chart-label-area {
-  display: flex;
+:host ::ng-deep .gridster-wrapper gridster-item {
+  background: $color-background-secondary !important;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-md;
+  display: flex !important;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  width: 100px;
-  min-width: 100px;
-  padding: $spacing-sm $spacing-sm $spacing-sm $spacing-md;
+}
 
-  .chart-field-name {
+.tile-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  border-bottom: $border-width-thin solid $color-border-default;
+  flex-shrink: 0;
+
+  .tile-field-name {
     font-size: $font-size-sm;
     font-weight: 600;
-    line-height: 1.2;
   }
 
-  .chart-field-unit {
+  .tile-field-unit {
     font-size: $font-size-xs;
     color: $color-text-muted;
-    margin-top: 2px;
+  }
+
+  .drag-handle {
+    margin-left: auto;
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+    color: $color-text-muted;
+    cursor: grab;
+    opacity: 0.5;
+    transition: opacity $transition-fast;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 }
 
-.chart-canvas-container {
+.tile-chart {
   flex: 1;
-  height: 150px;
   position: relative;
+  min-height: 0;
+  padding: $spacing-xs;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
 }

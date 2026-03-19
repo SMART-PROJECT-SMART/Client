@@ -1,18 +1,24 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import type { ChartConfiguration, ChartDataset, Plugin } from 'chart.js';
+import { GridType, CompactType } from 'angular-gridster2';
+import type { GridsterConfig, GridsterItem } from 'angular-gridster2';
+import type { ChartConfiguration, ChartDataset, Chart, Plugin } from 'chart.js';
 import { TelemetryField } from '../../../../common/enums';
 import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin.util';
 import { ArchiveApiService } from '../../../../services/archive/archive-api.service';
-import type { MissionTelemetryRo, ChartRowConfig } from '../../../../models/archive';
+import type { MissionTelemetryRo, ChartRowConfig, TelemetryDashboardItem } from '../../../../models/archive';
 
 const { COLORS, BACKGROUND_ALPHA, POINT_RADIUS, BORDER_WIDTH, LINE_TENSION,
   X_AXIS_MAX_TICKS, Y_AXIS_MAX_TICKS, TICK_FONT_SIZE, TICK_COLOR, GRID_COLOR,
 } = ClientConstants.ChartConfig;
 
 const { LOCALE, OPTIONS: TIME_FORMAT_OPTIONS } = ClientConstants.TimeFormat;
+
+const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
+  MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS,
+} = ClientConstants.GridsterDashboard;
 
 const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -49,22 +55,50 @@ export class MissionTelemetryPageComponent implements OnInit {
   readonly errorMessage = signal<string>('');
   readonly availableFields = signal<TelemetryField[]>([]);
   readonly selectedFields = signal<TelemetryField[]>([]);
+  readonly dashboardItems = signal<TelemetryDashboardItem[]>([]);
 
   private missionId = '';
   private telemetryData: MissionTelemetryRo[] = [];
   private timeLabels: string[] = [];
+  private readonly chartInstances = new Map<TelemetryField, Chart>();
 
   readonly crosshairIndex = signal<number | null>(null);
   readonly crosshairPlugin: Plugin<'line'> = createCrosshairPlugin(this.crosshairIndex);
 
+  readonly gridsterOptions: GridsterConfig = {
+    gridType: GridType.VerticalFixed,
+    compactType: CompactType.CompactUpAndLeft,
+    fixedRowHeight: FIXED_ROW_HEIGHT,
+    margin: MARGIN,
+    outerMargin: true,
+    minCols: DEFAULT_COLUMNS,
+    maxCols: DEFAULT_COLUMNS,
+    minItemCols: MIN_ITEM_COLS,
+    minItemRows: MIN_ITEM_ROWS,
+    defaultItemCols: DEFAULT_ITEM_COLS,
+    defaultItemRows: DEFAULT_ITEM_ROWS,
+    draggable: {
+      enabled: true,
+      dragHandleClass: 'drag-handle',
+      ignoreContentClass: 'no-drag',
+    },
+    resizable: {
+      enabled: true,
+    },
+    itemResizeCallback: (item: GridsterItem) => {
+      const dashboardItem = item as TelemetryDashboardItem;
+      const chart = this.chartInstances.get(dashboardItem.field);
+      if (chart) {
+        chart.resize();
+      }
+    },
+    pushItems: true,
+    swap: false,
+  };
+
   readonly unselectedFields = computed<TelemetryField[]>(() => {
     const selected = new Set(this.selectedFields());
     return this.availableFields().filter((f) => !selected.has(f));
-  });
-
-  readonly chartConfigs = computed<ChartRowConfig[]>(() => {
-    const selected = this.selectedFields();
-    return selected.map((field, index) => this.buildChartRowConfig(field, index, index === selected.length - 1));
   });
 
   ngOnInit(): void {
@@ -84,10 +118,17 @@ export class MissionTelemetryPageComponent implements OnInit {
 
   addField(field: TelemetryField): void {
     this.selectedFields.set([...this.selectedFields(), field]);
+    this.rebuildDashboardItems();
   }
 
   removeField(field: TelemetryField): void {
     this.selectedFields.set(this.selectedFields().filter((f) => f !== field));
+    this.chartInstances.delete(field);
+    this.rebuildDashboardItems();
+  }
+
+  onChartInit(field: TelemetryField, chart: Chart): void {
+    this.chartInstances.set(field, chart);
   }
 
   getFieldLabel(field: TelemetryField): string {
@@ -98,7 +139,23 @@ export class MissionTelemetryPageComponent implements OnInit {
     this.router.navigate(['/archive']);
   }
 
-  private buildChartRowConfig(field: TelemetryField, index: number, isLast: boolean): ChartRowConfig {
+  private rebuildDashboardItems(): void {
+    const selected = this.selectedFields();
+    const items: TelemetryDashboardItem[] = selected.map((field, index) => {
+      const chartConfig = this.buildChartRowConfig(field, index);
+      return {
+        x: index % DEFAULT_COLUMNS,
+        y: Math.floor(index / DEFAULT_COLUMNS),
+        cols: DEFAULT_ITEM_COLS,
+        rows: DEFAULT_ITEM_ROWS,
+        field,
+        chartConfig,
+      };
+    });
+    this.dashboardItems.set(items);
+  }
+
+  private buildChartRowConfig(field: TelemetryField, index: number): ChartRowConfig {
     const color = COLORS[index % COLORS.length];
 
     const datasets: ChartDataset<'line'>[] = [{
@@ -120,12 +177,11 @@ export class MissionTelemetryPageComponent implements OnInit {
         x: {
           type: 'category',
           ticks: {
-            display: isLast,
             color: TICK_COLOR,
             maxTicksLimit: X_AXIS_MAX_TICKS,
             font: { size: TICK_FONT_SIZE },
           },
-          grid: { color: GRID_COLOR, drawTicks: isLast },
+          grid: { color: GRID_COLOR },
         },
         y: {
           ticks: {
@@ -208,5 +264,7 @@ export class MissionTelemetryPageComponent implements OnInit {
     this.selectedFields.set(
       defaultSelected.length > 0 ? defaultSelected : available.slice(0, DEFAULT_SELECTED_COUNT),
     );
+
+    this.rebuildDashboardItems();
   }
 }
