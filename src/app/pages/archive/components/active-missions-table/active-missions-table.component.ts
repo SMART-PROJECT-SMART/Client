@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, effect, viewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, effect, viewChild, inject } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -31,19 +31,19 @@ export class ActiveMissionsTableComponent implements OnInit {
   public readonly dataSource = new MatTableDataSource<ActiveMissionRo>([]);
   public readonly pageSizeOptions = TableConfig.PAGE_SIZE_OPTIONS;
 
-  constructor(public readonly missionStatusStorage: MissionStatusStorageService) {
-    effect(() => {
-      this.dataSource.data = this.missionStatusStorage.activeMissionList();
-    });
-    effect(() => {
-      const sort = this.sort();
-      if (sort) this.dataSource.sort = sort;
-    });
-    effect(() => {
-      const paginator = this.paginator();
-      if (paginator) this.dataSource.paginator = paginator;
-    });
-  }
+  public readonly missionStatusStorage = inject(MissionStatusStorageService);
+
+  private readonly _dataEffect = effect(() => {
+    this.dataSource.data = this.missionStatusStorage.activeMissionList();
+  });
+  private readonly _sortEffect = effect(() => {
+    const sort = this.sort();
+    if (sort) this.dataSource.sort = sort;
+  });
+  private readonly _paginatorEffect = effect(() => {
+    const paginator = this.paginator();
+    if (paginator) this.dataSource.paginator = paginator;
+  });
 
   public ngOnInit(): void {
     this.dataSource.data = this.missionStatusStorage.activeMissionList();

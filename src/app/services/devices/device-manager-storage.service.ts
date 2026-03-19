@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { tap, switchMap, catchError } from 'rxjs/operators';
 import { SleeveRo } from '../../models/Ro/sleeveRo.ro';
@@ -21,7 +21,7 @@ export class DeviceManagerStorageService {
   public readonly loadingUAVs = this.isLoadingUAVs.asReadonly();
   public readonly loadingSleeves = this.isLoadingSleeves.asReadonly();
 
-  constructor(private readonly apiService: DeviceManagerApiService) {}
+  private readonly apiService = inject(DeviceManagerApiService);
 
   public loadUAVs(): Observable<UAVRo[]> {
     this.isLoadingUAVs.set(true);

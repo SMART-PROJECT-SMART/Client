@@ -40,7 +40,6 @@ export class ArchiveDiffDialogComponent {
     buildComparisonRows(this.data.suggestedAssignments, this.data.actualAssignments, this.data.allUavTelemetryData);
   readonly changedCount = this.comparisonRows.filter((r) => r.changed).length;
   readonly totalCount = this.comparisonRows.length;
-  readonly hasAllUavData = !!this.data.allUavTelemetryData;
   readonly formattedDate = this.data.createdAt
     ? new Date(this.data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : '';
