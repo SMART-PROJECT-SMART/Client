@@ -7,6 +7,7 @@ export interface ArchiveTimeWindow {
 }
 
 export interface ArchiveMissionRo {
+  id: string;
   title: string;
   requiredUAVType: string;
   priority: string;

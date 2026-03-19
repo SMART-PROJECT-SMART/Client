@@ -22,4 +22,5 @@ export enum TelemetryField {
   TailId = 'TailId',
   UAVTypeValue = 'UAVTypeValue',
   PlatformType = 'PlatformType',
+  MissionId = 'MissionId',
 }

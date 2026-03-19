@@ -43,6 +43,7 @@ export class EnumUtil {
       [TelemetryField.TailId]: 'Tail Number',
       [TelemetryField.UAVTypeValue]: 'UAV Type Value',
       [TelemetryField.PlatformType]: 'Platform Type',
+      [TelemetryField.MissionId]: 'Mission ID',
     };
     return displayMap[field];
   }

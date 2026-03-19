@@ -156,6 +156,7 @@ export namespace ClientConstants {
     export const TAIL_ID: string = 'id';
     export const UAV_TYPE_VALUE: string = 'enum';
     export const PLATFORM_TYPE: string = 'enum';
+    export const MISSION_ID: string = 'hash';
   }
   export namespace DeviceManagementConstants {
     export const PAGE_TITLE: string = 'Device Management';

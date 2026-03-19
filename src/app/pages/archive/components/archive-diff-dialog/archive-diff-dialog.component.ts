@@ -10,6 +10,7 @@ const EXCLUDED_TELEMETRY_FIELDS = new Set<string>([
   TelemetryField.UAVTypeValue,
   TelemetryField.PlatformType,
   TelemetryField.NearestSleeveId,
+  TelemetryField.MissionId,
 ]);
 
 export interface TelemetryFieldEntry {
