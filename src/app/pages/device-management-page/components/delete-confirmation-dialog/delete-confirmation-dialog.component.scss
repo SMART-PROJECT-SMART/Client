@@ -1,0 +1,58 @@
+@use '../../../../../styles/constants' as *;
+
+::ng-deep .mat-mdc-dialog-surface {
+  background-color: $color-background-secondary !important;
+}
+
+.dialog-header {
+  background-color: $color-background-secondary;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    margin: 0;
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+}
+
+.dialog-content {
+  background-color: $color-background-secondary;
+  padding: $spacing-xl $spacing-lg;
+  text-align: center;
+}
+
+.warning-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: $color-warning;
+  display: block;
+  margin: 0 auto $spacing-md;
+}
+
+.message {
+  color: $color-text-primary;
+  font-size: $font-size-md;
+  margin: 0 0 $spacing-sm;
+}
+
+.warning-text {
+  color: $color-error;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dialog-actions {
+  background-color: $color-background-secondary;
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border-top: $border-width-thin solid $color-border-default;
+}

@@ -1,3 +1,5 @@
+import { PlatformType } from '../enums/platformType.enum';
+
 export class CesiumConstants {
   public static readonly ION_ACCESS_TOKEN =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4NDNlZTYzYS00Y2JkLTRhYmEtYmRhMC02NTc3NmFiODc0N2IiLCJpZCI6MzMwMTQyLCJpYXQiOjE3Njc2ODg0MzZ9.3mjcPnO_RKNgQsOaEpVAHiLdWMyBeUjno_eNYfXpnBI';
@@ -8,11 +10,20 @@ export class CesiumConstants {
   public static readonly ISRAEL_CENTER_LONGITUDE = 34.8516;
   public static readonly ISRAEL_CENTER_LATITUDE = 31.0461;
 
-  public static readonly UAV_MODEL_PATH = '/models/UAV.glb';
-  public static readonly UAV_MODEL_SCALE = 1.0;
-  public static readonly UAV_MODEL_ROTATION_DEGREES = 180;
+  public static readonly UAV_MODEL_PATHS: Record<PlatformType, string> = {
+    [PlatformType.Hermes900]: '/models/global_hawk.glb',
+    [PlatformType.HeronTP]: '/models/mq-9_reaper.glb',
+    [PlatformType.Hermes450]: '/models/baykar_bayraktar_tb2.glb',
+    [PlatformType.Searcher]: '/models/mq_1_predator.glb',
+  };
+  public static readonly UAV_MODEL_HEADING_OFFSET_RADIANS = 0;
   public static readonly UAV_MODEL_MINIMUM_PIXEL_SIZE = 128;
   public static readonly UAV_MODEL_MAXIMUM_SCALE = 20000;
+
+  public static readonly CAMERA_MINIMUM_ZOOM_DISTANCE = 600;
+  public static readonly UAV_MODEL_SHADOWS_ENABLED = true;
+  public static readonly UAV_MODEL_COLOR_CSS = '#ffffff';
+  public static readonly UAV_MODEL_COLOR_BLEND_AMOUNT = 0.7;
 
   public static readonly CAMERA_FLY_DURATION_SECONDS = 2;
   public static readonly CAMERA_UAV_FLY_DURATION_SECONDS = 3;
@@ -22,4 +33,36 @@ export class CesiumConstants {
   public static readonly CAMERA_UAV_ROLL = 0;
 
   public static readonly DEFAULT_IMAGERY_ASSET_ID = 2;
+
+  public static readonly POSITION_INTERPOLATION_DEGREE = 1;
+  public static readonly ORIENTATION_INTERPOLATION_DEGREE = 1;
+  public static readonly EXTRAPOLATION_DURATION_SECONDS = 2;
+  public static readonly SAMPLE_RETENTION_SECONDS = 30;
+  public static readonly SAMPLE_TIME_BUFFER_SECONDS = 1.5;
+  public static readonly EPOCH_START_ISO = '1900-01-01';
+
+  public static readonly UAV_MODEL_YAW_CORRECTIONS: Record<PlatformType, number> = {
+    [PlatformType.Hermes900]: -90,
+    [PlatformType.HeronTP]: -90,
+    [PlatformType.Hermes450]: -90,
+    [PlatformType.Searcher]: -90,
+  };
+
+  public static readonly UAV_MODEL_BASE_SCALE: Record<PlatformType, number> = {
+    [PlatformType.Hermes900]: 12.0,
+    [PlatformType.HeronTP]: 6.0,
+    [PlatformType.Hermes450]: 19.0,
+    [PlatformType.Searcher]: 120.0,
+  };
+  public static readonly UAV_ENTITY_PREFIX_NAME = 'uav-';
+
+  public static readonly UAV_ALTITUDE_AS_AGL = true;
+
+  public static readonly ORIENTATION_SMOOTH_ALPHA = 0.08;
+  public static readonly ORIENTATION_SMOOTH_DURATION_MS = 450;
+  public static readonly ORIENTATION_DELTA_MS_CLAMP = 100;
+  public static readonly ORIENTATION_JUMP_ANGLE_RADIANS = 1.5;
+
+  public static readonly POSITION_JUMP_LOG_LAT_LON_DEGREES = 0.02;
+  public static readonly POSITION_JUMP_LOG_HEIGHT_METERS = 10;
 }

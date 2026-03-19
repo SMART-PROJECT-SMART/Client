@@ -1,0 +1,53 @@
+@use '../../../../../styles/constants' as *;
+
+:host ::ng-deep .mat-mdc-dialog-surface {
+  background-color: $color-background-secondary !important;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    margin: 0;
+    color: $color-text-primary;
+  }
+
+  ::ng-deep .mat-mdc-icon-button {
+    background-color: transparent !important;
+
+    .mat-mdc-button-persistent-ripple,
+    .mdc-icon-button__ripple {
+      background-color: transparent !important;
+    }
+  }
+}
+
+.dialog-content {
+  min-width: 280px;
+  padding: $spacing-md $spacing-lg;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border-top: $border-width-thin solid $color-border-default;
+}
+
+.filter-fields {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  mat-form-field {
+    width: 100%;
+    display: block;
+  }
+}

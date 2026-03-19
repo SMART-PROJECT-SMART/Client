@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import type {
   AssignmentSuggestionDto,
   ApplyAssignmentDto,
@@ -24,16 +23,12 @@ export class AssignmentApiService {
     dto: AssignmentSuggestionDto
   ): Observable<AssignmentRequestAcceptedRo> {
     const url: string = Endpoints.CREATE_ASSIGNMENT_SUGGESTION;
-    return this.httpClient.post<AssignmentRequestAcceptedRo>(url, dto).pipe(
-      tap((response: AssignmentRequestAcceptedRo) => console.log('[API] Response:', response))
-    );
+    return this.httpClient.post<AssignmentRequestAcceptedRo>(url, dto);
   }
 
   public checkAssignmentStatus(assignmentId: string): Observable<AssignmentStatusRo> {
     const url: string = `${Endpoints.CHECK_ASSIGNMENT_STATUS}/${assignmentId}/status`;
-    return this.httpClient.get<AssignmentStatusRo>(url).pipe(
-      tap((response: AssignmentStatusRo) => console.log('[API] Response:', response))
-    );
+    return this.httpClient.get<AssignmentStatusRo>(url);
   }
 
   public getAssignmentResult(assignmentId: string): Observable<AssignmentAlgorithmRo> {

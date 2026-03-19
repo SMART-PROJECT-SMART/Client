@@ -48,7 +48,7 @@
           <div class="location-group">
             <mat-form-field appearance="outline">
               <mat-label>Latitude (°)</mat-label>
-              <input matInput type="number" formControlName="latitude" aria-label="Latitude" />
+              <input matInput type="number" formControlName="latitude" aria-label="Latitude" appNumericInput />
               @if (missionForm.get('location.latitude')?.hasError('required') && missionForm.get('location.latitude')?.touched) {
                 <mat-error>Latitude is required</mat-error>
               }
@@ -61,7 +61,7 @@
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Longitude (°)</mat-label>
-              <input matInput type="number" formControlName="longitude" aria-label="Longitude" />
+              <input matInput type="number" formControlName="longitude" aria-label="Longitude" appNumericInput />
               @if (missionForm.get('location.longitude')?.hasError('required') && missionForm.get('location.longitude')?.touched) {
                 <mat-error>Longitude is required</mat-error>
               }
@@ -74,7 +74,7 @@
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Altitude (m)</mat-label>
-              <input matInput type="number" formControlName="altitude" aria-label="Altitude" />
+              <input matInput type="number" formControlName="altitude" aria-label="Altitude" appNumericInput />
               @if (missionForm.get('location.altitude')?.invalid && missionForm.get('location.altitude')?.touched) {
                 <mat-error>Altitude is required</mat-error>
               }

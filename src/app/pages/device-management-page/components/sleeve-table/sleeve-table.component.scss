@@ -1,0 +1,169 @@
+@use '../../../../../styles/constants' as *;
+
+:host {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.table-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: $spacing-lg;
+  gap: $spacing-md;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-md;
+}
+
+.table-title {
+  font-size: $font-size-xl;
+  font-weight: 600;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.item-count {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.header-actions {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+}
+
+.search-field {
+  width: 240px;
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.table-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-md;
+}
+
+::ng-deep mat-paginator {
+  flex-shrink: 0;
+  min-height: 56px;
+}
+
+.device-table {
+  width: 100%;
+
+  th {
+    background-color: $color-background-elevated;
+    color: $color-text-secondary;
+    font-weight: 600;
+    font-size: $font-size-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    color: $color-text-primary;
+    font-size: $font-size-md;
+  }
+
+  .table-row {
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: rgba($color-primary, 0.06);
+    }
+  }
+}
+
+.sleeve-name {
+  font-weight: 600;
+  color: $color-primary-light;
+}
+
+.location-cell {
+  font-variant-numeric: tabular-nums;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.ports-cell {
+  mat-chip-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+  }
+}
+
+::ng-deep .mat-column-actions {
+  width: 120px;
+  min-width: 120px;
+  text-align: right;
+  overflow: visible;
+
+  .mat-mdc-icon-button {
+    mat-icon {
+      font-family: 'Material Icons';
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      overflow: visible;
+    }
+  }
+
+  button + button {
+    margin-left: $spacing-xs;
+  }
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 300px;
+  text-align: center;
+  gap: $spacing-sm;
+
+  .empty-icon {
+    font-size: 72px;
+    width: 72px;
+    height: 72px;
+    color: $color-text-muted;
+  }
+
+  h3 {
+    font-size: $font-size-xl;
+    color: $color-text-primary;
+    margin: $spacing-sm 0 0;
+  }
+
+  p {
+    font-size: $font-size-md;
+    color: $color-text-secondary;
+    margin: 0 0 $spacing-md;
+  }
+}

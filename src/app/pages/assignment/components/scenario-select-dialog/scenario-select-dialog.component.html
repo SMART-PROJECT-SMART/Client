@@ -1,0 +1,64 @@
+<div class="dialog-header">
+  <h2>Select Test Scenarios</h2>
+  <button mat-icon-button (click)="close()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="dialog-content">
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+    <div class="search-bar">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          placeholder="Search scenarios..."
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+        />
+      </mat-form-field>
+    </div>
+    <div class="scenario-list">
+      <label class="scenario-item select-all">
+        <mat-checkbox
+          [checked]="allSelected()"
+          [indeterminate]="someSelected()"
+          (change)="toggleAll()"
+        >
+          Select All
+        </mat-checkbox>
+      </label>
+      @for (scenario of filteredScenarios(); track scenario.key) {
+        <label class="scenario-item">
+          <mat-checkbox
+            [checked]="isSelected(scenario.key)"
+            (change)="toggleScenario(scenario.key)"
+          >
+            {{ scenario.label }}
+          </mat-checkbox>
+          <span class="mission-count">{{ scenario.missionCount }} missions</span>
+        </label>
+      }
+    </div>
+  }
+</div>
+
+<div class="dialog-actions">
+  <button mat-button (click)="clear()">Clear All</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="apply()"
+    [disabled]="!hasSelection() || submitting()"
+  >
+    @if (submitting()) {
+      Loading...
+    } @else {
+      Apply
+    }
+  </button>
+</div>

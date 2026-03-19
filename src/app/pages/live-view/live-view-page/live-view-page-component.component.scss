@@ -1,7 +1,39 @@
+@use '../../../../styles/constants' as *;
+
 .live-view-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
   width: 100%;
   height: 100vh;
   margin: 0;
   padding: 0;
   overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    pointer-events: none;
+    z-index: 1;
+    background: linear-gradient(
+      to bottom,
+      rgba($color-background-dark, 0.7),
+      rgba($color-background-dark, 0.2),
+      transparent
+    );
+  }
+}
+
+app-cesium-viewer {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+app-uav-selection-component {
+  flex: 0 0 auto;
+  z-index: 1;
 }

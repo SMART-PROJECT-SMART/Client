@@ -1,4 +1,4 @@
-import { Priority, UAVType, TelemetryField } from '../enums';
+import { Priority, UAVType, TelemetryField, PlatformType, BaseLocation } from '../enums';
 
 export class EnumUtil {
   public static getPriorityDisplay(priority: Priority): string {
@@ -42,7 +42,57 @@ export class EnumUtil {
       [TelemetryField.NearestSleeveId]: 'Nearest Sleeve ID',
       [TelemetryField.TailId]: 'Tail Number',
       [TelemetryField.UAVTypeValue]: 'UAV Type Value',
+      [TelemetryField.PlatformType]: 'Platform Type',
     };
     return displayMap[field];
+  }
+
+  public static getUAVTypeFromPlatform(platformType: PlatformType): UAVType {
+    const armedPlatforms = [PlatformType.Hermes900, PlatformType.HeronTP];
+    return armedPlatforms.includes(platformType) ? UAVType.Armed : UAVType.Surveillance;
+  }
+
+  public static getUAVTypeFromPlatformNumber(platformTypeValue: number): UAVType {
+    const platformValues = Object.values(PlatformType);
+    const platformType = platformValues[platformTypeValue] as PlatformType;
+    return this.getUAVTypeFromPlatform(platformType);
+  }
+
+  public static getPlatformTypeDisplay(platformType: PlatformType | number): string {
+    const platformValues = Object.values(PlatformType);
+    const resolvedType =
+      typeof platformType === 'number' ? platformValues[platformType] : platformType;
+
+    const displayMap: Record<PlatformType, string> = {
+      [PlatformType.Hermes900]: 'Hermes 900',
+      [PlatformType.HeronTP]: 'Heron TP',
+      [PlatformType.Hermes450]: 'Hermes 450',
+      [PlatformType.Searcher]: 'Searcher',
+    };
+    return displayMap[resolvedType as PlatformType] ?? String(platformType);
+  }
+
+  public static platformTypeToNumber(platformType: PlatformType): number {
+    const mapping: Record<PlatformType, number> = {
+      [PlatformType.Hermes900]: 0,
+      [PlatformType.HeronTP]: 1,
+      [PlatformType.Hermes450]: 2,
+      [PlatformType.Searcher]: 3,
+    };
+    return mapping[platformType];
+  }
+
+  public static getBaseLocationDisplay(baseLocation: BaseLocation): string {
+    const displayMap: Record<BaseLocation, string> = {
+      [BaseLocation.Hatzerim]: 'Hatzerim Airbase',
+      [BaseLocation.TelNof]: 'Tel Nof Airbase',
+      [BaseLocation.RamatDavid]: 'Ramat David Airbase',
+      [BaseLocation.Nevatim]: 'Nevatim Airbase',
+      [BaseLocation.Ramon]: 'Ramon Airbase',
+      [BaseLocation.Hatzor]: 'Hatzor Airbase',
+      [BaseLocation.Palmachim]: 'Palmachim Airbase',
+      [BaseLocation.Ovda]: 'Ovda Airbase',
+    };
+    return displayMap[baseLocation];
   }
 }

@@ -1,5 +1,11 @@
 @use '../../../../styles/constants' as *;
 
+.assignment-page {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+}
+
 .loading-container,
 .error-container,
 .empty-result-container,
@@ -8,7 +14,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
   gap: $spacing-lg;
   padding: $spacing-lg;
 }
@@ -20,6 +26,11 @@
     width: $icon-size-xxl;
     height: $icon-size-xxl;
   }
+}
+
+.empty-result-container p {
+  font-size: $font-size-xl;
+  margin: 0;
 }
 
 .view-results-container {

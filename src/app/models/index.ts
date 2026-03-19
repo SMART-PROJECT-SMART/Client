@@ -17,3 +17,26 @@ export type { ApplyAssignmentRo } from './Ro/applyAssignmentRo.ro';
 
 export type { Violation } from './assignment/violation.model';
 export type { ValidationResult } from './assignment/validationResult.model';
+
+export type { UAVTelemetryData } from './lts/uavTelemetryData.model';
+export type { TelemetryBroadcastDto } from './lts/telemetryBroadcastDto.model';
+export type { UAVWantedFields } from './lts/uavWantedFields.model';
+export type { UpdateWantedFieldsDto } from './lts/updateWantedFieldsDto.model';
+
+export type { MissionFormGroups } from './forms/mission-form-groups.interface';
+
+export type { TestScenario } from './test/test-scenario.model';
+
+export type { UAVRo } from './Ro/uavRO.ro';
+export type { SleeveRo } from './Ro/sleeveRo.ro';
+export type { CreateUAVDto } from './dto/createUAV.dto';
+export type { UpdateUAVDto } from './dto/updateUAVDto.dto';
+export type { CreateSleeveDto } from './dto/createSleeveDto.dto';
+export type { UpdateSleeveDto } from './dto/updateSleeveDto.dto';
+
+export type {
+  ArchiveAssignmentRo,
+  ArchiveMissionRo,
+  ArchiveMissionToUavAssignmentRo,
+  ArchiveTimeWindow,
+} from './archive';

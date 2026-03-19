@@ -1,39 +1,31 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { DateTimeUtil } from '../utils';
 
 export function timeWindowValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    const startControl = control.get('start');
-    const endControl = control.get('end');
+    const startDateControl = control.get('startDate');
+    const startTimeControl = control.get('startTime');
+    const endDateControl = control.get('endDate');
+    const endTimeControl = control.get('endTime');
 
-    if (!startControl || !endControl) {
+    if (!startDateControl || !startTimeControl || !endDateControl || !endTimeControl) {
       return null;
     }
 
-    const start = startControl.value;
-    const end = endControl.value;
+    const startDate = startDateControl.value;
+    const startTime = startTimeControl.value;
+    const endDate = endDateControl.value;
+    const endTime = endTimeControl.value;
 
-    if (!start || !end) {
+    if (!startDate || !startTime || !endDate || !endTime) {
       return null;
     }
 
-    const startDate = new Date(start);
-    const endDate = new Date(end);
+    const start = DateTimeUtil.combineDateAndTime(startDate, startTime);
+    const end = DateTimeUtil.combineDateAndTime(endDate, endTime);
 
-    if (startDate >= endDate) {
-      const error = { timeWindowInvalid: true };
-      startControl.setErrors({ ...startControl.errors, ...error });
-      endControl.setErrors({ ...endControl.errors, ...error });
-      return error;
-    }
-
-    if (startControl.hasError('timeWindowInvalid')) {
-      const { timeWindowInvalid, ...remainingErrors } = startControl.errors || {};
-      startControl.setErrors(Object.keys(remainingErrors).length ? remainingErrors : null);
-    }
-
-    if (endControl.hasError('timeWindowInvalid')) {
-      const { timeWindowInvalid, ...remainingErrors } = endControl.errors || {};
-      endControl.setErrors(Object.keys(remainingErrors).length ? remainingErrors : null);
+    if (start >= end) {
+      return { timeWindowInvalid: true };
     }
 
     return null;

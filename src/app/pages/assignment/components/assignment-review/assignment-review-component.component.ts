@@ -1,4 +1,14 @@
-import { Component, input, output, signal, OnInit, WritableSignal, computed, Signal } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  signal,
+  OnInit,
+  WritableSignal,
+  computed,
+  Signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import type {
   AssignmentAlgorithmRo,
   MissionAssignmentPairing,
@@ -8,9 +18,9 @@ import type {
   ValidationResult,
   Violation,
 } from '../../../../models';
-import { TelemetryField, ViolationType } from '../../../../common/enums';
+import { TelemetryField, ViolationType, PlatformType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
-import { TelemetryUtil, EnumUtil, AssignmentUtil } from '../../../../common/utils';
+import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../common/utils';
 import { ApplyAssignmentDto } from '../../../../models/dto/applyAssignmentDto.dto';
 import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
 
@@ -21,9 +31,10 @@ const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
   standalone: false,
   templateUrl: './assignment-review-component.html',
   styleUrl: './assignment-review-component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentReviewComponent implements OnInit {
-  private readonly validatorService: AssignmentValidatorService = new AssignmentValidatorService();
+  constructor(private readonly validatorService: AssignmentValidatorService) {}
 
   public readonly algorithmResult = input.required<AssignmentAlgorithmRo>();
   public readonly availableUavs = input.required<UAV[]>();
@@ -34,9 +45,11 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly applyLabel: string = APPLY_LABEL;
   public readonly TelemetryField = TelemetryField;
   public readonly ViolationType = ViolationType;
+  public readonly PlatformType = PlatformType;
   public readonly AssignmentUtil = AssignmentUtil;
   public readonly TelemetryUtil = TelemetryUtil;
   public readonly EnumUtil = EnumUtil;
+  public readonly ImageUtil = ImageUtil;
 
   public readonly selectedTailIds: WritableSignal<Map<string, number>> = signal<
     Map<string, number>
@@ -48,13 +61,29 @@ export class AssignmentReviewComponent implements OnInit {
     return this.validatorService.validateAssignments(
       this.algorithmResult().pairings,
       this.selectedTailIds(),
-      this.algorithmResult().uavTelemetryData
+      this.algorithmResult().uavTelemetryData,
     );
   });
 
   public readonly canApplyAssignment: Signal<boolean> = computed(() => {
     return this.validationResult().isValid;
   });
+
+  public readonly uavByMissionId: Signal<Map<string, UAV>> = computed(() => {
+    const map = new Map<string, UAV>();
+    const telemetryData = this.algorithmResult().uavTelemetryData;
+    const selectedIds = this.selectedTailIds();
+
+    this.algorithmResult().pairings.forEach((pairing) => {
+      const tailId = selectedIds.get(pairing.mission.id) ?? pairing.tailId;
+      const uav = AssignmentUtil.buildUavFromTelemetry(tailId, telemetryData[tailId]);
+      map.set(pairing.mission.id, uav);
+    });
+
+    return map;
+  });
+
+  private readonly platformTypesArray: PlatformType[] = Object.values(PlatformType);
 
   public ngOnInit(): void {
     this.initializeEditedAssignments();
@@ -93,29 +122,49 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public onApply(): void {
+    const telemetryData = this.algorithmResult().uavTelemetryData;
+
     const suggestedAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(
       (p) => ({
         mission: p.mission,
         uavTailId: p.tailId,
         startTime: p.timeWindow.start,
-      })
+        uavTelemetrySnapshot: telemetryData[p.tailId],
+      }),
     );
 
     const actualAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(
-      (p) => ({
-        mission: p.mission,
-        uavTailId: this.selectedTailIds().get(p.mission.id) ?? p.tailId,
-        startTime: p.timeWindow.start,
-      })
+      (p) => {
+        const tailId = this.selectedTailIds().get(p.mission.id) ?? p.tailId;
+        return {
+          mission: p.mission,
+          uavTailId: tailId,
+          startTime: p.timeWindow.start,
+          uavTelemetrySnapshot: telemetryData[tailId],
+        };
+      },
     );
-    const Ro: ApplyAssignmentRo = { suggested: suggestedAssignments, actual: actualAssignments };
-    this.apply.emit(Ro);
+    const assignmentResult: ApplyAssignmentRo = {
+      suggested: suggestedAssignments,
+      actual: actualAssignments,
+      allUavTelemetryData: telemetryData as Record<string, Record<string, number>>,
+    };
+    this.apply.emit(assignmentResult);
   }
 
   public getTelemetryEntries(uav: UAV): [TelemetryField, number][] {
     return (Object.entries(uav.telemetryData) as [TelemetryField, number][]).filter(
-      ([field]) => field !== TelemetryField.UAVTypeValue && field !== TelemetryField.TailId
+      ([field]) =>
+        field !== TelemetryField.UAVTypeValue &&
+        field !== TelemetryField.TailId &&
+        field !== TelemetryField.PlatformType &&
+        field !== TelemetryField.NearestSleeveId,
     );
+  }
+
+  public getPlatformType(uav: UAV): PlatformType {
+    const platformValue = uav.telemetryData[TelemetryField.PlatformType];
+    return this.platformTypesArray[platformValue];
   }
 
   public trackByMissionId(_index: number, pairing: MissionAssignmentPairing): string {
@@ -126,7 +175,7 @@ export class AssignmentReviewComponent implements OnInit {
     const tailId = this.selectedTailIds().get(pairing.mission.id) ?? pairing.tailId;
     return AssignmentUtil.buildUavFromTelemetry(
       tailId,
-      this.algorithmResult().uavTelemetryData[tailId]
+      this.algorithmResult().uavTelemetryData[tailId],
     );
   }
 

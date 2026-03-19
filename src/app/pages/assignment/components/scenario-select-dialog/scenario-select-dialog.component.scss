@@ -1,0 +1,93 @@
+@use '../../../../../styles/constants' as *;
+
+:host ::ng-deep .mat-mdc-dialog-surface {
+  background-color: $color-background-secondary !important;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    margin: 0;
+    color: $color-text-primary;
+  }
+
+  ::ng-deep .mat-mdc-icon-button {
+    background-color: transparent !important;
+
+    .mat-mdc-button-persistent-ripple,
+    .mdc-icon-button__ripple {
+      background-color: transparent !important;
+    }
+  }
+}
+
+.dialog-content {
+  padding: 0;
+}
+
+.search-bar {
+  padding: $spacing-sm $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border-top: $border-width-thin solid $color-border-default;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: $spacing-lg;
+}
+
+.scenario-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.scenario-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+  cursor: pointer;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: $color-background-elevated;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.select-all {
+    border-bottom: $border-width-medium solid $color-border-light;
+    font-weight: 600;
+  }
+}
+
+.mission-count {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  white-space: nowrap;
+  margin-left: $spacing-md;
+}

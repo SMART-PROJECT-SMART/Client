@@ -1,0 +1,89 @@
+<div class="table-container">
+  <div class="table-header">
+    <div class="header-left">
+      <h2 class="table-title">UAV Devices</h2>
+      <span class="item-count">{{ dataSource.data.length }} UAVs</span>
+    </div>
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+        <mat-label>Search</mat-label>
+        <input matInput #searchInput (keyup)="onSearch($event)" placeholder="Tail ID, Type, or Base..." />
+        @if (searchInput.value) {
+          <button mat-icon-button matSuffix (click)="onClearSearch(searchInput)" aria-label="Clear">
+            <mat-icon>close</mat-icon>
+          </button>
+        } @else {
+          <mat-icon matSuffix>search</mat-icon>
+        }
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="onAddUAV()">
+        <mat-icon>add</mat-icon>
+        Add UAV
+      </button>
+    </div>
+  </div>
+
+  @if (deviceManager.loadingUAVs()) {
+    <div class="loading-state">
+      <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
+      <p>Loading UAVs...</p>
+    </div>
+  } @else if (dataSource.data.length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">flight</mat-icon>
+      <h3>No UAVs Found</h3>
+      <p>Register your first UAV to get started.</p>
+      <button mat-raised-button color="primary" (click)="onAddUAV()">
+        <mat-icon>add</mat-icon>
+        Add UAV
+      </button>
+    </div>
+  } @else {
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort class="device-table">
+        <ng-container matColumnDef="tailId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tail ID</th>
+          <td mat-cell *matCellDef="let uav" class="tail-id">{{ uav.tailId }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="platformType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Platform</th>
+          <td mat-cell *matCellDef="let uav">{{ getPlatformTypeDisplay(uav.platformType) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="uavType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>UAV Type</th>
+          <td mat-cell *matCellDef="let uav">{{ getUAVTypeDisplay(uav.platformType) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="baseLocation">
+          <th mat-header-cell *matHeaderCellDef>Base Location</th>
+          <td mat-cell *matCellDef="let uav" class="location-cell">
+            {{ formatLocation(uav.baseLocation) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let uav" class="actions-cell">
+            <button mat-icon-button matTooltip="Edit" (click)="onEditUAV(uav)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Delete" color="warn" (click)="onDeleteUAV(uav)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [pageSizeOptions]="pageSizeOptions"
+      [pageSize]="10"
+      showFirstLastButtons
+    ></mat-paginator>
+  }
+</div>

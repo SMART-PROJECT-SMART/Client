@@ -18,7 +18,7 @@
   h2 {
     color: $color-text-primary;
     font-size: $font-size-xl;
-    margin: 0;
+    margin: 0 0 0 $spacing-xl;
   }
 }
 
@@ -28,26 +28,29 @@
 }
 
 .assignments-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: $spacing-md;
   overflow-y: auto;
   padding: $spacing-xs;
+  align-content: start;
+  align-items: start;
 }
 
 .assignment-card {
   background-color: $color-background-card;
-  border: $border-width-medium solid $color-primary-dark;
+  border: $border-width-medium solid $color-border-default;
   border-radius: $border-radius-md;
   padding: $spacing-md;
   transition: border-color 0.3s ease;
+  min-width: 0;
 
   &.modified {
     border-color: $color-warning;
   }
 
   &:focus-within {
-    outline: $border-width-medium solid $color-primary;
+    outline: $border-width-medium solid $color-border-default;
     outline-offset: 2px;
   }
 }
@@ -55,14 +58,56 @@
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: $spacing-md;
 
   h3 {
     color: $color-text-primary;
-    font-size: $font-size-lg;
+    font-size: $font-size-xxl;
     margin: 0;
   }
+}
+
+.title-label {
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.card-layout {
+  display: flex;
+  gap: $spacing-lg;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.platform-visual {
+  flex-shrink: 0;
+}
+
+.platform-image {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: $border-radius-md;
+}
+
+.card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.info-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm $spacing-lg;
 }
 
 .modified-icon {
@@ -70,18 +115,9 @@
 }
 
 .uav-assignment {
-  margin-bottom: $spacing-md;
-
   mat-form-field {
     width: 100%;
-    max-width: 400px;
   }
-}
-
-.uav-info {
-  display: flex;
-  gap: $spacing-lg;
-  margin-top: $spacing-md;
 }
 
 .info-item {
@@ -110,7 +146,7 @@
 }
 
 .collapsible-section {
-  border: $border-width-thin solid $color-primary-dark;
+  border: $border-width-thin solid $color-border-default;
   border-radius: $border-radius-sm;
   padding: 0;
   margin: 0;
@@ -122,7 +158,7 @@
 }
 
 .collapsible-legend {
-  color: $color-primary;
+  color: $color-text-primary;
   font-size: $font-size-md;
   font-weight: 500;
   padding: $spacing-xs $spacing-sm;
@@ -135,7 +171,7 @@
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: rgba($color-primary, 0.1);
+    background-color: $color-background-elevated;
   }
 }
 
@@ -213,7 +249,9 @@
 }
 
 .warning-icon {
-  font-size: $icon-size-lg;
+  font-size: $icon-size-md;
+  width: $icon-size-md;
+  height: $icon-size-md;
 }
 
 .violations-list {
@@ -232,7 +270,9 @@
 }
 
 .violation-icon {
-  font-size: $icon-size-md;
+  font-size: $icon-size-sm;
+  width: $icon-size-sm;
+  height: $icon-size-sm;
   flex-shrink: 0;
 }
 

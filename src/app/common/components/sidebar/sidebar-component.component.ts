@@ -1,9 +1,8 @@
-import { Component, signal, output, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs/operators';
 import type { NavigationItem } from '../../../models';
-import { ClientConstants } from '../../../common';
-
-const { SidebarConstants } = ClientConstants;
 
 @Component({
   selector: 'app-sidebar',
@@ -13,34 +12,32 @@ const { SidebarConstants } = ClientConstants;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  public readonly isExpanded = signal<boolean>(false);
-  public readonly expansionChange = output<boolean>();
-  public readonly logoPath: string = SidebarConstants.LOGO_PATH;
-  public readonly collapsedWidth: number = SidebarConstants.COLLAPSED_WIDTH;
-  public readonly expandedWidth: number = SidebarConstants.EXPANDED_WIDTH;
+  public readonly navItemClicked = output<void>();
 
   public readonly navigationItems: NavigationItem[] = [
-    { label: 'Home', icon: 'home', route: '/' },
-    {
-      label: 'Assignment',
-      icon: 'assignment',
-      route: '/assignment-page',
-    },
+    { label: 'Assignment', icon: 'assignment', route: '/assignment-page' },
     { label: 'Live View', icon: 'map', route: '/live-view-page' },
+    { label: 'Device Management', icon: 'devices', route: '/device-management-page' },
+    { label: 'Archive', icon: 'archive', route: '/archive' },
   ];
 
-  constructor(private readonly router: Router) {}
+  private readonly router = inject(Router);
 
-  public toggleSidebar(): void {
-    this.isExpanded.update((value) => !value);
-    this.expansionChange.emit(this.isExpanded());
-  }
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((e) => e instanceof NavigationEnd),
+      map(() => this.router.url),
+      startWith(this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
 
-  public navigateTo(route: string): void {
+  public onNavItemClick(route: string): void {
     this.router.navigate([route]);
+    this.navItemClicked.emit();
   }
 
   public isActive(route: string): boolean {
-    return this.router.url === route;
+    return this.currentUrl() === route;
   }
 }

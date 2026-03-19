@@ -1,0 +1,314 @@
+@use '../../../../../styles/constants' as *;
+
+::ng-deep .mat-mdc-dialog-surface {
+  background-color: $color-background-secondary !important;
+}
+
+mat-dialog-content {
+  padding: 0 !important;
+  overflow: visible !important;
+  min-height: 400px;
+}
+
+.dialog-header {
+  background-color: $color-background-secondary;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    margin: 0;
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+}
+
+.dialog-content {
+  background-color: $color-background-secondary;
+  padding: $spacing-md;
+}
+
+.mission-stepper {
+  padding: $spacing-md;
+  background: transparent;
+}
+
+.step-label {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  mat-icon {
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+  }
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-lg 0;
+}
+
+.form-level-error {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: rgba($color-error, 0.1);
+  border-left: 3px solid $color-error;
+  border-radius: $border-radius-sm;
+  color: $color-error;
+  font-size: $font-size-sm;
+  margin-bottom: $spacing-md;
+}
+
+.datetime-row {
+  display: flex;
+  gap: $spacing-md;
+  align-items: flex-end;
+
+  .date-field {
+    flex: 2;
+    position: relative;
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+    }
+  }
+
+  .time-field {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+}
+
+.time-label {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+.time-input-wrapper {
+  border: $border-width-thin solid
+    var(--mat-form-field-outlined-outline-color, $color-border-default);
+  border-radius: $border-radius-sm;
+  display: flex;
+  align-items: center;
+  background-color: $color-background-secondary;
+  min-height: var(--mat-form-field-container-height, $form-field-container-height-default);
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: $spacing-sm $spacing-md;
+    border: none;
+    background: transparent;
+    color: $color-text-primary;
+    font: inherit;
+    text-align: center;
+    outline: none;
+
+    &::placeholder {
+      color: $color-text-secondary;
+    }
+  }
+
+  button[mat-icon-button] {
+    margin-bottom: 0;
+
+    mat-icon {
+      color: $color-text-primary;
+    }
+  }
+}
+
+.location-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-md;
+
+  input[type='number'] {
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  padding-top: $spacing-md;
+  border-top: $border-width-thin solid $color-border-default;
+  margin-top: $spacing-md;
+}
+
+.stepper-icon-done {
+  color: #66bb6a;
+}
+
+.stepper-icon-error {
+  color: #ef5350;
+}
+
+::ng-deep {
+  .mat-horizontal-stepper-header-container {
+    padding: 0 $spacing-md;
+  }
+
+  $stepper-yellow: #ffc107;
+  $stepper-green: #66bb6a;
+  $stepper-red: #ef5350;
+
+  .mat-step-header {
+    .mat-step-icon {
+      background-color: $color-background-elevated;
+      color: $color-text-secondary;
+    }
+
+    .mat-step-icon-selected {
+      background-color: $stepper-yellow !important;
+      color: $color-text-primary;
+    }
+
+    .mat-step-icon-state-done {
+      background-color: $stepper-green !important;
+      color: $color-text-primary;
+    }
+
+    .mat-step-icon-state-error {
+      background-color: $stepper-red !important;
+      color: $color-text-primary;
+
+      .mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .mat-step-label {
+      color: $color-text-secondary;
+    }
+
+    .mat-step-label-active {
+      color: $color-text-primary;
+    }
+
+    .mat-step-label-selected {
+      color: $color-primary-light;
+      font-weight: 600;
+    }
+  }
+
+  :host {
+    .mission-stepper.current-step-valid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon,
+    .mission-stepper.current-step-valid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon.mat-step-icon-state-edit,
+    .mission-stepper.current-step-valid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon.mat-step-icon-state-number {
+      background-color: $stepper-green !important;
+      color: $color-text-primary;
+    }
+
+    .mission-stepper.current-step-invalid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon,
+    .mission-stepper.current-step-invalid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon.mat-step-icon-state-edit,
+    .mission-stepper.current-step-invalid
+      .mat-step-header[aria-selected='true']
+      .mat-step-icon.mat-step-icon-state-number {
+      background-color: $stepper-red !important;
+      color: $color-text-primary;
+    }
+  }
+
+  .mission-stepper.step-0-complete
+    .mat-horizontal-stepper-header-container
+    .mat-step-header:nth-child(1):not([aria-selected='true'])
+    .mat-step-icon {
+    background-color: $stepper-green !important;
+    color: $color-text-primary;
+
+    .mat-step-icon-content {
+      position: relative;
+      font-size: 0;
+      line-height: 0;
+
+      > * {
+        visibility: hidden;
+        position: absolute;
+      }
+
+      &::after {
+        content: 'check_circle';
+        font-family: 'Material Icons';
+        font-size: 24px;
+        font-weight: normal;
+        color: $color-text-primary;
+        visibility: visible;
+        display: block;
+        line-height: 1;
+      }
+    }
+  }
+
+  .mission-stepper.step-1-complete
+    .mat-horizontal-stepper-header-container
+    .mat-step-header:nth-child(3):not([aria-selected='true'])
+    .mat-step-icon,
+  .mission-stepper.step-1-valid-when-back
+    .mat-horizontal-stepper-header-container
+    .mat-step-header:nth-child(3):not([aria-selected='true'])
+    .mat-step-icon {
+    background-color: $stepper-green !important;
+    color: $color-text-primary;
+
+    .mat-step-icon-content {
+      position: relative;
+      font-size: 0;
+      line-height: 0;
+
+      > * {
+        visibility: hidden;
+        position: absolute;
+      }
+
+      &::after {
+        content: 'check_circle';
+        font-family: 'Material Icons';
+        font-size: 24px;
+        font-weight: normal;
+        color: $color-text-primary;
+        visibility: visible;
+        display: block;
+        line-height: 1;
+      }
+    }
+  }
+
+  .mat-horizontal-content-container {
+    padding: 0;
+  }
+}

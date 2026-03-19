@@ -1,0 +1,272 @@
+@use '../../../../../styles/constants' as *;
+
+:host ::ng-deep .mat-mdc-dialog-surface {
+  background-color: $color-background-secondary !important;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    margin: 0;
+    color: $color-text-primary;
+  }
+}
+
+.dialog-content {
+  padding: $spacing-md $spacing-lg;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.no-diff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+  color: $color-text-secondary;
+
+  mat-icon {
+    font-size: $icon-size-xl;
+    width: $icon-size-xl;
+    height: $icon-size-xl;
+    color: $color-success;
+    margin-bottom: $spacing-md;
+  }
+
+  p {
+    font-size: $font-size-md;
+    margin: 0;
+  }
+}
+
+.summary-banner {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  margin-bottom: $spacing-md;
+  background-color: $color-background-elevated;
+  border-radius: $border-radius-md;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+
+  mat-icon {
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+    color: $color-warning;
+  }
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: $font-size-md;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+
+  th,
+  td {
+    padding: $spacing-sm $spacing-md;
+    text-align: left;
+    border-bottom: $border-width-thin solid $color-border-default;
+  }
+
+  th {
+    font-weight: 600;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: $color-background-secondary;
+  }
+
+  tbody tr {
+    transition: background-color $transition-fast;
+
+    &:nth-child(even) {
+      background-color: rgba($color-background-elevated, 0.3);
+    }
+
+    &:hover {
+      background-color: rgba($color-primary, 0.08);
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  td {
+    color: $color-text-primary;
+  }
+
+  tbody tr.changed-row {
+    background-color: rgba($color-warning, 0.05);
+
+    &:hover {
+      background-color: rgba($color-warning, 0.1);
+    }
+  }
+
+  .changed-cell {
+    color: $color-warning;
+    font-weight: 600;
+  }
+
+  .expand-col {
+    width: 32px;
+    padding: $spacing-sm $spacing-xs;
+    text-align: center;
+  }
+
+  .expand-icon {
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+    color: $color-text-muted;
+  }
+
+  .expandable-row {
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: -2px;
+    }
+  }
+
+  .telemetry-detail-row {
+    &:hover {
+      background-color: transparent !important;
+    }
+
+    > td {
+      padding: 0 $spacing-md $spacing-md;
+    }
+  }
+
+  .telemetry-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: $border-width-thin solid $color-border-default;
+    border-radius: $border-radius-sm;
+    overflow: hidden;
+    font-size: $font-size-sm;
+
+    th,
+    td {
+      padding: $spacing-xs $spacing-sm;
+      text-align: left;
+      border-bottom: $border-width-thin solid $color-border-default;
+    }
+
+    th {
+      font-weight: 600;
+      color: $color-text-secondary;
+      text-transform: none;
+      letter-spacing: normal;
+      background-color: transparent;
+      font-size: $font-size-sm;
+      white-space: nowrap;
+      border-bottom: $border-width-thin solid $color-border-default;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .param-label {
+      color: $color-text-secondary;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .param-label-col {
+      white-space: nowrap;
+    }
+
+    .param-value {
+      color: $color-text-primary;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .param-unit {
+      color: $color-text-muted;
+      margin-left: 2px;
+    }
+
+    .compare-header {
+      vertical-align: middle;
+    }
+
+    .compare-select {
+      width: 100%;
+      font-size: $font-size-sm;
+
+      ::ng-deep .mat-mdc-select-trigger {
+        padding: 4px 0;
+      }
+
+      ::ng-deep .mat-mdc-select-value {
+        color: $color-text-primary;
+        font-weight: 500;
+      }
+
+      ::ng-deep .mat-mdc-select-arrow-wrapper {
+        padding-left: 4px;
+      }
+    }
+  }
+
+  .no-telemetry {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin: $spacing-sm 0;
+    font-style: italic;
+  }
+
+  .arrow-col {
+    width: 24px;
+    padding: $spacing-sm $spacing-xs;
+    text-align: center;
+  }
+
+  .arrow {
+    color: $color-text-muted;
+    font-weight: 600;
+  }
+
+  .priority-badge {
+    padding: 2px $spacing-sm;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    white-space: nowrap;
+
+    &[data-priority='High'] {
+      background-color: rgba($color-error, 0.2);
+      color: $color-error;
+    }
+
+    &[data-priority='Medium'] {
+      background-color: rgba($color-warning, 0.2);
+      color: $color-warning;
+    }
+
+    &[data-priority='Low'] {
+      background-color: rgba($color-success, 0.2);
+      color: $color-success;
+    }
+  }
+}

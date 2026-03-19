@@ -1,0 +1,62 @@
+<div class="dialog-header">
+  <h2>Filters</h2>
+  <button mat-icon-button (click)="close()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="dialog-content">
+  <div class="filter-fields">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" [formControl]="dateControl" [max]="today" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Tail ID</mat-label>
+      <mat-select [formControl]="tailIdControl" multiple>
+        @for (id of availableTailIds(); track id) {
+          <mat-option [value]="id">Tail {{ id }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Mission Type</mat-label>
+      <mat-select [formControl]="typeControl" multiple>
+        @for (t of missionTypes; track t) {
+          <mat-option [value]="t">{{ t }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Priority</mat-label>
+      <mat-select [formControl]="priorityControl" multiple>
+        @for (p of priorityLevels; track p) {
+          <mat-option [value]="p">{{ p }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Title</mat-label>
+      <mat-chip-grid #chipGrid aria-label="Title keywords">
+        @for (title of titles(); track $index) {
+          <mat-chip-row (removed)="removeTitle($index)">
+            {{ title }}
+            <button matChipRemove><mat-icon>cancel</mat-icon></button>
+          </mat-chip-row>
+        }
+      </mat-chip-grid>
+      <input matInput [matChipInputFor]="chipGrid" (matChipInputTokenEnd)="addTitle($event)" placeholder="Add keywords..." />
+    </mat-form-field>
+  </div>
+</div>
+
+<div class="dialog-actions">
+  <button mat-button (click)="clear()">Clear All</button>
+  <button mat-raised-button color="primary" (click)="apply()">Apply</button>
+</div>

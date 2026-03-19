@@ -1,0 +1,168 @@
+<div class="dialog-header">
+  <h2>Assignments — {{ formattedDate }}</h2>
+  <button mat-icon-button (click)="close()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div class="dialog-content diff-container">
+  @if (changedCount === 0) {
+    <div class="no-diff">
+      <mat-icon>check_circle</mat-icon>
+      <p>No differences — suggested and actual assignments are identical.</p>
+    </div>
+  } @else {
+    <div class="summary-banner">
+      <mat-icon>swap_horiz</mat-icon>
+      <span>{{ changedCount }} of {{ totalCount }} {{ totalCount === 1 ? 'assignment' : 'assignments' }} changed</span>
+    </div>
+  }
+  @if (comparisonRows.length > 0) {
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Mission</th>
+          <th>Priority</th>
+          <th>Type</th>
+          <th>Suggested UAV</th>
+          <th class="arrow-col"></th>
+          <th>Actual UAV</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of comparisonRows; track row.title) {
+          <tr
+            class="expandable-row"
+            [class.changed-row]="row.changed"
+            (click)="toggleRow(row.title)"
+            (keydown.enter)="toggleRow(row.title)"
+            (keydown.space)="toggleRow(row.title)"
+            tabindex="0">
+            <td class="expand-col">
+              <mat-icon class="expand-icon">
+                {{ isRowExpanded(row.title) ? 'expand_less' : 'expand_more' }}
+              </mat-icon>
+            </td>
+            <td>{{ row.title }}</td>
+            <td>
+              @if (row.priority) {
+                <span class="priority-badge" [attr.data-priority]="row.priority">{{ row.priority }}</span>
+              } @else {
+                —
+              }
+            </td>
+            <td>{{ row.type }}</td>
+            <td>
+              {{ row.suggestedTailId !== null ? 'Tail ' + row.suggestedTailId : '—' }}
+            </td>
+            <td class="arrow-col">
+              @if (row.changed) {
+                <span class="arrow">→</span>
+              }
+            </td>
+            <td [class.changed-cell]="row.changed">
+              {{ row.actualTailId !== null ? 'Tail ' + row.actualTailId : '—' }}
+            </td>
+          </tr>
+          @if (isRowExpanded(row.title)) {
+            <tr class="telemetry-detail-row">
+              <td colspan="7">
+                @if (row.relevantUavs.length > 0) {
+                  <table class="telemetry-table">
+                    <thead>
+                      <tr>
+                        <th class="param-label-col">Parameter</th>
+                        <th class="compare-header" (click)="$event.stopPropagation()">
+                          <mat-select
+                            class="compare-select"
+                            [value]="getLeftTailId(row)"
+                            (selectionChange)="onLeftUavChange(row.title, $event.value)">
+                            @for (uav of row.relevantUavs; track uav.tailId) {
+                              <mat-option [value]="uav.tailId">
+                                Tail {{ uav.tailId }}{{ uav.isSuggested ? ' ★ Suggested' : '' }}
+                              </mat-option>
+                            }
+                          </mat-select>
+                        </th>
+                        <th class="compare-header" (click)="$event.stopPropagation()">
+                          <mat-select
+                            class="compare-select"
+                            [value]="getRightTailId(row)"
+                            (selectionChange)="onRightUavChange(row.title, $event.value)">
+                            @for (uav of row.relevantUavs; track uav.tailId) {
+                              <mat-option [value]="uav.tailId">
+                                Tail {{ uav.tailId }}{{ uav.isActual ? ' ✓ Actual' : '' }}
+                              </mat-option>
+                            }
+                          </mat-select>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (entry of getTelemetryFields(row.relevantUavs); track entry.field) {
+                        <tr>
+                          <td class="param-label">{{ entry.label }}</td>
+                          <td class="param-value">
+                            @if (getLeftUav(row); as leftUav) {
+                              {{ leftUav.telemetry[entry.field] !== undefined ? leftUav.telemetry[entry.field] : '—' }}
+                              @if (leftUav.telemetry[entry.field] !== undefined) {
+                                <span class="param-unit">{{ entry.unit }}</span>
+                              }
+                            } @else {
+                              —
+                            }
+                          </td>
+                          <td class="param-value">
+                            @if (getRightUav(row); as rightUav) {
+                              {{ rightUav.telemetry[entry.field] !== undefined ? rightUav.telemetry[entry.field] : '—' }}
+                              @if (rightUav.telemetry[entry.field] !== undefined) {
+                                <span class="param-unit">{{ entry.unit }}</span>
+                              }
+                            } @else {
+                              —
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                } @else if (row.suggestedTelemetry || row.actualTelemetry) {
+                  <table class="telemetry-table">
+                    <thead>
+                      <tr>
+                        <th>Parameter</th>
+                        <th class="suggested-col">Suggested (Tail {{ row.suggestedTailId ?? '—' }})</th>
+                        <th class="actual-col">Actual (Tail {{ row.actualTailId ?? '—' }})</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (entry of getLegacyTelemetryFields(row.suggestedTelemetry, row.actualTelemetry); track entry.field) {
+                        <tr>
+                          <td class="param-label">{{ entry.label }}</td>
+                          <td class="param-value suggested-col">
+                            {{ entry.suggestedValue !== null ? entry.suggestedValue : '—' }}
+                            @if (entry.suggestedValue !== null) {
+                              <span class="param-unit">{{ entry.unit }}</span>
+                            }
+                          </td>
+                          <td class="param-value actual-col">
+                            {{ entry.actualValue !== null ? entry.actualValue : '—' }}
+                            @if (entry.actualValue !== null) {
+                              <span class="param-unit">{{ entry.unit }}</span>
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                } @else {
+                  <p class="no-telemetry">No telemetry data available</p>
+                }
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  }
+</div>

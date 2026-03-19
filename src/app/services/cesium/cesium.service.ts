@@ -1,0 +1,131 @@
+import { Injectable, signal } from '@angular/core';
+import * as Cesium from 'cesium';
+import { CesiumConstants } from '../../common/constants/cesium.constants';
+import { CesiumConfigService } from './cesium-config.service';
+import { CesiumCameraService } from './cesium-camera.service';
+import { CesiumUAVService } from './cesium-uav.service';
+import type { GeographicPosition, UAVUpdateData } from '../../models/cesium';
+@Injectable({
+  providedIn: 'root',
+})
+export class CesiumService {
+  private viewer!: Cesium.Viewer;
+  private customImageryProvider: Cesium.UrlTemplateImageryProvider | null = null;
+  private uavEntities = signal<Map<number, Cesium.Entity>>(new Map());
+
+  constructor(
+    private readonly configService: CesiumConfigService,
+    private readonly cameraService: CesiumCameraService,
+    private readonly uavService: CesiumUAVService
+  ) {}
+
+  public async initializeViewer(containerId: string): Promise<Cesium.Viewer> {
+    this.validateDomElement(containerId);
+    this.configService.initializeCesium();
+
+    this.customImageryProvider = this.configService.createCustomImageryProvider();
+    const viewerOptions = this.configService.getViewerOptions(this.customImageryProvider);
+
+    this.viewer = new Cesium.Viewer(containerId, viewerOptions);
+
+    this.setupViewer();
+    this.cameraService.setInitialView(this.viewer);
+
+    return this.viewer;
+  }
+
+  public getViewer(): Cesium.Viewer {
+    return this.viewer;
+  }
+
+  public zoomToIsrael(): void {
+    if (!this.viewer) return;
+    this.cameraService.zoomToIsrael(this.viewer);
+  }
+
+  public flyToPosition(position: GeographicPosition): void {
+    if (!this.viewer) return;
+    this.cameraService.flyToPosition(this.viewer, position);
+  }
+
+  public addUAV(uavId: number, updateData: UAVUpdateData, platformTypeIndex: number): void {
+    if (!this.viewer) return;
+
+    const entity = this.uavService.createUAV(this.viewer, uavId, updateData, platformTypeIndex);
+
+    const currentMap = new Map(this.uavEntities());
+    currentMap.set(uavId, entity);
+    this.uavEntities.set(currentMap);
+  }
+
+  public updateUAV(uavId: number, updateData: UAVUpdateData, platformTypeIndex: number): void {
+    if (!this.viewer) return;
+
+    const entity = this.uavEntities().get(uavId);
+    if (entity) {
+      this.uavService.updateUAV(uavId, updateData);
+    } else {
+      this.addUAV(uavId, updateData, platformTypeIndex);
+    }
+  }
+
+  public updateMultipleUAVs(updates: Map<number, { updateData: UAVUpdateData; platformTypeIndex: number }>): void {
+    if (!this.viewer) return;
+
+    updates.forEach(({ updateData, platformTypeIndex }, uavId) => {
+      this.updateUAV(uavId, updateData, platformTypeIndex);
+    });
+  }
+
+  public removeUAV(uavId: number): void {
+    if (!this.viewer) return;
+
+    const entity = this.uavEntities().get(uavId);
+    if (entity) {
+      this.uavService.removeUAV(this.viewer, entity);
+      const currentMap = new Map(this.uavEntities());
+      currentMap.delete(uavId);
+      this.uavEntities.set(currentMap);
+    }
+  }
+
+  public removeAllUAVs(): void {
+    if (!this.viewer) return;
+
+    this.uavService.removeAllUAVs(this.viewer);
+    this.uavEntities.set(new Map());
+  }
+
+  public getUAVEntity(uavId: number): Cesium.Entity | undefined {
+    return this.uavEntities().get(uavId);
+  }
+
+  public getAllUAVs(): Map<number, Cesium.Entity> {
+    return this.uavEntities();
+  }
+
+  private validateDomElement(elementId: string): void {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      throw new Error(`DOM element with id "${elementId}" not found`);
+    }
+  }
+
+  private setupViewer(): void {
+    if (!this.viewer) return;
+
+    this.viewer.scene.shadowMap.enabled = true;
+    this.viewer.scene.requestRenderMode = false;
+    this.viewer.clock.shouldAnimate = true;
+    this.viewer.clock.clockRange = Cesium.ClockRange.UNBOUNDED;
+    this.viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK;
+
+    this.viewer.scene.screenSpaceCameraController.minimumZoomDistance =
+      CesiumConstants.CAMERA_MINIMUM_ZOOM_DISTANCE;
+
+    const creditContainer = this.viewer.cesiumWidget.creditContainer as HTMLElement;
+    if (creditContainer) {
+      creditContainer.style.display = 'none';
+    }
+  }
+}

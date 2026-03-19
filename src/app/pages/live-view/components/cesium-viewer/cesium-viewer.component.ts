@@ -1,6 +1,17 @@
-import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
-import { CesiumService } from '../../../../services/cesium/cesuim.service';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  signal,
+  effect,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { CesiumService } from '../../../../services/cesium/cesium.service';
+import { LtsSignalRService } from '../../../../services/lts/lts-signalr.service';
 import { TelemetryField } from '../../../../common/enums';
+import type { TelemetryBroadcastDto, UAVTelemetryData } from '../../../../models';
+import type { UAVUpdateData } from '../../../../models/cesium';
+import { TelemetryDataHelper } from '../../../../services/helpers/telemetryData/telemetryData.helper';
 
 @Component({
   selector: 'app-cesium-viewer',
@@ -12,18 +23,35 @@ import { TelemetryField } from '../../../../common/enums';
 export class CesiumViewer implements OnInit, OnDestroy {
   public readonly isInitialized = signal<boolean>(false);
 
-  constructor(private readonly cesiumService: CesiumService) {}
+  constructor(
+    private readonly cesiumService: CesiumService,
+    private readonly ltsService: LtsSignalRService,
+  ) {
+    effect(() => {
+      const telemetry: TelemetryBroadcastDto | null = this.ltsService.latestTelemetry();
+      if (telemetry && this.isInitialized()) {
+        this.updateUAVsFromTelemetry(telemetry);
+      }
+    });
+  }
 
   public async ngOnInit(): Promise<void> {
-    try {
-      await this.cesiumService.initializeViewer('cesium-container');
-      this.isInitialized.set(true);
-      this.cesiumService.zoomToIsrael();
-    } catch (error) {
-      console.error('Failed to initialize Cesium viewer:', error);
-    }
+    await this.cesiumService.initializeViewer('cesium-container');
+    this.isInitialized.set(true);
+    this.cesiumService.zoomToIsrael();
+    await this.ltsService.connectToAllUAVs();
   }
-  public ngOnDestroy(): void {
+
+  public async ngOnDestroy(): Promise<void> {
     this.cesiumService.removeAllUAVs();
+    await this.ltsService.disconnect();
+  }
+
+  private updateUAVsFromTelemetry(telemetry: TelemetryBroadcastDto): void {
+    telemetry.uavData.forEach((uavData: UAVTelemetryData) => {
+      const updateData: UAVUpdateData = TelemetryDataHelper.extractUpdateData(uavData);
+      const platformTypeIndex = uavData.fields[TelemetryField.PlatformType];
+      this.cesiumService.updateUAV(uavData.tailId, updateData, platformTypeIndex);
+    });
   }
 }
