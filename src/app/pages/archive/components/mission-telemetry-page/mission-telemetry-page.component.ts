@@ -62,7 +62,6 @@ export class MissionTelemetryPageComponent implements OnInit {
   private missionId = '';
   private telemetryData: MissionTelemetryRo[] = [];
   private timeLabels: string[] = [];
-  private readonly chartInstances = new Map<TelemetryField, Chart>();
 
   readonly crosshairIndex = signal<number | null>(null);
   readonly crosshairPlugin: Plugin<'line'> = createCrosshairPlugin(this.crosshairIndex);
@@ -119,10 +118,6 @@ export class MissionTelemetryPageComponent implements OnInit {
   removeField(field: TelemetryField): void {
     this.selectedFields.set(this.selectedFields().filter((f) => f !== field));
     this.rebuildDashboardItems();
-  }
-
-  onChartInit(field: TelemetryField, chart: Chart): void {
-    this.chartInstances.set(field, chart);
   }
 
   getFieldLabel(field: TelemetryField): string {
