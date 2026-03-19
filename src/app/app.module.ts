@@ -34,7 +34,7 @@ import { ArchiveDiffDialogComponent } from './pages/archive/components/archive-d
 import { ArchiveFilterDialogComponent } from './pages/archive/components/archive-filter-dialog/archive-filter-dialog.component';
 import { ActiveMissionsTableComponent } from './pages/archive/components/active-missions-table/active-missions-table.component';
 import { ScenarioSelectDialogComponent } from './pages/assignment/components/scenario-select-dialog/scenario-select-dialog.component';
-import { MissionTelemetryDialogComponent } from './pages/archive/components/mission-telemetry-dialog/mission-telemetry-dialog.component';
+import { MissionTelemetryPageComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-page.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +62,7 @@ import { MissionTelemetryDialogComponent } from './pages/archive/components/miss
     ArchiveFilterDialogComponent,
     ActiveMissionsTableComponent,
     ScenarioSelectDialogComponent,
-    MissionTelemetryDialogComponent,
+    MissionTelemetryPageComponent,
   ],
   imports: [
     BrowserModule,

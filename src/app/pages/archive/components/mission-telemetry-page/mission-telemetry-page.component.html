@@ -1,0 +1,75 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="goBack()" aria-label="Back to archive">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>{{ missionTitle() }}</h1>
+      <span class="header-meta">Tail {{ tailId() }}</span>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="state-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading telemetry data...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="state-container">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+    </div>
+  } @else if (availableFields().length === 0) {
+    <div class="state-container">
+      <mat-icon class="info-icon">info</mat-icon>
+      <p>No telemetry data found for this mission.</p>
+    </div>
+  } @else {
+    <div class="parameter-selector">
+      <div class="selected-chips">
+        @for (field of selectedFields(); track field) {
+          <span class="selected-chip">
+            {{ getFieldLabel(field) }}
+            <mat-icon class="chip-remove" (click)="removeField(field)">close</mat-icon>
+          </span>
+        }
+        @if (unselectedFields().length > 0) {
+          <button
+            mat-icon-button
+            class="add-param-btn"
+            [matMenuTriggerFor]="paramMenu"
+            aria-label="Add parameter">
+            <mat-icon>add</mat-icon>
+          </button>
+        }
+      </div>
+      <mat-menu #paramMenu="matMenu" class="param-menu">
+        @for (field of unselectedFields(); track field) {
+          <button mat-menu-item (click)="addField(field)">
+            {{ getFieldLabel(field) }}
+          </button>
+        }
+      </mat-menu>
+    </div>
+
+    <div class="charts-area">
+      @for (config of chartConfigs(); track config.field) {
+        <div class="chart-row">
+          <div class="chart-label-area">
+            <span class="chart-field-name" [style.color]="config.color">{{ config.label }}</span>
+            <span class="chart-field-unit">{{ config.unit }}</span>
+          </div>
+          <div class="chart-canvas-container">
+            <canvas
+              baseChart
+              type="line"
+              [data]="config.data"
+              [options]="config.options"
+              [plugins]="[crosshairPlugin]">
+            </canvas>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
