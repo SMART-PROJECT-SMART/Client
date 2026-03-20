@@ -34,61 +34,96 @@
           </span>
         }
         @if (unselectedFields().length > 0) {
-          <button
-            mat-icon-button
-            class="add-param-btn"
-            [matMenuTriggerFor]="paramMenu"
-            aria-label="Add parameter">
-            <mat-icon>add</mat-icon>
-          </button>
+          <mat-form-field appearance="outline" class="param-search-field" subscriptSizing="dynamic">
+            <input
+              matInput
+              #paramSearchInput
+              [value]="parameterSearch()"
+              (input)="onParameterSearchInput($event)"
+              [matAutocomplete]="paramAuto"
+              placeholder="Search parameters..."
+            />
+            <mat-icon matSuffix>search</mat-icon>
+            <mat-autocomplete
+              #paramAuto="matAutocomplete"
+              (optionSelected)="onParameterSelected($event, paramSearchInput)"
+            >
+              @for (field of filteredUnselectedFields(); track field) {
+                <mat-option [value]="field">{{ getFieldLabel(field) }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
         }
       </div>
-      <mat-menu #paramMenu="matMenu">
-        @for (field of unselectedFields(); track field) {
-          <button mat-menu-item (click)="addField(field)">
-            {{ getFieldLabel(field) }}
-          </button>
-        }
-      </mat-menu>
     </div>
 
-    @if (selectedFields().length > 0) {
-      <div class="gridster-wrapper">
-        <gridster [options]="gridsterOptions">
-          @for (item of dashboardItems(); track item.field) {
-            <gridster-item [item]="item">
-              <div class="tile-header">
-                <span class="tile-field-name" [style.color]="item.chartConfig.color">
-                  {{ item.chartConfig.label }}
-                </span>
-                <span class="tile-field-unit">{{ item.chartConfig.unit }}</span>
-                <mat-icon class="drag-handle">drag_indicator</mat-icon>
-              </div>
-              <div class="tile-chart no-drag"
-                   (mousedown)="$event.stopPropagation()"
-                   (touchstart)="$event.stopPropagation()">
-                <canvas
-                  baseChart
-                  type="line"
-                  [data]="item.chartConfig.data"
-                  [options]="item.chartConfig.options"
-                  [plugins]="[crosshairPlugin]">
-                </canvas>
-              </div>
-            </gridster-item>
-          }
-        </gridster>
+    <div class="content-area">
+      @if (selectedFields().length > 0) {
+        <div class="gridster-wrapper">
+          <gridster [options]="gridsterOptions">
+            @for (item of dashboardItems(); track item.field) {
+              <gridster-item [item]="item">
+                <div class="tile-header">
+                  <span class="tile-field-name" [style.color]="item.chartConfig.color">
+                    {{ item.chartConfig.label }}
+                  </span>
+                  <span class="tile-field-unit">{{ item.chartConfig.unit }}</span>
+                  <mat-icon class="drag-handle">drag_indicator</mat-icon>
+                </div>
+                <div class="tile-chart no-drag"
+                     (mousedown)="$event.stopPropagation()"
+                     (touchstart)="$event.stopPropagation()">
+                  <canvas
+                    baseChart
+                    type="line"
+                    [data]="item.chartConfig.data"
+                    [options]="item.chartConfig.options"
+                    [plugins]="[crosshairPlugin]">
+                  </canvas>
+                </div>
+              </gridster-item>
+            }
+          </gridster>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <mat-icon class="empty-icon">show_chart</mat-icon>
+          <h2>No Parameters Selected</h2>
+          <p>Add telemetry parameters to start investigating</p>
+          <button mat-raised-button color="primary" (click)="focusSearchInput()">
+            <mat-icon>add_circle</mat-icon>
+            Add Parameter
+          </button>
+        </div>
+      }
+
+      <div class="table-section">
+        <h2 class="section-heading">{{ tableHeading }}</h2>
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="tableDataSource" matSort class="telemetry-table">
+            <ng-container matColumnDef="timestamp">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Timestamp</th>
+              <td mat-cell *matCellDef="let row">{{ row['timestamp'] }}</td>
+            </ng-container>
+
+            @for (col of availableFields(); track col) {
+              <ng-container [matColumnDef]="col">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ getFieldLabel(col) }}</th>
+                <td mat-cell *matCellDef="let row">{{ row[col] | number:'1.0-2' }}</td>
+              </ng-container>
+            }
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns()" class="table-row"></tr>
+          </table>
+        </div>
+
+        <mat-paginator
+          [pageSizeOptions]="pageSizeOptions"
+          [pageSize]="10"
+          showFirstLastButtons
+        ></mat-paginator>
       </div>
-    } @else {
-      <div class="empty-state">
-        <mat-icon class="empty-icon">show_chart</mat-icon>
-        <h2>No Parameters Selected</h2>
-        <p>Add telemetry parameters to start investigating</p>
-        <button mat-raised-button color="primary" [matMenuTriggerFor]="paramMenu">
-          <mat-icon>add_circle</mat-icon>
-          Add Parameter
-        </button>
-      </div>
-    }
+    </div>
   }
 </div>

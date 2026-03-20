@@ -1,5 +1,9 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, effect, viewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import type { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { GridType, CompactType } from 'angular-gridster2';
 import type { GridsterConfig } from 'angular-gridster2';
 import type { ChartConfiguration, ChartDataset, Plugin } from 'chart.js';
@@ -20,7 +24,8 @@ const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
   MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS,
 } = ClientConstants.GridsterDashboard;
 
-const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
+const { NO_MISSION_ID, LOAD_FAILED, TELEMETRY_DATA_HEADING } = ClientConstants.TelemetryPageMessages;
+const { PAGE_SIZE_OPTIONS } = ClientConstants.TableConfig;
 
 const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -52,6 +57,15 @@ export class MissionTelemetryPageComponent implements OnInit {
   readonly availableFields = signal<TelemetryField[]>([]);
   readonly selectedFields = signal<TelemetryField[]>([]);
   readonly dashboardItems = signal<TelemetryDashboardItem[]>([]);
+  readonly parameterSearch = signal<string>('');
+
+  readonly tableDataSource = new MatTableDataSource<Record<string, string | number | null>>([]);
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
+  readonly tableHeading = TELEMETRY_DATA_HEADING;
+
+  private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
+  readonly tableSort = viewChild<MatSort>(MatSort);
+  readonly tablePaginator = viewChild<MatPaginator>(MatPaginator);
 
   private missionId = '';
   private telemetryData: MissionTelemetryRo[] = [];
@@ -59,6 +73,16 @@ export class MissionTelemetryPageComponent implements OnInit {
 
   readonly crosshairIndex = signal<number | null>(null);
   readonly crosshairPlugin: Plugin<'line'> = createCrosshairPlugin(this.crosshairIndex);
+
+  private readonly sortEffect = effect(() => {
+    const sort = this.tableSort();
+    if (sort) this.tableDataSource.sort = sort;
+  });
+
+  private readonly paginatorEffect = effect(() => {
+    const paginator = this.tablePaginator();
+    if (paginator) this.tableDataSource.paginator = paginator;
+  });
 
   readonly gridsterOptions: GridsterConfig = {
     gridType: GridType.VerticalFixed,
@@ -89,6 +113,19 @@ export class MissionTelemetryPageComponent implements OnInit {
     return this.availableFields().filter((f) => !selected.has(f));
   });
 
+  readonly filteredUnselectedFields = computed<TelemetryField[]>(() => {
+    const query = this.parameterSearch().toLowerCase().trim();
+    const unselected = this.unselectedFields();
+    if (!query) return unselected;
+    return unselected.filter((f) =>
+      EnumUtil.getTelemetryFieldDisplay(f).toLowerCase().includes(query),
+    );
+  });
+
+  readonly displayedColumns = computed<string[]>(() => {
+    return ['timestamp', ...this.availableFields()];
+  });
+
   ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
     this.missionId = params['missionId'] ?? '';
@@ -106,6 +143,7 @@ export class MissionTelemetryPageComponent implements OnInit {
 
   addField(field: TelemetryField): void {
     this.selectedFields.set([...this.selectedFields(), field]);
+    this.parameterSearch.set('');
     this.rebuildDashboardItems();
   }
 
@@ -116,6 +154,19 @@ export class MissionTelemetryPageComponent implements OnInit {
 
   getFieldLabel(field: TelemetryField): string {
     return EnumUtil.getTelemetryFieldDisplay(field);
+  }
+
+  onParameterSearchInput(event: Event): void {
+    this.parameterSearch.set((event.target as HTMLInputElement).value);
+  }
+
+  onParameterSelected(event: MatAutocompleteSelectedEvent, input: HTMLInputElement): void {
+    this.addField(event.option.value as TelemetryField);
+    input.value = '';
+  }
+
+  focusSearchInput(): void {
+    this.paramSearchInput()?.nativeElement.focus();
   }
 
   goBack(): void {
@@ -258,5 +309,20 @@ export class MissionTelemetryPageComponent implements OnInit {
     this.selectedFields.set(DEFAULT_SELECTED_FIELDS);
 
     this.rebuildDashboardItems();
+    this.populateTableData();
+  }
+
+  private populateTableData(): void {
+    const available = this.availableFields();
+    const rows: Record<string, string | number | null>[] = this.telemetryData.map((point, index) => {
+      const row: Record<string, string | number | null> = {
+        timestamp: this.timeLabels[index],
+      };
+      for (const field of available) {
+        row[field] = point.fields[field] ?? null;
+      }
+      return row;
+    });
+    this.tableDataSource.data = rows;
   }
 }

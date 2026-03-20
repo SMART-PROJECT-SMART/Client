@@ -198,6 +198,7 @@ export namespace ClientConstants {
   export namespace TelemetryPageMessages {
     export const NO_MISSION_ID: string = 'No mission ID provided.';
     export const LOAD_FAILED: string = 'Failed to load telemetry data.';
+    export const TELEMETRY_DATA_HEADING: string = 'Telemetry Data';
   }
 
   export namespace GridsterDashboard {

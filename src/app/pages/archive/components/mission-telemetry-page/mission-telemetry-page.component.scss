@@ -105,19 +105,12 @@
   }
 }
 
-.add-param-btn.mat-mdc-icon-button {
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
+.param-search-field {
+  width: 200px;
 
-  mat-icon {
-    font-size: $icon-size-sm;
-    width: $icon-size-sm;
-    height: $icon-size-sm;
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 
@@ -162,8 +155,14 @@
   }
 }
 
-.gridster-wrapper {
+.content-area {
   flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.gridster-wrapper {
   overflow: hidden;
 }
 
@@ -227,4 +226,59 @@
     width: 100% !important;
     height: 100% !important;
   }
+}
+
+.table-section {
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-lg;
+  gap: $spacing-md;
+
+  .section-heading {
+    font-size: $font-size-xl;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin: 0;
+  }
+}
+
+.table-wrapper {
+  overflow: auto;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-md;
+}
+
+.telemetry-table {
+  width: 100%;
+  min-width: 800px;
+
+  th {
+    background-color: $color-background-elevated;
+    color: $color-text-secondary;
+    font-weight: 600;
+    font-size: $font-size-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  td {
+    color: $color-text-primary;
+    font-size: $font-size-md;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .table-row {
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background-color: rgba($color-primary, 0.06);
+    }
+  }
+}
+
+::ng-deep .table-section mat-paginator {
+  flex-shrink: 0;
+  min-height: 56px;
 }
