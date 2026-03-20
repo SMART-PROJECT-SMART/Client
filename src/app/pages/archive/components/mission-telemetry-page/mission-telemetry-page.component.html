@@ -52,31 +52,43 @@
       </mat-menu>
     </div>
 
-    <div class="gridster-wrapper">
-      <gridster [options]="gridsterOptions">
-        @for (item of dashboardItems(); track item.field) {
-          <gridster-item [item]="item">
-            <div class="tile-header">
-              <span class="tile-field-name" [style.color]="item.chartConfig.color">
-                {{ item.chartConfig.label }}
-              </span>
-              <span class="tile-field-unit">{{ item.chartConfig.unit }}</span>
-              <mat-icon class="drag-handle">drag_indicator</mat-icon>
-            </div>
-            <div class="tile-chart no-drag"
-                 (mousedown)="$event.stopPropagation()"
-                 (touchstart)="$event.stopPropagation()">
-              <canvas
-                baseChart
-                type="line"
-                [data]="item.chartConfig.data"
-                [options]="item.chartConfig.options"
-                [plugins]="[crosshairPlugin]">
-              </canvas>
-            </div>
-          </gridster-item>
-        }
-      </gridster>
-    </div>
+    @if (selectedFields().length > 0) {
+      <div class="gridster-wrapper">
+        <gridster [options]="gridsterOptions">
+          @for (item of dashboardItems(); track item.field) {
+            <gridster-item [item]="item">
+              <div class="tile-header">
+                <span class="tile-field-name" [style.color]="item.chartConfig.color">
+                  {{ item.chartConfig.label }}
+                </span>
+                <span class="tile-field-unit">{{ item.chartConfig.unit }}</span>
+                <mat-icon class="drag-handle">drag_indicator</mat-icon>
+              </div>
+              <div class="tile-chart no-drag"
+                   (mousedown)="$event.stopPropagation()"
+                   (touchstart)="$event.stopPropagation()">
+                <canvas
+                  baseChart
+                  type="line"
+                  [data]="item.chartConfig.data"
+                  [options]="item.chartConfig.options"
+                  [plugins]="[crosshairPlugin]">
+                </canvas>
+              </div>
+            </gridster-item>
+          }
+        </gridster>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">show_chart</mat-icon>
+        <h2>No Parameters Selected</h2>
+        <p>Add telemetry parameters to start investigating</p>
+        <button mat-raised-button color="primary" [matMenuTriggerFor]="paramMenu">
+          <mat-icon>add_circle</mat-icon>
+          Add Parameter
+        </button>
+      </div>
+    }
   }
 </div>

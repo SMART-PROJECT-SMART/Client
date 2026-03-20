@@ -31,13 +31,7 @@ const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.LandingGearStatus,
 ]);
 
-const DEFAULT_SELECTED_FIELDS: TelemetryField[] = [
-  TelemetryField.Altitude,
-  TelemetryField.CurrentSpeedKmph,
-  TelemetryField.FuelAmount,
-];
-
-const DEFAULT_SELECTED_COUNT = 3;
+const DEFAULT_SELECTED_FIELDS: TelemetryField[] = [];
 
 @Component({
   selector: 'app-mission-telemetry-page',
@@ -165,6 +159,12 @@ export class MissionTelemetryPageComponent implements OnInit {
       scales: {
         x: {
           type: 'category',
+          title: {
+            display: true,
+            text: 'Time',
+            color: TICK_COLOR,
+            font: { size: TICK_FONT_SIZE },
+          },
           ticks: {
             color: TICK_COLOR,
             maxTicksLimit: X_AXIS_MAX_TICKS,
@@ -173,6 +173,12 @@ export class MissionTelemetryPageComponent implements OnInit {
           grid: { color: GRID_COLOR },
         },
         y: {
+          title: {
+            display: true,
+            text: `${EnumUtil.getTelemetryFieldDisplay(field)} (${TelemetryUtil.getUnit(field)})`,
+            color: TICK_COLOR,
+            font: { size: TICK_FONT_SIZE },
+          },
           ticks: {
             color: TICK_COLOR,
             font: { size: TICK_FONT_SIZE },
@@ -249,10 +255,7 @@ export class MissionTelemetryPageComponent implements OnInit {
     const available = [...fieldSet] as TelemetryField[];
     this.availableFields.set(available);
 
-    const defaultSelected = DEFAULT_SELECTED_FIELDS.filter((f) => available.includes(f));
-    this.selectedFields.set(
-      defaultSelected.length > 0 ? defaultSelected : available.slice(0, DEFAULT_SELECTED_COUNT),
-    );
+    this.selectedFields.set(DEFAULT_SELECTED_FIELDS);
 
     this.rebuildDashboardItems();
   }

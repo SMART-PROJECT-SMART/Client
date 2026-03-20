@@ -121,6 +121,47 @@
   }
 }
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: $spacing-xl;
+  background: linear-gradient(135deg, rgba($color-primary, 0.05), transparent);
+  border: $border-width-medium solid $color-border-default;
+  border-radius: $border-radius-lg;
+  margin: $spacing-lg;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 100px;
+    width: 100px;
+    height: 100px;
+    color: $color-text-muted;
+    margin-bottom: $spacing-lg;
+  }
+
+  h2 {
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin: 0 0 $spacing-sm 0;
+  }
+
+  p {
+    font-size: $font-size-md;
+    color: $color-text-secondary;
+    margin: 0 0 $spacing-lg 0;
+  }
+
+  button {
+    mat-icon {
+      margin-right: $spacing-xs;
+    }
+  }
+}
+
 .gridster-wrapper {
   flex: 1;
   overflow: hidden;
