@@ -43,6 +43,17 @@ export namespace ClientConstants {
     export const NO_ASSIGNMENT_LABEL: string = 'Unassigned';
   }
 
+  export namespace ArchiveRoutes {
+    export const ARCHIVE: string = '/archive';
+    export const INVESTIGATE: string = '/archive/investigate';
+  }
+
+  export namespace TelemetryQueryParams {
+    export const MISSION_ID: string = 'missionId';
+    export const TAIL_ID: string = 'tailId';
+    export const TITLE: string = 'title';
+  }
+
   export namespace ArchiveAPI {
     export const BASE = '/api/archive';
     export const LATEST = `${BASE}/latest`;
@@ -183,6 +194,9 @@ export namespace ClientConstants {
     export const CROSSHAIR_COLOR: string = 'rgba(245, 245, 245, 0.4)';
     export const CROSSHAIR_WIDTH: number = 1;
     export const CROSSHAIR_PLUGIN_ID: string = 'syncedCrosshair';
+    export const TIME_AXIS_LABEL: string = 'Time (s)';
+    export const X_SCALE_ID: string = 'x';
+    export const Y_SCALE_ID: string = 'y';
   }
 
   export namespace TimeFormat {
@@ -198,7 +212,6 @@ export namespace ClientConstants {
   export namespace TelemetryPageMessages {
     export const NO_MISSION_ID: string = 'No mission ID provided.';
     export const LOAD_FAILED: string = 'Failed to load telemetry data.';
-    export const TELEMETRY_DATA_HEADING: string = 'Telemetry Data';
   }
 
   export namespace GridsterDashboard {
@@ -209,6 +222,8 @@ export namespace ClientConstants {
     export const MARGIN: number = 8;
     export const MIN_ITEM_COLS: number = 1;
     export const MIN_ITEM_ROWS: number = 1;
+    export const DRAG_HANDLE_CLASS: string = 'drag-handle';
+    export const NO_DRAG_CLASS: string = 'no-drag';
   }
 
   export namespace DeviceManagementConstants {
@@ -245,6 +260,7 @@ export namespace ClientConstants {
   export namespace TableConfig {
     export const DEFAULT_PAGE_SIZE: number = 10;
     export const PAGE_SIZE_OPTIONS: number[] = [5, 10, 25, 50];
+    export const TIMESTAMP_COLUMN: string = 'timestamp';
   }
 
   export namespace BaseLocationConfig {

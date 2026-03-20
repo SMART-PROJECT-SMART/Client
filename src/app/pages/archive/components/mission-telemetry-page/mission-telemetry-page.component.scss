@@ -1,5 +1,11 @@
 @use '../../../../../styles/constants' as *;
 
+$empty-icon-size: 100px;
+$search-field-width: 240px;
+$table-min-width: 800px;
+$chip-padding-vertical: 6px;
+$header-letter-spacing: 0.5px;
+
 .page-container {
   display: flex;
   flex-direction: column;
@@ -84,7 +90,7 @@
   display: inline-flex;
   align-items: center;
   gap: $spacing-xs;
-  padding: 6px $spacing-sm 6px $spacing-md;
+  padding: $chip-padding-vertical $spacing-sm $chip-padding-vertical $spacing-md;
   border-radius: $border-radius-sm;
   font-size: $font-size-sm;
   background-color: rgba($color-primary, 0.15);
@@ -112,7 +118,7 @@
 }
 
 .param-search-field {
-  width: 240px;
+  width: $search-field-width;
 
   ::ng-deep .mat-mdc-text-field-wrapper {
     padding-top: 0;
@@ -139,9 +145,9 @@
   text-align: center;
 
   .empty-icon {
-    font-size: 100px;
-    width: 100px;
-    height: 100px;
+    font-size: $empty-icon-size;
+    width: $empty-icon-size;
+    height: $empty-icon-size;
     color: $color-text-muted;
     margin-bottom: $spacing-lg;
   }
@@ -277,7 +283,7 @@
 
 .telemetry-table {
   width: 100%;
-  min-width: 800px;
+  min-width: $table-min-width;
 
   th {
     background-color: $color-background-elevated;
@@ -285,7 +291,7 @@
     font-weight: 600;
     font-size: $font-size-sm;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: $header-letter-spacing;
     white-space: nowrap;
   }
 
@@ -307,5 +313,5 @@
 
 ::ng-deep .data-tab mat-paginator {
   flex-shrink: 0;
-  min-height: 56px;
+  min-height: $form-field-container-height-default;
 }

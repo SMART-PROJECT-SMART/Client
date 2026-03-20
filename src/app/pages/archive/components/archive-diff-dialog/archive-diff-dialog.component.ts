@@ -5,6 +5,10 @@ import type { ArchiveAssignmentRo } from '../../../../models/archive';
 import { buildComparisonRows, type ComparisonRow, type RelevantUav } from '../../archive-page/archive-comparison.utils';
 import { TelemetryField } from '../../../../common/enums';
 import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
+import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
+
+const { INVESTIGATE } = ClientConstants.ArchiveRoutes;
+const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM, TITLE: TITLE_PARAM } = ClientConstants.TelemetryQueryParams;
 
 const EXCLUDED_TELEMETRY_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -144,8 +148,8 @@ export class ArchiveDiffDialogComponent {
     }
 
     this.dialogRef.close();
-    this.router.navigate(['/archive/investigate'], {
-      queryParams: { missionId: row.missionId, tailId, title: row.title },
+    this.router.navigate([INVESTIGATE], {
+      queryParams: { [MISSION_ID_PARAM]: row.missionId, [TAIL_ID_PARAM]: tailId, [TITLE_PARAM]: row.title },
     });
   }
 

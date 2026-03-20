@@ -16,16 +16,19 @@ import type { MissionTelemetryRo, ChartRowConfig, TelemetryDashboardItem } from 
 
 const { COLORS, BACKGROUND_ALPHA, POINT_RADIUS, BORDER_WIDTH, LINE_TENSION,
   X_AXIS_MAX_TICKS, Y_AXIS_MAX_TICKS, TICK_FONT_SIZE, TICK_COLOR, GRID_COLOR,
+  TIME_AXIS_LABEL,
 } = ClientConstants.ChartConfig;
 
 const { LOCALE, OPTIONS: TIME_FORMAT_OPTIONS } = ClientConstants.TimeFormat;
 
 const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
-  MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS,
+  MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS, DRAG_HANDLE_CLASS, NO_DRAG_CLASS,
 } = ClientConstants.GridsterDashboard;
 
 const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
-const { PAGE_SIZE_OPTIONS } = ClientConstants.TableConfig;
+const { PAGE_SIZE_OPTIONS, DEFAULT_PAGE_SIZE, TIMESTAMP_COLUMN } = ClientConstants.TableConfig;
+const { ARCHIVE } = ClientConstants.ArchiveRoutes;
+const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM, TITLE: TITLE_PARAM } = ClientConstants.TelemetryQueryParams;
 
 const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -61,6 +64,7 @@ export class MissionTelemetryPageComponent implements OnInit {
 
   readonly tableDataSource = new MatTableDataSource<Record<string, string | number | null>>([]);
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
+  readonly defaultPageSize = DEFAULT_PAGE_SIZE;
 
   private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
   readonly tableSort = viewChild<MatSort>(MatSort);
@@ -97,8 +101,8 @@ export class MissionTelemetryPageComponent implements OnInit {
     defaultItemRows: DEFAULT_ITEM_ROWS,
     draggable: {
       enabled: true,
-      dragHandleClass: 'drag-handle',
-      ignoreContentClass: 'no-drag',
+      dragHandleClass: DRAG_HANDLE_CLASS,
+      ignoreContentClass: NO_DRAG_CLASS,
     },
     resizable: {
       enabled: true,
@@ -122,14 +126,14 @@ export class MissionTelemetryPageComponent implements OnInit {
   });
 
   readonly displayedColumns = computed<string[]>(() => {
-    return ['timestamp', ...this.selectedFields()];
+    return [TIMESTAMP_COLUMN, ...this.selectedFields()];
   });
 
   ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
-    this.missionId = params['missionId'] ?? '';
-    this.tailId.set(Number(params['tailId']) || 0);
-    this.missionTitle.set(params['title'] ?? '');
+    this.missionId = params[MISSION_ID_PARAM] ?? '';
+    this.tailId.set(Number(params[TAIL_ID_PARAM]) || 0);
+    this.missionTitle.set(params[TITLE_PARAM] ?? '');
 
     if (!this.missionId) {
       this.errorMessage.set(NO_MISSION_ID);
@@ -171,7 +175,7 @@ export class MissionTelemetryPageComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/archive']);
+    this.router.navigate([ARCHIVE]);
   }
 
   private rebuildDashboardItems(): void {
@@ -213,7 +217,7 @@ export class MissionTelemetryPageComponent implements OnInit {
           type: 'category',
           title: {
             display: true,
-            text: 'Time (s)',
+            text: TIME_AXIS_LABEL,
             color: TICK_COLOR,
             font: { size: TICK_FONT_SIZE },
           },
@@ -317,7 +321,7 @@ export class MissionTelemetryPageComponent implements OnInit {
     const selected = this.selectedFields();
     const rows: Record<string, string | number | null>[] = this.telemetryData.map((point, index) => {
       const row: Record<string, string | number | null> = {
-        timestamp: this.timeLabels[index],
+        [TIMESTAMP_COLUMN]: this.timeLabels[index],
       };
       for (const field of selected) {
         row[field] = point.fields[field] ?? null;
