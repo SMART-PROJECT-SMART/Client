@@ -213,7 +213,7 @@ export class MissionTelemetryPageComponent implements OnInit {
           type: 'category',
           title: {
             display: true,
-            text: 'Time',
+            text: 'Time (s)',
             color: TICK_COLOR,
             font: { size: TICK_FONT_SIZE },
           },
