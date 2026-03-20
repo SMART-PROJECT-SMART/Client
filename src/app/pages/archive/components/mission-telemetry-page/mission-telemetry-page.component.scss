@@ -70,26 +70,32 @@
   padding: $spacing-sm $spacing-lg;
   flex-shrink: 0;
   background-color: $color-background-primary;
+  border-bottom: $border-width-thin solid $color-border-default;
 
   .selected-chips {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: $spacing-sm;
   }
 }
 
 .selected-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 6px 5px $spacing-sm;
+  gap: $spacing-xs;
+  padding: 6px $spacing-sm 6px $spacing-md;
   border-radius: $border-radius-sm;
   font-size: $font-size-sm;
   background-color: rgba($color-primary, 0.15);
   border: $border-width-thin solid rgba($color-primary, 0.5);
   color: $color-primary-light;
   line-height: 1;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: rgba($color-primary, 0.25);
+  }
 
   .chip-remove {
     font-size: $icon-size-xs;
@@ -106,11 +112,16 @@
 }
 
 .param-search-field {
-  width: 200px;
+  width: 240px;
 
   ::ng-deep .mat-mdc-text-field-wrapper {
     padding-top: 0;
     padding-bottom: 0;
+  }
+
+  ::ng-deep .mat-mdc-form-field-icon-prefix {
+    padding-right: $spacing-xs;
+    color: $color-text-muted;
   }
 }
 

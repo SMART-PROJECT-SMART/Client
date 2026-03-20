@@ -27,14 +27,9 @@
   } @else {
     <div class="parameter-selector">
       <div class="selected-chips">
-        @for (field of selectedFields(); track field) {
-          <span class="selected-chip">
-            {{ getFieldLabel(field) }}
-            <mat-icon class="chip-remove" (click)="removeField(field)">close</mat-icon>
-          </span>
-        }
         @if (unselectedFields().length > 0) {
           <mat-form-field appearance="outline" class="param-search-field" subscriptSizing="dynamic">
+            <mat-icon matPrefix>search</mat-icon>
             <input
               matInput
               #paramSearchInput
@@ -43,7 +38,6 @@
               [matAutocomplete]="paramAuto"
               placeholder="Search parameters..."
             />
-            <mat-icon matSuffix>search</mat-icon>
             <mat-autocomplete
               #paramAuto="matAutocomplete"
               (optionSelected)="onParameterSelected($event, paramSearchInput)"
@@ -53,6 +47,12 @@
               }
             </mat-autocomplete>
           </mat-form-field>
+        }
+        @for (field of selectedFields(); track field) {
+          <span class="selected-chip">
+            {{ getFieldLabel(field) }}
+            <mat-icon class="chip-remove" (click)="removeField(field)">close</mat-icon>
+          </span>
         }
       </div>
     </div>
