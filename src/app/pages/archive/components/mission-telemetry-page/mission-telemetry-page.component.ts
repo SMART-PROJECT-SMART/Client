@@ -24,7 +24,7 @@ const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
   MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS,
 } = ClientConstants.GridsterDashboard;
 
-const { NO_MISSION_ID, LOAD_FAILED, TELEMETRY_DATA_HEADING } = ClientConstants.TelemetryPageMessages;
+const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
 const { PAGE_SIZE_OPTIONS } = ClientConstants.TableConfig;
 
 const NON_GRAPHABLE_FIELDS = new Set<string>([
@@ -61,7 +61,6 @@ export class MissionTelemetryPageComponent implements OnInit {
 
   readonly tableDataSource = new MatTableDataSource<Record<string, string | number | null>>([]);
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
-  readonly tableHeading = TELEMETRY_DATA_HEADING;
 
   private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
   readonly tableSort = viewChild<MatSort>(MatSort);
@@ -123,7 +122,7 @@ export class MissionTelemetryPageComponent implements OnInit {
   });
 
   readonly displayedColumns = computed<string[]>(() => {
-    return ['timestamp', ...this.availableFields()];
+    return ['timestamp', ...this.selectedFields()];
   });
 
   ngOnInit(): void {
@@ -145,11 +144,13 @@ export class MissionTelemetryPageComponent implements OnInit {
     this.selectedFields.set([...this.selectedFields(), field]);
     this.parameterSearch.set('');
     this.rebuildDashboardItems();
+    this.populateTableData();
   }
 
   removeField(field: TelemetryField): void {
     this.selectedFields.set(this.selectedFields().filter((f) => f !== field));
     this.rebuildDashboardItems();
+    this.populateTableData();
   }
 
   getFieldLabel(field: TelemetryField): string {
@@ -313,12 +314,12 @@ export class MissionTelemetryPageComponent implements OnInit {
   }
 
   private populateTableData(): void {
-    const available = this.availableFields();
+    const selected = this.selectedFields();
     const rows: Record<string, string | number | null>[] = this.telemetryData.map((point, index) => {
       const row: Record<string, string | number | null> = {
         timestamp: this.timeLabels[index],
       };
-      for (const field of available) {
+      for (const field of selected) {
         row[field] = point.fields[field] ?? null;
       }
       return row;
