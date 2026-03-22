@@ -1,8 +1,5 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, effect, viewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, viewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatSort } from '@angular/material/sort';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
 import type { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { GridType, CompactType } from 'angular-gridster2';
 import type { GridsterConfig } from 'angular-gridster2';
@@ -12,7 +9,7 @@ import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin.util';
 import { ArchiveApiService } from '../../../../services/archive/archive-api.service';
-import type { MissionTelemetryRo, ChartRowConfig, TelemetryDashboardItem } from '../../../../models/archive';
+import type { MissionTelemetryRo, ChartRowConfig, TelemetryDashboardItem, TileViewMode } from '../../../../models/archive';
 
 const { COLORS, BACKGROUND_ALPHA, POINT_RADIUS, BORDER_WIDTH, LINE_TENSION,
   X_AXIS_MAX_TICKS, Y_AXIS_MAX_TICKS, TICK_FONT_SIZE, TICK_COLOR, GRID_COLOR,
@@ -23,10 +20,10 @@ const { LOCALE, OPTIONS: TIME_FORMAT_OPTIONS } = ClientConstants.TimeFormat;
 
 const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
   MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS, DRAG_HANDLE_CLASS, NO_DRAG_CLASS,
+  VIEW_MODE_CHART,
 } = ClientConstants.GridsterDashboard;
 
 const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
-const { PAGE_SIZE_OPTIONS, DEFAULT_PAGE_SIZE, TIMESTAMP_COLUMN } = ClientConstants.TableConfig;
 const { ARCHIVE } = ClientConstants.ArchiveRoutes;
 const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM, TITLE: TITLE_PARAM } = ClientConstants.TelemetryQueryParams;
 
@@ -62,13 +59,7 @@ export class MissionTelemetryPageComponent implements OnInit {
   readonly dashboardItems = signal<TelemetryDashboardItem[]>([]);
   readonly parameterSearch = signal<string>('');
 
-  readonly tableDataSource = new MatTableDataSource<Record<string, string | number | null>>([]);
-  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
-  readonly defaultPageSize = DEFAULT_PAGE_SIZE;
-
   private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
-  readonly tableSort = viewChild<MatSort>(MatSort);
-  readonly tablePaginator = viewChild<MatPaginator>(MatPaginator);
 
   private missionId = '';
   private telemetryData: MissionTelemetryRo[] = [];
@@ -76,16 +67,6 @@ export class MissionTelemetryPageComponent implements OnInit {
 
   readonly crosshairIndex = signal<number | null>(null);
   readonly crosshairPlugin: Plugin<'line'> = createCrosshairPlugin(this.crosshairIndex);
-
-  private readonly sortEffect = effect(() => {
-    const sort = this.tableSort();
-    if (sort) this.tableDataSource.sort = sort;
-  });
-
-  private readonly paginatorEffect = effect(() => {
-    const paginator = this.tablePaginator();
-    if (paginator) this.tableDataSource.paginator = paginator;
-  });
 
   readonly gridsterOptions: GridsterConfig = {
     gridType: GridType.VerticalFixed,
@@ -125,10 +106,6 @@ export class MissionTelemetryPageComponent implements OnInit {
     );
   });
 
-  readonly displayedColumns = computed<string[]>(() => {
-    return [TIMESTAMP_COLUMN, ...this.selectedFields()];
-  });
-
   ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
     this.missionId = params[MISSION_ID_PARAM] ?? '';
@@ -148,13 +125,11 @@ export class MissionTelemetryPageComponent implements OnInit {
     this.selectedFields.set([...this.selectedFields(), field]);
     this.parameterSearch.set('');
     this.rebuildDashboardItems();
-    this.populateTableData();
   }
 
   removeField(field: TelemetryField): void {
     this.selectedFields.set(this.selectedFields().filter((f) => f !== field));
     this.rebuildDashboardItems();
-    this.populateTableData();
   }
 
   getFieldLabel(field: TelemetryField): string {
@@ -178,8 +153,29 @@ export class MissionTelemetryPageComponent implements OnInit {
     this.router.navigate([ARCHIVE]);
   }
 
+  toggleViewMode(field: TelemetryField): void {
+    const items = this.dashboardItems();
+    const updated = items.map((item) => {
+      if (item.field !== field) return item;
+      const nextMode: TileViewMode = item.viewMode === VIEW_MODE_CHART ? 'table' : 'chart';
+      return { ...item, viewMode: nextMode };
+    });
+    this.dashboardItems.set(updated);
+  }
+
+  getFieldTableData(field: TelemetryField): { timestamp: string; value: number | null }[] {
+    return this.telemetryData.map((point, index) => ({
+      timestamp: this.timeLabels[index],
+      value: point.fields[field] ?? null,
+    }));
+  }
+
   private rebuildDashboardItems(): void {
     const selected = this.selectedFields();
+    const existingModes = new Map<TelemetryField, TileViewMode>(
+      this.dashboardItems().map((item) => [item.field, item.viewMode]),
+    );
+
     const items: TelemetryDashboardItem[] = selected.map((field, index) => {
       const chartConfig = this.buildChartRowConfig(field, index);
       return {
@@ -189,6 +185,7 @@ export class MissionTelemetryPageComponent implements OnInit {
         rows: DEFAULT_ITEM_ROWS,
         field,
         chartConfig,
+        viewMode: existingModes.get(field) ?? 'chart',
       };
     });
     this.dashboardItems.set(items);
@@ -314,20 +311,5 @@ export class MissionTelemetryPageComponent implements OnInit {
     this.selectedFields.set(DEFAULT_SELECTED_FIELDS);
 
     this.rebuildDashboardItems();
-    this.populateTableData();
-  }
-
-  private populateTableData(): void {
-    const selected = this.selectedFields();
-    const rows: Record<string, string | number | null>[] = this.telemetryData.map((point, index) => {
-      const row: Record<string, string | number | null> = {
-        [TIMESTAMP_COLUMN]: this.timeLabels[index],
-      };
-      for (const field of selected) {
-        row[field] = point.fields[field] ?? null;
-      }
-      return row;
-    });
-    this.tableDataSource.data = rows;
   }
 }

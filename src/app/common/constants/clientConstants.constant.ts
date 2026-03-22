@@ -224,6 +224,8 @@ export namespace ClientConstants {
     export const MIN_ITEM_ROWS: number = 1;
     export const DRAG_HANDLE_CLASS: string = 'drag-handle';
     export const NO_DRAG_CLASS: string = 'no-drag';
+    export const VIEW_MODE_CHART: string = 'chart';
+    export const VIEW_MODE_TABLE: string = 'table';
   }
 
   export namespace DeviceManagementConstants {
