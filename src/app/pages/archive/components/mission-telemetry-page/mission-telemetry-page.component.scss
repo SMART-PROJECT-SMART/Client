@@ -277,7 +277,15 @@ $tile-reveal-delay: 80ms;
 .tile-table {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tile-table-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 
   table {
     width: 100%;
@@ -286,8 +294,6 @@ $tile-reveal-delay: 80ms;
   }
 
   th {
-    position: sticky;
-    top: 0;
     background-color: $color-background-elevated;
     color: $color-text-secondary;
     font-weight: 600;
@@ -311,5 +317,42 @@ $tile-reveal-delay: 80ms;
 
   tr:hover td {
     background-color: rgba($color-primary, 0.06);
+  }
+}
+
+.tile-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs 0;
+  border-top: $border-width-thin solid $color-border-default;
+  flex-shrink: 0;
+
+  .page-info {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  button.mat-mdc-icon-button {
+    width: $tile-menu-btn-size;
+    height: $tile-menu-btn-size;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep .mat-mdc-button-touch-target {
+      width: $tile-menu-btn-size;
+      height: $tile-menu-btn-size;
+    }
+
+    mat-icon {
+      font-size: $icon-size-sm;
+      width: $icon-size-sm;
+      height: $icon-size-sm;
+    }
   }
 }

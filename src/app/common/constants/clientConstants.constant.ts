@@ -226,6 +226,11 @@ export namespace ClientConstants {
     export const NO_DRAG_CLASS: string = 'no-drag';
     export const VIEW_MODE_CHART: string = 'chart';
     export const VIEW_MODE_TABLE: string = 'table';
+    export const TILE_HEADER_HEIGHT: number = 38;
+    export const TABLE_HEADER_HEIGHT: number = 26;
+    export const PAGINATION_HEIGHT: number = 38;
+    export const TABLE_ROW_HEIGHT: number = 28;
+    export const MIN_PAGE_SIZE: number = 1;
   }
 
   export namespace DeviceManagementConstants {

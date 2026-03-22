@@ -21,6 +21,7 @@ const { LOCALE, OPTIONS: TIME_FORMAT_OPTIONS } = ClientConstants.TimeFormat;
 const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
   MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS, DRAG_HANDLE_CLASS, NO_DRAG_CLASS,
   VIEW_MODE_CHART, VIEW_MODE_TABLE,
+  TILE_HEADER_HEIGHT, TABLE_HEADER_HEIGHT, PAGINATION_HEIGHT, TABLE_ROW_HEIGHT, MIN_PAGE_SIZE,
 } = ClientConstants.GridsterDashboard;
 
 const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
@@ -37,6 +38,8 @@ const NON_GRAPHABLE_FIELDS = new Set<string>([
 ]);
 
 const DEFAULT_SELECTED_FIELDS: TelemetryField[] = [];
+
+type TelemetryTableRowView = { timestamp: string; value: number | null; trackId: string };
 
 @Component({
   selector: 'app-mission-telemetry-page',
@@ -58,13 +61,40 @@ export class MissionTelemetryPageComponent implements OnInit {
   readonly selectedFields = signal<TelemetryField[]>([]);
   readonly dashboardItems = signal<TelemetryDashboardItem[]>([]);
   readonly parameterSearch = signal<string>('');
+  readonly tilePages = signal<Map<TelemetryField, number>>(new Map());
   readonly viewModeChart = VIEW_MODE_CHART;
 
   private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
 
   private missionId = '';
-  private telemetryData: MissionTelemetryRo[] = [];
-  private timeLabels: string[] = [];
+  private readonly telemetryData = signal<MissionTelemetryRo[]>([]);
+  private readonly timeLabels = signal<string[]>([]);
+  private debugPageSizeLogCount = 0;
+
+  readonly tableRowsByField = computed(() => {
+    this.telemetryData();
+    this.timeLabels();
+    const items = this.dashboardItems();
+    const pages = this.tilePages();
+    const map = new Map<TelemetryField, TelemetryTableRowView[]>();
+    for (const item of items) {
+      if (item.viewMode !== VIEW_MODE_TABLE) continue;
+      const field = item.field;
+      const pageSize = this.getPageSize(item.rows);
+      const page = pages.get(field) ?? 0;
+      const start = page * pageSize;
+      const allData = this.getFieldTableData(field);
+      const sliced = allData.slice(start, start + pageSize).map((row, i) => ({
+        ...row,
+        trackId: `${String(field)}|${start + i}`,
+      }));
+      // #region agent log
+      console.warn('[DEBUG-e98047] tableRowsByField', { field, gridsterRows: item.rows, pageSize, page, start, totalData: allData.length, sliceLen: sliced.length, firstTs: sliced[0]?.timestamp, lastTs: sliced[sliced.length - 1]?.timestamp });
+      // #endregion
+      map.set(field, sliced);
+    }
+    return map;
+  });
 
   readonly crosshairIndex = signal<number | null>(null);
   readonly crosshairPlugin: Plugin<'line'> = createCrosshairPlugin(this.crosshairIndex);
@@ -88,6 +118,13 @@ export class MissionTelemetryPageComponent implements OnInit {
     },
     resizable: {
       enabled: true,
+    },
+    itemResizeCallback: (item) => {
+      // #region agent log
+      fetch('http://127.0.0.1:7524/ingest/2dc3412f-fe12-45c2-b207-57ed347cc7d9', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'e98047' }, body: JSON.stringify({ sessionId: 'e98047', location: 'mission-telemetry-page.component.ts:itemResizeCallback', message: 'gridster resize', data: { itemRows: item.rows, itemCols: item.cols, itemY: item.y, itemX: item.x }, timestamp: Date.now(), hypothesisId: 'H4', runId: 'post-fix' }) }).catch(() => {});
+      // #endregion
+      this.dashboardItems.set([...this.dashboardItems()]);
+      this.clampTilePagesToTotal();
     },
     pushItems: true,
     swap: false,
@@ -125,11 +162,17 @@ export class MissionTelemetryPageComponent implements OnInit {
   addField(field: TelemetryField): void {
     this.selectedFields.set([...this.selectedFields(), field]);
     this.parameterSearch.set('');
+    const pages = new Map(this.tilePages());
+    pages.set(field, 0);
+    this.tilePages.set(pages);
     this.rebuildDashboardItems();
   }
 
   removeField(field: TelemetryField): void {
     this.selectedFields.set(this.selectedFields().filter((f) => f !== field));
+    const pages = new Map(this.tilePages());
+    pages.delete(field);
+    this.tilePages.set(pages);
     this.rebuildDashboardItems();
   }
 
@@ -165,10 +208,76 @@ export class MissionTelemetryPageComponent implements OnInit {
   }
 
   getFieldTableData(field: TelemetryField): { timestamp: string; value: number | null }[] {
-    return this.telemetryData.map((point, index) => ({
-      timestamp: this.timeLabels[index],
+    const data = this.telemetryData();
+    const labels = this.timeLabels();
+    return data.map((point, index) => ({
+      timestamp: labels[index],
       value: point.fields[field] ?? null,
     }));
+  }
+
+  getPageSize(rows: number): number {
+    const tileHeight = rows * (FIXED_ROW_HEIGHT + MARGIN) - MARGIN;
+    const available = tileHeight - TILE_HEADER_HEIGHT - TABLE_HEADER_HEIGHT - PAGINATION_HEIGHT;
+    const pageSize = Math.max(MIN_PAGE_SIZE, Math.floor(available / TABLE_ROW_HEIGHT));
+    // #region agent log
+    if (this.debugPageSizeLogCount < 12) {
+      this.debugPageSizeLogCount += 1;
+      const estimatedModelPx = TILE_HEADER_HEIGHT + TABLE_HEADER_HEIGHT + pageSize * TABLE_ROW_HEIGHT + PAGINATION_HEIGHT;
+      const conservativeRowPx = 32;
+      const estimatedDomPx = TILE_HEADER_HEIGHT + TABLE_HEADER_HEIGHT + pageSize * conservativeRowPx + PAGINATION_HEIGHT;
+      fetch('http://127.0.0.1:7524/ingest/2dc3412f-fe12-45c2-b207-57ed347cc7d9', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'e98047' }, body: JSON.stringify({ sessionId: 'e98047', location: 'mission-telemetry-page.component.ts:getPageSize', message: 'tile page size calc', data: { rows, tileHeight, available, pageSize, tableRowConst: TABLE_ROW_HEIGHT, estimatedModelPx, estimatedDomPx, modelExceedsTile: estimatedModelPx > tileHeight, domLikelyExceedsTile: estimatedDomPx > tileHeight }, timestamp: Date.now(), hypothesisId: 'H1', runId: 'post-fix' }) }).catch(() => {});
+    }
+    // #endregion
+    return pageSize;
+  }
+
+  getTilePage(field: TelemetryField): number {
+    return this.tilePages().get(field) ?? 0;
+  }
+
+  getTotalPages(field: TelemetryField, rows: number): number {
+    const pageSize = this.getPageSize(rows);
+    return Math.ceil(this.telemetryData().length / pageSize) || 1;
+  }
+
+  nextPage(field: TelemetryField): void {
+    const item = this.dashboardItems().find((i) => i.field === field);
+    if (!item) return;
+    const current = this.getTilePage(field);
+    if (current < this.getTotalPages(field, item.rows) - 1) {
+      const pages = new Map(this.tilePages());
+      pages.set(field, current + 1);
+      this.tilePages.set(pages);
+    }
+  }
+
+  prevPage(field: TelemetryField): void {
+    const current = this.getTilePage(field);
+    if (current > 0) {
+      const pages = new Map(this.tilePages());
+      pages.set(field, current - 1);
+      this.tilePages.set(pages);
+    }
+  }
+
+  private clampTilePagesToTotal(): void {
+    const items = this.dashboardItems();
+    const pages = new Map(this.tilePages());
+    let changed = false;
+    for (const item of items) {
+      if (item.viewMode !== VIEW_MODE_TABLE) continue;
+      const total = this.getTotalPages(item.field, item.rows);
+      const maxPage = Math.max(0, total - 1);
+      const cur = pages.get(item.field) ?? 0;
+      if (cur > maxPage) {
+        pages.set(item.field, maxPage);
+        changed = true;
+      }
+    }
+    if (changed) {
+      this.tilePages.set(pages);
+    }
   }
 
   private rebuildDashboardItems(): void {
@@ -197,7 +306,7 @@ export class MissionTelemetryPageComponent implements OnInit {
 
     const datasets: ChartDataset<'line'>[] = [{
       label: EnumUtil.getTelemetryFieldDisplay(field),
-      data: this.telemetryData.map((point) => point.fields[field] ?? null),
+      data: this.telemetryData().map((point) => point.fields[field] ?? null),
       borderColor: color,
       backgroundColor: color + BACKGROUND_ALPHA,
       pointRadius: POINT_RADIUS,
@@ -265,7 +374,7 @@ export class MissionTelemetryPageComponent implements OnInit {
       label: EnumUtil.getTelemetryFieldDisplay(field),
       unit: TelemetryUtil.getUnit(field),
       color,
-      data: { labels: this.timeLabels, datasets },
+      data: { labels: this.timeLabels(), datasets },
       options,
     };
   }
@@ -278,10 +387,16 @@ export class MissionTelemetryPageComponent implements OnInit {
       .getMissionTelemetry(this.missionId, this.tailId())
       .subscribe({
         next: (data: MissionTelemetryRo[]) => {
-          this.telemetryData = data;
-          this.timeLabels = data.map((point) =>
+          this.telemetryData.set(data);
+          this.timeLabels.set(data.map((point) =>
             new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
-          );
+          ));
+          // #region agent log
+          const labels = this.timeLabels();
+          const gaps: string[] = [];
+          for (let i = 1; i < labels.length; i++) { if (labels[i] === labels[i - 1]) { gaps.push(`DUP@${i}:${labels[i]}`); } }
+          console.warn('[DEBUG-e98047] telemetry loaded', { totalPoints: data.length, firstLabel: labels[0], lastLabel: labels[labels.length - 1], duplicates: gaps.length, firstDups: gaps.slice(0, 20) });
+          // #endregion
           this.initializeFields();
           this.loading.set(false);
         },
@@ -293,12 +408,12 @@ export class MissionTelemetryPageComponent implements OnInit {
   }
 
   private initializeFields(): void {
-    if (this.telemetryData.length === 0) {
+    if (this.telemetryData().length === 0) {
       return;
     }
 
     const fieldSet = new Set<string>();
-    for (const point of this.telemetryData) {
+    for (const point of this.telemetryData()) {
       for (const key of Object.keys(point.fields)) {
         if (!NON_GRAPHABLE_FIELDS.has(key)) {
           fieldSet.add(key);

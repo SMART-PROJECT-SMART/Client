@@ -99,22 +99,37 @@
                 <div class="tile-table no-drag"
                      (mousedown)="$event.stopPropagation()"
                      (touchstart)="$event.stopPropagation()">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Timestamp</th>
-                        <th>{{ item.chartConfig.label }} {{ item.chartConfig.unit }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (row of getFieldTableData(item.field); track $index) {
+                  <div class="tile-table-body">
+                    <table>
+                      <thead>
                         <tr>
-                          <td>{{ row.timestamp }}</td>
-                          <td>{{ row.value | number:'1.0-2' }}</td>
+                          <th>Timestamp</th>
+                          <th>{{ item.chartConfig.label }} {{ item.chartConfig.unit }}</th>
                         </tr>
-                      }
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        @for (row of tableRowsByField().get(item.field) ?? []; track row.trackId) {
+                          <tr>
+                            <td>{{ row.timestamp }}</td>
+                            <td>{{ row.value | number:'1.0-2' }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="tile-pagination">
+                    <button mat-icon-button
+                            [disabled]="getTilePage(item.field) === 0"
+                            (click)="prevPage(item.field)">
+                      <mat-icon>chevron_left</mat-icon>
+                    </button>
+                    <span class="page-info">{{ getTilePage(item.field) + 1 }} / {{ getTotalPages(item.field, item.rows) }}</span>
+                    <button mat-icon-button
+                            [disabled]="getTilePage(item.field) >= getTotalPages(item.field, item.rows) - 1"
+                            (click)="nextPage(item.field)">
+                      <mat-icon>chevron_right</mat-icon>
+                    </button>
+                  </div>
                 </div>
               }
             </gridster-item>
