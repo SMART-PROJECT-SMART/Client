@@ -76,14 +76,14 @@
                 </button>
                 <mat-menu #tileMenu="matMenu">
                   <button mat-menu-item (click)="toggleViewMode(item.field)">
-                    <mat-icon>{{ item.viewMode === 'chart' ? 'table_chart' : 'show_chart' }}</mat-icon>
-                    {{ item.viewMode === 'chart' ? 'Show as Table' : 'Show as Chart' }}
+                    <mat-icon>{{ item.viewMode === viewModeChart ? 'table_chart' : 'show_chart' }}</mat-icon>
+                    {{ item.viewMode === viewModeChart ? 'Show as Table' : 'Show as Chart' }}
                   </button>
                 </mat-menu>
                 <mat-icon class="drag-handle">drag_indicator</mat-icon>
               </div>
 
-              @if (item.viewMode === 'chart') {
+              @if (item.viewMode === viewModeChart) {
                 <div class="tile-chart no-drag"
                      (mousedown)="$event.stopPropagation()"
                      (touchstart)="$event.stopPropagation()">

@@ -5,6 +5,7 @@ $search-field-width: 240px;
 $chip-padding-vertical: 6px;
 $header-letter-spacing: 0.5px;
 $tile-menu-btn-size: 28px;
+$tile-reveal-delay: 80ms;
 
 .page-container {
   display: flex;
@@ -187,7 +188,7 @@ $tile-menu-btn-size: 28px;
   border-radius: $border-radius-md;
   display: flex !important;
   flex-direction: column;
-  animation: tileReveal 0s 80ms forwards;
+  animation: tileReveal 0s $tile-reveal-delay forwards;
   opacity: 0;
 }
 

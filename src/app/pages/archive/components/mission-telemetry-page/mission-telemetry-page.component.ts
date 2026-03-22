@@ -20,7 +20,7 @@ const { LOCALE, OPTIONS: TIME_FORMAT_OPTIONS } = ClientConstants.TimeFormat;
 
 const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
   MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS, DRAG_HANDLE_CLASS, NO_DRAG_CLASS,
-  VIEW_MODE_CHART,
+  VIEW_MODE_CHART, VIEW_MODE_TABLE,
 } = ClientConstants.GridsterDashboard;
 
 const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
@@ -58,6 +58,7 @@ export class MissionTelemetryPageComponent implements OnInit {
   readonly selectedFields = signal<TelemetryField[]>([]);
   readonly dashboardItems = signal<TelemetryDashboardItem[]>([]);
   readonly parameterSearch = signal<string>('');
+  readonly viewModeChart = VIEW_MODE_CHART;
 
   private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
 
@@ -157,7 +158,7 @@ export class MissionTelemetryPageComponent implements OnInit {
     const items = this.dashboardItems();
     const updated = items.map((item) => {
       if (item.field !== field) return item;
-      const nextMode: TileViewMode = item.viewMode === VIEW_MODE_CHART ? 'table' : 'chart';
+      const nextMode: TileViewMode = item.viewMode === VIEW_MODE_CHART ? VIEW_MODE_TABLE as TileViewMode : VIEW_MODE_CHART as TileViewMode;
       return { ...item, viewMode: nextMode };
     });
     this.dashboardItems.set(updated);
@@ -185,7 +186,7 @@ export class MissionTelemetryPageComponent implements OnInit {
         rows: DEFAULT_ITEM_ROWS,
         field,
         chartConfig,
-        viewMode: existingModes.get(field) ?? 'chart',
+        viewMode: (existingModes.get(field) ?? VIEW_MODE_CHART) as TileViewMode,
       };
     });
     this.dashboardItems.set(items);
