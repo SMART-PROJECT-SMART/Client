@@ -273,6 +273,7 @@ $tile-menu-btn-size: 28px;
   table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
   }
 
   th {
