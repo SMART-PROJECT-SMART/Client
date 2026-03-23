@@ -75,8 +75,9 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   private missionId = '';
   private readonly telemetryData = signal<MissionTelemetryRo[]>([]);
   private readonly timeLabels = signal<string[]>([]);
-  private readonly fetchTrigger$ = new Subject<void>();
+  private readonly fetchTrigger$ = new Subject<{ fieldsToFetch: TelemetryField[]; fullReload: boolean }>();
   private readonly destroy$ = new Subject<void>();
+  private loadedFields = new Set<TelemetryField>();
   readonly tableRowsByField = computed(() => {
     this.telemetryData();
     this.timeLabels();
@@ -165,21 +166,33 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     this.fetchTrigger$
       .pipe(
         debounceTime(300),
-        switchMap(() => {
-          const fields = this.selectedFields();
-          if (fields.length === 0) {
+        switchMap(({ fieldsToFetch, fullReload }) => {
+          if (fullReload) {
+            this.loadedFields.clear();
+          }
+
+          const selected = this.selectedFields();
+          if (selected.length === 0) {
             this.telemetryData.set([]);
             this.timeLabels.set([]);
             this.dashboardItems.set([]);
+            this.loadedFields.clear();
             this.fetchingData.set(false);
             return [];
           }
+
+          const newFields = fullReload ? selected : fieldsToFetch.filter((f) => !this.loadedFields.has(f));
+          if (newFields.length === 0) {
+            this.rebuildDashboardItems();
+            return [];
+          }
+
           this.fetchingData.set(true);
           this.errorMessage.set('');
           return this.archiveApi.getMissionTelemetry(
             this.missionId,
             this.tailId(),
-            fields,
+            newFields,
             this.timeRangeStart(),
             this.timeRangeEnd(),
           );
@@ -188,10 +201,31 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (data: MissionTelemetryRo[]) => {
-          this.telemetryData.set(data);
-          this.timeLabels.set(data.map((point) =>
-            new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
-          ));
+          const existing = this.telemetryData();
+
+          if (existing.length === 0) {
+            this.telemetryData.set(data);
+            this.timeLabels.set(data.map((point) =>
+              new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
+            ));
+          } else {
+            const merged = existing.map((point, i) => {
+              const incoming = data[i];
+              if (!incoming) return point;
+              return {
+                ...point,
+                fields: { ...point.fields, ...incoming.fields },
+              };
+            });
+            this.telemetryData.set(merged);
+          }
+
+          for (const point of data) {
+            for (const key of Object.keys(point.fields)) {
+              this.loadedFields.add(key as TelemetryField);
+            }
+          }
+
           this.rebuildDashboardItems();
           this.fetchingData.set(false);
         },
@@ -213,7 +247,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     const pages = new Map(this.tilePages());
     pages.set(field, 0);
     this.tilePages.set(pages);
-    this.fetchTrigger$.next();
+    this.fetchTrigger$.next({ fieldsToFetch: [field], fullReload: false });
   }
 
   removeField(field: TelemetryField): void {
@@ -221,23 +255,29 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     const pages = new Map(this.tilePages());
     pages.delete(field);
     this.tilePages.set(pages);
-    this.fetchTrigger$.next();
+    this.rebuildDashboardItems();
   }
 
   onTimeRangeStartChange(value: string): void {
     this.timeRangeStart.set(value || null);
-    if (this.selectedFields().length > 0) this.fetchTrigger$.next();
+    if (this.selectedFields().length > 0) {
+      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
+    }
   }
 
   onTimeRangeEndChange(value: string): void {
     this.timeRangeEnd.set(value || null);
-    if (this.selectedFields().length > 0) this.fetchTrigger$.next();
+    if (this.selectedFields().length > 0) {
+      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
+    }
   }
 
   resetTimeRange(): void {
     this.timeRangeStart.set(null);
     this.timeRangeEnd.set(null);
-    if (this.selectedFields().length > 0) this.fetchTrigger$.next();
+    if (this.selectedFields().length > 0) {
+      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
+    }
   }
 
   getFieldLabel(field: TelemetryField): string {
