@@ -1,7 +1,9 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, viewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, OnDestroy, viewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import type { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { Subject } from 'rxjs';
+import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { GridType, CompactType } from 'angular-gridster2';
 import type { GridsterConfig } from 'angular-gridster2';
 import type { ChartConfiguration, ChartDataset, Plugin } from 'chart.js';
@@ -39,8 +41,6 @@ const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.LandingGearStatus,
 ]);
 
-const DEFAULT_SELECTED_FIELDS: TelemetryField[] = [];
-
 type TelemetryTableRowView = { timestamp: string; value: number | null; trackId: string };
 
 @Component({
@@ -50,7 +50,7 @@ type TelemetryTableRowView = { timestamp: string; value: number | null; trackId:
   styleUrl: './mission-telemetry-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MissionTelemetryPageComponent implements OnInit {
+export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
@@ -59,7 +59,7 @@ export class MissionTelemetryPageComponent implements OnInit {
   readonly missionTitle = signal<string>('');
   readonly tailId = signal<number>(0);
   readonly missionDetails = signal<ArchiveMissionRo | null>(null);
-  readonly loading = signal<boolean>(true);
+  readonly fetchingData = signal<boolean>(false);
   readonly errorMessage = signal<string>('');
   readonly availableFields = signal<TelemetryField[]>([]);
   readonly selectedFields = signal<TelemetryField[]>([]);
@@ -67,12 +67,16 @@ export class MissionTelemetryPageComponent implements OnInit {
   readonly parameterSearch = signal<string>('');
   readonly tilePages = signal<Map<TelemetryField, number>>(new Map());
   readonly viewModeChart = VIEW_MODE_CHART;
+  readonly timeRangeStart = signal<string | null>(null);
+  readonly timeRangeEnd = signal<string | null>(null);
 
   private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
 
   private missionId = '';
   private readonly telemetryData = signal<MissionTelemetryRo[]>([]);
   private readonly timeLabels = signal<string[]>([]);
+  private readonly fetchTrigger$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
   readonly tableRowsByField = computed(() => {
     this.telemetryData();
     this.timeLabels();
@@ -148,11 +152,59 @@ export class MissionTelemetryPageComponent implements OnInit {
 
     if (!this.missionId) {
       this.errorMessage.set(NO_MISSION_ID);
-      this.loading.set(false);
       return;
     }
 
-    this.fetchTelemetry();
+    const allFields = Object.values(TelemetryField).filter((f) => !NON_GRAPHABLE_FIELDS.has(f));
+    this.availableFields.set(allFields);
+
+    this.archiveApi.getMissionById(this.missionId).subscribe({
+      next: (mission) => this.missionDetails.set(mission),
+    });
+
+    this.fetchTrigger$
+      .pipe(
+        debounceTime(300),
+        switchMap(() => {
+          const fields = this.selectedFields();
+          if (fields.length === 0) {
+            this.telemetryData.set([]);
+            this.timeLabels.set([]);
+            this.dashboardItems.set([]);
+            this.fetchingData.set(false);
+            return [];
+          }
+          this.fetchingData.set(true);
+          this.errorMessage.set('');
+          return this.archiveApi.getMissionTelemetry(
+            this.missionId,
+            this.tailId(),
+            fields,
+            this.timeRangeStart(),
+            this.timeRangeEnd(),
+          );
+        }),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: (data: MissionTelemetryRo[]) => {
+          this.telemetryData.set(data);
+          this.timeLabels.set(data.map((point) =>
+            new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
+          ));
+          this.rebuildDashboardItems();
+          this.fetchingData.set(false);
+        },
+        error: () => {
+          this.errorMessage.set(LOAD_FAILED);
+          this.fetchingData.set(false);
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   addField(field: TelemetryField): void {
@@ -161,7 +213,7 @@ export class MissionTelemetryPageComponent implements OnInit {
     const pages = new Map(this.tilePages());
     pages.set(field, 0);
     this.tilePages.set(pages);
-    this.rebuildDashboardItems();
+    this.fetchTrigger$.next();
   }
 
   removeField(field: TelemetryField): void {
@@ -169,7 +221,23 @@ export class MissionTelemetryPageComponent implements OnInit {
     const pages = new Map(this.tilePages());
     pages.delete(field);
     this.tilePages.set(pages);
-    this.rebuildDashboardItems();
+    this.fetchTrigger$.next();
+  }
+
+  onTimeRangeStartChange(value: string): void {
+    this.timeRangeStart.set(value || null);
+    if (this.selectedFields().length > 0) this.fetchTrigger$.next();
+  }
+
+  onTimeRangeEndChange(value: string): void {
+    this.timeRangeEnd.set(value || null);
+    if (this.selectedFields().length > 0) this.fetchTrigger$.next();
+  }
+
+  resetTimeRange(): void {
+    this.timeRangeStart.set(null);
+    this.timeRangeEnd.set(null);
+    if (this.selectedFields().length > 0) this.fetchTrigger$.next();
   }
 
   getFieldLabel(field: TelemetryField): string {
@@ -372,53 +440,5 @@ export class MissionTelemetryPageComponent implements OnInit {
       data: { mission },
       autoFocus: false,
     });
-  }
-
-  private fetchTelemetry(): void {
-    this.loading.set(true);
-    this.errorMessage.set('');
-
-    this.archiveApi.getMissionById(this.missionId).subscribe({
-      next: (mission) => this.missionDetails.set(mission),
-    });
-
-    this.archiveApi
-      .getMissionTelemetry(this.missionId, this.tailId())
-      .subscribe({
-        next: (data: MissionTelemetryRo[]) => {
-          this.telemetryData.set(data);
-          this.timeLabels.set(data.map((point) =>
-            new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
-          ));
-          this.initializeFields();
-          this.loading.set(false);
-        },
-        error: () => {
-          this.errorMessage.set(LOAD_FAILED);
-          this.loading.set(false);
-        },
-      });
-  }
-
-  private initializeFields(): void {
-    if (this.telemetryData().length === 0) {
-      return;
-    }
-
-    const fieldSet = new Set<string>();
-    for (const point of this.telemetryData()) {
-      for (const key of Object.keys(point.fields)) {
-        if (!NON_GRAPHABLE_FIELDS.has(key)) {
-          fieldSet.add(key);
-        }
-      }
-    }
-
-    const available = [...fieldSet] as TelemetryField[];
-    this.availableFields.set(available);
-
-    this.selectedFields.set(DEFAULT_SELECTED_FIELDS);
-
-    this.rebuildDashboardItems();
   }
 }

@@ -15,22 +15,12 @@
     }
   </div>
 
-  @if (loading()) {
-    <div class="state-container">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading telemetry data...</p>
-    </div>
-  } @else if (errorMessage()) {
+  @if (errorMessage()) {
     <div class="state-container">
       <mat-icon class="error-icon">error_outline</mat-icon>
       <p>{{ errorMessage() }}</p>
     </div>
-  } @else if (availableFields().length === 0) {
-    <div class="state-container">
-      <mat-icon class="info-icon">info</mat-icon>
-      <p>No telemetry data found for this mission.</p>
-    </div>
-  } @else {
+  } @else if (availableFields().length > 0) {
     <div class="parameter-selector">
       <div class="selected-chips">
         @if (unselectedFields().length > 0) {
@@ -64,7 +54,37 @@
     </div>
 
     @if (selectedFields().length > 0) {
+      <div class="time-range-bar">
+        <mat-icon class="time-range-icon">schedule</mat-icon>
+        <label class="time-range-label">From</label>
+        <input
+          type="datetime-local"
+          class="time-range-input"
+          [value]="timeRangeStart() ?? ''"
+          (change)="onTimeRangeStartChange($any($event.target).value)"
+          step="1"
+        />
+        <label class="time-range-label">To</label>
+        <input
+          type="datetime-local"
+          class="time-range-input"
+          [value]="timeRangeEnd() ?? ''"
+          (change)="onTimeRangeEndChange($any($event.target).value)"
+          step="1"
+        />
+        @if (timeRangeStart() || timeRangeEnd()) {
+          <button mat-icon-button class="time-range-reset" (click)="resetTimeRange()" aria-label="Reset time range">
+            <mat-icon>clear</mat-icon>
+          </button>
+        }
+      </div>
+
       <div class="gridster-wrapper">
+        @if (fetchingData()) {
+          <div class="fetch-overlay">
+            <mat-spinner diameter="32"></mat-spinner>
+          </div>
+        }
         <gridster [options]="gridsterOptions">
           @for (item of dashboardItems(); track item.field) {
             <gridster-item [item]="item">

@@ -78,6 +78,70 @@ $tile-reveal-delay: 80ms;
   }
 }
 
+.time-range-bar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-xs $spacing-lg;
+  flex-shrink: 0;
+  background-color: $color-background-primary;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  .time-range-icon {
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+    color: $color-text-muted;
+  }
+
+  .time-range-label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    font-weight: 500;
+  }
+
+  .time-range-input {
+    background-color: $color-background-secondary;
+    color: $color-text-primary;
+    border: $border-width-thin solid $color-border-default;
+    border-radius: $border-radius-sm;
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-sm;
+    font-family: inherit;
+    outline: none;
+    transition: border-color $transition-fast;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+
+    &::-webkit-calendar-picker-indicator {
+      filter: invert(0.7);
+      cursor: pointer;
+    }
+  }
+
+  .time-range-reset.mat-mdc-icon-button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep .mat-mdc-button-touch-target {
+      width: 28px;
+      height: 28px;
+    }
+
+    mat-icon {
+      font-size: $icon-size-sm;
+      width: $icon-size-sm;
+      height: $icon-size-sm;
+    }
+  }
+}
+
 .parameter-selector {
   display: flex;
   align-items: center;
@@ -183,6 +247,18 @@ $tile-reveal-delay: 80ms;
 .gridster-wrapper {
   flex: 1;
   overflow: hidden;
+  position: relative;
+}
+
+.fetch-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  pointer-events: none;
 }
 
 :host ::ng-deep .gridster-wrapper gridster {
