@@ -7,6 +7,12 @@
       <h1>{{ missionTitle() }}</h1>
       <span class="header-meta">Tail {{ tailId() }}</span>
     </div>
+    @if (missionDetails()) {
+      <button mat-stroked-button class="mission-details-btn" (click)="openMissionDetails()">
+        <mat-icon>info_outline</mat-icon>
+        Mission Details
+      </button>
+    }
   </div>
 
   @if (loading()) {

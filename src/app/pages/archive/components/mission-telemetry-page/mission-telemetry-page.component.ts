@@ -1,5 +1,6 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, viewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import type { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { GridType, CompactType } from 'angular-gridster2';
 import type { GridsterConfig } from 'angular-gridster2';
@@ -9,7 +10,8 @@ import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin.util';
 import { ArchiveApiService } from '../../../../services/archive/archive-api.service';
-import type { MissionTelemetryRo, ChartRowConfig, TelemetryDashboardItem, TileViewMode } from '../../../../models/archive';
+import { MissionDetailsDialogComponent } from '../mission-details-dialog/mission-details-dialog.component';
+import type { ArchiveMissionRo, MissionTelemetryRo, ChartRowConfig, TelemetryDashboardItem, TileViewMode } from '../../../../models/archive';
 
 const { COLORS, BACKGROUND_ALPHA, POINT_RADIUS, BORDER_WIDTH, LINE_TENSION,
   X_AXIS_MAX_TICKS, Y_AXIS_MAX_TICKS, TICK_FONT_SIZE, TICK_COLOR, GRID_COLOR,
@@ -51,10 +53,12 @@ type TelemetryTableRowView = { timestamp: string; value: number | null; trackId:
 export class MissionTelemetryPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
   private readonly archiveApi = inject(ArchiveApiService);
 
   readonly missionTitle = signal<string>('');
   readonly tailId = signal<number>(0);
+  readonly missionDetails = signal<ArchiveMissionRo | null>(null);
   readonly loading = signal<boolean>(true);
   readonly errorMessage = signal<string>('');
   readonly availableFields = signal<TelemetryField[]>([]);
@@ -69,8 +73,6 @@ export class MissionTelemetryPageComponent implements OnInit {
   private missionId = '';
   private readonly telemetryData = signal<MissionTelemetryRo[]>([]);
   private readonly timeLabels = signal<string[]>([]);
-  private debugPageSizeLogCount = 0;
-
   readonly tableRowsByField = computed(() => {
     this.telemetryData();
     this.timeLabels();
@@ -88,9 +90,6 @@ export class MissionTelemetryPageComponent implements OnInit {
         ...row,
         trackId: `${String(field)}|${start + i}`,
       }));
-      // #region agent log
-      console.warn('[DEBUG-e98047] tableRowsByField', { field, gridsterRows: item.rows, pageSize, page, start, totalData: allData.length, sliceLen: sliced.length, firstTs: sliced[0]?.timestamp, lastTs: sliced[sliced.length - 1]?.timestamp });
-      // #endregion
       map.set(field, sliced);
     }
     return map;
@@ -119,10 +118,7 @@ export class MissionTelemetryPageComponent implements OnInit {
     resizable: {
       enabled: true,
     },
-    itemResizeCallback: (item) => {
-      // #region agent log
-      fetch('http://127.0.0.1:7524/ingest/2dc3412f-fe12-45c2-b207-57ed347cc7d9', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'e98047' }, body: JSON.stringify({ sessionId: 'e98047', location: 'mission-telemetry-page.component.ts:itemResizeCallback', message: 'gridster resize', data: { itemRows: item.rows, itemCols: item.cols, itemY: item.y, itemX: item.x }, timestamp: Date.now(), hypothesisId: 'H4', runId: 'post-fix' }) }).catch(() => {});
-      // #endregion
+    itemResizeCallback: () => {
       this.dashboardItems.set([...this.dashboardItems()]);
       this.clampTilePagesToTotal();
     },
@@ -219,17 +215,7 @@ export class MissionTelemetryPageComponent implements OnInit {
   getPageSize(rows: number): number {
     const tileHeight = rows * (FIXED_ROW_HEIGHT + MARGIN) - MARGIN;
     const available = tileHeight - TILE_HEADER_HEIGHT - TABLE_HEADER_HEIGHT - PAGINATION_HEIGHT;
-    const pageSize = Math.max(MIN_PAGE_SIZE, Math.floor(available / TABLE_ROW_HEIGHT));
-    // #region agent log
-    if (this.debugPageSizeLogCount < 12) {
-      this.debugPageSizeLogCount += 1;
-      const estimatedModelPx = TILE_HEADER_HEIGHT + TABLE_HEADER_HEIGHT + pageSize * TABLE_ROW_HEIGHT + PAGINATION_HEIGHT;
-      const conservativeRowPx = 32;
-      const estimatedDomPx = TILE_HEADER_HEIGHT + TABLE_HEADER_HEIGHT + pageSize * conservativeRowPx + PAGINATION_HEIGHT;
-      fetch('http://127.0.0.1:7524/ingest/2dc3412f-fe12-45c2-b207-57ed347cc7d9', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'e98047' }, body: JSON.stringify({ sessionId: 'e98047', location: 'mission-telemetry-page.component.ts:getPageSize', message: 'tile page size calc', data: { rows, tileHeight, available, pageSize, tableRowConst: TABLE_ROW_HEIGHT, estimatedModelPx, estimatedDomPx, modelExceedsTile: estimatedModelPx > tileHeight, domLikelyExceedsTile: estimatedDomPx > tileHeight }, timestamp: Date.now(), hypothesisId: 'H1', runId: 'post-fix' }) }).catch(() => {});
-    }
-    // #endregion
-    return pageSize;
+    return Math.max(MIN_PAGE_SIZE, Math.floor(available / TABLE_ROW_HEIGHT));
   }
 
   getTilePage(field: TelemetryField): number {
@@ -379,9 +365,22 @@ export class MissionTelemetryPageComponent implements OnInit {
     };
   }
 
+  openMissionDetails(): void {
+    const mission = this.missionDetails();
+    if (!mission) return;
+    this.dialog.open(MissionDetailsDialogComponent, {
+      data: { mission },
+      autoFocus: false,
+    });
+  }
+
   private fetchTelemetry(): void {
     this.loading.set(true);
     this.errorMessage.set('');
+
+    this.archiveApi.getMissionById(this.missionId).subscribe({
+      next: (mission) => this.missionDetails.set(mission),
+    });
 
     this.archiveApi
       .getMissionTelemetry(this.missionId, this.tailId())
@@ -391,12 +390,6 @@ export class MissionTelemetryPageComponent implements OnInit {
           this.timeLabels.set(data.map((point) =>
             new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
           ));
-          // #region agent log
-          const labels = this.timeLabels();
-          const gaps: string[] = [];
-          for (let i = 1; i < labels.length; i++) { if (labels[i] === labels[i - 1]) { gaps.push(`DUP@${i}:${labels[i]}`); } }
-          console.warn('[DEBUG-e98047] telemetry loaded', { totalPoints: data.length, firstLabel: labels[0], lastLabel: labels[labels.length - 1], duplicates: gaps.length, firstDups: gaps.slice(0, 20) });
-          // #endregion
           this.initializeFields();
           this.loading.set(false);
         },

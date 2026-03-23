@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ClientConstants } from '../../common/constants/clientConstants.constant';
-import type { ArchiveAssignmentRo, MissionTelemetryRo } from '../../models/archive';
+import type { ArchiveAssignmentRo, ArchiveMissionRo, MissionTelemetryRo } from '../../models/archive';
 
 const { ArchiveAPI, TelemetryDataAPI } = ClientConstants;
 
@@ -29,6 +29,12 @@ export class ArchiveApiService {
   ): Observable<MissionTelemetryRo[]> {
     return this.http.get<MissionTelemetryRo[]>(
       TelemetryDataAPI.BY_MISSION(missionId, tailId),
+    );
+  }
+
+  getMissionById(missionId: string): Observable<ArchiveMissionRo | null> {
+    return this.http.get<ArchiveMissionRo>(ArchiveAPI.BY_MISSION(missionId)).pipe(
+      catchError(() => of(null)),
     );
   }
 }

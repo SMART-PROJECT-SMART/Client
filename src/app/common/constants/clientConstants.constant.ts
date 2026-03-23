@@ -58,6 +58,7 @@ export namespace ClientConstants {
     export const BASE = '/api/archive';
     export const LATEST = `${BASE}/latest`;
     export const BY_DATE = (date: string) => `${BASE}/by-date/${date}`;
+    export const BY_MISSION = (missionId: string) => `${BASE}/by-mission/${missionId}`;
   }
 
   export namespace TelemetryDataAPI {

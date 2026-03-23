@@ -36,6 +36,7 @@ import { ArchiveFilterDialogComponent } from './pages/archive/components/archive
 import { ActiveMissionsTableComponent } from './pages/archive/components/active-missions-table/active-missions-table.component';
 import { ScenarioSelectDialogComponent } from './pages/assignment/components/scenario-select-dialog/scenario-select-dialog.component';
 import { MissionTelemetryPageComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-page.component';
+import { MissionDetailsDialogComponent } from './pages/archive/components/mission-details-dialog/mission-details-dialog.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { MissionTelemetryPageComponent } from './pages/archive/components/missio
     ActiveMissionsTableComponent,
     ScenarioSelectDialogComponent,
     MissionTelemetryPageComponent,
+    MissionDetailsDialogComponent,
   ],
   imports: [
     BrowserModule,
