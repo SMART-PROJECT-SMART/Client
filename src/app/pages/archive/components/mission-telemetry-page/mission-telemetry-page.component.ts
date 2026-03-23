@@ -32,6 +32,8 @@ const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
 const { ARCHIVE } = ClientConstants.ArchiveRoutes;
 const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM, TITLE: TITLE_PARAM } = ClientConstants.TelemetryQueryParams;
 
+const FETCH_DEBOUNCE_MS = 300;
+
 const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.TailId,
   TelemetryField.UAVTypeValue,
@@ -165,7 +167,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
 
     this.fetchTrigger$
       .pipe(
-        debounceTime(300),
+        debounceTime(FETCH_DEBOUNCE_MS),
         switchMap(({ fieldsToFetch, fullReload }) => {
           if (fullReload) {
             this.loadedFields.clear();

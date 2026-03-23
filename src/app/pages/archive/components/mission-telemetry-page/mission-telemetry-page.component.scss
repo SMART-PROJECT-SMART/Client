@@ -122,16 +122,16 @@ $tile-reveal-delay: 80ms;
   }
 
   .time-range-reset.mat-mdc-icon-button {
-    width: 28px;
-    height: 28px;
+    width: $tile-menu-btn-size;
+    height: $tile-menu-btn-size;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
 
     ::ng-deep .mat-mdc-button-touch-target {
-      width: 28px;
-      height: 28px;
+      width: $tile-menu-btn-size;
+      height: $tile-menu-btn-size;
     }
 
     mat-icon {
@@ -256,7 +256,7 @@ $tile-reveal-delay: 80ms;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
+  background: $color-overlay;
   z-index: 10;
   pointer-events: none;
 }
