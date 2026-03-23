@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import type { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Subject } from 'rxjs';
-import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
+import { switchMap, takeUntil } from 'rxjs/operators';
 import { GridType, CompactType } from 'angular-gridster2';
 import type { GridsterConfig } from 'angular-gridster2';
 import type { ChartConfiguration, ChartDataset, Plugin } from 'chart.js';
@@ -31,8 +31,6 @@ const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
 const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
 const { ARCHIVE } = ClientConstants.ArchiveRoutes;
 const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM, TITLE: TITLE_PARAM } = ClientConstants.TelemetryQueryParams;
-
-const FETCH_DEBOUNCE_MS = 300;
 
 const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -173,7 +171,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
 
     this.fetchTrigger$
       .pipe(
-        debounceTime(FETCH_DEBOUNCE_MS),
         switchMap(({ fieldsToFetch, fullReload }) => {
           if (fullReload) {
             this.loadedFields.clear();
@@ -249,6 +246,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     const pages = new Map(this.tilePages());
     pages.set(field, 0);
     this.tilePages.set(pages);
+    this.rebuildDashboardItems();
     this.fetchTrigger$.next({ fieldsToFetch: [field], fullReload: false });
   }
 
