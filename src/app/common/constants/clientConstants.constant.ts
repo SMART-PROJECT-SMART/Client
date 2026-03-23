@@ -63,17 +63,9 @@ export namespace ClientConstants {
 
   export namespace TelemetryDataAPI {
     export const BASE = '/api/telemetry-data';
-    export const BY_MISSION = (
-      missionId: string,
-      tailId: number,
-      fields?: string[],
-      startTime?: string | null,
-      endTime?: string | null,
-    ) => {
+    export const BY_MISSION = (missionId: string, tailId: number, fields?: string[]) => {
       let url = `${BASE}/by-mission?missionId=${missionId}&tailId=${tailId}`;
       if (fields?.length) url += `&fields=${fields.join(',')}`;
-      if (startTime) url += `&startTime=${encodeURIComponent(startTime)}`;
-      if (endTime) url += `&endTime=${encodeURIComponent(endTime)}`;
       return url;
     };
   }

@@ -27,11 +27,9 @@ export class ArchiveApiService {
     missionId: string,
     tailId: number,
     fields?: string[],
-    startTime?: string | null,
-    endTime?: string | null,
   ): Observable<MissionTelemetryRo[]> {
     return this.http.get<MissionTelemetryRo[]>(
-      TelemetryDataAPI.BY_MISSION(missionId, tailId, fields, startTime, endTime),
+      TelemetryDataAPI.BY_MISSION(missionId, tailId, fields),
     );
   }
 

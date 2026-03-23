@@ -69,17 +69,21 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly parameterSearch = signal<string>('');
   readonly tilePages = signal<Map<TelemetryField, number>>(new Map());
   readonly viewModeChart = VIEW_MODE_CHART;
-  readonly timeRangeStart = signal<string | null>(null);
-  readonly timeRangeEnd = signal<string | null>(null);
 
   private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
 
   private missionId = '';
   private readonly telemetryData = signal<MissionTelemetryRo[]>([]);
-  private readonly timeLabels = signal<string[]>([]);
   private readonly fetchTrigger$ = new Subject<{ fieldsToFetch: TelemetryField[]; fullReload: boolean }>();
   private readonly destroy$ = new Subject<void>();
   private loadedFields = new Set<TelemetryField>();
+
+  private readonly timeLabels = computed<string[]>(() =>
+    this.telemetryData().map((point) =>
+      new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
+    ),
+  );
+
   readonly tableRowsByField = computed(() => {
     this.telemetryData();
     this.timeLabels();
@@ -162,7 +166,9 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     this.availableFields.set(allFields);
 
     this.archiveApi.getMissionById(this.missionId).subscribe({
-      next: (mission) => this.missionDetails.set(mission),
+      next: (mission) => {
+        this.missionDetails.set(mission);
+      },
     });
 
     this.fetchTrigger$
@@ -176,7 +182,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
           const selected = this.selectedFields();
           if (selected.length === 0) {
             this.telemetryData.set([]);
-            this.timeLabels.set([]);
             this.dashboardItems.set([]);
             this.loadedFields.clear();
             this.fetchingData.set(false);
@@ -195,8 +200,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
             this.missionId,
             this.tailId(),
             newFields,
-            this.timeRangeStart(),
-            this.timeRangeEnd(),
           );
         }),
         takeUntil(this.destroy$),
@@ -207,9 +210,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
 
           if (existing.length === 0) {
             this.telemetryData.set(data);
-            this.timeLabels.set(data.map((point) =>
-              new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
-            ));
           } else {
             const merged = existing.map((point, i) => {
               const incoming = data[i];
@@ -258,28 +258,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     pages.delete(field);
     this.tilePages.set(pages);
     this.rebuildDashboardItems();
-  }
-
-  onTimeRangeStartChange(value: string): void {
-    this.timeRangeStart.set(value || null);
-    if (this.selectedFields().length > 0) {
-      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
-    }
-  }
-
-  onTimeRangeEndChange(value: string): void {
-    this.timeRangeEnd.set(value || null);
-    if (this.selectedFields().length > 0) {
-      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
-    }
-  }
-
-  resetTimeRange(): void {
-    this.timeRangeStart.set(null);
-    this.timeRangeEnd.set(null);
-    if (this.selectedFields().length > 0) {
-      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
-    }
   }
 
   getFieldLabel(field: TelemetryField): string {
