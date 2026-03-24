@@ -329,7 +329,7 @@ $tile-reveal-delay: 80ms;
 .tile-table-body {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
 
   table {
     width: 100%;
@@ -390,6 +390,12 @@ $tile-reveal-delay: 80ms;
       outline: none;
       border-color: $color-primary;
     }
+  }
+
+  .row-range {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    margin-left: $spacing-xs;
   }
 
   .page-info {

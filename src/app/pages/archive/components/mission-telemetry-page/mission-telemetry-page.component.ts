@@ -282,6 +282,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
           }
 
           this.rebuildDashboardItems();
+          this.clampTilePagesToTotal();
           this.fetchingData.set(false);
         },
         error: () => {
@@ -373,11 +374,16 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
 
   setTilePageSize(field: TelemetryField, size: number): void {
     const sizes = new Map(this.tilePageSizes());
-    sizes.set(field, size);
+    if (size > 0) {
+      sizes.set(field, size);
+    } else {
+      sizes.delete(field);
+    }
     this.tilePageSizes.set(sizes);
     const pages = new Map(this.tilePages());
     pages.set(field, 0);
     this.tilePages.set(pages);
+    this.clampTilePagesToTotal();
   }
 
   getTilePage(field: TelemetryField): number {
@@ -387,6 +393,16 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   getTotalPages(field: TelemetryField, rows: number): number {
     const pageSize = this.getEffectivePageSize(field, rows);
     return Math.ceil(this.viewTelemetry().length / pageSize) || 1;
+  }
+
+  getRowRangeDisplay(field: TelemetryField, rows: number): string {
+    const total = this.viewTelemetry().length;
+    if (total === 0) return '0 rows';
+    const pageSize = this.getEffectivePageSize(field, rows);
+    const page = this.getTilePage(field);
+    const start = page * pageSize + 1;
+    const end = Math.min(start + pageSize - 1, total);
+    return `${start}\u2013${end} of ${total}`;
   }
 
   nextPage(field: TelemetryField): void {

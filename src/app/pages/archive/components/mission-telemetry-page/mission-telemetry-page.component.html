@@ -142,11 +142,12 @@
                             (change)="setTilePageSize(item.field, +$any($event.target).value)"
                             (mousedown)="$event.stopPropagation()"
                             (touchstart)="$event.stopPropagation()">
-                      <option value="" disabled>Auto</option>
+                      <option value="">Auto</option>
                       @for (size of pageSizeOptions; track size) {
                         <option [value]="size">{{ size }}</option>
                       }
                     </select>
+                    <span class="row-range">{{ getRowRangeDisplay(item.field, item.rows) }}</span>
                     <button mat-icon-button
                             [disabled]="getTilePage(item.field) === 0"
                             (click)="prevPage(item.field)">
