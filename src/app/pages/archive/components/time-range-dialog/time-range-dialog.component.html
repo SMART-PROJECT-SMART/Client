@@ -8,7 +8,13 @@
 <mat-dialog-content>
   <form [formGroup]="rangeForm" class="dialog-body" (ngSubmit)="$event.preventDefault()">
     @if (boundsDisplay) {
-      <span class="range-bounds">Data bounds: {{ boundsDisplay }}</span>
+      <div class="valid-range-panel" role="status">
+        <mat-icon class="valid-range-icon">info_outline</mat-icon>
+        <div class="valid-range-copy">
+          <span class="valid-range-title">Valid time range</span>
+          <span class="valid-range-value">{{ boundsDisplay }}</span>
+        </div>
+      </div>
     }
 
     <div class="datetime-row">
