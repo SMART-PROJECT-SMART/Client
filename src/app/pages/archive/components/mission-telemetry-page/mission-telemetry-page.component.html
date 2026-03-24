@@ -21,7 +21,7 @@
       <p>{{ errorMessage() }}</p>
     </div>
   } @else if (availableFields().length > 0) {
-    <div class="parameter-selector">
+    <div class="toolbar-row">
       <div class="selected-chips">
         @if (unselectedFields().length > 0) {
           <mat-form-field appearance="outline" class="param-search-field" subscriptSizing="dynamic">
@@ -51,6 +51,41 @@
           </span>
         }
       </div>
+      @if (originalBounds()) {
+        <div class="time-range-controls">
+          <label class="range-label">
+            <span>From</span>
+            <input type="datetime-local"
+                   [value]="fromInput()"
+                   (input)="fromInput.set($any($event.target).value)"
+                   step="1" />
+          </label>
+          <mat-icon class="range-arrow">arrow_forward</mat-icon>
+          <label class="range-label">
+            <span>To</span>
+            <input type="datetime-local"
+                   [value]="toInput()"
+                   (input)="toInput.set($any($event.target).value)"
+                   step="1" />
+          </label>
+          <button mat-icon-button
+                  color="primary"
+                  [disabled]="!isRangeValid() || !isRangeModified()"
+                  (click)="applyTimeRange()"
+                  matTooltip="Apply time range">
+            <mat-icon>check</mat-icon>
+          </button>
+          <button mat-icon-button
+                  [disabled]="!isRangeModified()"
+                  (click)="resetTimeRange()"
+                  matTooltip="Reset to full range">
+            <mat-icon>restart_alt</mat-icon>
+          </button>
+          @if (!isRangeValid() && fromInput() && toInput()) {
+            <span class="range-error">Invalid range</span>
+          }
+        </div>
+      }
     </div>
 
     @if (selectedFields().length > 0) {

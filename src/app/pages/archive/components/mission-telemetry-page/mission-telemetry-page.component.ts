@@ -67,6 +67,11 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly parameterSearch = signal<string>('');
   readonly tilePages = signal<Map<TelemetryField, number>>(new Map());
   readonly viewModeChart = VIEW_MODE_CHART;
+  readonly fromInput = signal<string>('');
+  readonly toInput = signal<string>('');
+  readonly activeStartTime = signal<string>('');
+  readonly activeEndTime = signal<string>('');
+  readonly originalBounds = signal<{ first: string; last: string } | null>(null);
 
   private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
 
@@ -149,6 +154,35 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     );
   });
 
+  readonly isRangeValid = computed<boolean>(() => {
+    const from = this.fromInput();
+    const to = this.toInput();
+    if (!from || !to) return false;
+    return new Date(from) <= new Date(to);
+  });
+
+  readonly isRangeModified = computed<boolean>(() => {
+    const bounds = this.originalBounds();
+    if (!bounds) return false;
+    return this.fromInput() !== this.toDatetimeLocalValue(bounds.first)
+      || this.toInput() !== this.toDatetimeLocalValue(bounds.last);
+  });
+
+  readonly boundsDisplay = computed<string>(() => {
+    const bounds = this.originalBounds();
+    if (!bounds) return '';
+    const formatBound = (iso: string) => new Date(iso).toLocaleString(LOCALE, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+    return `${formatBound(bounds.first)} \u2014 ${formatBound(bounds.last)}`;
+  });
+
   ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
     this.missionId = params[MISSION_ID_PARAM] ?? '';
@@ -174,6 +208,8 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
         switchMap(({ fieldsToFetch, fullReload }) => {
           if (fullReload) {
             this.loadedFields.clear();
+            this.telemetryData.set([]);
+            this.tilePages.set(new Map());
           }
 
           const selected = this.selectedFields();
@@ -197,6 +233,8 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
             this.missionId,
             this.tailId(),
             newFields,
+            this.activeStartTime() || undefined,
+            this.activeEndTime() || undefined,
           );
         }),
         takeUntil(this.destroy$),
@@ -217,6 +255,14 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
               };
             });
             this.telemetryData.set(merged);
+          }
+
+          if (!this.originalBounds() && data.length > 0) {
+            const first = data[0].timestamp;
+            const last = data[data.length - 1].timestamp;
+            this.originalBounds.set({ first, last });
+            this.fromInput.set(this.toDatetimeLocalValue(first));
+            this.toInput.set(this.toDatetimeLocalValue(last));
           }
 
           for (const point of data) {
@@ -451,6 +497,29 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     };
   }
 
+  applyTimeRange(): void {
+    const from = this.fromInput();
+    const to = this.toInput();
+    if (!from || !to || !this.isRangeValid()) return;
+    this.activeStartTime.set(new Date(from).toISOString());
+    this.activeEndTime.set(new Date(to).toISOString());
+    if (this.selectedFields().length > 0) {
+      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
+    }
+  }
+
+  resetTimeRange(): void {
+    const bounds = this.originalBounds();
+    if (!bounds) return;
+    this.fromInput.set(this.toDatetimeLocalValue(bounds.first));
+    this.toInput.set(this.toDatetimeLocalValue(bounds.last));
+    this.activeStartTime.set('');
+    this.activeEndTime.set('');
+    if (this.selectedFields().length > 0) {
+      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
+    }
+  }
+
   openMissionDetails(): void {
     const mission = this.missionDetails();
     if (!mission) return;
@@ -458,5 +527,11 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       data: { mission },
       autoFocus: false,
     });
+  }
+
+  private toDatetimeLocalValue(isoString: string): string {
+    const d = new Date(isoString);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
 }
