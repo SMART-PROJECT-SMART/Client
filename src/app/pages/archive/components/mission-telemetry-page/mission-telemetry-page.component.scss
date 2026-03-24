@@ -148,46 +148,19 @@ $tile-reveal-delay: 80ms;
   gap: $spacing-xs;
   flex-shrink: 0;
 
-  .range-label {
-    display: flex;
+  .range-trigger {
+    display: inline-flex;
     align-items: center;
     gap: $spacing-xs;
-    font-size: $font-size-xs;
-    color: $color-text-muted;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-
-    input[type='datetime-local'] {
-      background-color: $color-background-secondary;
-      color: $color-text-primary;
-      border: $border-width-thin solid $color-border-default;
-      border-radius: $border-radius-sm;
-      padding: 4px $spacing-sm;
-      font-size: $font-size-sm;
-      font-family: inherit;
-      font-variant-numeric: tabular-nums;
-      color-scheme: dark;
-      line-height: 1.4;
-
-      &:focus {
-        outline: none;
-        border-color: $color-primary;
-      }
-    }
-  }
-
-  .range-arrow {
-    font-size: $icon-size-sm;
-    width: $icon-size-sm;
-    height: $icon-size-sm;
-    color: $color-text-muted;
-    flex-shrink: 0;
-  }
-
-  .range-error {
-    font-size: $font-size-xs;
-    color: $color-error;
+    font-size: $font-size-sm;
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .range-display {
+    color: $color-text-primary;
   }
 }
 
@@ -399,6 +372,25 @@ $tile-reveal-delay: 80ms;
   padding: $spacing-xs 0;
   border-top: $border-width-thin solid $color-border-default;
   flex-shrink: 0;
+
+  .page-size-select {
+    background-color: $color-background-primary;
+    color: $color-text-secondary;
+    border: $border-width-thin solid $color-border-default;
+    border-radius: $border-radius-sm;
+    padding: 2px $spacing-xs;
+    font-size: $font-size-xs;
+    font-family: inherit;
+    cursor: pointer;
+    color-scheme: dark;
+    margin-right: auto;
+    margin-left: $spacing-xs;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+  }
 
   .page-info {
     font-size: $font-size-xs;

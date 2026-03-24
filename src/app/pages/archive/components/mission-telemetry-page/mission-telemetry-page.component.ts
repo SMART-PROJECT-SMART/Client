@@ -13,6 +13,8 @@ import { ClientConstants } from '../../../../common/constants/clientConstants.co
 import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin.util';
 import { ArchiveApiService } from '../../../../services/archive/archive-api.service';
 import { MissionDetailsDialogComponent } from '../mission-details-dialog/mission-details-dialog.component';
+import { TimeRangeDialogComponent } from '../time-range-dialog/time-range-dialog.component';
+import type { TimeRangeDialogData, TimeRangeDialogResult } from '../time-range-dialog/time-range-dialog.component';
 import type { ArchiveMissionRo, MissionTelemetryRo, ChartRowConfig, TelemetryDashboardItem, TileViewMode } from '../../../../models/archive';
 
 const { COLORS, BACKGROUND_ALPHA, POINT_RADIUS, BORDER_WIDTH, LINE_TENSION,
@@ -26,6 +28,7 @@ const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
   MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS, DRAG_HANDLE_CLASS, NO_DRAG_CLASS,
   VIEW_MODE_CHART, VIEW_MODE_TABLE,
   TILE_HEADER_HEIGHT, TABLE_HEADER_HEIGHT, PAGINATION_HEIGHT, TABLE_ROW_HEIGHT, MIN_PAGE_SIZE,
+  PAGE_SIZE_OPTIONS,
 } = ClientConstants.GridsterDashboard;
 
 const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
@@ -66,6 +69,8 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly dashboardItems = signal<TelemetryDashboardItem[]>([]);
   readonly parameterSearch = signal<string>('');
   readonly tilePages = signal<Map<TelemetryField, number>>(new Map());
+  readonly tilePageSizes = signal<Map<TelemetryField, number>>(new Map());
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly viewModeChart = VIEW_MODE_CHART;
   readonly fromInput = signal<string>('');
   readonly toInput = signal<string>('');
@@ -81,22 +86,38 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private loadedFields = new Set<TelemetryField>();
 
+  private readonly viewTelemetry = computed<MissionTelemetryRo[]>(() => {
+    const raw = this.telemetryData();
+    const start = this.activeStartTime();
+    const end = this.activeEndTime();
+    if (!start && !end) return raw;
+    const startMs = start ? new Date(start).getTime() : null;
+    const endMs = end ? new Date(end).getTime() : null;
+    return raw.filter((p) => {
+      const t = new Date(p.timestamp).getTime();
+      if (startMs !== null && t < startMs) return false;
+      if (endMs !== null && t > endMs) return false;
+      return true;
+    });
+  });
+
   private readonly timeLabels = computed<string[]>(() =>
-    this.telemetryData().map((point) =>
+    this.viewTelemetry().map((point) =>
       new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
     ),
   );
 
   readonly tableRowsByField = computed(() => {
-    this.telemetryData();
+    this.viewTelemetry();
     this.timeLabels();
+    this.tilePageSizes();
     const items = this.dashboardItems();
     const pages = this.tilePages();
     const map = new Map<TelemetryField, TelemetryTableRowView[]>();
     for (const item of items) {
       if (item.viewMode !== VIEW_MODE_TABLE) continue;
       const field = item.field;
-      const pageSize = this.getPageSize(item.rows);
+      const pageSize = this.getEffectivePageSize(field, item.rows);
       const page = pages.get(field) ?? 0;
       const start = page * pageSize;
       const allData = this.getFieldTableData(field);
@@ -154,13 +175,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     );
   });
 
-  readonly isRangeValid = computed<boolean>(() => {
-    const from = this.fromInput();
-    const to = this.toInput();
-    if (!from || !to) return false;
-    return new Date(from) <= new Date(to);
-  });
-
   readonly isRangeModified = computed<boolean>(() => {
     const bounds = this.originalBounds();
     if (!bounds) return false;
@@ -171,16 +185,14 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly boundsDisplay = computed<string>(() => {
     const bounds = this.originalBounds();
     if (!bounds) return '';
-    const formatBound = (iso: string) => new Date(iso).toLocaleString(LOCALE, {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
-    return `${formatBound(bounds.first)} \u2014 ${formatBound(bounds.last)}`;
+    return `${this.formatDateDisplay(bounds.first)} \u2014 ${this.formatDateDisplay(bounds.last)}`;
+  });
+
+  readonly rangeDisplay = computed<string>(() => {
+    const from = this.fromInput();
+    const to = this.toInput();
+    if (!from || !to) return '';
+    return `${this.formatDateDisplay(new Date(from).toISOString())} \u2014 ${this.formatDateDisplay(new Date(to).toISOString())}`;
   });
 
   ngOnInit(): void {
@@ -233,8 +245,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
             this.missionId,
             this.tailId(),
             newFields,
-            this.activeStartTime() || undefined,
-            this.activeEndTime() || undefined,
           );
         }),
         takeUntil(this.destroy$),
@@ -301,6 +311,9 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     const pages = new Map(this.tilePages());
     pages.delete(field);
     this.tilePages.set(pages);
+    const sizes = new Map(this.tilePageSizes());
+    sizes.delete(field);
+    this.tilePageSizes.set(sizes);
     this.rebuildDashboardItems();
   }
 
@@ -336,7 +349,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   }
 
   getFieldTableData(field: TelemetryField): { timestamp: string; value: number | null }[] {
-    const data = this.telemetryData();
+    const data = this.viewTelemetry();
     const labels = this.timeLabels();
     return data.map((point, index) => ({
       timestamp: labels[index],
@@ -350,13 +363,30 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     return Math.max(MIN_PAGE_SIZE, Math.floor(available / TABLE_ROW_HEIGHT));
   }
 
+  getEffectivePageSize(field: TelemetryField, rows: number): number {
+    return this.tilePageSizes().get(field) ?? this.getPageSize(rows);
+  }
+
+  getTilePageSize(field: TelemetryField): number | null {
+    return this.tilePageSizes().get(field) ?? null;
+  }
+
+  setTilePageSize(field: TelemetryField, size: number): void {
+    const sizes = new Map(this.tilePageSizes());
+    sizes.set(field, size);
+    this.tilePageSizes.set(sizes);
+    const pages = new Map(this.tilePages());
+    pages.set(field, 0);
+    this.tilePages.set(pages);
+  }
+
   getTilePage(field: TelemetryField): number {
     return this.tilePages().get(field) ?? 0;
   }
 
   getTotalPages(field: TelemetryField, rows: number): number {
-    const pageSize = this.getPageSize(rows);
-    return Math.ceil(this.telemetryData().length / pageSize) || 1;
+    const pageSize = this.getEffectivePageSize(field, rows);
+    return Math.ceil(this.viewTelemetry().length / pageSize) || 1;
   }
 
   nextPage(field: TelemetryField): void {
@@ -424,7 +454,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
 
     const datasets: ChartDataset<'line'>[] = [{
       label: EnumUtil.getTelemetryFieldDisplay(field),
-      data: this.telemetryData().map((point) => point.fields[field] ?? null),
+      data: this.viewTelemetry().map((point) => point.fields[field] ?? null),
       borderColor: color,
       backgroundColor: color + BACKGROUND_ALPHA,
       pointRadius: POINT_RADIUS,
@@ -497,15 +527,39 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     };
   }
 
-  applyTimeRange(): void {
+  openRangePicker(): void {
     const from = this.fromInput();
     const to = this.toInput();
-    if (!from || !to || !this.isRangeValid()) return;
-    this.activeStartTime.set(new Date(from).toISOString());
-    this.activeEndTime.set(new Date(to).toISOString());
-    if (this.selectedFields().length > 0) {
-      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
-    }
+    const bounds = this.originalBounds();
+    if (!from || !to || !bounds) return;
+
+    const data: TimeRangeDialogData = {
+      from: new Date(from),
+      to: new Date(to),
+      boundsDisplay: `${this.formatDateDisplay(bounds.first)} \u2014 ${this.formatDateDisplay(bounds.last)}`,
+      minBound: new Date(bounds.first),
+      maxBound: new Date(bounds.last),
+    };
+
+    this.dialog.open<TimeRangeDialogComponent, TimeRangeDialogData, TimeRangeDialogResult>(
+      TimeRangeDialogComponent,
+      {
+        data,
+        autoFocus: false,
+        width: '520px',
+        disableClose: false,
+        hasBackdrop: true,
+        closeOnNavigation: true,
+      },
+    ).afterClosed().subscribe((result) => {
+      if (!result) return;
+      this.fromInput.set(this.toDatetimeLocalValue(result.from.toISOString()));
+      this.toInput.set(this.toDatetimeLocalValue(result.to.toISOString()));
+      this.activeStartTime.set(result.from.toISOString());
+      this.activeEndTime.set(result.to.toISOString());
+      this.rebuildDashboardItems();
+      this.clampTilePagesToTotal();
+    });
   }
 
   resetTimeRange(): void {
@@ -515,9 +569,8 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     this.toInput.set(this.toDatetimeLocalValue(bounds.last));
     this.activeStartTime.set('');
     this.activeEndTime.set('');
-    if (this.selectedFields().length > 0) {
-      this.fetchTrigger$.next({ fieldsToFetch: this.selectedFields(), fullReload: true });
-    }
+    this.rebuildDashboardItems();
+    this.clampTilePagesToTotal();
   }
 
   openMissionDetails(): void {
@@ -526,6 +579,18 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     this.dialog.open(MissionDetailsDialogComponent, {
       data: { mission },
       autoFocus: false,
+    });
+  }
+
+  private formatDateDisplay(iso: string): string {
+    return new Date(iso).toLocaleString(LOCALE, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
     });
   }
 

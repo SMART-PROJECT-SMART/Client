@@ -1,0 +1,115 @@
+@use '../../../../../styles/constants' as *;
+
+::ng-deep .mat-mdc-dialog-surface {
+  background-color: $color-background-secondary !important;
+}
+
+mat-dialog-content {
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.dialog-header {
+  background-color: $color-background-secondary;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    margin: 0;
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+}
+
+.dialog-body {
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.range-bounds {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}
+
+.datetime-row {
+  display: flex;
+  gap: $spacing-md;
+  align-items: flex-end;
+
+  .date-field {
+    flex: 2;
+    position: relative;
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+    }
+  }
+
+  .time-field {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+}
+
+.time-label {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: 500;
+}
+
+.time-input-wrapper {
+  border: $border-width-thin solid
+    var(--mat-form-field-outlined-outline-color, $color-border-default);
+  border-radius: $border-radius-sm;
+  display: flex;
+  align-items: center;
+  background-color: $color-background-secondary;
+  min-height: var(--mat-form-field-container-height, $form-field-container-height-default);
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: $spacing-sm $spacing-md;
+    border: none;
+    background: transparent;
+    color: $color-text-primary;
+    font: inherit;
+    text-align: center;
+    outline: none;
+
+    &::placeholder {
+      color: $color-text-secondary;
+    }
+  }
+
+  button[mat-icon-button] {
+    margin-bottom: 0;
+
+    mat-icon {
+      color: $color-text-primary;
+    }
+  }
+}
+
+.form-level-error {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: rgba($color-error, 0.1);
+  border-left: 3px solid $color-error;
+  border-radius: $border-radius-sm;
+  color: $color-error;
+  font-size: $font-size-sm;
+}

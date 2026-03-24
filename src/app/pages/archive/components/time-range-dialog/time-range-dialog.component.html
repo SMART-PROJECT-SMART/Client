@@ -1,0 +1,118 @@
+<div class="dialog-header">
+  <h2>Select Time Range</h2>
+  <button mat-icon-button type="button" mat-dialog-close aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="rangeForm" class="dialog-body" (ngSubmit)="$event.preventDefault()">
+    @if (boundsDisplay) {
+      <span class="range-bounds">Data bounds: {{ boundsDisplay }}</span>
+    }
+
+    <div class="datetime-row">
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>Start Date</mat-label>
+        <input matInput [matDatepicker]="startDatePicker" formControlName="startDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #startDatePicker></mat-datepicker>
+        @if (rangeForm.get('startDate')?.hasError('matDatepickerParse')) {
+          <mat-error>Enter a valid date</mat-error>
+        } @else if (
+          rangeForm.get('startDate')?.hasError('required') &&
+          rangeForm.get('startDate')?.touched
+        ) {
+          <mat-error>Required</mat-error>
+        }
+      </mat-form-field>
+      <div class="time-field">
+        <label class="time-label">Start Time</label>
+        <div class="time-input-wrapper">
+          <input
+            type="text"
+            [owlDateTime]="startTimePicker"
+            formControlName="startTime"
+            placeholder="HH:mm"
+          />
+          <button
+            mat-icon-button
+            type="button"
+            [owlDateTimeTrigger]="startTimePicker"
+            aria-label="Open time picker"
+          >
+            <mat-icon>schedule</mat-icon>
+          </button>
+          <owl-date-time
+            #startTimePicker
+            [pickerType]="'timer'"
+            [showSecondsTimer]="false"
+            [hour12Timer]="false"
+            panelClass="owl-dt-picker-dark"
+          ></owl-date-time>
+        </div>
+      </div>
+    </div>
+
+    <div class="datetime-row">
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>End Date</mat-label>
+        <input matInput [matDatepicker]="endDatePicker" formControlName="endDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #endDatePicker></mat-datepicker>
+        @if (rangeForm.get('endDate')?.hasError('matDatepickerParse')) {
+          <mat-error>Enter a valid date</mat-error>
+        } @else if (
+          rangeForm.get('endDate')?.hasError('required') &&
+          rangeForm.get('endDate')?.touched
+        ) {
+          <mat-error>Required</mat-error>
+        }
+      </mat-form-field>
+      <div class="time-field">
+        <label class="time-label">End Time</label>
+        <div class="time-input-wrapper">
+          <input
+            type="text"
+            [owlDateTime]="endTimePicker"
+            formControlName="endTime"
+            placeholder="HH:mm"
+          />
+          <button
+            mat-icon-button
+            type="button"
+            [owlDateTimeTrigger]="endTimePicker"
+            aria-label="Open time picker"
+          >
+            <mat-icon>schedule</mat-icon>
+          </button>
+          <owl-date-time
+            #endTimePicker
+            [pickerType]="'timer'"
+            [showSecondsTimer]="false"
+            [hour12Timer]="false"
+            panelClass="owl-dt-picker-dark"
+          ></owl-date-time>
+        </div>
+      </div>
+    </div>
+
+    @if (isInvalidRange) {
+      <div class="form-level-error">
+        <mat-icon>error</mat-icon>
+        <span>End time must be after start time</span>
+      </div>
+    }
+    @if (isOutOfDataBounds) {
+      <div class="form-level-error">
+        <mat-icon>error</mat-icon>
+        <span>Range must stay within the loaded data bounds (first through last timestamp).</span>
+      </div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" type="button" [disabled]="!isValid" (click)="onApply()">Apply</button>
+</mat-dialog-actions>

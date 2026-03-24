@@ -243,6 +243,7 @@ export namespace ClientConstants {
     export const PAGINATION_HEIGHT: number = 38;
     export const TABLE_ROW_HEIGHT: number = 28;
     export const MIN_PAGE_SIZE: number = 1;
+    export const PAGE_SIZE_OPTIONS: number[] = [5, 10, 25, 50];
   }
 
   export namespace DeviceManagementConstants {

@@ -3,11 +3,18 @@ export class DateTimeUtil {
     const combined = new Date(date);
 
     if (typeof time === 'string') {
-      const [hours, minutes] = time.split(':').map(Number);
-      combined.setHours(hours, minutes, 0, 0);
+      const parts = time.trim().split(':').map(Number);
+      const hours = parts[0] ?? 0;
+      const minutes = parts[1] ?? 0;
+      const seconds = parts.length > 2 ? (parts[2] ?? 0) : 0;
+      combined.setHours(hours, minutes, seconds, 0);
     } else {
-      // time is a Date object from MatTimepicker
-      combined.setHours(time.getHours(), time.getMinutes(), 0, 0);
+      combined.setHours(
+        time.getHours(),
+        time.getMinutes(),
+        time.getSeconds(),
+        time.getMilliseconds(),
+      );
     }
 
     return combined;
