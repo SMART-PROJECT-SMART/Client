@@ -39,7 +39,7 @@
             type="text"
             [owlDateTime]="startTimePicker"
             formControlName="startTime"
-            placeholder="HH:mm"
+            placeholder="HH:mm:ss"
           />
           <button
             mat-icon-button
@@ -52,7 +52,7 @@
           <owl-date-time
             #startTimePicker
             [pickerType]="'timer'"
-            [showSecondsTimer]="false"
+            [showSecondsTimer]="true"
             [hour12Timer]="false"
             panelClass="owl-dt-picker-dark"
           ></owl-date-time>
@@ -82,7 +82,7 @@
             type="text"
             [owlDateTime]="endTimePicker"
             formControlName="endTime"
-            placeholder="HH:mm"
+            placeholder="HH:mm:ss"
           />
           <button
             mat-icon-button
@@ -95,7 +95,7 @@
           <owl-date-time
             #endTimePicker
             [pickerType]="'timer'"
-            [showSecondsTimer]="false"
+            [showSecondsTimer]="true"
             [hour12Timer]="false"
             panelClass="owl-dt-picker-dark"
           ></owl-date-time>

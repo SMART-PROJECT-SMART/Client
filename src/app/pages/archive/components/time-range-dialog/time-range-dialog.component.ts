@@ -1,7 +1,19 @@
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { OWL_DATE_TIME_FORMATS } from '@danielmoncada/angular-datetime-picker';
+import { OWL_TIME_FORMATS } from '../../../../common/constants/owl-datetime.constants';
 import { DateTimeUtil } from '../../../../common/utils/date-time.util';
+
+const TIME_RANGE_DIALOG_OWL_FORMATS = {
+  ...OWL_TIME_FORMATS,
+  timePickerInput: {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  } as Intl.DateTimeFormatOptions,
+};
 
 export interface TimeRangeDialogData {
   from: Date;
@@ -21,6 +33,9 @@ export interface TimeRangeDialogResult {
   standalone: false,
   templateUrl: './time-range-dialog.component.html',
   styleUrl: './time-range-dialog.component.scss',
+  providers: [
+    { provide: OWL_DATE_TIME_FORMATS, useValue: TIME_RANGE_DIALOG_OWL_FORMATS },
+  ],
 })
 export class TimeRangeDialogComponent {
   readonly rangeForm: FormGroup;
