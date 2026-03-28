@@ -568,7 +568,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       {
         data,
         autoFocus: false,
-        width: '720px',
+        width: '680px',
         disableClose: false,
         hasBackdrop: true,
         closeOnNavigation: true,

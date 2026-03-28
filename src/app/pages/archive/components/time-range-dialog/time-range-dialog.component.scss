@@ -1,5 +1,7 @@
 @use '../../../../../styles/constants' as *;
 
+$time-range-calendar-panel-max-width: 340px;
+
 ::ng-deep .mat-mdc-dialog-surface {
   background-color: $color-background-secondary !important;
 }
@@ -34,10 +36,18 @@ mat-dialog-content {
   min-height: 0;
 }
 
+.calendar-section-header {
+  margin-left: -$spacing-lg;
+  margin-right: -$spacing-lg;
+  padding-left: $spacing-lg;
+  padding-right: $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+  margin-bottom: $spacing-md;
+}
+
 .calendar-tab-bar {
   display: flex;
-  border-bottom: $border-width-thin solid $color-border-default;
-  margin-bottom: $spacing-xs;
+  margin-bottom: -$border-width-thin;
 }
 
 .calendar-tab {
@@ -57,8 +67,11 @@ mat-dialog-content {
 .booking-calendar-wrap {
   flex-shrink: 0;
   width: 100%;
-  min-height: 320px;
-  overflow-x: auto;
+  min-height: 240px;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  overflow-x: visible;
   overflow-y: visible;
 
   ::ng-deep .md-drppicker {
@@ -69,19 +82,29 @@ mat-dialog-content {
     border: $border-width-thin solid $color-border-default;
     display: block;
     width: 100%;
+    max-width: $time-range-calendar-panel-max-width;
+    margin-left: auto;
+    margin-right: auto;
     overflow: visible;
-    clear: both;
+  }
 
-    &::after {
-      content: '';
-      display: table;
-      clear: both;
-    }
+  ::ng-deep .md-drppicker.double {
+    display: block;
+    width: 100%;
+    max-width: $time-range-calendar-panel-max-width;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  ::ng-deep .md-drppicker.ltr .calendar.right {
+    display: none !important;
+  }
+
+  ::ng-deep .md-drppicker.rtl .calendar.right {
+    display: none !important;
   }
 
   ::ng-deep .md-drppicker.inline {
-    display: block;
-    width: 100%;
     transform: none !important;
     opacity: 1 !important;
     visibility: visible !important;
@@ -98,17 +121,93 @@ mat-dialog-content {
   }
 
   ::ng-deep .md-drppicker .calendar {
-    min-height: 240px;
+    min-height: 220px;
+    max-width: 100%;
+    width: 100%;
   }
 
   ::ng-deep .md-drppicker.ltr .calendar.left,
   ::ng-deep .md-drppicker.ltr .calendar.right {
-    float: left;
+    float: none;
   }
 
   ::ng-deep .md-drppicker .calendar-table {
     background-color: $color-background-primary;
     border-color: $color-border-default;
+    border-radius: $border-radius-sm;
+    border: $border-width-thin solid $color-border-default;
+  }
+
+  ::ng-deep .md-drppicker .dropdowns select {
+    background-color: $color-background-elevated;
+    color: $color-text-primary;
+    border-color: $color-border-default;
+  }
+
+  ::ng-deep .md-drppicker .dropdowns {
+    color: $color-text-primary;
+  }
+
+  ::ng-deep .md-drppicker table.table-condensed {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: $color-background-primary;
+  }
+
+  ::ng-deep .md-drppicker table.table-condensed th,
+  ::ng-deep .md-drppicker table.table-condensed td {
+    border: $border-width-thin solid $color-border-light;
+  }
+
+  ::ng-deep .md-drppicker table.table-condensed thead .week-days th {
+    border-bottom-color: $color-border-default;
+  }
+
+  ::ng-deep .md-drppicker td.off,
+  ::ng-deep .md-drppicker td.off.in-range {
+    background-color: $color-background-primary;
+  }
+
+  ::ng-deep .md-drppicker th,
+  ::ng-deep .md-drppicker td {
+    border-radius: 0;
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+
+  ::ng-deep .md-drppicker th {
+    color: $color-text-secondary;
+    font-weight: 500;
+    padding: $spacing-xs $spacing-xs;
+    min-width: 28px;
+    width: auto;
+    height: auto;
+    line-height: 1.2;
+  }
+
+  ::ng-deep .md-drppicker td {
+    margin: 0;
+    padding: 1px;
+    min-width: 28px;
+    width: auto;
+    height: auto;
+    line-height: 1.2;
+    transform: none;
+  }
+
+  ::ng-deep .md-drppicker td span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: $border-radius-sm;
+    transform: none;
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+
+  ::ng-deep .md-drppicker td.available:hover,
+  ::ng-deep .md-drppicker th.available:hover {
+    transform: none;
   }
 
   ::ng-deep .md-drppicker td.in-range {
@@ -131,12 +230,14 @@ mat-dialog-content {
 
   ::ng-deep .md-drppicker td.active,
   ::ng-deep .md-drppicker td.active:hover {
-    background-color: $color-primary;
-    color: $color-background-primary;
+    background-color: transparent;
+    color: inherit;
   }
 
-  ::ng-deep .md-drppicker th {
-    color: $color-text-secondary;
+  ::ng-deep .md-drppicker td.active span,
+  ::ng-deep .md-drppicker td.active:hover span {
+    background-color: $color-primary;
+    color: $color-background-primary;
   }
 
   ::ng-deep .md-drppicker td.available {
@@ -225,7 +326,7 @@ mat-dialog-content {
 }
 
 .time-label {
-  font-size: $font-size-sm;
+  font-size: $font-size-md;
   color: $color-text-secondary;
   font-weight: 500;
 }

@@ -17,8 +17,10 @@
       </div>
     }
 
-    <div class="calendar-tab-bar">
-      <span class="calendar-tab calendar-tab-active">Calendar</span>
+    <div class="calendar-section-header">
+      <div class="calendar-tab-bar">
+        <span class="calendar-tab calendar-tab-active">Calendar</span>
+      </div>
     </div>
 
     <div class="booking-calendar-wrap">
@@ -31,10 +33,10 @@
         [maxDate]="maxDateBoundStr"
         [autoApply]="true"
         [alwaysShowCalendars]="true"
-        [linkedCalendars]="true"
+        [linkedCalendars]="false"
         [showCancel]="false"
         [showClearButton]="false"
-        [showDropdowns]="false"
+        [showDropdowns]="true"
         [timePicker]="false"
         drops="down"
         opens="center"
