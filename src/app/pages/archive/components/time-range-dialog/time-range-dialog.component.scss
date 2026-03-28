@@ -36,34 +36,6 @@ mat-dialog-content {
   min-height: 0;
 }
 
-.calendar-section-header {
-  margin-left: -$spacing-lg;
-  margin-right: -$spacing-lg;
-  padding-left: $spacing-lg;
-  padding-right: $spacing-lg;
-  border-bottom: $border-width-thin solid $color-border-default;
-  margin-bottom: $spacing-md;
-}
-
-.calendar-tab-bar {
-  display: flex;
-  margin-bottom: -$border-width-thin;
-}
-
-.calendar-tab {
-  padding: $spacing-sm $spacing-md;
-  font-size: $font-size-sm;
-  font-weight: 600;
-  color: $color-text-secondary;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -1px;
-}
-
-.calendar-tab-active {
-  color: $color-primary-light;
-  border-bottom-color: $color-primary-light;
-}
-
 .booking-calendar-wrap {
   flex-shrink: 0;
   width: 100%;
@@ -77,15 +49,16 @@ mat-dialog-content {
   ::ng-deep .md-drppicker {
     margin-top: 0;
     box-shadow: none;
-    background-color: $color-background-secondary;
-    border-radius: $border-radius-sm;
-    border: $border-width-thin solid $color-border-default;
+    background-color: $color-background-card;
+    border-radius: $border-radius-md;
+    border: $border-width-thin solid $color-border-light;
     display: block;
     width: 100%;
     max-width: $time-range-calendar-panel-max-width;
     margin-left: auto;
     margin-right: auto;
     overflow: visible;
+    padding: $spacing-sm $spacing-md $spacing-md;
   }
 
   ::ng-deep .md-drppicker.double {
@@ -132,40 +105,47 @@ mat-dialog-content {
   }
 
   ::ng-deep .md-drppicker .calendar-table {
-    background-color: $color-background-primary;
-    border-color: $color-border-default;
+    background-color: transparent;
+    border: none;
     border-radius: $border-radius-sm;
-    border: $border-width-thin solid $color-border-default;
+    padding: 0;
   }
 
   ::ng-deep .md-drppicker .dropdowns select {
     background-color: $color-background-elevated;
     color: $color-text-primary;
-    border-color: $color-border-default;
+    border-color: $color-border-light;
+    border-radius: $border-radius-sm;
   }
 
   ::ng-deep .md-drppicker .dropdowns {
     color: $color-text-primary;
   }
 
+  ::ng-deep .md-drppicker th.month {
+    padding-bottom: $spacing-sm;
+  }
+
   ::ng-deep .md-drppicker table.table-condensed {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 2px;
     width: 100%;
-    background-color: $color-background-primary;
+    background-color: transparent;
   }
 
   ::ng-deep .md-drppicker table.table-condensed th,
   ::ng-deep .md-drppicker table.table-condensed td {
-    border: $border-width-thin solid $color-border-light;
+    border: none;
   }
 
-  ::ng-deep .md-drppicker table.table-condensed thead .week-days th {
-    border-bottom-color: $color-border-default;
+  ::ng-deep .md-drppicker table.table-condensed thead tr.week-days th {
+    border-bottom: $border-width-thin solid $color-border-default;
+    padding-bottom: $spacing-xs;
   }
 
   ::ng-deep .md-drppicker td.off,
   ::ng-deep .md-drppicker td.off.in-range {
-    background-color: $color-background-primary;
+    background-color: transparent;
   }
 
   ::ng-deep .md-drppicker th,
@@ -186,7 +166,7 @@ mat-dialog-content {
 
   ::ng-deep .md-drppicker td {
     margin: 0;
-    padding: 1px;
+    padding: 2px;
     min-width: 28px;
     width: auto;
     height: auto;
@@ -198,9 +178,9 @@ mat-dialog-content {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 28px;
-    min-height: 28px;
-    border-radius: $border-radius-sm;
+    min-width: 30px;
+    min-height: 30px;
+    border-radius: $border-radius-md;
     transform: none;
     transition: background-color 0.12s ease, color 0.12s ease;
   }
