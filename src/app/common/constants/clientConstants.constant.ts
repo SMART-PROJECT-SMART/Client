@@ -51,7 +51,6 @@ export namespace ClientConstants {
   export namespace TelemetryQueryParams {
     export const MISSION_ID: string = 'missionId';
     export const TAIL_ID: string = 'tailId';
-    export const TITLE: string = 'title';
   }
 
   export namespace ArchiveAPI {

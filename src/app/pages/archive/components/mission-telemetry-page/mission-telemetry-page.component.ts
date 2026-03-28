@@ -33,7 +33,7 @@ const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
 
 const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
 const { ARCHIVE } = ClientConstants.ArchiveRoutes;
-const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM, TITLE: TITLE_PARAM } = ClientConstants.TelemetryQueryParams;
+const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM } = ClientConstants.TelemetryQueryParams;
 
 const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -199,7 +199,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     const params = this.route.snapshot.queryParams;
     this.missionId = params[MISSION_ID_PARAM] ?? '';
     this.tailId.set(Number(params[TAIL_ID_PARAM]) || 0);
-    this.missionTitle.set(params[TITLE_PARAM] ?? '');
 
     if (!this.missionId) {
       this.errorMessage.set(NO_MISSION_ID);
@@ -212,6 +211,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     this.archiveApi.getMissionById(this.missionId).subscribe({
       next: (mission) => {
         this.missionDetails.set(mission);
+        this.missionTitle.set(mission?.title ?? '');
       },
     });
 

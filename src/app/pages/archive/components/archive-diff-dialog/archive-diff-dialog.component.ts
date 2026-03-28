@@ -8,7 +8,7 @@ import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 
 const { INVESTIGATE } = ClientConstants.ArchiveRoutes;
-const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM, TITLE: TITLE_PARAM } = ClientConstants.TelemetryQueryParams;
+const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM } = ClientConstants.TelemetryQueryParams;
 
 const EXCLUDED_TELEMETRY_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -149,7 +149,7 @@ export class ArchiveDiffDialogComponent {
 
     this.dialogRef.close();
     this.router.navigate([INVESTIGATE], {
-      queryParams: { [MISSION_ID_PARAM]: row.missionId, [TAIL_ID_PARAM]: tailId, [TITLE_PARAM]: row.title },
+      queryParams: { [MISSION_ID_PARAM]: row.missionId, [TAIL_ID_PARAM]: tailId },
     });
   }
 
