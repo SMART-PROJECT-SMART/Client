@@ -30,6 +30,143 @@ mat-dialog-content {
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.calendar-tab-bar {
+  display: flex;
+  border-bottom: $border-width-thin solid $color-border-default;
+  margin-bottom: $spacing-xs;
+}
+
+.calendar-tab {
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $color-text-secondary;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+
+.calendar-tab-active {
+  color: $color-primary-light;
+  border-bottom-color: $color-primary-light;
+}
+
+.booking-calendar-wrap {
+  flex-shrink: 0;
+  width: 100%;
+  min-height: 320px;
+  overflow-x: auto;
+  overflow-y: visible;
+
+  ::ng-deep .md-drppicker {
+    margin-top: 0;
+    box-shadow: none;
+    background-color: $color-background-secondary;
+    border-radius: $border-radius-sm;
+    border: $border-width-thin solid $color-border-default;
+    display: block;
+    width: 100%;
+    overflow: visible;
+    clear: both;
+
+    &::after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+  }
+
+  ::ng-deep .md-drppicker.inline {
+    display: block;
+    width: 100%;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  ::ng-deep .md-drppicker.inline.hidden {
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  ::ng-deep .md-drppicker.inline.shown {
+    transform: none !important;
+  }
+
+  ::ng-deep .md-drppicker .calendar {
+    min-height: 240px;
+  }
+
+  ::ng-deep .md-drppicker.ltr .calendar.left,
+  ::ng-deep .md-drppicker.ltr .calendar.right {
+    float: left;
+  }
+
+  ::ng-deep .md-drppicker .calendar-table {
+    background-color: $color-background-primary;
+    border-color: $color-border-default;
+  }
+
+  ::ng-deep .md-drppicker td.in-range {
+    background-color: rgba($color-primary, 0.12);
+    color: $color-text-primary;
+    border-radius: 0;
+  }
+
+  ::ng-deep .md-drppicker td.start-date {
+    border-radius: $border-radius-sm 0 0 $border-radius-sm;
+  }
+
+  ::ng-deep .md-drppicker td.end-date {
+    border-radius: 0 $border-radius-sm $border-radius-sm 0;
+  }
+
+  ::ng-deep .md-drppicker td.start-date.end-date {
+    border-radius: $border-radius-sm;
+  }
+
+  ::ng-deep .md-drppicker td.active,
+  ::ng-deep .md-drppicker td.active:hover {
+    background-color: $color-primary;
+    color: $color-background-primary;
+  }
+
+  ::ng-deep .md-drppicker th {
+    color: $color-text-secondary;
+  }
+
+  ::ng-deep .md-drppicker td.available {
+    color: $color-text-primary;
+  }
+
+  ::ng-deep .md-drppicker td.off {
+    color: $color-text-muted;
+  }
+}
+
+.flex-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  align-items: center;
+}
+
+.flex-pill {
+  border-color: $color-border-default;
+  color: $color-text-primary;
+  font-size: $font-size-xs;
+  min-height: 36px;
+  line-height: 1.2;
+}
+
+.flex-pill-active {
+  border-color: $color-primary;
+  color: $color-primary-light;
+  background-color: rgba($color-primary, 0.12);
 }
 
 .valid-range-panel {
@@ -73,28 +210,17 @@ mat-dialog-content {
   line-height: 1.4;
 }
 
-.datetime-row {
+.time-rows {
   display: flex;
   gap: $spacing-md;
   align-items: flex-end;
 
-  .date-field {
-    flex: 2;
-    position: relative;
-
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-    }
-  }
-
   .time-field {
-    flex: 2;
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
+    min-width: 0;
   }
 }
 

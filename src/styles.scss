@@ -68,3 +68,17 @@ body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+
+.time-range-dialog-panel .mat-mdc-dialog-container {
+  max-height: none !important;
+}
+
+.time-range-dialog-panel .mat-mdc-dialog-surface {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+.time-range-dialog-panel .mat-mdc-dialog-content {
+  max-height: none !important;
+  overflow: visible !important;
+}

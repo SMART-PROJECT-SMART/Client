@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
 
 import { AppRoutingModule } from './app-routing.module';
 import { App } from './app';
@@ -74,6 +75,7 @@ import { TimeRangeDialogComponent } from './pages/archive/components/time-range-
     AppRoutingModule,
     MatModule,
     ReactiveFormsModule,
+    NgxDaterangepickerMd.forRoot(),
     NumericInputDirective,
     TimeInputDirective,
     BaseChartDirective,

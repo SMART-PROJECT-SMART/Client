@@ -14,7 +14,7 @@ import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin
 import { ArchiveApiService } from '../../../../services/archive/archive-api.service';
 import { MissionDetailsDialogComponent } from '../mission-details-dialog/mission-details-dialog.component';
 import { TimeRangeDialogComponent } from '../time-range-dialog/time-range-dialog.component';
-import type { TimeRangeDialogData, TimeRangeDialogResult } from '../time-range-dialog/time-range-dialog.component';
+import type { TimeRangeDialogData, TimeRangeDialogResult } from '../time-range-dialog/time-range-dialog.models';
 import type { ArchiveMissionRo, MissionTelemetryRo, ChartRowConfig, TelemetryDashboardItem, TileViewMode } from '../../../../models/archive';
 
 const { COLORS, BACKGROUND_ALPHA, POINT_RADIUS, BORDER_WIDTH, LINE_TENSION,
@@ -544,10 +544,16 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   }
 
   openRangePicker(): void {
-    const from = this.fromInput();
-    const to = this.toInput();
     const bounds = this.originalBounds();
-    if (!from || !to || !bounds) return;
+    if (!bounds) return;
+    let from = this.fromInput();
+    let to = this.toInput();
+    if (!from || !to) {
+      from = this.toDatetimeLocalValue(bounds.first);
+      to = this.toDatetimeLocalValue(bounds.last);
+      this.fromInput.set(from);
+      this.toInput.set(to);
+    }
 
     const data: TimeRangeDialogData = {
       from: new Date(from),
@@ -562,10 +568,11 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       {
         data,
         autoFocus: false,
-        width: '520px',
+        width: '720px',
         disableClose: false,
         hasBackdrop: true,
         closeOnNavigation: true,
+        panelClass: 'time-range-dialog-panel',
       },
     ).afterClosed().subscribe((result) => {
       if (!result) return;
