@@ -225,6 +225,38 @@ export namespace ClientConstants {
     export const LOAD_FAILED: string = 'Failed to load telemetry data.';
   }
 
+  export namespace TelemetryInvestigationUi {
+    export const TIME_RANGE_DIALOG_WIDTH: string = '680px';
+    export const TIME_RANGE_DIALOG_PANEL_CLASS: string = 'time-range-dialog-panel';
+    export const FETCH_OVERLAY_SPINNER_DIAMETER: number = 32;
+    export const TABLE_ROW_TRACK_ID_SEPARATOR: string = '|';
+    export const ROW_RANGE_ZERO_ROWS: string = '0 rows';
+    export const TIMESTAMP_TABLE_HEADER: string = 'Timestamp';
+    export const PARAMETER_SEARCH_PLACEHOLDER: string = 'Search parameters...';
+    export const MISSION_DETAILS_LABEL: string = 'Mission Details';
+    export const EMPTY_STATE_TITLE: string = 'No Parameters Selected';
+    export const EMPTY_STATE_HINT: string = 'Add telemetry parameters to start investigating';
+    export const ADD_PARAMETER_LABEL: string = 'Add Parameter';
+    export const TAIL_LABEL_PREFIX: string = 'Tail ';
+    export const BACK_ARIA_LABEL: string = 'Back to archive';
+    export const TABLE_VALUE_NUMBER_FORMAT: string = '1.0-2';
+    export const DATETIME_LOCAL_PAD_LENGTH: number = 2;
+    export const DATETIME_PAD_CHAR: string = '0';
+    export const TOOLTIP_TIME_RANGE: string = 'Click to change time range';
+    export const TOOLTIP_RESET_RANGE: string = 'Reset to full range';
+    export const MENU_SHOW_AS_TABLE: string = 'Show as Table';
+    export const MENU_SHOW_AS_CHART: string = 'Show as Chart';
+    export const BOUNDS_DISPLAY_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    };
+  }
+
   export namespace GridsterDashboard {
     export const DEFAULT_COLUMNS: number = 2;
     export const DEFAULT_ITEM_COLS: number = 1;

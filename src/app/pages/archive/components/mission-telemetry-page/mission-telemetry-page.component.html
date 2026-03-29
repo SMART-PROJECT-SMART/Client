@@ -1,16 +1,16 @@
 <div class="page-container">
   <div class="page-header">
     <div class="header-left">
-      <button mat-icon-button (click)="goBack()" aria-label="Back to archive">
+      <button mat-icon-button (click)="goBack()" [attr.aria-label]="investigationUi.BACK_ARIA_LABEL">
         <mat-icon>arrow_back</mat-icon>
       </button>
       <h1>{{ missionTitle() }}</h1>
-      <span class="header-meta">Tail {{ tailId() }}</span>
+      <span class="header-meta">{{ investigationUi.TAIL_LABEL_PREFIX }}{{ tailId() }}</span>
     </div>
     @if (missionDetails()) {
       <button mat-stroked-button class="mission-details-btn" (click)="openMissionDetails()">
         <mat-icon>info_outline</mat-icon>
-        Mission Details
+        {{ investigationUi.MISSION_DETAILS_LABEL }}
       </button>
     }
   </div>
@@ -32,7 +32,7 @@
               [value]="parameterSearch()"
               (input)="onParameterSearchInput($event)"
               [matAutocomplete]="paramAuto"
-              placeholder="Search parameters..."
+              [placeholder]="investigationUi.PARAMETER_SEARCH_PLACEHOLDER"
             />
             <mat-autocomplete
               #paramAuto="matAutocomplete"
@@ -56,14 +56,14 @@
           <button mat-stroked-button
                   class="range-trigger"
                   (click)="openRangePicker()"
-                  matTooltip="Click to change time range">
+                  [matTooltip]="investigationUi.TOOLTIP_TIME_RANGE">
             <mat-icon>date_range</mat-icon>
             <span class="range-display">{{ rangeDisplay() }}</span>
           </button>
           @if (isRangeModified()) {
             <button mat-icon-button
                     (click)="resetTimeRange()"
-                    matTooltip="Reset to full range">
+                    [matTooltip]="investigationUi.TOOLTIP_RESET_RANGE">
               <mat-icon>restart_alt</mat-icon>
             </button>
           }
@@ -75,7 +75,7 @@
       <div class="gridster-wrapper">
         @if (fetchingData()) {
           <div class="fetch-overlay">
-            <mat-spinner diameter="32"></mat-spinner>
+            <mat-spinner [diameter]="investigationUi.FETCH_OVERLAY_SPINNER_DIAMETER"></mat-spinner>
           </div>
         }
         <gridster [options]="gridsterOptions">
@@ -96,7 +96,7 @@
                 <mat-menu #tileMenu="matMenu">
                   <button mat-menu-item (click)="toggleViewMode(item.field)">
                     <mat-icon>{{ item.viewMode === viewModeChart ? 'table_chart' : 'show_chart' }}</mat-icon>
-                    {{ item.viewMode === viewModeChart ? 'Show as Table' : 'Show as Chart' }}
+                    {{ item.viewMode === viewModeChart ? investigationUi.MENU_SHOW_AS_TABLE : investigationUi.MENU_SHOW_AS_CHART }}
                   </button>
                 </mat-menu>
                 <mat-icon class="drag-handle">drag_indicator</mat-icon>
@@ -122,7 +122,7 @@
                     <table>
                       <thead>
                         <tr>
-                          <th>Timestamp</th>
+                          <th>{{ investigationUi.TIMESTAMP_TABLE_HEADER }}</th>
                           <th>{{ item.chartConfig.label }} {{ item.chartConfig.unit }}</th>
                         </tr>
                       </thead>
@@ -130,7 +130,7 @@
                         @for (row of tableRowsByField().get(item.field) ?? []; track row.trackId) {
                           <tr>
                             <td>{{ row.timestamp }}</td>
-                            <td>{{ row.value | number:'1.0-2' }}</td>
+                            <td>{{ row.value | number:investigationUi.TABLE_VALUE_NUMBER_FORMAT }}</td>
                           </tr>
                         }
                       </tbody>
@@ -169,11 +169,11 @@
     } @else {
       <div class="empty-state">
         <mat-icon class="empty-icon">show_chart</mat-icon>
-        <h2>No Parameters Selected</h2>
-        <p>Add telemetry parameters to start investigating</p>
+        <h2>{{ investigationUi.EMPTY_STATE_TITLE }}</h2>
+        <p>{{ investigationUi.EMPTY_STATE_HINT }}</p>
         <button mat-raised-button color="primary" (click)="focusSearchInput()">
           <mat-icon>add_circle</mat-icon>
-          Add Parameter
+          {{ investigationUi.ADD_PARAMETER_LABEL }}
         </button>
       </div>
     }

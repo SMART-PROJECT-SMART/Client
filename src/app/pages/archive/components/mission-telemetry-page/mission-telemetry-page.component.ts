@@ -34,6 +34,15 @@ const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
 const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
 const { ARCHIVE } = ClientConstants.ArchiveRoutes;
 const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM } = ClientConstants.TelemetryQueryParams;
+const {
+  TIME_RANGE_DIALOG_WIDTH,
+  TIME_RANGE_DIALOG_PANEL_CLASS,
+  TABLE_ROW_TRACK_ID_SEPARATOR,
+  ROW_RANGE_ZERO_ROWS,
+  BOUNDS_DISPLAY_FORMAT_OPTIONS,
+  DATETIME_LOCAL_PAD_LENGTH,
+  DATETIME_PAD_CHAR,
+} = ClientConstants.TelemetryInvestigationUi;
 
 const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.TailId,
@@ -58,6 +67,8 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly archiveApi = inject(ArchiveApiService);
+
+  readonly investigationUi = ClientConstants.TelemetryInvestigationUi;
 
   readonly missionTitle = signal<string>('');
   readonly tailId = signal<number>(0);
@@ -123,7 +134,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       const allData = this.getFieldTableData(field);
       const sliced = allData.slice(start, start + pageSize).map((row, i) => ({
         ...row,
-        trackId: `${String(field)}|${start + i}`,
+        trackId: `${String(field)}${TABLE_ROW_TRACK_ID_SEPARATOR}${start + i}`,
       }));
       map.set(field, sliced);
     }
@@ -212,6 +223,10 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       next: (mission) => {
         this.missionDetails.set(mission);
         this.missionTitle.set(mission?.title ?? '');
+      },
+      error: () => {
+        this.missionDetails.set(null);
+        this.missionTitle.set('');
       },
     });
 
@@ -397,7 +412,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
 
   getRowRangeDisplay(field: TelemetryField, rows: number): string {
     const total = this.viewTelemetry().length;
-    if (total === 0) return '0 rows';
+    if (total === 0) return ROW_RANGE_ZERO_ROWS;
     const pageSize = this.getEffectivePageSize(field, rows);
     const page = this.getTilePage(field);
     const start = page * pageSize + 1;
@@ -563,26 +578,30 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       maxBound: new Date(bounds.last),
     };
 
-    this.dialog.open<TimeRangeDialogComponent, TimeRangeDialogData, TimeRangeDialogResult>(
-      TimeRangeDialogComponent,
-      {
-        data,
-        autoFocus: false,
-        width: '680px',
-        disableClose: false,
-        hasBackdrop: true,
-        closeOnNavigation: true,
-        panelClass: 'time-range-dialog-panel',
-      },
-    ).afterClosed().subscribe((result) => {
-      if (!result) return;
-      this.fromInput.set(this.toDatetimeLocalValue(result.from.toISOString()));
-      this.toInput.set(this.toDatetimeLocalValue(result.to.toISOString()));
-      this.activeStartTime.set(result.from.toISOString());
-      this.activeEndTime.set(result.to.toISOString());
-      this.rebuildDashboardItems();
-      this.clampTilePagesToTotal();
-    });
+    this.dialog
+      .open<TimeRangeDialogComponent, TimeRangeDialogData, TimeRangeDialogResult>(
+        TimeRangeDialogComponent,
+        {
+          data,
+          autoFocus: false,
+          width: TIME_RANGE_DIALOG_WIDTH,
+          disableClose: false,
+          hasBackdrop: true,
+          closeOnNavigation: true,
+          panelClass: TIME_RANGE_DIALOG_PANEL_CLASS,
+        },
+      )
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result) => {
+        if (!result) return;
+        this.fromInput.set(this.toDatetimeLocalValue(result.from.toISOString()));
+        this.toInput.set(this.toDatetimeLocalValue(result.to.toISOString()));
+        this.activeStartTime.set(result.from.toISOString());
+        this.activeEndTime.set(result.to.toISOString());
+        this.rebuildDashboardItems();
+        this.clampTilePagesToTotal();
+      });
   }
 
   resetTimeRange(): void {
@@ -606,20 +625,12 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   }
 
   private formatDateDisplay(iso: string): string {
-    return new Date(iso).toLocaleString(LOCALE, {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
+    return new Date(iso).toLocaleString(LOCALE, BOUNDS_DISPLAY_FORMAT_OPTIONS);
   }
 
   private toDatetimeLocalValue(isoString: string): string {
     const d = new Date(isoString);
-    const pad = (n: number) => String(n).padStart(2, '0');
+    const pad = (n: number) => String(n).padStart(DATETIME_LOCAL_PAD_LENGTH, DATETIME_PAD_CHAR);
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
 }
