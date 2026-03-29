@@ -62,17 +62,24 @@ export namespace ClientConstants {
 
   export namespace TelemetryDataAPI {
     export const BASE = '/api/telemetry-data';
+    export const QUERY_PAGE = 'page';
+    export const QUERY_PAGE_SIZE = 'pageSize';
+    export const DEFAULT_PAGE_SIZE: number = 500;
     export const BY_MISSION = (
       missionId: string,
       tailId: number,
       fields?: string[],
       startTime?: string,
       endTime?: string,
+      page?: number,
+      pageSize?: number,
     ) => {
-      let url = `${BASE}/by-mission?missionId=${missionId}&tailId=${tailId}`;
+      let url = `${BASE}/by-mission?missionId=${encodeURIComponent(missionId)}&tailId=${tailId}`;
       if (fields?.length) url += `&fields=${fields.join(',')}`;
       if (startTime) url += `&startTime=${encodeURIComponent(startTime)}`;
       if (endTime) url += `&endTime=${encodeURIComponent(endTime)}`;
+      if (page !== undefined) url += `&${QUERY_PAGE}=${page}`;
+      if (pageSize !== undefined) url += `&${QUERY_PAGE_SIZE}=${pageSize}`;
       return url;
     };
   }
