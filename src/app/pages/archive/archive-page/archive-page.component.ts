@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, ChangeDetectionStrategy, inject, viewChild } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy, inject, effect } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -94,6 +94,17 @@ export class ArchivePageComponent implements OnInit {
     const all = this.displayRecords();
     const start = this.pageIndex() * this.pageSize();
     return all.slice(start, start + this.pageSize());
+  });
+
+  private readonly clampPageIndexToTotal = effect(() => {
+    const total = this.displayRecords().length;
+    const size = this.pageSize();
+    if (size <= 0) return;
+    const maxPage = Math.max(0, Math.ceil(total / size) - 1);
+    const current = this.pageIndex();
+    if (current > maxPage) {
+      this.pageIndex.set(maxPage);
+    }
   });
 
   onPageChange(event: PageEvent): void {
