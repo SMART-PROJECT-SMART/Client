@@ -6,6 +6,7 @@ import { ClientConstants } from '../../common/constants/clientConstants.constant
 import type {
   ArchiveAssignmentRo,
   ArchiveMissionRo,
+  MissionTelemetryBoundsRo,
   MissionTelemetryPageRo,
   MissionTelemetryRo,
 } from '../../models/archive';
@@ -16,6 +17,7 @@ const {
   DEFAULT_PAGE_SIZE,
   INITIAL_PAGE_INDEX,
   MAX_PAGE_FETCH_ITERATIONS,
+  BOUNDS: buildTelemetryBoundsUrl,
   BY_MISSION: buildTelemetryByMissionUrl,
 } = ClientConstants.TelemetryDataAPI;
 
@@ -49,6 +51,12 @@ export class ArchiveApiService {
 
   getMissionById(missionId: string): Observable<ArchiveMissionRo | null> {
     return this.http.get<ArchiveMissionRo>(ArchiveAPI.BY_MISSION(missionId)).pipe(
+      catchError(() => of(null)),
+    );
+  }
+
+  getMissionTelemetryBounds(missionId: string, tailId: number): Observable<MissionTelemetryBoundsRo | null> {
+    return this.http.get<MissionTelemetryBoundsRo>(buildTelemetryBoundsUrl(missionId, tailId)).pipe(
       catchError(() => of(null)),
     );
   }

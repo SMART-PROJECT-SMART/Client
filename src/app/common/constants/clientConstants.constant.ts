@@ -68,6 +68,8 @@ export namespace ClientConstants {
     export const INITIAL_PAGE_INDEX: number = 0;
     export const FIELDS_QUERY_SEPARATOR: string = ',';
     export const MAX_PAGE_FETCH_ITERATIONS: number = 100000;
+    export const BOUNDS = (missionId: string, tailId: number) =>
+      `${BASE}/bounds?missionId=${encodeURIComponent(missionId)}&tailId=${tailId}`;
     export const BY_MISSION = (
       missionId: string,
       tailId: number,
