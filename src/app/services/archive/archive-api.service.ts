@@ -10,7 +10,14 @@ import type {
   MissionTelemetryRo,
 } from '../../models/archive';
 
-const { ArchiveAPI, TelemetryDataAPI } = ClientConstants;
+const { ArchiveAPI } = ClientConstants;
+
+const {
+  DEFAULT_PAGE_SIZE,
+  INITIAL_PAGE_INDEX,
+  MAX_PAGE_FETCH_ITERATIONS,
+  BY_MISSION: buildTelemetryByMissionUrl,
+} = ClientConstants.TelemetryDataAPI;
 
 @Injectable({
   providedIn: 'root',
@@ -53,20 +60,37 @@ export class ArchiveApiService {
     startTime?: string,
     endTime?: string,
   ): Promise<MissionTelemetryRo[]> {
-    const pageSize = TelemetryDataAPI.DEFAULT_PAGE_SIZE;
     const merged: MissionTelemetryRo[] = [];
-    let page = 0;
-    let totalCount = 0;
-    do {
-      const url = TelemetryDataAPI.BY_MISSION(missionId, tailId, fields, startTime, endTime, page, pageSize);
+    let page = INITIAL_PAGE_INDEX;
+    let iteration = 0;
+    while (iteration < MAX_PAGE_FETCH_ITERATIONS) {
+      iteration += 1;
+      const url = buildTelemetryByMissionUrl(missionId, tailId, fields, startTime, endTime, page, DEFAULT_PAGE_SIZE);
       const response = await firstValueFrom(this.http.get<MissionTelemetryPageRo>(url));
       merged.push(...response.items);
-      totalCount = response.totalCount;
-      if (response.items.length === 0) {
+      if (this.shouldStopTelemetryPageFetch(response, merged.length, DEFAULT_PAGE_SIZE)) {
         break;
       }
       page += 1;
-    } while (merged.length < totalCount);
+    }
     return merged;
+  }
+
+  private shouldStopTelemetryPageFetch(
+    response: MissionTelemetryPageRo,
+    mergedLength: number,
+    pageSize: number,
+  ): boolean {
+    if (response.items.length === 0) {
+      return true;
+    }
+    const totalCount = Number(response.totalCount);
+    if (totalCount > 0 && mergedLength >= totalCount) {
+      return true;
+    }
+    if (response.items.length < pageSize) {
+      return true;
+    }
+    return false;
   }
 }

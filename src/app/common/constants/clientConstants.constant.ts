@@ -65,6 +65,9 @@ export namespace ClientConstants {
     export const QUERY_PAGE = 'page';
     export const QUERY_PAGE_SIZE = 'pageSize';
     export const DEFAULT_PAGE_SIZE: number = 500;
+    export const INITIAL_PAGE_INDEX: number = 0;
+    export const FIELDS_QUERY_SEPARATOR: string = ',';
+    export const MAX_PAGE_FETCH_ITERATIONS: number = 100000;
     export const BY_MISSION = (
       missionId: string,
       tailId: number,
@@ -75,7 +78,7 @@ export namespace ClientConstants {
       pageSize?: number,
     ) => {
       let url = `${BASE}/by-mission?missionId=${encodeURIComponent(missionId)}&tailId=${tailId}`;
-      if (fields?.length) url += `&fields=${fields.join(',')}`;
+      if (fields?.length) url += `&fields=${fields.join(FIELDS_QUERY_SEPARATOR)}`;
       if (startTime) url += `&startTime=${encodeURIComponent(startTime)}`;
       if (endTime) url += `&endTime=${encodeURIComponent(endTime)}`;
       if (page !== undefined) url += `&${QUERY_PAGE}=${page}`;
