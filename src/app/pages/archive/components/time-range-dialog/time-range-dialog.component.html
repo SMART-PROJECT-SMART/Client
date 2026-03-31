@@ -38,20 +38,6 @@
       ></ngx-daterangepicker-material>
     </div>
 
-    <div class="flex-pill-row">
-      @for (key of flexPillKeys; track key) {
-        <button
-          mat-stroked-button
-          type="button"
-          class="flex-pill"
-          [class.flex-pill-active]="isPillActive(key)"
-          (click)="key === flexPill.EXACT ? applyExact() : applyFlexOffset(key)"
-        >
-          {{ flexPillLabels[key] }}
-        </button>
-      }
-    </div>
-
     <div class="time-rows">
       <div class="time-field">
         <label class="time-label">{{ startTimeLabel }}</label>

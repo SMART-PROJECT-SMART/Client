@@ -253,27 +253,6 @@ mat-dialog-content {
   }
 }
 
-.flex-pill-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-sm;
-  align-items: center;
-}
-
-.flex-pill {
-  border-color: $color-border-default;
-  color: $color-text-primary;
-  font-size: $font-size-xs;
-  min-height: 36px;
-  line-height: 1.2;
-}
-
-.flex-pill-active {
-  border-color: $color-primary;
-  color: $color-primary-light;
-  background-color: rgba($color-primary, 0.12);
-}
-
 .valid-range-panel {
   display: flex;
   align-items: flex-start;

@@ -9,11 +9,6 @@ import { DateTimeUtil } from '../../../../common/utils/date-time.util';
 import { DaterangepickerComponent } from 'ngx-daterangepicker-material';
 import {
   TimeRangeEndTimeLabel,
-  TimeRangeFlexOffsetByKey,
-  TimeRangeFlexPill,
-  TimeRangeFlexPillKey,
-  TimeRangeFlexPillLabels,
-  TimeRangeFlexPillOrder,
   TimeRangePickerBoundDateFormat,
   TimeRangeStartTimeLabel,
   TimeRangeTimeInputPlaceholder,
@@ -52,9 +47,6 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   readonly maxDayjs: Dayjs;
   readonly minDateBoundStr: string;
   readonly maxDateBoundStr: string;
-  readonly flexPillKeys = TimeRangeFlexPillOrder;
-  readonly flexPillLabels = TimeRangeFlexPillLabels;
-  readonly flexPill = TimeRangeFlexPill;
   pickerStart: Dayjs;
   pickerEnd: Dayjs;
 
@@ -62,8 +54,6 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   private readonly initialPickerEnd: Dayjs;
   private readonly initialStartTime: Date;
   private readonly initialEndTime: Date;
-
-  selectedFlexKey: TimeRangeFlexPillKey | null = TimeRangeFlexPill.EXACT;
 
   private readonly minBound: Date;
   private readonly maxBound: Date;
@@ -177,60 +167,6 @@ export class TimeRangeDialogComponent implements AfterViewInit {
       this.pickerEnd = p.endDate.clone().startOf('day');
     }
     this.patchDateRangeFromPicker();
-    this.selectedFlexKey = null;
-  }
-
-  applyExact(): void {
-    this.pickerStart = this.initialPickerStart.clone();
-    this.pickerEnd = this.initialPickerEnd.clone();
-    if (this.useUtcCalendar) {
-      this.rangeForm.patchValue({
-        dateRange: {
-          start: this.toUtcDateOnlyAnchor(this.initialPickerStart),
-          end: this.toUtcDateOnlyAnchor(this.initialPickerEnd),
-        },
-        startTime: DateTimeUtil.utcTimeStringFromDate(this.initialStartTime),
-        endTime: DateTimeUtil.utcTimeStringFromDate(this.initialEndTime),
-      });
-    } else {
-      this.rangeForm.patchValue({
-        dateRange: {
-          start: this.pickerStart.toDate(),
-          end: this.pickerEnd.toDate(),
-        },
-        startTime: DateTimeUtil.localTimeOfDayForPicker(this.initialStartTime),
-        endTime: DateTimeUtil.localTimeOfDayForPicker(this.initialEndTime),
-      });
-    }
-    this.selectedFlexKey = TimeRangeFlexPill.EXACT;
-  }
-
-  applyFlexOffset(key: TimeRangeFlexPillKey): void {
-    const offset = TimeRangeFlexOffsetByKey[key];
-    if (offset === undefined) {
-      return;
-    }
-    const s = this.pickerStart.clone().startOf('day');
-    const e = this.pickerEnd.clone().startOf('day');
-    const daySpan = e.diff(s, 'day');
-    const mid = s.add(Math.floor(daySpan / 2), 'day');
-    let ns = mid.subtract(offset, 'day').startOf('day');
-    let ne = mid.add(offset, 'day').startOf('day');
-    ns = this.clampDayjsToBounds(ns);
-    ne = this.clampDayjsToBounds(ne);
-    if (ns.isAfter(ne)) {
-      const t = ns;
-      ns = ne;
-      ne = t;
-    }
-    this.pickerStart = ns;
-    this.pickerEnd = ne;
-    this.patchDateRangeFromPicker();
-    this.selectedFlexKey = key;
-  }
-
-  isPillActive(key: TimeRangeFlexPillKey): boolean {
-    return this.selectedFlexKey === key;
   }
 
   onApply(): void {
@@ -318,15 +254,5 @@ export class TimeRangeDialogComponent implements AfterViewInit {
 
   private toUtcDateOnlyAnchor(d: Dayjs): Date {
     return new Date(Date.UTC(d.year(), d.month(), d.date()));
-  }
-
-  private clampDayjsToBounds(d: Dayjs): Dayjs {
-    if (d.isBefore(this.minDayjs)) {
-      return this.minDayjs.clone();
-    }
-    if (d.isAfter(this.maxDayjs)) {
-      return this.maxDayjs.clone();
-    }
-    return d;
   }
 }
