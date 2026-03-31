@@ -54,56 +54,80 @@
 
     <div class="time-rows">
       <div class="time-field">
-        <label class="time-label">Start Time</label>
-        <div class="time-input-wrapper">
-          <input
-            type="text"
-            [owlDateTime]="startTimePicker"
-            formControlName="startTime"
-            placeholder="HH:mm:ss"
-          />
-          <button
-            mat-icon-button
-            type="button"
-            [owlDateTimeTrigger]="startTimePicker"
-            aria-label="Open time picker"
-          >
-            <mat-icon>schedule</mat-icon>
-          </button>
-          <owl-date-time
-            #startTimePicker
-            [pickerType]="'timer'"
-            [showSecondsTimer]="true"
-            [hour12Timer]="false"
-            panelClass="owl-dt-picker-dark"
-          ></owl-date-time>
-        </div>
+        <label class="time-label">{{ startTimeLabel }}</label>
+        @if (useUtcCalendar) {
+          <div class="time-input-wrapper">
+            <input
+              type="text"
+              formControlName="startTime"
+              [placeholder]="timeInputPlaceholder"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+        } @else {
+          <div class="time-input-wrapper">
+            <input
+              type="text"
+              [owlDateTime]="startTimePicker"
+              formControlName="startTime"
+              [placeholder]="timeInputPlaceholder"
+            />
+            <button
+              mat-icon-button
+              type="button"
+              [owlDateTimeTrigger]="startTimePicker"
+              aria-label="Open time picker"
+            >
+              <mat-icon>schedule</mat-icon>
+            </button>
+            <owl-date-time
+              #startTimePicker
+              [pickerType]="'timer'"
+              [showSecondsTimer]="true"
+              [hour12Timer]="false"
+              panelClass="owl-dt-picker-dark"
+            ></owl-date-time>
+          </div>
+        }
       </div>
       <div class="time-field">
-        <label class="time-label">End Time</label>
-        <div class="time-input-wrapper">
-          <input
-            type="text"
-            [owlDateTime]="endTimePicker"
-            formControlName="endTime"
-            placeholder="HH:mm:ss"
-          />
-          <button
-            mat-icon-button
-            type="button"
-            [owlDateTimeTrigger]="endTimePicker"
-            aria-label="Open time picker"
-          >
-            <mat-icon>schedule</mat-icon>
-          </button>
-          <owl-date-time
-            #endTimePicker
-            [pickerType]="'timer'"
-            [showSecondsTimer]="true"
-            [hour12Timer]="false"
-            panelClass="owl-dt-picker-dark"
-          ></owl-date-time>
-        </div>
+        <label class="time-label">{{ endTimeLabel }}</label>
+        @if (useUtcCalendar) {
+          <div class="time-input-wrapper">
+            <input
+              type="text"
+              formControlName="endTime"
+              [placeholder]="timeInputPlaceholder"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+        } @else {
+          <div class="time-input-wrapper">
+            <input
+              type="text"
+              [owlDateTime]="endTimePicker"
+              formControlName="endTime"
+              [placeholder]="timeInputPlaceholder"
+            />
+            <button
+              mat-icon-button
+              type="button"
+              [owlDateTimeTrigger]="endTimePicker"
+              aria-label="Open time picker"
+            >
+              <mat-icon>schedule</mat-icon>
+            </button>
+            <owl-date-time
+              #endTimePicker
+              [pickerType]="'timer'"
+              [showSecondsTimer]="true"
+              [hour12Timer]="false"
+              panelClass="owl-dt-picker-dark"
+            ></owl-date-time>
+          </div>
+        }
       </div>
     </div>
 

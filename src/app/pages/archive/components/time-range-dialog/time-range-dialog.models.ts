@@ -4,6 +4,7 @@ export interface TimeRangeDialogData {
   boundsDisplay: string;
   minBound: Date;
   maxBound: Date;
+  useUtcCalendar?: boolean;
 }
 
 export interface TimeRangeDialogResult {

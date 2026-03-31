@@ -622,6 +622,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       boundsDisplay: `${this.formatDateDisplay(bounds.first)} \u2014 ${this.formatDateDisplay(bounds.last)}`,
       minBound: new Date(bounds.first),
       maxBound: new Date(bounds.last),
+      useUtcCalendar: true,
     };
 
     this.dialog

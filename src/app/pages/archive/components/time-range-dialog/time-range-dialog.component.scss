@@ -42,9 +42,17 @@ mat-dialog-content {
   min-height: 240px;
   min-width: 0;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   overflow-x: visible;
   overflow-y: visible;
+
+  ngx-daterangepicker-material {
+    display: block;
+    width: 100%;
+    max-width: $time-range-calendar-panel-max-width;
+  }
 
   ::ng-deep .md-drppicker {
     margin-top: 0;
@@ -52,7 +60,12 @@ mat-dialog-content {
     background-color: $color-background-card;
     border-radius: $border-radius-md;
     border: $border-width-thin solid $color-border-light;
-    display: block;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: flex-start;
     width: 100%;
     max-width: $time-range-calendar-panel-max-width;
     margin-left: auto;
@@ -62,11 +75,8 @@ mat-dialog-content {
   }
 
   ::ng-deep .md-drppicker.double {
-    display: block;
     width: 100%;
     max-width: $time-range-calendar-panel-max-width;
-    margin-left: auto;
-    margin-right: auto;
   }
 
   ::ng-deep .md-drppicker.ltr .calendar.right {
@@ -79,8 +89,13 @@ mat-dialog-content {
 
   ::ng-deep .md-drppicker.inline {
     transform: none !important;
+    transform-origin: center top;
     opacity: 1 !important;
     visibility: visible !important;
+  }
+
+  ::ng-deep .md-drppicker.shown.drops-down-center {
+    transform-origin: center top;
   }
 
   ::ng-deep .md-drppicker.inline.hidden {
@@ -97,11 +112,20 @@ mat-dialog-content {
     min-height: 220px;
     max-width: 100%;
     width: 100%;
+    flex: 0 0 auto;
   }
 
   ::ng-deep .md-drppicker.ltr .calendar.left,
   ::ng-deep .md-drppicker.ltr .calendar.right {
     float: none;
+    clear: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  ::ng-deep .md-drppicker.ltr .calendar.left .calendar-table {
+    padding-left: 0;
+    padding-right: 0;
   }
 
   ::ng-deep .md-drppicker .calendar-table {
