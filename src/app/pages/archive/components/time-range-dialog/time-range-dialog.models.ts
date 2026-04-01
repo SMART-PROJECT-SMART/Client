@@ -11,3 +11,9 @@ export interface TimeRangeDialogResult {
   from: Date;
   to: Date;
 }
+
+export type TimeRangeFormRawValue = {
+  dateRange: { start: Date | null; end: Date | null };
+  startTime: string | Date | null | undefined;
+  endTime: string | Date | null | undefined;
+};

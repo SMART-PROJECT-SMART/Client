@@ -24,6 +24,7 @@ import type {
   TileViewMode,
 } from '../../../../models/archive';
 import {
+  clampMillisecondsIntervalToTelemetryBounds,
   isoQueryParamsFromDatetimeLocal,
   telemetryBoundsHasSamples,
 } from '../../utils/mission-telemetry-time-range.util';
@@ -51,6 +52,7 @@ const {
   TABLE_ROW_TRACK_ID_SEPARATOR,
   ROW_RANGE_ZERO_ROWS,
   BOUNDS_DISPLAY_FORMAT_OPTIONS,
+  BOUNDS_DISPLAY_RANGE_SEPARATOR,
   DATETIME_LOCAL_PAD_LENGTH,
   DATETIME_PAD_CHAR,
 } = ClientConstants.TelemetryInvestigationUi;
@@ -634,12 +636,12 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       this.toInput.set(to);
     }
 
-    const seed = this.clampDialogSeedToMissionBounds(new Date(from).getTime(), new Date(to).getTime(), bounds);
+    const seed = clampMillisecondsIntervalToTelemetryBounds(new Date(from).getTime(), new Date(to).getTime(), bounds);
 
     const data: TimeRangeDialogData = {
       from: new Date(seed.fromMs),
       to: new Date(seed.toMs),
-      boundsDisplay: `${this.formatDateDisplay(bounds.first)} \u2014 ${this.formatDateDisplay(bounds.last)}`,
+      boundsDisplay: `${this.formatDateDisplay(bounds.first)} ${BOUNDS_DISPLAY_RANGE_SEPARATOR} ${this.formatDateDisplay(bounds.last)}`,
       minBound: new Date(bounds.first),
       maxBound: new Date(bounds.last),
       useUtcCalendar: true,
@@ -689,21 +691,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       data: { mission },
       autoFocus: false,
     });
-  }
-
-  private clampDialogSeedToMissionBounds(
-    fromMs: number,
-    toMs: number,
-    bounds: TelemetryTimeRangeBounds,
-  ): { fromMs: number; toMs: number } {
-    const bMin = new Date(bounds.first).getTime();
-    const bMax = new Date(bounds.last).getTime();
-    const nextFrom = Math.max(fromMs, bMin);
-    const nextTo = Math.min(toMs, bMax);
-    if (nextFrom > nextTo) {
-      return { fromMs: bMin, toMs: bMax };
-    }
-    return { fromMs: nextFrom, toMs: nextTo };
   }
 
   private formatDateDisplay(iso: string): string {

@@ -1,4 +1,19 @@
-import type { MissionTelemetryBoundsRo } from '../../../models/archive';
+import type { MissionTelemetryBoundsRo, TelemetryTimeRangeBounds } from '../../../models/archive';
+
+export function clampMillisecondsIntervalToTelemetryBounds(
+  fromMs: number,
+  toMs: number,
+  bounds: TelemetryTimeRangeBounds,
+): { fromMs: number; toMs: number } {
+  const bMin = new Date(bounds.first).getTime();
+  const bMax = new Date(bounds.last).getTime();
+  const nextFrom = Math.max(fromMs, bMin);
+  const nextTo = Math.min(toMs, bMax);
+  if (nextFrom > nextTo) {
+    return { fromMs: bMin, toMs: bMax };
+  }
+  return { fromMs: nextFrom, toMs: nextTo };
+}
 
 export function isoQueryParamsFromDatetimeLocal(
   fromLocal: string,
