@@ -1,6 +1,7 @@
 @use '../../../../../styles/constants' as *;
 
 $time-range-calendar-panel-max-width: 340px;
+$time-range-calendar-range-fill: rgba($color-primary, 0.12);
 
 ::ng-deep .mat-mdc-dialog-surface {
   background-color: $color-background-secondary !important;
@@ -34,6 +35,16 @@ mat-dialog-content {
   gap: $spacing-md;
   align-items: stretch;
   min-height: 0;
+}
+
+.calendar-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: $time-range-calendar-panel-max-width;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: $spacing-xs;
 }
 
 .booking-calendar-wrap {
@@ -90,18 +101,10 @@ mat-dialog-content {
   ::ng-deep .md-drppicker.inline {
     transform: none !important;
     transform-origin: center top;
-    opacity: 1 !important;
-    visibility: visible !important;
   }
 
   ::ng-deep .md-drppicker.shown.drops-down-center {
     transform-origin: center top;
-  }
-
-  ::ng-deep .md-drppicker.inline.hidden {
-    transform: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
   }
 
   ::ng-deep .md-drppicker.inline.shown {
@@ -196,6 +199,7 @@ mat-dialog-content {
     height: auto;
     line-height: 1.2;
     transform: none;
+    opacity: 1;
   }
 
   ::ng-deep .md-drppicker td span {
@@ -215,9 +219,14 @@ mat-dialog-content {
   }
 
   ::ng-deep .md-drppicker td.in-range {
-    background-color: rgba($color-primary, 0.12);
+    background-color: $time-range-calendar-range-fill;
     color: $color-text-primary;
     border-radius: 0;
+  }
+
+  ::ng-deep .md-drppicker td.start-date,
+  ::ng-deep .md-drppicker td.end-date {
+    background-color: $time-range-calendar-range-fill;
   }
 
   ::ng-deep .md-drppicker td.start-date {
@@ -232,8 +241,13 @@ mat-dialog-content {
     border-radius: $border-radius-sm;
   }
 
-  ::ng-deep .md-drppicker td.active,
-  ::ng-deep .md-drppicker td.active:hover {
+  ::ng-deep .md-drppicker td.off.active.start-date,
+  ::ng-deep .md-drppicker td.off.active.end-date {
+    background-color: $time-range-calendar-range-fill;
+  }
+
+  ::ng-deep .md-drppicker td.active:not(.in-range):not(.start-date):not(.end-date),
+  ::ng-deep .md-drppicker td.active:not(.in-range):not(.start-date):not(.end-date):hover {
     background-color: transparent;
     color: inherit;
   }

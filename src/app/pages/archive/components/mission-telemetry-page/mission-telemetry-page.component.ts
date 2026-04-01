@@ -55,6 +55,8 @@ const {
   DATETIME_PAD_CHAR,
 } = ClientConstants.TelemetryInvestigationUi;
 
+const MILLISECONDS_PER_SECOND = 1000;
+
 const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.TailId,
   TelemetryField.UAVTypeValue,
@@ -200,8 +202,13 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly isRangeModified = computed<boolean>(() => {
     const bounds = this.originalBounds();
     if (!bounds) return false;
-    return this.fromInput() !== this.toDatetimeLocalValue(bounds.first)
-      || this.toInput() !== this.toDatetimeLocalValue(bounds.last);
+    const start = this.activeStartTime();
+    const end = this.activeEndTime();
+    if (!start || !end) return false;
+    const toSec = (iso: string) => Math.floor(new Date(iso).getTime() / MILLISECONDS_PER_SECOND);
+    return (
+      toSec(start) !== toSec(bounds.first) || toSec(end) !== toSec(bounds.last)
+    );
   });
 
   readonly boundsDisplay = computed<string>(() => {

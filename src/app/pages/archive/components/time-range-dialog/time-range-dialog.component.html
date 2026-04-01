@@ -18,6 +18,9 @@
     }
 
     <div class="booking-calendar-wrap">
+      <div class="calendar-toolbar">
+        <button mat-button type="button" (click)="resetRangeToInitial()">{{ resetRangeLabel }}</button>
+      </div>
       <ngx-daterangepicker-material
         [startDate]="pickerStart"
         [endDate]="pickerEnd"

@@ -8,8 +8,11 @@ import { OWL_TIME_FORMATS } from '../../../../common/constants/owl-datetime.cons
 import { DateTimeUtil } from '../../../../common/utils/date-time.util';
 import { DaterangepickerComponent } from 'ngx-daterangepicker-material';
 import {
+  CalendarDayEndTimeParts,
+  CalendarDayStartTimeParts,
   TimeRangeEndTimeLabel,
   TimeRangePickerBoundDateFormat,
+  TimeRangeResetRangeLabel,
   TimeRangeStartTimeLabel,
   TimeRangeTimeInputPlaceholder,
   UtcTimeOfDayStringPattern,
@@ -39,6 +42,7 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   readonly useUtcCalendar: boolean;
   readonly startTimeLabel = TimeRangeStartTimeLabel;
   readonly endTimeLabel = TimeRangeEndTimeLabel;
+  readonly resetRangeLabel = TimeRangeResetRangeLabel;
   readonly timeInputPlaceholder = TimeRangeTimeInputPlaceholder;
   readonly emptyPickerRanges: Record<string, [Dayjs, Dayjs]> = {};
   readonly rangeForm: FormGroup;
@@ -143,7 +147,7 @@ export class TimeRangeDialogComponent implements AfterViewInit {
     if (this.rangeForm.invalid) return false;
     const result = this.buildResult();
     if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
-    return this.isWithinDataBounds(result);
+    return this.intersectResultWithBounds(result) !== null;
   }
 
   get isInvalidRange(): boolean {
@@ -154,31 +158,95 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   get isOutOfDataBounds(): boolean {
     const result = this.buildResult();
     if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
-    return !this.isWithinDataBounds(result);
+    return this.intersectResultWithBounds(result) === null;
   }
 
   onPickerDatesUpdated(period: unknown): void {
-    const p = period as { startDate: Dayjs; endDate: Dayjs };
+    const p = period as { startDate: Dayjs | null; endDate: Dayjs | null };
+    if (!p.startDate && !p.endDate) {
+      this.restoreInitialDateRangeFromDialogOpen();
+      return;
+    }
+    if (!p.startDate || !p.endDate) {
+      return;
+    }
     if (this.useUtcCalendar) {
       this.pickerStart = dayjs.utc(p.startDate.valueOf()).startOf('day');
       this.pickerEnd = dayjs.utc(p.endDate.valueOf()).startOf('day');
     } else {
-      this.pickerStart = p.startDate.clone().startOf('day');
-      this.pickerEnd = p.endDate.clone().startOf('day');
+      this.pickerStart = dayjs(p.startDate.valueOf()).startOf('day');
+      this.pickerEnd = dayjs(p.endDate.valueOf()).startOf('day');
     }
     this.patchDateRangeFromPicker();
+  }
+
+  resetRangeToInitial(): void {
+    this.restoreInitialDateRangeFromDialogOpen();
+  }
+
+  private restoreInitialDateRangeFromDialogOpen(): void {
+    this.pickerStart = this.initialPickerStart.clone();
+    this.pickerEnd = this.initialPickerEnd.clone();
+    this.patchDateRangeFromPicker();
+    if (this.useUtcCalendar) {
+      this.rangeForm.patchValue({
+        startTime: DateTimeUtil.utcTimeStringFromDate(this.initialStartTime),
+        endTime: DateTimeUtil.utcTimeStringFromDate(this.initialEndTime),
+      });
+    } else {
+      this.rangeForm.patchValue({
+        startTime: DateTimeUtil.localTimeOfDayForPicker(this.initialStartTime),
+        endTime: DateTimeUtil.localTimeOfDayForPicker(this.initialEndTime),
+      });
+    }
+    this.syncInlinePickerViewFromBindings();
+  }
+
+  private syncInlinePickerViewFromBindings(): void {
+    const picker = this.dateRangePicker;
+    if (!picker) {
+      return;
+    }
+    picker.startDate = this.pickerStart;
+    picker.endDate = this.pickerEnd;
+    picker.updateView();
   }
 
   onApply(): void {
     const result = this.buildResult();
     if (!result || !this.isFiniteRange(result) || result.from > result.to) return;
-    if (!this.isWithinDataBounds(result)) return;
-    const fromMs = Math.max(result.from.getTime(), this.minBound.getTime());
-    const toMs = Math.min(result.to.getTime(), this.maxBound.getTime());
+    const clamped = this.intersectResultWithBounds(result);
+    if (!clamped) return;
     this.dialogRef.close({
-      from: new Date(fromMs),
-      to: new Date(toMs),
+      from: clamped.from,
+      to: clamped.to,
     });
+  }
+
+  private syncPickerModelIntoForm(): void {
+    const picker = this.dateRangePicker;
+    if (!picker?.startDate) {
+      this.patchDateRangeFromPicker();
+      return;
+    }
+    if (!picker.endDate) {
+      picker.setEndDate(picker.startDate);
+    }
+    let nextStart;
+    let nextEnd;
+    if (this.useUtcCalendar) {
+      nextStart = dayjs.utc(picker.startDate.valueOf()).startOf('day');
+      nextEnd = dayjs.utc(picker.endDate.valueOf()).startOf('day');
+    } else {
+      nextStart = dayjs(picker.startDate.valueOf()).startOf('day');
+      nextEnd = dayjs(picker.endDate.valueOf()).startOf('day');
+    }
+    if (nextStart.valueOf() === this.pickerStart.valueOf() && nextEnd.valueOf() === this.pickerEnd.valueOf()) {
+      return;
+    }
+    this.pickerStart = nextStart;
+    this.pickerEnd = nextEnd;
+    this.patchDateRangeFromPicker();
   }
 
   private patchDateRangeFromPicker(): void {
@@ -204,6 +272,7 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   }
 
   private buildResult(): TimeRangeDialogResult | null {
+    this.syncPickerModelIntoForm();
     const raw = this.rangeForm.getRawValue() as {
       dateRange: { start: Date | null; end: Date | null };
       startTime: string | Date | null | undefined;
@@ -223,25 +292,105 @@ export class TimeRangeDialogComponent implements AfterViewInit {
       const from = DateTimeUtil.combineUtcDateAndTime(startDate, timeStart as string);
       const to = DateTimeUtil.combineUtcDateAndTime(endDate, timeEnd as string);
       if (!Number.isFinite(from.getTime()) || !Number.isFinite(to.getTime())) return null;
+      if (from.getTime() > to.getTime() && this.sameUtcCalendarDay(startDate, endDate)) {
+        return {
+          from: this.utcStartOfCalendarDay(startDate),
+          to: this.utcEndOfCalendarDay(endDate),
+        };
+      }
       return { from, to };
     }
     const from = DateTimeUtil.combineDateAndTime(startDate, timeStart);
     const to = DateTimeUtil.combineDateAndTime(endDate, timeEnd);
     if (!Number.isFinite(from.getTime()) || !Number.isFinite(to.getTime())) return null;
+    if (from.getTime() > to.getTime() && this.sameLocalCalendarDay(startDate, endDate)) {
+      return {
+        from: this.localStartOfCalendarDay(startDate),
+        to: this.localEndOfCalendarDay(endDate),
+      };
+    }
     return { from, to };
+  }
+
+  private utcStartOfCalendarDay(anchor: Date): Date {
+    return new Date(
+      Date.UTC(
+        anchor.getUTCFullYear(),
+        anchor.getUTCMonth(),
+        anchor.getUTCDate(),
+        CalendarDayStartTimeParts.hour,
+        CalendarDayStartTimeParts.minute,
+        CalendarDayStartTimeParts.second,
+        CalendarDayStartTimeParts.millisecond,
+      ),
+    );
+  }
+
+  private utcEndOfCalendarDay(anchor: Date): Date {
+    return new Date(
+      Date.UTC(
+        anchor.getUTCFullYear(),
+        anchor.getUTCMonth(),
+        anchor.getUTCDate(),
+        CalendarDayEndTimeParts.hour,
+        CalendarDayEndTimeParts.minute,
+        CalendarDayEndTimeParts.second,
+        CalendarDayEndTimeParts.millisecond,
+      ),
+    );
+  }
+
+  private localStartOfCalendarDay(anchor: Date): Date {
+    return new Date(
+      anchor.getFullYear(),
+      anchor.getMonth(),
+      anchor.getDate(),
+      CalendarDayStartTimeParts.hour,
+      CalendarDayStartTimeParts.minute,
+      CalendarDayStartTimeParts.second,
+      CalendarDayStartTimeParts.millisecond,
+    );
+  }
+
+  private localEndOfCalendarDay(anchor: Date): Date {
+    return new Date(
+      anchor.getFullYear(),
+      anchor.getMonth(),
+      anchor.getDate(),
+      CalendarDayEndTimeParts.hour,
+      CalendarDayEndTimeParts.minute,
+      CalendarDayEndTimeParts.second,
+      CalendarDayEndTimeParts.millisecond,
+    );
+  }
+
+  private sameUtcCalendarDay(a: Date, b: Date): boolean {
+    return (
+      a.getUTCFullYear() === b.getUTCFullYear() &&
+      a.getUTCMonth() === b.getUTCMonth() &&
+      a.getUTCDate() === b.getUTCDate()
+    );
+  }
+
+  private sameLocalCalendarDay(a: Date, b: Date): boolean {
+    return (
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+    );
   }
 
   private isFiniteRange(result: TimeRangeDialogResult): boolean {
     return Number.isFinite(result.from.getTime()) && Number.isFinite(result.to.getTime());
   }
 
-  private isWithinDataBounds(result: TimeRangeDialogResult): boolean {
-    const toSec = (ms: number) => Math.floor(ms / 1000);
-    const startSec = toSec(result.from.getTime());
-    const endSec = toSec(result.to.getTime());
-    const minSec = toSec(this.minBound.getTime());
-    const maxSec = toSec(this.maxBound.getTime());
-    return startSec >= minSec && endSec <= maxSec;
+  private intersectResultWithBounds(result: TimeRangeDialogResult): TimeRangeDialogResult | null {
+    const fromMs = Math.max(result.from.getTime(), this.minBound.getTime());
+    const toMs = Math.min(result.to.getTime(), this.maxBound.getTime());
+    if (fromMs > toMs) {
+      return null;
+    }
+    return { from: new Date(fromMs), to: new Date(toMs) };
   }
 
   private stripToDateOnlyLocal(d: Date): Date {
