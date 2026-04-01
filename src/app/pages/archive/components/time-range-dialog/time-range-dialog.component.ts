@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { OWL_DATE_TIME_FORMATS } from '@danielmoncada/angular-datetime-picker';
@@ -13,6 +13,7 @@ import {
   TimeRangeStartTimeLabel,
   TimeRangeTimeInputPlaceholder,
 } from './time-range-dialog.constants';
+import { computeNextCalendarSelection } from './time-range-calendar-selection.util';
 import {
   dayjsToUtcDateOnlyAnchor,
   startOfCalendarDayFromMillis,
@@ -46,7 +47,7 @@ const TIME_RANGE_DIALOG_OWL_FORMATS = {
   styleUrl: './time-range-dialog.component.scss',
   providers: [{ provide: OWL_DATE_TIME_FORMATS, useValue: TIME_RANGE_DIALOG_OWL_FORMATS }],
 })
-export class TimeRangeDialogComponent implements AfterViewInit {
+export class TimeRangeDialogComponent implements AfterViewInit, OnDestroy {
   readonly useUtcCalendar: boolean;
   readonly startTimeLabel = TimeRangeStartTimeLabel;
   readonly endTimeLabel = TimeRangeEndTimeLabel;
@@ -70,6 +71,10 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   private readonly maxBound: Date;
 
   @ViewChild(DaterangepickerComponent) private dateRangePicker?: DaterangepickerComponent;
+  @ViewChild('calendarWrap') private calendarWrap?: ElementRef<HTMLElement>;
+
+  private unlistenCalendarCapture?: () => void;
+  private pickerSyncSuppressed = false;
 
   constructor(
     private readonly dialogRef: MatDialogRef<TimeRangeDialogComponent, TimeRangeDialogResult | undefined>,
@@ -99,6 +104,90 @@ export class TimeRangeDialogComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.ensurePickerCalendarsVisible();
+    this.installCalendarCaptureListener();
+  }
+
+  ngOnDestroy(): void {
+    this.unlistenCalendarCapture?.();
+  }
+
+  private installCalendarCaptureListener(): void {
+    const el = this.calendarWrap?.nativeElement;
+    if (!el) {
+      return;
+    }
+    const handler = (event: Event): void => {
+      this.onCalendarWrapCaptureClick(event);
+    };
+    el.addEventListener('click', handler, true);
+    this.unlistenCalendarCapture = () => el.removeEventListener('click', handler, true);
+  }
+
+  private onCalendarWrapCaptureClick(event: Event): void {
+    const clicked = this.resolveClickedCalendarDayFromEvent(event);
+    if (!clicked) {
+      return;
+    }
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    this.applyCustomCalendarSelection(clicked);
+  }
+
+  private resolveClickedCalendarDayFromEvent(event: Event): ReturnType<typeof startOfCalendarDayFromMillis> | null {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return null;
+    }
+    const td = target.closest('td');
+    if (!td || !td.classList.contains('available') || td.classList.contains('disabled')) {
+      return null;
+    }
+    if (td.classList.contains('week')) {
+      return null;
+    }
+    const calendarEl = td.closest('.calendar');
+    if (!calendarEl) {
+      return null;
+    }
+    const side = calendarEl.classList.contains('right') ? 'right' : 'left';
+    const tr = td.closest('tr');
+    const tbody = tr?.parentElement;
+    if (!tr || !tbody || tbody.tagName !== 'TBODY') {
+      return null;
+    }
+    const row = Array.from(tbody.children).indexOf(tr);
+    const dayCells = Array.from(tr.querySelectorAll('td')).filter((cell) => !cell.classList.contains('week'));
+    const col = dayCells.indexOf(td as HTMLTableCellElement);
+    if (col < 0) {
+      return null;
+    }
+    const picker = this.dateRangePicker as unknown as {
+      calendarVariables?: { left: { calendar: Dayjs[][] }; right: { calendar: Dayjs[][] } };
+    };
+    const grid = picker.calendarVariables?.[side]?.calendar;
+    const rowCells = grid?.[row];
+    const cell = rowCells?.[col];
+    if (!cell) {
+      return null;
+    }
+    return startOfCalendarDayFromMillis(cell.valueOf(), this.useUtcCalendar);
+  }
+
+  private applyCustomCalendarSelection(clickedDay: ReturnType<typeof startOfCalendarDayFromMillis>): void {
+    const next = computeNextCalendarSelection(
+      clickedDay,
+      { start: this.pickerStart, end: this.pickerEnd },
+      { start: this.initialPickerStart, end: this.initialPickerEnd },
+    );
+    this.pickerSyncSuppressed = true;
+    try {
+      this.pickerStart = next.start;
+      this.pickerEnd = next.end;
+      this.syncInlinePickerViewFromBindings();
+      this.patchDateRangeFromPicker();
+    } finally {
+      this.pickerSyncSuppressed = false;
+    }
   }
 
   private ensurePickerCalendarsVisible(): void {
@@ -116,7 +205,6 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   }
 
   get isValid(): boolean {
-    if (this.pickerEnd === null) return false;
     if (this.rangeForm.invalid) return false;
     const result = this.buildResult();
     if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
@@ -135,6 +223,9 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   }
 
   onPickerDatesUpdated(period: unknown): void {
+    if (this.pickerSyncSuppressed) {
+      return;
+    }
     const p = period as { startDate: Dayjs | null; endDate: Dayjs | null };
     if (!p.startDate && !p.endDate) {
       this.restoreInitialDateRangeFromDialogOpen();
@@ -150,6 +241,9 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   }
 
   onPickerStartDateChangedFromLibrary(payload: unknown): void {
+    if (this.pickerSyncSuppressed) {
+      return;
+    }
     const emitted = payload as { startDate: { valueOf: () => number } };
     const picker = this.dateRangePicker;
     const useUtc = this.useUtcCalendar;
@@ -162,6 +256,9 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   }
 
   onPickerEndDateChangedFromLibrary(payload: unknown): void {
+    if (this.pickerSyncSuppressed) {
+      return;
+    }
     const emitted = payload as { endDate: { valueOf: () => number } };
     this.pickerEnd = startOfCalendarDayFromMillis(emitted.endDate.valueOf(), this.useUtcCalendar);
   }
@@ -229,10 +326,22 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   }
 
   private patchDateRangeFromPicker(): void {
+    const start = this.pickerStart.clone().startOf('day');
     if (this.pickerEnd === null) {
+      const end = start;
+      if (this.useUtcCalendar) {
+        this.dateRangeGroup.patchValue({
+          start: dayjsToUtcDateOnlyAnchor(start),
+          end: dayjsToUtcDateOnlyAnchor(end),
+        });
+      } else {
+        this.dateRangeGroup.patchValue({
+          start: start.toDate(),
+          end: end.toDate(),
+        });
+      }
       return;
     }
-    const start = this.pickerStart.clone().startOf('day');
     const end = this.pickerEnd.clone().startOf('day');
     this.pickerStart = start;
     this.pickerEnd = end;
