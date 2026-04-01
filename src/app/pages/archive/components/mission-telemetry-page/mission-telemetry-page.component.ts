@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, OnDestroy, viewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy, OnInit, OnDestroy, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import type { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -6,33 +6,34 @@ import { forkJoin, of, Subject } from 'rxjs';
 import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { GridType, CompactType } from 'angular-gridster2';
 import type { GridsterConfig } from 'angular-gridster2';
-import type { ChartConfiguration, ChartDataset, Plugin } from 'chart.js';
+import type { Plugin } from 'chart.js';
 import { TelemetryField } from '../../../../common/enums';
-import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
+import { EnumUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin.util';
 import { ArchiveApiService } from '../../../../services/archive/archive-api.service';
+import { MissionTelemetryFetchService } from '../../../../services/archive/mission-telemetry-fetch.service';
 import { MissionDetailsDialogComponent } from '../mission-details-dialog/mission-details-dialog.component';
 import { TimeRangeDialogComponent } from '../time-range-dialog/time-range-dialog.component';
 import type { TimeRangeDialogData, TimeRangeDialogResult } from '../time-range-dialog/time-range-dialog.models';
 import type {
   ArchiveMissionRo,
   MissionTelemetryRo,
-  ChartRowConfig,
   TelemetryDashboardItem,
   TelemetryTimeRangeBounds,
   TileViewMode,
 } from '../../../../models/archive';
+import { MissionTelemetryInvestigationToolbarComponent } from './mission-telemetry-investigation-toolbar.component';
 import {
   clampMillisecondsIntervalToTelemetryBounds,
-  isoQueryParamsFromDatetimeLocal,
   telemetryBoundsHasSamples,
 } from '../../utils/mission-telemetry-time-range.util';
-
-const { COLORS, BACKGROUND_ALPHA, POINT_RADIUS, BORDER_WIDTH, LINE_TENSION,
-  X_AXIS_MAX_TICKS, Y_AXIS_MAX_TICKS, TICK_FONT_SIZE, TICK_COLOR, GRID_COLOR,
-  TIME_AXIS_LABEL,
-} = ClientConstants.ChartConfig;
+import { buildTelemetryChartRowConfig } from '../../utils/mission-telemetry-chart.util';
+import {
+  formatTelemetryBoundsDateDisplay,
+  isoTimestampToDatetimeLocalValue,
+} from '../../utils/mission-telemetry-datetime.util';
+import { mergeMissionTelemetryRows } from '../../utils/mission-telemetry-merge.util';
 
 const { LOCALE, OPTIONS: TIME_FORMAT_OPTIONS } = ClientConstants.TimeFormat;
 
@@ -51,10 +52,7 @@ const {
   TIME_RANGE_DIALOG_PANEL_CLASS,
   TABLE_ROW_TRACK_ID_SEPARATOR,
   ROW_RANGE_ZERO_ROWS,
-  BOUNDS_DISPLAY_FORMAT_OPTIONS,
   BOUNDS_DISPLAY_RANGE_SEPARATOR,
-  DATETIME_LOCAL_PAD_LENGTH,
-  DATETIME_PAD_CHAR,
 } = ClientConstants.TelemetryInvestigationUi;
 
 const MILLISECONDS_PER_SECOND = 1000;
@@ -82,6 +80,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly archiveApi = inject(ArchiveApiService);
+  private readonly missionTelemetryFetch = inject(MissionTelemetryFetchService);
 
   readonly investigationUi = ClientConstants.TelemetryInvestigationUi;
 
@@ -105,7 +104,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly originalBounds = signal<TelemetryTimeRangeBounds | null>(null);
   private readonly telemetryMissionBounds = signal<TelemetryTimeRangeBounds | null>(null);
 
-  private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
+  private readonly investigationToolbar = viewChild(MissionTelemetryInvestigationToolbarComponent);
 
   private missionId = '';
   private readonly telemetryData = signal<MissionTelemetryRo[]>([]);
@@ -225,14 +224,14 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly boundsDisplay = computed<string>(() => {
     const bounds = this.missionTelemetryWindow();
     if (!bounds) return '';
-    return `${this.formatDateDisplay(bounds.first)} \u2014 ${this.formatDateDisplay(bounds.last)}`;
+    return `${formatTelemetryBoundsDateDisplay(bounds.first)} \u2014 ${formatTelemetryBoundsDateDisplay(bounds.last)}`;
   });
 
   readonly rangeDisplay = computed<string>(() => {
     const from = this.fromInput();
     const to = this.toInput();
     if (!from || !to) return '';
-    return `${this.formatDateDisplay(new Date(from).toISOString())} \u2014 ${this.formatDateDisplay(new Date(to).toISOString())}`;
+    return `${formatTelemetryBoundsDateDisplay(new Date(from).toISOString())} \u2014 ${formatTelemetryBoundsDateDisplay(new Date(to).toISOString())}`;
   });
 
   ngOnInit(): void {
@@ -276,8 +275,8 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
             const window = { first, last };
             this.originalBounds.set(window);
             this.telemetryMissionBounds.set(window);
-            this.fromInput.set(this.toDatetimeLocalValue(first));
-            this.toInput.set(this.toDatetimeLocalValue(last));
+            this.fromInput.set(isoTimestampToDatetimeLocalValue(first));
+            this.toInput.set(isoTimestampToDatetimeLocalValue(last));
           }
         },
       });
@@ -310,31 +309,27 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
 
           this.fetchingData.set(true);
           this.errorMessage.set('');
-          const { startTime, endTime } = isoQueryParamsFromDatetimeLocal(
-            this.fromInput(),
-            this.toInput(),
-          );
-          return this.archiveApi.getMissionTelemetry(
+          return this.missionTelemetryFetch.fetchTelemetryRows(
             this.missionId,
             this.tailId(),
             newFields,
-            startTime,
-            endTime,
+            this.fromInput(),
+            this.toInput(),
           );
         }),
         takeUntil(this.destroy$),
       )
       .subscribe({
         next: (data: MissionTelemetryRo[]) => {
-          const merged = this.mergeTelemetryRows(this.telemetryData(), data);
+          const merged = mergeMissionTelemetryRows(this.telemetryData(), data);
           this.telemetryData.set(merged);
 
           if (!this.originalBounds() && data.length > 0) {
             const first = data[0].timestamp;
             const last = data[data.length - 1].timestamp;
             this.originalBounds.set({ first, last });
-            this.fromInput.set(this.toDatetimeLocalValue(first));
-            this.toInput.set(this.toDatetimeLocalValue(last));
+            this.fromInput.set(isoTimestampToDatetimeLocalValue(first));
+            this.toInput.set(isoTimestampToDatetimeLocalValue(last));
           }
 
           for (const point of data) {
@@ -352,25 +347,6 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
           this.fetchingData.set(false);
         },
       });
-  }
-
-  private mergeTelemetryRows(
-    existing: MissionTelemetryRo[],
-    incoming: MissionTelemetryRo[],
-  ): MissionTelemetryRo[] {
-    if (existing.length === 0) {
-      return incoming;
-    }
-    return existing.map((point, index) => {
-      const next = incoming[index];
-      if (!next) {
-        return point;
-      }
-      return {
-        ...point,
-        fields: { ...point.fields, ...next.fields },
-      };
-    });
   }
 
   ngOnDestroy(): void {
@@ -413,7 +389,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   }
 
   focusSearchInput(): void {
-    this.paramSearchInput()?.nativeElement.focus();
+    this.investigationToolbar()?.focusSearchInput();
   }
 
   goBack(): void {
@@ -532,7 +508,12 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     );
 
     const items: TelemetryDashboardItem[] = selected.map((field, index) => {
-      const chartConfig = this.buildChartRowConfig(field, index);
+      const chartConfig = buildTelemetryChartRowConfig({
+        field,
+        colorIndex: index,
+        viewTelemetry: this.viewTelemetry(),
+        timeLabels: this.timeLabels(),
+      });
       return {
         x: index % DEFAULT_COLUMNS,
         y: Math.floor(index / DEFAULT_COLUMNS),
@@ -546,92 +527,14 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     this.dashboardItems.set(items);
   }
 
-  private buildChartRowConfig(field: TelemetryField, index: number): ChartRowConfig {
-    const color = COLORS[index % COLORS.length];
-
-    const datasets: ChartDataset<'line'>[] = [{
-      label: EnumUtil.getTelemetryFieldDisplay(field),
-      data: this.viewTelemetry().map((point) => point.fields[field] ?? null),
-      borderColor: color,
-      backgroundColor: color + BACKGROUND_ALPHA,
-      pointRadius: POINT_RADIUS,
-      borderWidth: BORDER_WIDTH,
-      tension: LINE_TENSION,
-      fill: false,
-    }];
-
-    const options: ChartConfiguration<'line'>['options'] = {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
-      scales: {
-        x: {
-          type: 'category',
-          title: {
-            display: true,
-            text: TIME_AXIS_LABEL,
-            color: TICK_COLOR,
-            font: { size: TICK_FONT_SIZE },
-          },
-          ticks: {
-            color: TICK_COLOR,
-            maxTicksLimit: X_AXIS_MAX_TICKS,
-            font: { size: TICK_FONT_SIZE },
-          },
-          grid: { color: GRID_COLOR },
-        },
-        y: {
-          title: {
-            display: true,
-            text: `${EnumUtil.getTelemetryFieldDisplay(field)} (${TelemetryUtil.getUnit(field)})`,
-            color: TICK_COLOR,
-            font: { size: TICK_FONT_SIZE },
-          },
-          ticks: {
-            color: TICK_COLOR,
-            font: { size: TICK_FONT_SIZE },
-            maxTicksLimit: Y_AXIS_MAX_TICKS,
-          },
-          grid: { color: GRID_COLOR },
-        },
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          callbacks: {
-            title: (items) => items[0]?.label ?? '',
-            label: (item) =>
-              `${EnumUtil.getTelemetryFieldDisplay(field)}: ${item.formattedValue} ${TelemetryUtil.getUnit(field)}`,
-          },
-        },
-      },
-      interaction: {
-        mode: 'nearest',
-        axis: 'x',
-        intersect: false,
-      },
-    };
-
-    return {
-      field,
-      label: EnumUtil.getTelemetryFieldDisplay(field),
-      unit: TelemetryUtil.getUnit(field),
-      color,
-      data: { labels: this.timeLabels(), datasets },
-      options,
-    };
-  }
-
   openRangePicker(): void {
     const bounds = this.missionTelemetryWindow();
     if (!bounds) return;
     let from = this.fromInput();
     let to = this.toInput();
     if (!from || !to) {
-      from = this.toDatetimeLocalValue(bounds.first);
-      to = this.toDatetimeLocalValue(bounds.last);
+      from = isoTimestampToDatetimeLocalValue(bounds.first);
+      to = isoTimestampToDatetimeLocalValue(bounds.last);
       this.fromInput.set(from);
       this.toInput.set(to);
     }
@@ -641,7 +544,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     const data: TimeRangeDialogData = {
       from: new Date(seed.fromMs),
       to: new Date(seed.toMs),
-      boundsDisplay: `${this.formatDateDisplay(bounds.first)} ${BOUNDS_DISPLAY_RANGE_SEPARATOR} ${this.formatDateDisplay(bounds.last)}`,
+      boundsDisplay: `${formatTelemetryBoundsDateDisplay(bounds.first)} ${BOUNDS_DISPLAY_RANGE_SEPARATOR} ${formatTelemetryBoundsDateDisplay(bounds.last)}`,
       minBound: new Date(bounds.first),
       maxBound: new Date(bounds.last),
       useUtcCalendar: true,
@@ -664,8 +567,8 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((result) => {
         if (!result) return;
-        this.fromInput.set(this.toDatetimeLocalValue(result.from.toISOString()));
-        this.toInput.set(this.toDatetimeLocalValue(result.to.toISOString()));
+        this.fromInput.set(isoTimestampToDatetimeLocalValue(result.from.toISOString()));
+        this.toInput.set(isoTimestampToDatetimeLocalValue(result.to.toISOString()));
         this.activeStartTime.set(result.from.toISOString());
         this.activeEndTime.set(result.to.toISOString());
         this.rebuildDashboardItems();
@@ -676,8 +579,8 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   resetTimeRange(): void {
     const bounds = this.missionTelemetryWindow();
     if (!bounds) return;
-    this.fromInput.set(this.toDatetimeLocalValue(bounds.first));
-    this.toInput.set(this.toDatetimeLocalValue(bounds.last));
+    this.fromInput.set(isoTimestampToDatetimeLocalValue(bounds.first));
+    this.toInput.set(isoTimestampToDatetimeLocalValue(bounds.last));
     this.activeStartTime.set('');
     this.activeEndTime.set('');
     this.rebuildDashboardItems();
@@ -693,13 +596,4 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formatDateDisplay(iso: string): string {
-    return new Date(iso).toLocaleString(LOCALE, BOUNDS_DISPLAY_FORMAT_OPTIONS);
-  }
-
-  private toDatetimeLocalValue(isoString: string): string {
-    const d = new Date(isoString);
-    const pad = (n: number) => String(n).padStart(DATETIME_LOCAL_PAD_LENGTH, DATETIME_PAD_CHAR);
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-  }
 }

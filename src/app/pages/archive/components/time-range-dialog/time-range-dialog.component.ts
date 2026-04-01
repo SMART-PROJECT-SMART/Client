@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Inject, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { OWL_DATE_TIME_FORMATS } from '@danielmoncada/angular-datetime-picker';
 import type { Dayjs } from 'dayjs';
@@ -12,7 +12,6 @@ import {
   TimeRangeEndTimeLabel,
   TimeRangeStartTimeLabel,
   TimeRangeTimeInputPlaceholder,
-  UtcTimeOfDayStringPattern,
 } from './time-range-dialog.constants';
 import {
   dayjsToUtcDateOnlyAnchor,

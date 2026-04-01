@@ -1,0 +1,90 @@
+@use '../../../../../styles/constants' as *;
+
+$search-field-width: 240px;
+$chip-padding-vertical: 6px;
+
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-sm $spacing-lg;
+  flex-shrink: 0;
+  background-color: $color-background-primary;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  .selected-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $spacing-sm;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.selected-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $chip-padding-vertical $spacing-sm $chip-padding-vertical $spacing-md;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  background-color: rgba($color-primary, 0.15);
+  border: $border-width-thin solid rgba($color-primary, 0.5);
+  color: $color-primary-light;
+  line-height: 1;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background-color: rgba($color-primary, 0.25);
+  }
+
+  .chip-remove {
+    font-size: $icon-size-xs;
+    width: $icon-size-xs;
+    height: $icon-size-xs;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity $transition-fast;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.param-search-field {
+  width: $search-field-width;
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  ::ng-deep .mat-mdc-form-field-icon-prefix {
+    padding-right: $spacing-xs;
+    color: $color-text-muted;
+  }
+}
+
+.time-range-controls {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+
+  .range-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .range-display {
+    color: $color-text-primary;
+  }
+}

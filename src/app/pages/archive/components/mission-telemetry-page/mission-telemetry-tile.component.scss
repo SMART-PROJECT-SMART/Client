@@ -1,0 +1,195 @@
+@use '../../../../../styles/constants' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+$tile-menu-btn-size: 28px;
+$header-letter-spacing: 0.5px;
+
+.tile-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  border-bottom: $border-width-thin solid $color-border-default;
+  flex-shrink: 0;
+
+  .tile-field-name {
+    font-size: $font-size-sm;
+    font-weight: 600;
+  }
+
+  .tile-field-unit {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+  }
+
+  .tile-menu-btn.mat-mdc-icon-button {
+    margin-left: auto;
+    width: $tile-menu-btn-size;
+    height: $tile-menu-btn-size;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+    transition: opacity $transition-fast;
+
+    ::ng-deep .mat-mdc-button-touch-target {
+      width: $tile-menu-btn-size;
+      height: $tile-menu-btn-size;
+    }
+
+    mat-icon {
+      font-size: $icon-size-sm;
+      width: $icon-size-sm;
+      height: $icon-size-sm;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .drag-handle {
+    font-size: $icon-size-sm;
+    width: $icon-size-sm;
+    height: $icon-size-sm;
+    color: $color-text-muted;
+    cursor: grab;
+    opacity: 0.5;
+    transition: opacity $transition-fast;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+.tile-chart {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+  padding: $spacing-xs;
+
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+.tile-table {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tile-table-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  th {
+    background-color: $color-background-elevated;
+    color: $color-text-secondary;
+    font-weight: 600;
+    font-size: $font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: $header-letter-spacing;
+    white-space: nowrap;
+    padding: $spacing-xs $spacing-sm;
+    text-align: left;
+    border-bottom: $border-width-thin solid $color-border-default;
+  }
+
+  td {
+    color: $color-text-primary;
+    font-size: $font-size-sm;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    padding: $spacing-xs $spacing-sm;
+    border-bottom: $border-width-thin solid rgba($color-border-default, 0.3);
+  }
+
+  tr:hover td {
+    background-color: rgba($color-primary, 0.06);
+  }
+}
+
+.tile-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs 0;
+  border-top: $border-width-thin solid $color-border-default;
+  flex-shrink: 0;
+
+  .page-size-select {
+    background-color: $color-background-primary;
+    color: $color-text-secondary;
+    border: $border-width-thin solid $color-border-default;
+    border-radius: $border-radius-sm;
+    padding: 2px $spacing-xs;
+    font-size: $font-size-xs;
+    font-family: inherit;
+    cursor: pointer;
+    color-scheme: dark;
+    margin-right: auto;
+    margin-left: $spacing-xs;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+  }
+
+  .row-range {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    margin-left: $spacing-xs;
+  }
+
+  .page-info {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  button.mat-mdc-icon-button {
+    width: $tile-menu-btn-size;
+    height: $tile-menu-btn-size;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep .mat-mdc-button-touch-target {
+      width: $tile-menu-btn-size;
+      height: $tile-menu-btn-size;
+    }
+
+    mat-icon {
+      font-size: $icon-size-sm;
+      width: $icon-size-sm;
+      height: $icon-size-sm;
+    }
+  }
+}

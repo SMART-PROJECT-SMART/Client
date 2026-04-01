@@ -1,19 +1,11 @@
 <div class="page-container">
-  <div class="page-header">
-    <div class="header-left">
-      <button mat-icon-button (click)="goBack()" [attr.aria-label]="investigationUi.BACK_ARIA_LABEL">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h1>{{ missionTitle() }}</h1>
-      <span class="header-meta">{{ investigationUi.TAIL_LABEL_PREFIX }}{{ tailId() }}</span>
-    </div>
-    @if (missionDetails()) {
-      <button mat-stroked-button class="mission-details-btn" (click)="openMissionDetails()">
-        <mat-icon>info_outline</mat-icon>
-        {{ investigationUi.MISSION_DETAILS_LABEL }}
-      </button>
-    }
-  </div>
+  <app-mission-telemetry-page-header
+    [missionTitle]="missionTitle()"
+    [tailId]="tailId()"
+    [hasMissionDetails]="!!missionDetails()"
+    (back)="goBack()"
+    (openMissionDetails)="openMissionDetails()"
+  />
 
   @if (errorMessage()) {
     <div class="state-container">
@@ -21,55 +13,21 @@
       <p>{{ errorMessage() }}</p>
     </div>
   } @else if (availableFields().length > 0) {
-    <div class="toolbar-row">
-      <div class="selected-chips">
-        @if (unselectedFields().length > 0) {
-          <mat-form-field appearance="outline" class="param-search-field" subscriptSizing="dynamic">
-            <mat-icon matPrefix>search</mat-icon>
-            <input
-              matInput
-              #paramSearchInput
-              [value]="parameterSearch()"
-              (input)="onParameterSearchInput($event)"
-              [matAutocomplete]="paramAuto"
-              [placeholder]="investigationUi.PARAMETER_SEARCH_PLACEHOLDER"
-            />
-            <mat-autocomplete
-              #paramAuto="matAutocomplete"
-              (optionSelected)="onParameterSelected($event, paramSearchInput)"
-            >
-              @for (field of filteredUnselectedFields(); track field) {
-                <mat-option [value]="field">{{ getFieldLabel(field) }}</mat-option>
-              }
-            </mat-autocomplete>
-          </mat-form-field>
-        }
-        @for (field of selectedFields(); track field) {
-          <span class="selected-chip">
-            {{ getFieldLabel(field) }}
-            <mat-icon class="chip-remove" (click)="removeField(field)">close</mat-icon>
-          </span>
-        }
-      </div>
-      @if (missionTelemetryWindow()) {
-        <div class="time-range-controls">
-          <button mat-stroked-button
-                  class="range-trigger"
-                  (click)="openRangePicker()"
-                  [matTooltip]="investigationUi.TOOLTIP_TIME_RANGE">
-            <mat-icon>date_range</mat-icon>
-            <span class="range-display">{{ rangeDisplay() }}</span>
-          </button>
-          @if (isRangeModified()) {
-            <button mat-icon-button
-                    (click)="resetTimeRange()"
-                    [matTooltip]="investigationUi.TOOLTIP_RESET_RANGE">
-              <mat-icon>restart_alt</mat-icon>
-            </button>
-          }
-        </div>
-      }
-    </div>
+    <app-mission-telemetry-investigation-toolbar
+      #investigationToolbar
+      [showParameterSearch]="unselectedFields().length > 0"
+      [parameterSearch]="parameterSearch()"
+      [filteredUnselectedFields]="filteredUnselectedFields()"
+      [selectedFields]="selectedFields()"
+      [showTimeRangeControls]="!!missionTelemetryWindow()"
+      [rangeDisplay]="rangeDisplay()"
+      [isRangeModified]="isRangeModified()"
+      (parameterSearchInput)="onParameterSearchInput($event)"
+      (parameterSelected)="onParameterSelected($event.event, $event.input)"
+      (removeField)="removeField($event)"
+      (openRangePicker)="openRangePicker()"
+      (resetTimeRange)="resetTimeRange()"
+    />
 
     @if (selectedFields().length > 0) {
       <div class="gridster-wrapper">
@@ -81,87 +39,23 @@
         <gridster [options]="gridsterOptions">
           @for (item of dashboardItems(); track item.field) {
             <gridster-item [item]="item">
-              <div class="tile-header">
-                <span class="tile-field-name" [style.color]="item.chartConfig.color">
-                  {{ item.chartConfig.label }}
-                </span>
-                <span class="tile-field-unit">{{ item.chartConfig.unit }}</span>
-                <button mat-icon-button
-                        [matMenuTriggerFor]="tileMenu"
-                        class="tile-menu-btn no-drag"
-                        (mousedown)="$event.stopPropagation()"
-                        (touchstart)="$event.stopPropagation()">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #tileMenu="matMenu">
-                  <button mat-menu-item (click)="toggleViewMode(item.field)">
-                    <mat-icon>{{ item.viewMode === viewModeChart ? 'table_chart' : 'show_chart' }}</mat-icon>
-                    {{ item.viewMode === viewModeChart ? investigationUi.MENU_SHOW_AS_TABLE : investigationUi.MENU_SHOW_AS_CHART }}
-                  </button>
-                </mat-menu>
-                <mat-icon class="drag-handle">drag_indicator</mat-icon>
-              </div>
-
-              @if (item.viewMode === viewModeChart) {
-                <div class="tile-chart no-drag"
-                     (mousedown)="$event.stopPropagation()"
-                     (touchstart)="$event.stopPropagation()">
-                  <canvas
-                    baseChart
-                    type="line"
-                    [data]="item.chartConfig.data"
-                    [options]="item.chartConfig.options"
-                    [plugins]="[crosshairPlugin]">
-                  </canvas>
-                </div>
-              } @else {
-                <div class="tile-table no-drag"
-                     (mousedown)="$event.stopPropagation()"
-                     (touchstart)="$event.stopPropagation()">
-                  <div class="tile-table-body">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>{{ investigationUi.TIMESTAMP_TABLE_HEADER }}</th>
-                          <th>{{ item.chartConfig.label }} {{ item.chartConfig.unit }}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @for (row of tableRowsByField().get(item.field) ?? []; track row.trackId) {
-                          <tr>
-                            <td>{{ row.timestamp }}</td>
-                            <td>{{ row.value | number:investigationUi.TABLE_VALUE_NUMBER_FORMAT }}</td>
-                          </tr>
-                        }
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="tile-pagination">
-                    <select class="page-size-select no-drag"
-                            [value]="getTilePageSize(item.field) ?? ''"
-                            (change)="setTilePageSize(item.field, +$any($event.target).value)"
-                            (mousedown)="$event.stopPropagation()"
-                            (touchstart)="$event.stopPropagation()">
-                      <option value="">Auto</option>
-                      @for (size of pageSizeOptions; track size) {
-                        <option [value]="size">{{ size }}</option>
-                      }
-                    </select>
-                    <span class="row-range">{{ getRowRangeDisplay(item.field, item.rows) }}</span>
-                    <button mat-icon-button
-                            [disabled]="getTilePage(item.field) === 0"
-                            (click)="prevPage(item.field)">
-                      <mat-icon>chevron_left</mat-icon>
-                    </button>
-                    <span class="page-info">{{ getTilePage(item.field) + 1 }} / {{ getTotalPages(item.field, item.rows) }}</span>
-                    <button mat-icon-button
-                            [disabled]="getTilePage(item.field) >= getTotalPages(item.field, item.rows) - 1"
-                            (click)="nextPage(item.field)">
-                      <mat-icon>chevron_right</mat-icon>
-                    </button>
-                  </div>
-                </div>
-              }
+              <app-mission-telemetry-tile
+                [item]="item"
+                [viewModeChart]="viewModeChart"
+                [tableRows]="tableRowsByField().get(item.field) ?? []"
+                [crosshairPlugin]="crosshairPlugin"
+                [pageSizeOptions]="pageSizeOptions"
+                [tilePage]="getTilePage(item.field)"
+                [totalPages]="getTotalPages(item.field, item.rows)"
+                [rowRangeDisplay]="getRowRangeDisplay(item.field, item.rows)"
+                [selectedPageSize]="getTilePageSize(item.field)"
+                [prevDisabled]="getTilePage(item.field) === 0"
+                [nextDisabled]="getTilePage(item.field) >= getTotalPages(item.field, item.rows) - 1"
+                (toggleViewMode)="toggleViewMode($event)"
+                (prevPage)="prevPage($event)"
+                (nextPage)="nextPage($event)"
+                (pageSizeChange)="setTilePageSize($event.field, $event.size)"
+              />
             </gridster-item>
           }
         </gridster>

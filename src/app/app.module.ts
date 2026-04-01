@@ -37,6 +37,9 @@ import { ArchiveFilterDialogComponent } from './pages/archive/components/archive
 import { ActiveMissionsTableComponent } from './pages/archive/components/active-missions-table/active-missions-table.component';
 import { ScenarioSelectDialogComponent } from './pages/assignment/components/scenario-select-dialog/scenario-select-dialog.component';
 import { MissionTelemetryPageComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-page.component';
+import { MissionTelemetryPageHeaderComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-page-header.component';
+import { MissionTelemetryInvestigationToolbarComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-investigation-toolbar.component';
+import { MissionTelemetryTileComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-tile.component';
 import { MissionDetailsDialogComponent } from './pages/archive/components/mission-details-dialog/mission-details-dialog.component';
 import { TimeRangeDialogComponent } from './pages/archive/components/time-range-dialog/time-range-dialog.component';
 
@@ -67,6 +70,9 @@ import { TimeRangeDialogComponent } from './pages/archive/components/time-range-
     ActiveMissionsTableComponent,
     ScenarioSelectDialogComponent,
     MissionTelemetryPageComponent,
+    MissionTelemetryPageHeaderComponent,
+    MissionTelemetryInvestigationToolbarComponent,
+    MissionTelemetryTileComponent,
     MissionDetailsDialogComponent,
     TimeRangeDialogComponent,
   ],
