@@ -12,7 +12,6 @@ import {
   CalendarDayStartTimeParts,
   TimeRangeEndTimeLabel,
   TimeRangePickerBoundDateFormat,
-  TimeRangeResetRangeLabel,
   TimeRangeStartTimeLabel,
   TimeRangeTimeInputPlaceholder,
   UtcTimeOfDayStringPattern,
@@ -47,7 +46,6 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   readonly useUtcCalendar: boolean;
   readonly startTimeLabel = TimeRangeStartTimeLabel;
   readonly endTimeLabel = TimeRangeEndTimeLabel;
-  readonly resetRangeLabel = TimeRangeResetRangeLabel;
   readonly timeInputPlaceholder = TimeRangeTimeInputPlaceholder;
   readonly emptyPickerRanges: Record<string, [Dayjs, Dayjs]> = {};
   readonly rangeForm: FormGroup;
@@ -57,7 +55,7 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   readonly minDateBoundStr: string;
   readonly maxDateBoundStr: string;
   pickerStart: Dayjs;
-  pickerEnd: Dayjs;
+  pickerEnd: Dayjs | null;
 
   private readonly initialPickerStart: Dayjs;
   private readonly initialPickerEnd: Dayjs;
@@ -149,6 +147,7 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   }
 
   get isValid(): boolean {
+    if (this.pickerEnd === null) return false;
     if (this.rangeForm.invalid) return false;
     const result = this.buildResult();
     if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
@@ -185,8 +184,32 @@ export class TimeRangeDialogComponent implements AfterViewInit {
     this.patchDateRangeFromPicker();
   }
 
-  resetRangeToInitial(): void {
-    this.restoreInitialDateRangeFromDialogOpen();
+  onPickerStartDateChangedFromLibrary(payload: unknown): void {
+    const emitted = payload as { startDate: { valueOf: () => number } };
+    const picker = this.dateRangePicker;
+    const anchorMs = emitted.startDate.valueOf();
+    if (this.useUtcCalendar) {
+      this.pickerStart = dayjs.utc(anchorMs).startOf('day');
+    } else {
+      this.pickerStart = dayjs(anchorMs).startOf('day');
+    }
+    if (!picker?.endDate) {
+      this.pickerEnd = null;
+    } else if (this.useUtcCalendar) {
+      this.pickerEnd = dayjs.utc(picker.endDate.valueOf()).startOf('day');
+    } else {
+      this.pickerEnd = dayjs(picker.endDate.valueOf()).startOf('day');
+    }
+  }
+
+  onPickerEndDateChangedFromLibrary(payload: unknown): void {
+    const emitted = payload as { endDate: { valueOf: () => number } };
+    const endMs = emitted.endDate.valueOf();
+    if (this.useUtcCalendar) {
+      this.pickerEnd = dayjs.utc(endMs).startOf('day');
+    } else {
+      this.pickerEnd = dayjs(endMs).startOf('day');
+    }
   }
 
   private restoreInitialDateRangeFromDialogOpen(): void {
@@ -213,7 +236,7 @@ export class TimeRangeDialogComponent implements AfterViewInit {
       return;
     }
     picker.startDate = this.pickerStart;
-    picker.endDate = this.pickerEnd;
+    (picker as unknown as { endDate: Dayjs | null }).endDate = this.pickerEnd;
     picker.updateView();
   }
 
@@ -230,6 +253,9 @@ export class TimeRangeDialogComponent implements AfterViewInit {
 
   private syncPickerModelIntoForm(): void {
     const picker = this.dateRangePicker;
+    if (this.pickerEnd === null) {
+      return;
+    }
     if (!picker?.startDate) {
       this.patchDateRangeFromPicker();
       return;
@@ -246,7 +272,10 @@ export class TimeRangeDialogComponent implements AfterViewInit {
       nextStart = dayjs(picker.startDate.valueOf()).startOf('day');
       nextEnd = dayjs(picker.endDate.valueOf()).startOf('day');
     }
-    if (nextStart.valueOf() === this.pickerStart.valueOf() && nextEnd.valueOf() === this.pickerEnd.valueOf()) {
+    if (
+      nextStart.valueOf() === this.pickerStart.valueOf() &&
+      nextEnd.valueOf() === this.pickerEnd.valueOf()
+    ) {
       return;
     }
     this.pickerStart = nextStart;
@@ -255,6 +284,9 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   }
 
   private patchDateRangeFromPicker(): void {
+    if (this.pickerEnd === null) {
+      return;
+    }
     if (this.useUtcCalendar) {
       const start = this.pickerStart.clone().startOf('day');
       const end = this.pickerEnd.clone().startOf('day');
