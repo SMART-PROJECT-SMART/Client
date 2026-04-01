@@ -147,7 +147,7 @@ export class TimeRangeDialogComponent implements AfterViewInit {
     if (this.rangeForm.invalid) return false;
     const result = this.buildResult();
     if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
-    return this.intersectResultWithBounds(result) !== null;
+    return this.intersectResultWithBoundsOrUtcCalendarEnvelope(result) !== null;
   }
 
   get isInvalidRange(): boolean {
@@ -158,7 +158,7 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   get isOutOfDataBounds(): boolean {
     const result = this.buildResult();
     if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
-    return this.intersectResultWithBounds(result) === null;
+    return this.intersectResultWithBoundsOrUtcCalendarEnvelope(result) === null;
   }
 
   onPickerDatesUpdated(period: unknown): void {
@@ -215,7 +215,7 @@ export class TimeRangeDialogComponent implements AfterViewInit {
   onApply(): void {
     const result = this.buildResult();
     if (!result || !this.isFiniteRange(result) || result.from > result.to) return;
-    const clamped = this.intersectResultWithBounds(result);
+    const clamped = this.intersectResultWithBoundsOrUtcCalendarEnvelope(result);
     if (!clamped) return;
     this.dialogRef.close({
       from: clamped.from,
@@ -382,6 +382,29 @@ export class TimeRangeDialogComponent implements AfterViewInit {
 
   private isFiniteRange(result: TimeRangeDialogResult): boolean {
     return Number.isFinite(result.from.getTime()) && Number.isFinite(result.to.getTime());
+  }
+
+  private intersectResultWithBoundsOrUtcCalendarEnvelope(
+    result: TimeRangeDialogResult,
+  ): TimeRangeDialogResult | null {
+    const direct = this.intersectResultWithBounds(result);
+    if (direct !== null) {
+      return direct;
+    }
+    if (!this.useUtcCalendar) {
+      return null;
+    }
+    const raw = this.rangeForm.getRawValue() as { dateRange: { start: Date | null; end: Date | null } };
+    const startDate = raw.dateRange?.start;
+    const endDate = raw.dateRange?.end;
+    if (!startDate || !endDate) {
+      return null;
+    }
+    const envelope: TimeRangeDialogResult = {
+      from: this.utcStartOfCalendarDay(startDate),
+      to: this.utcEndOfCalendarDay(endDate),
+    };
+    return this.intersectResultWithBounds(envelope);
   }
 
   private intersectResultWithBounds(result: TimeRangeDialogResult): TimeRangeDialogResult | null {

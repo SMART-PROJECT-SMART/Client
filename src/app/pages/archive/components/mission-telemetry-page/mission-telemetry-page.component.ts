@@ -101,6 +101,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly activeStartTime = signal<string>('');
   readonly activeEndTime = signal<string>('');
   readonly originalBounds = signal<TelemetryTimeRangeBounds | null>(null);
+  private readonly telemetryMissionBounds = signal<TelemetryTimeRangeBounds | null>(null);
 
   private readonly paramSearchInput = viewChild<ElementRef<HTMLInputElement>>('paramSearchInput');
 
@@ -199,8 +200,16 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     );
   });
 
+  readonly missionTelemetryWindow = computed<TelemetryTimeRangeBounds | null>(() => {
+    const fromApi = this.telemetryMissionBounds();
+    if (fromApi) {
+      return fromApi;
+    }
+    return this.originalBounds();
+  });
+
   readonly isRangeModified = computed<boolean>(() => {
-    const bounds = this.originalBounds();
+    const bounds = this.missionTelemetryWindow();
     if (!bounds) return false;
     const start = this.activeStartTime();
     const end = this.activeEndTime();
@@ -212,7 +221,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   });
 
   readonly boundsDisplay = computed<string>(() => {
-    const bounds = this.originalBounds();
+    const bounds = this.missionTelemetryWindow();
     if (!bounds) return '';
     return `${this.formatDateDisplay(bounds.first)} \u2014 ${this.formatDateDisplay(bounds.last)}`;
   });
@@ -262,7 +271,9 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
           if (telemetryBoundsHasSamples(bounds)) {
             const first = bounds.firstTimestamp;
             const last = bounds.lastTimestamp;
-            this.originalBounds.set({ first, last });
+            const window = { first, last };
+            this.originalBounds.set(window);
+            this.telemetryMissionBounds.set(window);
             this.fromInput.set(this.toDatetimeLocalValue(first));
             this.toInput.set(this.toDatetimeLocalValue(last));
           }
@@ -612,7 +623,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   }
 
   openRangePicker(): void {
-    const bounds = this.originalBounds();
+    const bounds = this.missionTelemetryWindow();
     if (!bounds) return;
     let from = this.fromInput();
     let to = this.toInput();
@@ -623,9 +634,11 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       this.toInput.set(to);
     }
 
+    const seed = this.clampDialogSeedToMissionBounds(new Date(from).getTime(), new Date(to).getTime(), bounds);
+
     const data: TimeRangeDialogData = {
-      from: new Date(from),
-      to: new Date(to),
+      from: new Date(seed.fromMs),
+      to: new Date(seed.toMs),
       boundsDisplay: `${this.formatDateDisplay(bounds.first)} \u2014 ${this.formatDateDisplay(bounds.last)}`,
       minBound: new Date(bounds.first),
       maxBound: new Date(bounds.last),
@@ -659,7 +672,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   }
 
   resetTimeRange(): void {
-    const bounds = this.originalBounds();
+    const bounds = this.missionTelemetryWindow();
     if (!bounds) return;
     this.fromInput.set(this.toDatetimeLocalValue(bounds.first));
     this.toInput.set(this.toDatetimeLocalValue(bounds.last));
@@ -676,6 +689,21 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       data: { mission },
       autoFocus: false,
     });
+  }
+
+  private clampDialogSeedToMissionBounds(
+    fromMs: number,
+    toMs: number,
+    bounds: TelemetryTimeRangeBounds,
+  ): { fromMs: number; toMs: number } {
+    const bMin = new Date(bounds.first).getTime();
+    const bMax = new Date(bounds.last).getTime();
+    const nextFrom = Math.max(fromMs, bMin);
+    const nextTo = Math.min(toMs, bMax);
+    if (nextFrom > nextTo) {
+      return { fromMs: bMin, toMs: bMax };
+    }
+    return { fromMs: nextFrom, toMs: nextTo };
   }
 
   private formatDateDisplay(iso: string): string {
