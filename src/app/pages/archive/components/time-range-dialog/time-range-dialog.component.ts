@@ -2,8 +2,7 @@ import { AfterViewInit, Component, Inject, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { OWL_DATE_TIME_FORMATS } from '@danielmoncada/angular-datetime-picker';
-import dayjs, { Dayjs } from 'dayjs';
-import utc from 'dayjs/plugin/utc';
+import type { Dayjs } from 'dayjs';
 import { OWL_TIME_FORMATS } from '../../../../common/constants/owl-datetime.constants';
 import { DateTimeUtil } from '../../../../common/utils/date-time.util';
 import { DaterangepickerComponent } from 'ngx-daterangepicker-material';
@@ -11,19 +10,25 @@ import {
   CalendarDayEndTimeParts,
   CalendarDayStartTimeParts,
   TimeRangeEndTimeLabel,
-  TimeRangePickerBoundDateFormat,
   TimeRangeStartTimeLabel,
   TimeRangeTimeInputPlaceholder,
   UtcTimeOfDayStringPattern,
 } from './time-range-dialog.constants';
-import { TimeRangeDialogData, TimeRangeDialogResult, TimeRangeFormRawValue } from './time-range-dialog.models';
+import {
+  dayjsToUtcDateOnlyAnchor,
+  startOfCalendarDayFromMillis,
+} from './time-range-dialog-calendar.util';
+import { createTimeRangeDialogInitialState } from './time-range-dialog-initial-state.factory';
+import {
+  TimeRangeDialogData,
+  TimeRangeDialogResult,
+  TimeRangeFormRawValue,
+} from './time-range-dialog.models';
 import {
   resolveSelectableRangeWithinBounds,
   utcCalendarDayEndInstant,
   utcCalendarDayStartInstant,
 } from '../../utils/time-range-dialog-bounds.util';
-
-dayjs.extend(utc);
 
 const TIME_RANGE_DIALOG_OWL_FORMATS = {
   ...OWL_TIME_FORMATS,
@@ -81,51 +86,16 @@ export class TimeRangeDialogComponent implements AfterViewInit {
     this.initialStartTime = new Date(from.getTime());
     this.initialEndTime = new Date(to.getTime());
 
-    if (this.useUtcCalendar) {
-      this.minDayjs = dayjs.utc(this.minBound).startOf('day');
-      this.maxDayjs = dayjs.utc(this.maxBound).startOf('day');
-      this.minDateBoundStr = this.minDayjs.format(TimeRangePickerBoundDateFormat);
-      this.maxDateBoundStr = this.maxDayjs.format(TimeRangePickerBoundDateFormat);
-      const startDateOnly = this.stripToDateOnlyUtc(from);
-      const endDateOnly = this.stripToDateOnlyUtc(to);
-      this.initialPickerStart = dayjs.utc(from).startOf('day');
-      this.initialPickerEnd = dayjs.utc(to).startOf('day');
-      this.pickerStart = this.initialPickerStart.clone();
-      this.pickerEnd = this.initialPickerEnd.clone();
-      this.rangeForm = fb.group({
-        dateRange: fb.group({
-          start: [startDateOnly, Validators.required],
-          end: [endDateOnly, Validators.required],
-        }),
-        startTime: [
-          DateTimeUtil.utcTimeStringFromDate(from),
-          [Validators.required, Validators.pattern(UtcTimeOfDayStringPattern)],
-        ],
-        endTime: [
-          DateTimeUtil.utcTimeStringFromDate(to),
-          [Validators.required, Validators.pattern(UtcTimeOfDayStringPattern)],
-        ],
-      });
-    } else {
-      this.minDayjs = dayjs(this.stripToDateOnlyLocal(this.minBound)).startOf('day');
-      this.maxDayjs = dayjs(this.stripToDateOnlyLocal(this.maxBound)).startOf('day');
-      this.minDateBoundStr = this.minDayjs.format(TimeRangePickerBoundDateFormat);
-      this.maxDateBoundStr = this.maxDayjs.format(TimeRangePickerBoundDateFormat);
-      const startDateOnly = this.stripToDateOnlyLocal(from);
-      const endDateOnly = this.stripToDateOnlyLocal(to);
-      this.initialPickerStart = dayjs(startDateOnly).startOf('day');
-      this.initialPickerEnd = dayjs(endDateOnly).startOf('day');
-      this.pickerStart = this.initialPickerStart.clone();
-      this.pickerEnd = this.initialPickerEnd.clone();
-      this.rangeForm = fb.group({
-        dateRange: fb.group({
-          start: [startDateOnly, Validators.required],
-          end: [endDateOnly, Validators.required],
-        }),
-        startTime: [DateTimeUtil.localTimeOfDayForPicker(from)],
-        endTime: [DateTimeUtil.localTimeOfDayForPicker(to)],
-      });
-    }
+    const initial = createTimeRangeDialogInitialState(fb, from, to, this.minBound, this.maxBound, this.useUtcCalendar);
+    this.minDayjs = initial.minDayjs;
+    this.maxDayjs = initial.maxDayjs;
+    this.minDateBoundStr = initial.minDateBoundStr;
+    this.maxDateBoundStr = initial.maxDateBoundStr;
+    this.initialPickerStart = initial.initialPickerStart;
+    this.initialPickerEnd = initial.initialPickerEnd;
+    this.pickerStart = initial.pickerStart;
+    this.pickerEnd = initial.pickerEnd;
+    this.rangeForm = initial.rangeForm;
   }
 
   ngAfterViewInit(): void {
@@ -174,42 +144,27 @@ export class TimeRangeDialogComponent implements AfterViewInit {
     if (!p.startDate || !p.endDate) {
       return;
     }
-    if (this.useUtcCalendar) {
-      this.pickerStart = dayjs.utc(p.startDate.valueOf()).startOf('day');
-      this.pickerEnd = dayjs.utc(p.endDate.valueOf()).startOf('day');
-    } else {
-      this.pickerStart = dayjs(p.startDate.valueOf()).startOf('day');
-      this.pickerEnd = dayjs(p.endDate.valueOf()).startOf('day');
-    }
+    const useUtc = this.useUtcCalendar;
+    this.pickerStart = startOfCalendarDayFromMillis(p.startDate.valueOf(), useUtc);
+    this.pickerEnd = startOfCalendarDayFromMillis(p.endDate.valueOf(), useUtc);
     this.patchDateRangeFromPicker();
   }
 
   onPickerStartDateChangedFromLibrary(payload: unknown): void {
     const emitted = payload as { startDate: { valueOf: () => number } };
     const picker = this.dateRangePicker;
-    const anchorMs = emitted.startDate.valueOf();
-    if (this.useUtcCalendar) {
-      this.pickerStart = dayjs.utc(anchorMs).startOf('day');
-    } else {
-      this.pickerStart = dayjs(anchorMs).startOf('day');
-    }
+    const useUtc = this.useUtcCalendar;
+    this.pickerStart = startOfCalendarDayFromMillis(emitted.startDate.valueOf(), useUtc);
     if (!picker?.endDate) {
       this.pickerEnd = null;
-    } else if (this.useUtcCalendar) {
-      this.pickerEnd = dayjs.utc(picker.endDate.valueOf()).startOf('day');
     } else {
-      this.pickerEnd = dayjs(picker.endDate.valueOf()).startOf('day');
+      this.pickerEnd = startOfCalendarDayFromMillis(picker.endDate.valueOf(), useUtc);
     }
   }
 
   onPickerEndDateChangedFromLibrary(payload: unknown): void {
     const emitted = payload as { endDate: { valueOf: () => number } };
-    const endMs = emitted.endDate.valueOf();
-    if (this.useUtcCalendar) {
-      this.pickerEnd = dayjs.utc(endMs).startOf('day');
-    } else {
-      this.pickerEnd = dayjs(endMs).startOf('day');
-    }
+    this.pickerEnd = startOfCalendarDayFromMillis(emitted.endDate.valueOf(), this.useUtcCalendar);
   }
 
   private restoreInitialDateRangeFromDialogOpen(): void {
@@ -263,19 +218,10 @@ export class TimeRangeDialogComponent implements AfterViewInit {
     if (!picker.endDate) {
       picker.setEndDate(picker.startDate);
     }
-    let nextStart;
-    let nextEnd;
-    if (this.useUtcCalendar) {
-      nextStart = dayjs.utc(picker.startDate.valueOf()).startOf('day');
-      nextEnd = dayjs.utc(picker.endDate.valueOf()).startOf('day');
-    } else {
-      nextStart = dayjs(picker.startDate.valueOf()).startOf('day');
-      nextEnd = dayjs(picker.endDate.valueOf()).startOf('day');
-    }
-    if (
-      nextStart.valueOf() === this.pickerStart.valueOf() &&
-      nextEnd.valueOf() === this.pickerEnd.valueOf()
-    ) {
+    const useUtc = this.useUtcCalendar;
+    const nextStart = startOfCalendarDayFromMillis(picker.startDate.valueOf(), useUtc);
+    const nextEnd = startOfCalendarDayFromMillis(picker.endDate.valueOf(), useUtc);
+    if (nextStart.valueOf() === this.pickerStart.valueOf() && nextEnd.valueOf() === this.pickerEnd.valueOf()) {
       return;
     }
     this.pickerStart = nextStart;
@@ -287,20 +233,16 @@ export class TimeRangeDialogComponent implements AfterViewInit {
     if (this.pickerEnd === null) {
       return;
     }
+    const start = this.pickerStart.clone().startOf('day');
+    const end = this.pickerEnd.clone().startOf('day');
+    this.pickerStart = start;
+    this.pickerEnd = end;
     if (this.useUtcCalendar) {
-      const start = this.pickerStart.clone().startOf('day');
-      const end = this.pickerEnd.clone().startOf('day');
-      this.pickerStart = start;
-      this.pickerEnd = end;
       this.dateRangeGroup.patchValue({
-        start: this.toUtcDateOnlyAnchor(start),
-        end: this.toUtcDateOnlyAnchor(end),
+        start: dayjsToUtcDateOnlyAnchor(start),
+        end: dayjsToUtcDateOnlyAnchor(end),
       });
     } else {
-      const start = this.pickerStart.clone().startOf('day');
-      const end = this.pickerEnd.clone().startOf('day');
-      this.pickerStart = start;
-      this.pickerEnd = end;
       this.dateRangeGroup.patchValue({
         start: start.toDate(),
         end: end.toDate(),
@@ -399,17 +341,5 @@ export class TimeRangeDialogComponent implements AfterViewInit {
       minBound: this.minBound,
       maxBound: this.maxBound,
     });
-  }
-
-  private stripToDateOnlyLocal(d: Date): Date {
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  }
-
-  private stripToDateOnlyUtc(d: Date): Date {
-    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-  }
-
-  private toUtcDateOnlyAnchor(d: Dayjs): Date {
-    return new Date(Date.UTC(d.year(), d.month(), d.date()));
   }
 }
