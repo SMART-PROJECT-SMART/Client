@@ -5,38 +5,57 @@ $time-range-calendar-range-bridge: rgba($color-primary, 0.32);
 $time-range-calendar-range-bridge-text: $color-text-primary;
 $time-range-calendar-off-in-range-text: $color-text-muted;
 
-::ng-deep .mat-mdc-dialog-surface {
-  background-color: $color-background-secondary !important;
+:host {
+  display: block;
 }
 
-mat-dialog-content {
-  padding: 0 !important;
-  overflow: visible !important;
-}
-
-.dialog-header {
+.time-range-picker-panel {
   background-color: $color-background-secondary;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: $spacing-md $spacing-lg;
+  padding: $spacing-sm $spacing-md;
   border-bottom: $border-width-thin solid $color-border-default;
-
-  h2 {
-    margin: 0;
-    font-size: $font-size-xxl;
-    font-weight: 600;
-    color: $color-text-primary;
-  }
+  min-height: 44px;
+  box-sizing: border-box;
 }
 
-.dialog-body {
-  padding: $spacing-lg;
+.panel-title {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.panel-body {
+  padding: 0;
+  overflow: visible;
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+}
+
+.panel-form {
+  padding: $spacing-md;
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
   align-items: stretch;
   min-height: 0;
+}
+
+.panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md $spacing-md;
+  border-top: $border-width-thin solid $color-border-default;
+  background-color: $color-background-secondary;
 }
 
 .booking-calendar-wrap {

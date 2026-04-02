@@ -41,7 +41,8 @@ import { MissionTelemetryPageHeaderComponent } from './pages/archive/components/
 import { MissionTelemetryInvestigationToolbarComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-investigation-toolbar.component';
 import { MissionTelemetryTileComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-tile.component';
 import { MissionDetailsDialogComponent } from './pages/archive/components/mission-details-dialog/mission-details-dialog.component';
-import { TimeRangeDialogComponent } from './pages/archive/components/time-range-dialog/time-range-dialog.component';
+import { TimeRangePickerPanelComponent } from './pages/archive/components/time-range-dialog/time-range-picker-panel.component';
+import { MissionTimeRangePickerComponent } from './pages/archive/components/mission-telemetry-page/mission-time-range-picker.component';
 
 @NgModule({
   declarations: [
@@ -74,7 +75,8 @@ import { TimeRangeDialogComponent } from './pages/archive/components/time-range-
     MissionTelemetryInvestigationToolbarComponent,
     MissionTelemetryTileComponent,
     MissionDetailsDialogComponent,
-    TimeRangeDialogComponent,
+    TimeRangePickerPanelComponent,
+    MissionTimeRangePickerComponent,
   ],
   imports: [
     BrowserModule,

@@ -67,24 +67,3 @@ $chip-padding-vertical: 6px;
   }
 }
 
-.time-range-controls {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-  flex-shrink: 0;
-
-  .range-trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: $spacing-xs;
-    font-size: $font-size-sm;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    text-transform: none;
-    letter-spacing: normal;
-  }
-
-  .range-display {
-    color: $color-text-primary;
-  }
-}

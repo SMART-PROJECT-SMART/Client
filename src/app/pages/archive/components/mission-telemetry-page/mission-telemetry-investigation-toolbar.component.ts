@@ -3,6 +3,7 @@ import type { MatAutocompleteSelectedEvent } from '@angular/material/autocomplet
 import { TelemetryField } from '../../../../common/enums';
 import { EnumUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
+import type { TimeRangeDialogData, TimeRangeDialogResult } from '../time-range-dialog/time-range-dialog.models';
 
 @Component({
   selector: 'app-mission-telemetry-investigation-toolbar',
@@ -22,6 +23,8 @@ export class MissionTelemetryInvestigationToolbarComponent {
   @Input() showTimeRangeControls = false;
   @Input() rangeDisplay = '';
   @Input() isRangeModified = false;
+  @Input() timeRangeOverlayOpen = false;
+  @Input() timeRangePickerConfig: TimeRangeDialogData | null = null;
 
   @Output() parameterSearchInput = new EventEmitter<Event>();
   @Output() parameterSelected = new EventEmitter<{
@@ -29,7 +32,9 @@ export class MissionTelemetryInvestigationToolbarComponent {
     input: HTMLInputElement;
   }>();
   @Output() removeField = new EventEmitter<TelemetryField>();
-  @Output() openRangePicker = new EventEmitter<void>();
+  @Output() timeRangeOpenChange = new EventEmitter<boolean>();
+  @Output() timeRangeToggle = new EventEmitter<void>();
+  @Output() timeRangeApplied = new EventEmitter<TimeRangeDialogResult>();
   @Output() resetTimeRange = new EventEmitter<void>();
 
   getFieldLabel(field: TelemetryField): string {

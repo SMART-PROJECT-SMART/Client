@@ -29,25 +29,15 @@
     }
   </div>
   @if (showTimeRangeControls) {
-    <div class="time-range-controls">
-      <button
-        mat-stroked-button
-        class="range-trigger"
-        (click)="openRangePicker.emit()"
-        [matTooltip]="investigationUi.TOOLTIP_TIME_RANGE"
-      >
-        <mat-icon>date_range</mat-icon>
-        <span class="range-display">{{ rangeDisplay }}</span>
-      </button>
-      @if (isRangeModified) {
-        <button
-          mat-icon-button
-          (click)="resetTimeRange.emit()"
-          [matTooltip]="investigationUi.TOOLTIP_RESET_RANGE"
-        >
-          <mat-icon>restart_alt</mat-icon>
-        </button>
-      }
-    </div>
+    <app-mission-time-range-picker
+      [rangeDisplay]="rangeDisplay"
+      [isRangeModified]="isRangeModified"
+      [open]="timeRangeOverlayOpen"
+      (openChange)="timeRangeOpenChange.emit($event)"
+      [config]="timeRangePickerConfig"
+      (toggleOpen)="timeRangeToggle.emit()"
+      (applied)="timeRangeApplied.emit($event)"
+      (resetTimeRange)="resetTimeRange.emit()"
+    />
   }
 </div>

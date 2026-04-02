@@ -22,10 +22,14 @@
       [showTimeRangeControls]="!!missionTelemetryWindow()"
       [rangeDisplay]="rangeDisplay()"
       [isRangeModified]="isRangeModified()"
+      [timeRangeOverlayOpen]="timeRangeOverlayOpen()"
+      [timeRangePickerConfig]="timeRangePickerConfig()"
       (parameterSearchInput)="onParameterSearchInput($event)"
       (parameterSelected)="onParameterSelected($event.event, $event.input)"
       (removeField)="removeField($event)"
-      (openRangePicker)="openRangePicker()"
+      (timeRangeOpenChange)="onTimeRangeOpenChange($event)"
+      (timeRangeToggle)="onTimeRangeToggle()"
+      (timeRangeApplied)="onTimeRangeApplied($event)"
       (resetTimeRange)="resetTimeRange()"
     />
 

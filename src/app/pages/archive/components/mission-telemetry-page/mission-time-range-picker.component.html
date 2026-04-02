@@ -1,0 +1,47 @@
+<div class="mission-time-range-picker">
+  <button
+    #rangeOrigin="cdkOverlayOrigin"
+    cdkOverlayOrigin
+    type="button"
+    mat-stroked-button
+    class="range-trigger"
+    [matTooltip]="investigationUi.TOOLTIP_TIME_RANGE"
+    [attr.aria-expanded]="open"
+    aria-haspopup="dialog"
+    (click)="onTriggerClick()"
+  >
+    <mat-icon>date_range</mat-icon>
+    <span class="range-display">{{ rangeDisplay }}</span>
+  </button>
+  @if (isRangeModified) {
+    <button
+      mat-icon-button
+      type="button"
+      (click)="resetTimeRange.emit()"
+      [matTooltip]="investigationUi.TOOLTIP_RESET_RANGE"
+    >
+      <mat-icon>restart_alt</mat-icon>
+    </button>
+  }
+
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="rangeOrigin"
+    [cdkConnectedOverlayOpen]="open"
+    [cdkConnectedOverlayHasBackdrop]="true"
+    [cdkConnectedOverlayBackdropClass]="overlayBackdropClass"
+    [cdkConnectedOverlayPanelClass]="overlayPanelClass"
+    [cdkConnectedOverlayPositions]="overlayPositions"
+    [cdkConnectedOverlayPush]="true"
+    [cdkConnectedOverlayMinWidth]="investigationUi.TIME_RANGE_OVERLAY_MIN_WIDTH"
+    (backdropClick)="onBackdropClick()"
+  >
+    @if (config) {
+      <app-time-range-picker-panel
+        [config]="config"
+        (applied)="onPanelApplied($event)"
+        (dismiss)="onPanelDismiss()"
+      />
+    }
+  </ng-template>
+</div>

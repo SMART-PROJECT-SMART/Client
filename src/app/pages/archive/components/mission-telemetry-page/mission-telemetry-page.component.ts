@@ -14,7 +14,6 @@ import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin
 import { ArchiveApiService } from '../../../../services/archive/archive-api.service';
 import { MissionTelemetryFetchService } from '../../../../services/archive/mission-telemetry-fetch.service';
 import { MissionDetailsDialogComponent } from '../mission-details-dialog/mission-details-dialog.component';
-import { TimeRangeDialogComponent } from '../time-range-dialog/time-range-dialog.component';
 import type { TimeRangeDialogData, TimeRangeDialogResult } from '../time-range-dialog/time-range-dialog.models';
 import type {
   ArchiveMissionRo,
@@ -48,8 +47,6 @@ const { NO_MISSION_ID, LOAD_FAILED } = ClientConstants.TelemetryPageMessages;
 const { ARCHIVE } = ClientConstants.ArchiveRoutes;
 const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM } = ClientConstants.TelemetryQueryParams;
 const {
-  TIME_RANGE_DIALOG_WIDTH,
-  TIME_RANGE_DIALOG_PANEL_CLASS,
   TABLE_ROW_TRACK_ID_SEPARATOR,
   ROW_RANGE_ZERO_ROWS,
   BOUNDS_DISPLAY_RANGE_SEPARATOR,
@@ -103,6 +100,8 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly activeEndTime = signal<string>('');
   readonly originalBounds = signal<TelemetryTimeRangeBounds | null>(null);
   private readonly telemetryMissionBounds = signal<TelemetryTimeRangeBounds | null>(null);
+  readonly timeRangeOverlayOpen = signal(false);
+  readonly timeRangePickerConfig = signal<TimeRangeDialogData | null>(null);
 
   private readonly investigationToolbar = viewChild(MissionTelemetryInvestigationToolbarComponent);
 
@@ -527,7 +526,12 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     this.dashboardItems.set(items);
   }
 
-  openRangePicker(): void {
+  onTimeRangeToggle(): void {
+    if (this.timeRangeOverlayOpen()) {
+      this.timeRangeOverlayOpen.set(false);
+      this.timeRangePickerConfig.set(null);
+      return;
+    }
     const bounds = this.missionTelemetryWindow();
     if (!bounds) return;
     let from = this.fromInput();
@@ -550,30 +554,24 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       useUtcCalendar: true,
     };
 
-    this.dialog
-      .open<TimeRangeDialogComponent, TimeRangeDialogData, TimeRangeDialogResult>(
-        TimeRangeDialogComponent,
-        {
-          data,
-          autoFocus: false,
-          width: TIME_RANGE_DIALOG_WIDTH,
-          disableClose: false,
-          hasBackdrop: true,
-          closeOnNavigation: true,
-          panelClass: TIME_RANGE_DIALOG_PANEL_CLASS,
-        },
-      )
-      .afterClosed()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((result) => {
-        if (!result) return;
-        this.fromInput.set(isoTimestampToDatetimeLocalValue(result.from.toISOString()));
-        this.toInput.set(isoTimestampToDatetimeLocalValue(result.to.toISOString()));
-        this.activeStartTime.set(result.from.toISOString());
-        this.activeEndTime.set(result.to.toISOString());
-        this.rebuildDashboardItems();
-        this.clampTilePagesToTotal();
-      });
+    this.timeRangePickerConfig.set(data);
+    this.timeRangeOverlayOpen.set(true);
+  }
+
+  onTimeRangeOpenChange(open: boolean): void {
+    this.timeRangeOverlayOpen.set(open);
+    if (!open) {
+      this.timeRangePickerConfig.set(null);
+    }
+  }
+
+  onTimeRangeApplied(result: TimeRangeDialogResult): void {
+    this.fromInput.set(isoTimestampToDatetimeLocalValue(result.from.toISOString()));
+    this.toInput.set(isoTimestampToDatetimeLocalValue(result.to.toISOString()));
+    this.activeStartTime.set(result.from.toISOString());
+    this.activeEndTime.set(result.to.toISOString());
+    this.rebuildDashboardItems();
+    this.clampTilePagesToTotal();
   }
 
   resetTimeRange(): void {

@@ -238,8 +238,9 @@ export namespace ClientConstants {
   }
 
   export namespace TelemetryInvestigationUi {
-    export const TIME_RANGE_DIALOG_WIDTH: string = '680px';
-    export const TIME_RANGE_DIALOG_PANEL_CLASS: string = 'time-range-dialog-panel';
+    export const TIME_RANGE_OVERLAY_MIN_WIDTH: string = 'min(100vw - 32px, 560px)';
+    export const TIME_RANGE_OVERLAY_PANEL_CLASS: string = 'time-range-overlay-panel';
+    export const TIME_RANGE_OVERLAY_BACKDROP_CLASS: string = 'cdk-overlay-transparent-backdrop';
     export const FETCH_OVERLAY_SPINNER_DIAMETER: number = 32;
     export const TABLE_ROW_TRACK_ID_SEPARATOR: string = '|';
     export const ROW_RANGE_ZERO_ROWS: string = '0 rows';

@@ -1,6 +1,15 @@
-import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { OWL_DATE_TIME_FORMATS } from '@danielmoncada/angular-datetime-picker';
 import type { Dayjs } from 'dayjs';
 import { OWL_TIME_FORMATS } from '../../../../common/constants/owl-datetime.constants';
@@ -30,7 +39,7 @@ import {
   utcCalendarDayStartInstant,
 } from '../../utils/time-range-dialog-bounds.util';
 
-const TIME_RANGE_DIALOG_OWL_FORMATS = {
+const TIME_RANGE_PICKER_OWL_FORMATS = {
   ...OWL_TIME_FORMATS,
   timePickerInput: {
     hour: '2-digit',
@@ -41,46 +50,60 @@ const TIME_RANGE_DIALOG_OWL_FORMATS = {
 };
 
 @Component({
-  selector: 'app-time-range-dialog',
+  selector: 'app-time-range-picker-panel',
   standalone: false,
-  templateUrl: './time-range-dialog.component.html',
-  styleUrl: './time-range-dialog.component.scss',
-  providers: [{ provide: OWL_DATE_TIME_FORMATS, useValue: TIME_RANGE_DIALOG_OWL_FORMATS }],
+  templateUrl: './time-range-picker-panel.component.html',
+  styleUrl: './time-range-picker-panel.component.scss',
+  providers: [{ provide: OWL_DATE_TIME_FORMATS, useValue: TIME_RANGE_PICKER_OWL_FORMATS }],
 })
-export class TimeRangeDialogComponent implements AfterViewInit, OnDestroy {
-  readonly useUtcCalendar: boolean;
+export class TimeRangePickerPanelComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input({ required: true }) config!: TimeRangeDialogData;
+
+  @Output() readonly applied = new EventEmitter<TimeRangeDialogResult>();
+  @Output() readonly dismiss = new EventEmitter<void>();
+
   readonly startTimeLabel = TimeRangeStartTimeLabel;
   readonly endTimeLabel = TimeRangeEndTimeLabel;
   readonly timeInputPlaceholder = TimeRangeTimeInputPlaceholder;
   readonly emptyPickerRanges: Record<string, [Dayjs, Dayjs]> = {};
-  readonly rangeForm: FormGroup;
-  readonly boundsDisplay: string;
-  readonly minDayjs: Dayjs;
-  readonly maxDayjs: Dayjs;
-  readonly minDateBoundStr: string;
-  readonly maxDateBoundStr: string;
-  pickerStart: Dayjs;
-  pickerEnd: Dayjs | null;
+  rangeForm!: FormGroup;
+  boundsDisplay = '';
+  minDayjs!: Dayjs;
+  maxDayjs!: Dayjs;
+  minDateBoundStr = '';
+  maxDateBoundStr = '';
+  pickerStart!: Dayjs;
+  pickerEnd: Dayjs | null = null;
+  useUtcCalendar = false;
 
-  private readonly initialPickerStart: Dayjs;
-  private readonly initialPickerEnd: Dayjs;
-  private readonly initialStartTime: Date;
-  private readonly initialEndTime: Date;
-
-  private readonly minBound: Date;
-  private readonly maxBound: Date;
-
+  private initialPickerStart!: Dayjs;
+  private initialPickerEnd!: Dayjs;
+  private initialStartTime!: Date;
+  private initialEndTime!: Date;
+  private minBound!: Date;
+  private maxBound!: Date;
   @ViewChild(DaterangepickerComponent) private dateRangePicker?: DaterangepickerComponent;
   @ViewChild('calendarWrap') private calendarWrap?: ElementRef<HTMLElement>;
 
   private unlistenCalendarCapture?: () => void;
   private pickerSyncSuppressed = false;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<TimeRangeDialogComponent, TimeRangeDialogResult | undefined>,
-    @Inject(MAT_DIALOG_DATA) data: TimeRangeDialogData,
-    fb: FormBuilder,
-  ) {
+  constructor(private readonly fb: FormBuilder) {}
+
+  ngOnInit(): void {
+    this.applyConfig(this.config);
+  }
+
+  ngAfterViewInit(): void {
+    this.ensurePickerCalendarsVisible();
+    this.installCalendarCaptureListener();
+  }
+
+  ngOnDestroy(): void {
+    this.unlistenCalendarCapture?.();
+  }
+
+  private applyConfig(data: TimeRangeDialogData): void {
     this.useUtcCalendar = data.useUtcCalendar === true;
     this.boundsDisplay = data.boundsDisplay;
     this.minBound = new Date(data.minBound);
@@ -90,7 +113,14 @@ export class TimeRangeDialogComponent implements AfterViewInit, OnDestroy {
     this.initialStartTime = new Date(from.getTime());
     this.initialEndTime = new Date(to.getTime());
 
-    const initial = createTimeRangeDialogInitialState(fb, from, to, this.minBound, this.maxBound, this.useUtcCalendar);
+    const initial = createTimeRangeDialogInitialState(
+      this.fb,
+      from,
+      to,
+      this.minBound,
+      this.maxBound,
+      this.useUtcCalendar,
+    );
     this.minDayjs = initial.minDayjs;
     this.maxDayjs = initial.maxDayjs;
     this.minDateBoundStr = initial.minDateBoundStr;
@@ -102,13 +132,30 @@ export class TimeRangeDialogComponent implements AfterViewInit, OnDestroy {
     this.rangeForm = initial.rangeForm;
   }
 
-  ngAfterViewInit(): void {
-    this.ensurePickerCalendarsVisible();
-    this.installCalendarCaptureListener();
+  get dateRangeGroup(): FormGroup {
+    return this.rangeForm.get('dateRange') as FormGroup;
   }
 
-  ngOnDestroy(): void {
-    this.unlistenCalendarCapture?.();
+  get isValid(): boolean {
+    if (this.rangeForm.invalid) return false;
+    const result = this.buildResult();
+    if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
+    return this.resolveAgainstBounds(result) !== null;
+  }
+
+  get isInvalidRange(): boolean {
+    const result = this.buildResult();
+    return result !== null && this.isFiniteRange(result) && result.from > result.to;
+  }
+
+  get isOutOfDataBounds(): boolean {
+    const result = this.buildResult();
+    if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
+    return this.resolveAgainstBounds(result) === null;
+  }
+
+  onCancel(): void {
+    this.dismiss.emit();
   }
 
   private installCalendarCaptureListener(): void {
@@ -200,35 +247,13 @@ export class TimeRangeDialogComponent implements AfterViewInit, OnDestroy {
     picker.updateView();
   }
 
-  get dateRangeGroup(): FormGroup {
-    return this.rangeForm.get('dateRange') as FormGroup;
-  }
-
-  get isValid(): boolean {
-    if (this.rangeForm.invalid) return false;
-    const result = this.buildResult();
-    if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
-    return this.resolveAgainstBounds(result) !== null;
-  }
-
-  get isInvalidRange(): boolean {
-    const result = this.buildResult();
-    return result !== null && this.isFiniteRange(result) && result.from > result.to;
-  }
-
-  get isOutOfDataBounds(): boolean {
-    const result = this.buildResult();
-    if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
-    return this.resolveAgainstBounds(result) === null;
-  }
-
   onPickerDatesUpdated(period: unknown): void {
     if (this.pickerSyncSuppressed) {
       return;
     }
     const p = period as { startDate: Dayjs | null; endDate: Dayjs | null };
     if (!p.startDate && !p.endDate) {
-      this.restoreInitialDateRangeFromDialogOpen();
+      this.restoreInitialDateRange();
       return;
     }
     if (!p.startDate || !p.endDate) {
@@ -263,7 +288,7 @@ export class TimeRangeDialogComponent implements AfterViewInit, OnDestroy {
     this.pickerEnd = startOfCalendarDayFromMillis(emitted.endDate.valueOf(), this.useUtcCalendar);
   }
 
-  private restoreInitialDateRangeFromDialogOpen(): void {
+  private restoreInitialDateRange(): void {
     this.pickerStart = this.initialPickerStart.clone();
     this.pickerEnd = this.initialPickerEnd.clone();
     this.patchDateRangeFromPicker();
@@ -296,7 +321,7 @@ export class TimeRangeDialogComponent implements AfterViewInit, OnDestroy {
     if (!result || !this.isFiniteRange(result) || result.from > result.to) return;
     const clamped = this.resolveAgainstBounds(result);
     if (!clamped) return;
-    this.dialogRef.close({
+    this.applied.emit({
       from: clamped.from,
       to: clamped.to,
     });
@@ -317,7 +342,7 @@ export class TimeRangeDialogComponent implements AfterViewInit, OnDestroy {
     const useUtc = this.useUtcCalendar;
     const nextStart = startOfCalendarDayFromMillis(picker.startDate.valueOf(), useUtc);
     const nextEnd = startOfCalendarDayFromMillis(picker.endDate.valueOf(), useUtc);
-    if (nextStart.valueOf() === this.pickerStart.valueOf() && nextEnd.valueOf() === this.pickerEnd.valueOf()) {
+    if (nextStart.valueOf() === this.pickerStart.valueOf() && nextEnd.valueOf() === this.pickerEnd!.valueOf()) {
       return;
     }
     this.pickerStart = nextStart;
