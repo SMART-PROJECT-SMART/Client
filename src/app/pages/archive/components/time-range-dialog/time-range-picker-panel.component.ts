@@ -3,11 +3,15 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Injector,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
+  afterNextRender,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { OWL_DATE_TIME_FORMATS } from '@danielmoncada/angular-datetime-picker';
@@ -56,7 +60,7 @@ const TIME_RANGE_PICKER_OWL_FORMATS = {
   styleUrl: './time-range-picker-panel.component.scss',
   providers: [{ provide: OWL_DATE_TIME_FORMATS, useValue: TIME_RANGE_PICKER_OWL_FORMATS }],
 })
-export class TimeRangePickerPanelComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Input({ required: true }) config!: TimeRangeDialogData;
 
   @Output() readonly applied = new EventEmitter<TimeRangeDialogResult>();
@@ -88,15 +92,24 @@ export class TimeRangePickerPanelComponent implements OnInit, AfterViewInit, OnD
   private unlistenCalendarCapture?: () => void;
   private pickerSyncSuppressed = false;
 
-  constructor(private readonly fb: FormBuilder) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly injector: Injector,
+  ) {}
 
   ngOnInit(): void {
     this.applyConfig(this.config);
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['config'] && !changes['config'].firstChange && this.config) {
+      this.applyConfig(this.config);
+      this.scheduleCalendarInteractionSetup();
+    }
+  }
+
   ngAfterViewInit(): void {
-    this.ensurePickerCalendarsVisible();
-    this.installCalendarCaptureListener();
+    this.scheduleCalendarInteractionSetup();
   }
 
   ngOnDestroy(): void {
@@ -158,7 +171,22 @@ export class TimeRangePickerPanelComponent implements OnInit, AfterViewInit, OnD
     this.dismiss.emit();
   }
 
-  private installCalendarCaptureListener(): void {
+  private scheduleCalendarInteractionSetup(): void {
+    afterNextRender(
+      () => {
+        this.setupCalendarInteraction();
+        if (!this.calendarWrap?.nativeElement) {
+          queueMicrotask(() => this.setupCalendarInteraction());
+        }
+      },
+      { injector: this.injector },
+    );
+  }
+
+  private setupCalendarInteraction(): void {
+    this.unlistenCalendarCapture?.();
+    this.unlistenCalendarCapture = undefined;
+    this.ensurePickerCalendarsVisible();
     const el = this.calendarWrap?.nativeElement;
     if (!el) {
       return;
@@ -167,7 +195,9 @@ export class TimeRangePickerPanelComponent implements OnInit, AfterViewInit, OnD
       this.onCalendarWrapCaptureClick(event);
     };
     el.addEventListener('click', handler, true);
-    this.unlistenCalendarCapture = () => el.removeEventListener('click', handler, true);
+    this.unlistenCalendarCapture = () => {
+      el.removeEventListener('click', handler, true);
+    };
   }
 
   private onCalendarWrapCaptureClick(event: Event): void {
