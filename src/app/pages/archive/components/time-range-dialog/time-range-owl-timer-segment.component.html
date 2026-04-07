@@ -1,0 +1,26 @@
+<div class="time-input-wrapper">
+  <input
+    type="text"
+    [formControl]="control"
+    [owlDateTime]="timerPicker"
+    [placeholder]="placeholder"
+    [attr.aria-label]="ariaLabel"
+  />
+  <button
+    mat-icon-button
+    type="button"
+    class="time-picker-trigger"
+    [disableRipple]="true"
+    [owlDateTimeTrigger]="timerPicker"
+    [attr.aria-label]="triggerAriaLabel"
+  >
+    <mat-icon>schedule</mat-icon>
+  </button>
+  <owl-date-time
+    #timerPicker
+    [pickerType]="'timer'"
+    [showSecondsTimer]="true"
+    [hour12Timer]="false"
+    panelClass="owl-dt-picker-dark"
+  ></owl-date-time>
+</div>

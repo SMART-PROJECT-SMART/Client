@@ -42,6 +42,7 @@ import { MissionTelemetryInvestigationToolbarComponent } from './pages/archive/c
 import { MissionTelemetryTileComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-tile.component';
 import { MissionDetailsDialogComponent } from './pages/archive/components/mission-details-dialog/mission-details-dialog.component';
 import { TimeRangePickerPanelComponent } from './pages/archive/components/time-range-dialog/time-range-picker-panel.component';
+import { TimeRangeOwlTimerSegmentComponent } from './pages/archive/components/time-range-dialog/time-range-owl-timer-segment.component';
 import { MissionTimeRangePickerComponent } from './pages/archive/components/mission-telemetry-page/mission-time-range-picker.component';
 
 @NgModule({
@@ -88,6 +89,7 @@ import { MissionTimeRangePickerComponent } from './pages/archive/components/miss
     TimeInputDirective,
     BaseChartDirective,
     GridsterModule,
+    TimeRangeOwlTimerSegmentComponent,
   ],
   providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient(), provideCharts(withDefaultRegisterables())],
   bootstrap: [App],

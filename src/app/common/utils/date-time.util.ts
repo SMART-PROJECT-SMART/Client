@@ -41,6 +41,20 @@ export class DateTimeUtil {
     );
   }
 
+  public static utcWallClockForPicker(source: Date): Date {
+    return new Date(
+      Date.UTC(
+        DateTimeUtil.TimePickerReferenceYear,
+        DateTimeUtil.TimePickerReferenceMonthIndex,
+        DateTimeUtil.TimePickerReferenceDayOfMonth,
+        source.getUTCHours(),
+        source.getUTCMinutes(),
+        source.getUTCSeconds(),
+        source.getUTCMilliseconds(),
+      ),
+    );
+  }
+
   public static formatTimeForInput(date: Date): string {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');

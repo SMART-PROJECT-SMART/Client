@@ -5,10 +5,7 @@ import {
   stripToDateOnlyLocal,
   stripToDateOnlyUtc,
 } from './time-range-dialog-calendar.util';
-import {
-  TimeRangePickerBoundDateFormat,
-  UtcTimeOfDayStringPattern,
-} from './time-range-dialog.constants';
+import { TimeRangePickerBoundDateFormat } from './time-range-dialog.constants';
 import type { TimeRangeDialogInitialState } from './time-range-dialog.models';
 
 export function createTimeRangeDialogInitialState(
@@ -33,14 +30,8 @@ export function createTimeRangeDialogInitialState(
         start: [startDateOnly, Validators.required],
         end: [endDateOnly, Validators.required],
       }),
-      startTime: [
-        DateTimeUtil.utcTimeStringFromDate(from),
-        [Validators.required, Validators.pattern(UtcTimeOfDayStringPattern)],
-      ],
-      endTime: [
-        DateTimeUtil.utcTimeStringFromDate(to),
-        [Validators.required, Validators.pattern(UtcTimeOfDayStringPattern)],
-      ],
+      startTime: [DateTimeUtil.utcWallClockForPicker(from), Validators.required],
+      endTime: [DateTimeUtil.utcWallClockForPicker(to), Validators.required],
     });
     return {
       minDayjs,

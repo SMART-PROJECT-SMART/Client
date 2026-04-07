@@ -44,87 +44,28 @@
 
       <div class="time-range-times-shell">
         <div class="time-range-times-heading">{{ timesGroupTitle }}</div>
-        <div class="time-range-times-row">
-          <div class="time-segment">
-            <span class="time-segment-label">{{ startTimeShortLabel }}</span>
-            @if (useUtcCalendar) {
-              <div class="time-input-wrapper">
-                <input
-                  type="text"
-                  formControlName="startTime"
-                  [placeholder]="timeInputPlaceholder"
-                  [attr.aria-label]="startTimeLabel"
-                  autocomplete="off"
-                  spellcheck="false"
-                />
-              </div>
-            } @else {
-              <div class="time-input-wrapper">
-                <input
-                  type="text"
-                  [owlDateTime]="startTimePicker"
-                  formControlName="startTime"
-                  [placeholder]="timeInputPlaceholder"
-                  [attr.aria-label]="startTimeLabel"
-                />
-                <button
-                  mat-icon-button
-                  type="button"
-                  [owlDateTimeTrigger]="startTimePicker"
-                  [attr.aria-label]="'Open ' + startTimeLabel + ' picker'"
-                >
-                  <mat-icon>schedule</mat-icon>
-                </button>
-                <owl-date-time
-                  #startTimePicker
-                  [pickerType]="'timer'"
-                  [showSecondsTimer]="true"
-                  [hour12Timer]="false"
-                  panelClass="owl-dt-picker-dark"
-                ></owl-date-time>
-              </div>
-            }
+        <div class="time-range-times-grid">
+          <span class="time-segment-label">{{ startTimeShortLabel }}</span>
+          <span class="time-range-label-spacer" aria-hidden="true"></span>
+          <span class="time-segment-label">{{ endTimeShortLabel }}</span>
+          <div class="time-range-time-cell">
+            <app-time-range-owl-timer-segment
+              [control]="startTimeControl"
+              [useUtcWallClock]="useUtcCalendar"
+              [placeholder]="timeInputPlaceholder"
+              [ariaLabel]="startTimeLabel"
+              [triggerAriaLabel]="startTimeOpenPickerAriaLabel"
+            />
           </div>
           <span class="time-range-separator" aria-hidden="true">–</span>
-          <div class="time-segment">
-            <span class="time-segment-label">{{ endTimeShortLabel }}</span>
-            @if (useUtcCalendar) {
-              <div class="time-input-wrapper">
-                <input
-                  type="text"
-                  formControlName="endTime"
-                  [placeholder]="timeInputPlaceholder"
-                  [attr.aria-label]="endTimeLabel"
-                  autocomplete="off"
-                  spellcheck="false"
-                />
-              </div>
-            } @else {
-              <div class="time-input-wrapper">
-                <input
-                  type="text"
-                  [owlDateTime]="endTimePicker"
-                  formControlName="endTime"
-                  [placeholder]="timeInputPlaceholder"
-                  [attr.aria-label]="endTimeLabel"
-                />
-                <button
-                  mat-icon-button
-                  type="button"
-                  [owlDateTimeTrigger]="endTimePicker"
-                  [attr.aria-label]="'Open ' + endTimeLabel + ' picker'"
-                >
-                  <mat-icon>schedule</mat-icon>
-                </button>
-                <owl-date-time
-                  #endTimePicker
-                  [pickerType]="'timer'"
-                  [showSecondsTimer]="true"
-                  [hour12Timer]="false"
-                  panelClass="owl-dt-picker-dark"
-                ></owl-date-time>
-              </div>
-            }
+          <div class="time-range-time-cell">
+            <app-time-range-owl-timer-segment
+              [control]="endTimeControl"
+              [useUtcWallClock]="useUtcCalendar"
+              [placeholder]="timeInputPlaceholder"
+              [ariaLabel]="endTimeLabel"
+              [triggerAriaLabel]="endTimeOpenPickerAriaLabel"
+            />
           </div>
         </div>
       </div>

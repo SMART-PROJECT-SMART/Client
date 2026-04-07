@@ -13,10 +13,8 @@ import {
   ViewChild,
   afterNextRender,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { OWL_DATE_TIME_FORMATS } from '@danielmoncada/angular-datetime-picker';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import type { Dayjs } from 'dayjs';
-import { OWL_TIME_FORMATS } from '../../../../common/constants/owl-datetime.constants';
 import { DateTimeUtil } from '../../../../common/utils/date-time.util';
 import { DaterangepickerComponent } from 'ngx-daterangepicker-material';
 import {
@@ -47,22 +45,11 @@ import {
   utcCalendarDayStartInstant,
 } from '../../utils/time-range-dialog-bounds.util';
 
-const TIME_RANGE_PICKER_OWL_FORMATS = {
-  ...OWL_TIME_FORMATS,
-  timePickerInput: {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  } as Intl.DateTimeFormatOptions,
-};
-
 @Component({
   selector: 'app-time-range-picker-panel',
   standalone: false,
   templateUrl: './time-range-picker-panel.component.html',
   styleUrl: './time-range-picker-panel.component.scss',
-  providers: [{ provide: OWL_DATE_TIME_FORMATS, useValue: TIME_RANGE_PICKER_OWL_FORMATS }],
 })
 export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Input({ required: true }) config!: TimeRangeDialogData;
@@ -77,6 +64,8 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
   readonly startTimeShortLabel = TimeRangeStartTimeShortLabel;
   readonly endTimeShortLabel = TimeRangeEndTimeShortLabel;
   readonly timeInputPlaceholder = TimeRangeTimeInputPlaceholder;
+  readonly startTimeOpenPickerAriaLabel = `Open ${TimeRangeStartTimeLabel} picker`;
+  readonly endTimeOpenPickerAriaLabel = `Open ${TimeRangeEndTimeLabel} picker`;
   readonly emptyPickerRanges: Record<string, [Dayjs, Dayjs]> = {};
   rangeForm!: FormGroup;
   boundsDisplay = '';
@@ -155,6 +144,14 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
 
   get dateRangeGroup(): FormGroup {
     return this.rangeForm.get('dateRange') as FormGroup;
+  }
+
+  get startTimeControl(): FormControl<Date | null> {
+    return this.rangeForm.get('startTime') as FormControl<Date | null>;
+  }
+
+  get endTimeControl(): FormControl<Date | null> {
+    return this.rangeForm.get('endTime') as FormControl<Date | null>;
   }
 
   get isValid(): boolean {
@@ -332,8 +329,8 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
     this.patchDateRangeFromPicker();
     if (this.useUtcCalendar) {
       this.rangeForm.patchValue({
-        startTime: DateTimeUtil.utcTimeStringFromDate(this.initialStartTime),
-        endTime: DateTimeUtil.utcTimeStringFromDate(this.initialEndTime),
+        startTime: DateTimeUtil.utcWallClockForPicker(this.initialStartTime),
+        endTime: DateTimeUtil.utcWallClockForPicker(this.initialEndTime),
       });
     } else {
       this.rangeForm.patchValue({
@@ -435,8 +432,11 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
     if (typeof timeStart === 'string' && timeStart.trim() === '') return null;
     if (typeof timeEnd === 'string' && timeEnd.trim() === '') return null;
     if (this.useUtcCalendar) {
-      const from = DateTimeUtil.combineUtcDateAndTime(startDate, timeStart as string);
-      const to = DateTimeUtil.combineUtcDateAndTime(endDate, timeEnd as string);
+      const from = DateTimeUtil.combineUtcDateAndTime(
+        startDate,
+        timeStart as string | Date,
+      );
+      const to = DateTimeUtil.combineUtcDateAndTime(endDate, timeEnd as string | Date);
       if (!Number.isFinite(from.getTime()) || !Number.isFinite(to.getTime())) return null;
       if (from.getTime() > to.getTime() && this.sameUtcCalendarDay(startDate, endDate)) {
         return {
