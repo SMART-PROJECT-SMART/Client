@@ -1,5 +1,8 @@
 @use '../../../../../styles/constants' as *;
 
+$mission-time-range-trigger-max-width: 360px;
+$mission-time-range-trigger-min-height: 40px;
+
 .mission-time-range-picker {
   display: flex;
   align-items: center;
@@ -9,15 +12,32 @@
   .range-trigger {
     display: inline-flex;
     align-items: center;
-    gap: $spacing-xs;
+    justify-content: flex-start;
+    gap: $spacing-sm;
+    max-width: $mission-time-range-trigger-max-width;
+    min-height: $mission-time-range-trigger-min-height;
+    padding-inline: $spacing-md;
+    padding-block: $spacing-xs;
     font-size: $font-size-sm;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     text-transform: none;
     letter-spacing: normal;
+    border-radius: $border-radius-md;
+    border-width: $border-width-thin;
+    transition: border-color 0.15s ease;
+
+    &.range-trigger--open {
+      border-color: $color-border-focus;
+      box-shadow: 0 0 0 1px $color-border-focus;
+    }
   }
 
   .range-display {
     color: $color-text-primary;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: start;
   }
 }

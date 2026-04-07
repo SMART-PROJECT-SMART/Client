@@ -23,8 +23,12 @@ import {
   CalendarDayEndTimeParts,
   CalendarDayStartTimeParts,
   TimeRangeEndTimeLabel,
+  TimeRangeEndTimeShortLabel,
+  TimeRangeCalendarOutsideMonthCellClass,
   TimeRangeStartTimeLabel,
+  TimeRangeStartTimeShortLabel,
   TimeRangeTimeInputPlaceholder,
+  TimeRangeTimesGroupTitle,
 } from './time-range-dialog.constants';
 import { computeNextCalendarSelection } from './time-range-calendar-selection.util';
 import {
@@ -66,8 +70,12 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
   @Output() readonly applied = new EventEmitter<TimeRangeDialogResult>();
   @Output() readonly dismiss = new EventEmitter<void>();
 
+  readonly timeRangeCalendarOutsideMonthCellClass = TimeRangeCalendarOutsideMonthCellClass;
   readonly startTimeLabel = TimeRangeStartTimeLabel;
   readonly endTimeLabel = TimeRangeEndTimeLabel;
+  readonly timesGroupTitle = TimeRangeTimesGroupTitle;
+  readonly startTimeShortLabel = TimeRangeStartTimeShortLabel;
+  readonly endTimeShortLabel = TimeRangeEndTimeShortLabel;
   readonly timeInputPlaceholder = TimeRangeTimeInputPlaceholder;
   readonly emptyPickerRanges: Record<string, [Dayjs, Dayjs]> = {};
   rangeForm!: FormGroup;

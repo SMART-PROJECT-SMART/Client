@@ -5,6 +5,7 @@
     type="button"
     mat-stroked-button
     class="range-trigger"
+    [class.range-trigger--open]="open"
     [matTooltip]="investigationUi.TOOLTIP_TIME_RANGE"
     [attr.aria-expanded]="open"
     aria-haspopup="dialog"

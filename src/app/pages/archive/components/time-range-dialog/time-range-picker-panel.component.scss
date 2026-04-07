@@ -1,6 +1,6 @@
 @use '../../../../../styles/constants' as *;
 
-$time-range-calendar-panel-max-width: 340px;
+$time-range-calendar-panel-max-width: 560px;
 $time-range-calendar-range-bridge: rgba($color-primary, 0.32);
 $time-range-calendar-range-bridge-text: $color-text-primary;
 $time-range-calendar-off-in-range-text: $color-text-muted;
@@ -20,14 +20,14 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: $spacing-sm $spacing-md;
+  padding: $spacing-xs $spacing-md;
   border-bottom: $border-width-thin solid $color-border-default;
-  min-height: 44px;
+  min-height: 40px;
   box-sizing: border-box;
 }
 
 .panel-title {
-  font-size: $font-size-lg;
+  font-size: $font-size-md;
   font-weight: 600;
   color: $color-text-primary;
 }
@@ -99,14 +99,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   ::ng-deep .md-drppicker.double {
     width: 100%;
     max-width: $time-range-calendar-panel-max-width;
-  }
-
-  ::ng-deep .md-drppicker.ltr .calendar.right {
-    display: none !important;
-  }
-
-  ::ng-deep .md-drppicker.rtl .calendar.right {
-    display: none !important;
+    gap: $spacing-md;
   }
 
   ::ng-deep .md-drppicker.inline {
@@ -124,9 +117,10 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 
   ::ng-deep .md-drppicker .calendar {
     min-height: 220px;
-    max-width: 100%;
-    width: 100%;
-    flex: 0 0 auto;
+    max-width: calc(50% - #{$spacing-md} / 2);
+    width: calc(50% - #{$spacing-md} / 2);
+    flex: 1 1 calc(50% - #{$spacing-md} / 2);
+    min-width: 0;
   }
 
   ::ng-deep .md-drppicker.ltr .calendar.left,
@@ -183,6 +177,14 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 
   ::ng-deep .md-drppicker td.off:not(.in-range) {
     background-color: transparent;
+  }
+
+  ::ng-deep .md-drppicker td.time-range-cal-outside-month {
+    pointer-events: none;
+  }
+
+  ::ng-deep .md-drppicker td.time-range-cal-outside-month span {
+    visibility: hidden;
   }
 
   ::ng-deep .md-drppicker th,
@@ -322,24 +324,59 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   line-height: 1.4;
 }
 
-.time-rows {
+.time-range-times-shell {
   display: flex;
-  gap: $spacing-md;
-  align-items: flex-end;
-
-  .time-field {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
-    min-width: 0;
-  }
+  flex-direction: column;
+  gap: $spacing-xs;
 }
 
-.time-label {
-  font-size: $font-size-md;
-  color: $color-text-secondary;
+.time-range-times-heading {
+  font-size: $font-size-sm;
   font-weight: 500;
+  color: $color-text-secondary;
+}
+
+.time-range-times-row {
+  display: flex;
+  align-items: stretch;
+  border: $border-width-thin solid
+    var(--mat-form-field-outlined-outline-color, $color-border-default);
+  border-radius: $border-radius-sm;
+  background-color: $color-background-secondary;
+  overflow: hidden;
+  min-height: var(--mat-form-field-container-height, $form-field-container-height-default);
+}
+
+.time-segment {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+}
+
+.time-segment-label {
+  font-size: $font-size-xs;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: $color-text-secondary;
+}
+
+.time-range-separator {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  padding: 0 $spacing-xs;
+  border-left: $border-width-thin solid
+    var(--mat-form-field-outlined-outline-color, $color-border-default);
+  color: $color-text-secondary;
+  font-size: $font-size-lg;
+  font-weight: 500;
+  line-height: 1;
 }
 
 .time-input-wrapper {
@@ -373,6 +410,18 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
     mat-icon {
       color: $color-text-primary;
     }
+  }
+}
+
+.time-range-times-row .time-input-wrapper {
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  min-height: auto;
+  padding: 0;
+
+  input {
+    padding: $spacing-xs $spacing-sm;
   }
 }
 

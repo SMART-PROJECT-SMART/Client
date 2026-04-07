@@ -1,10 +1,18 @@
 export const TimeRangePickerBoundDateFormat = 'YYYY-MM-DD' as const;
 
+export const TimeRangeCalendarOutsideMonthCellClass = 'time-range-cal-outside-month';
+
 export const UtcTimeOfDayStringPattern = '^(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$';
+
+export const TimeRangeTimesGroupTitle = 'Times';
 
 export const TimeRangeStartTimeLabel = 'Start time';
 
 export const TimeRangeEndTimeLabel = 'End time';
+
+export const TimeRangeStartTimeShortLabel = 'Start';
+
+export const TimeRangeEndTimeShortLabel = 'End';
 
 export const TimeRangeTimeInputPlaceholder = 'HH:mm:ss';
 
