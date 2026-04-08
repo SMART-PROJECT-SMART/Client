@@ -268,6 +268,10 @@ export namespace ClientConstants {
       second: '2-digit',
       hour12: false,
     };
+    export const BOUNDS_DISPLAY_FORMAT_OPTIONS_UTC: Intl.DateTimeFormatOptions = {
+      ...BOUNDS_DISPLAY_FORMAT_OPTIONS,
+      timeZone: 'UTC',
+    };
     export const BOUNDS_DISPLAY_RANGE_SEPARATOR: string = '\u2014';
   }
 

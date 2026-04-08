@@ -29,7 +29,7 @@ import {
 } from '../../utils/mission-telemetry-time-range.util';
 import { buildTelemetryChartRowConfig } from '../../utils/mission-telemetry-chart.util';
 import {
-  formatTelemetryBoundsDateDisplay,
+  formatTelemetryBoundsDateDisplayUtc,
   isoTimestampToDatetimeLocalValue,
 } from '../../utils/mission-telemetry-datetime.util';
 import { mergeMissionTelemetryRows } from '../../utils/mission-telemetry-merge.util';
@@ -223,14 +223,14 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly boundsDisplay = computed<string>(() => {
     const bounds = this.missionTelemetryWindow();
     if (!bounds) return '';
-    return `${formatTelemetryBoundsDateDisplay(bounds.first)} \u2014 ${formatTelemetryBoundsDateDisplay(bounds.last)}`;
+    return `${formatTelemetryBoundsDateDisplayUtc(bounds.first)} \u2014 ${formatTelemetryBoundsDateDisplayUtc(bounds.last)}`;
   });
 
   readonly rangeDisplay = computed<string>(() => {
     const from = this.fromInput();
     const to = this.toInput();
     if (!from || !to) return '';
-    return `${formatTelemetryBoundsDateDisplay(new Date(from).toISOString())} \u2014 ${formatTelemetryBoundsDateDisplay(new Date(to).toISOString())}`;
+    return `${formatTelemetryBoundsDateDisplayUtc(new Date(from).toISOString())} \u2014 ${formatTelemetryBoundsDateDisplayUtc(new Date(to).toISOString())}`;
   });
 
   ngOnInit(): void {
@@ -548,7 +548,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     const data: TimeRangeDialogData = {
       from: new Date(seed.fromMs),
       to: new Date(seed.toMs),
-      boundsDisplay: `${formatTelemetryBoundsDateDisplay(bounds.first)} ${BOUNDS_DISPLAY_RANGE_SEPARATOR} ${formatTelemetryBoundsDateDisplay(bounds.last)}`,
+      boundsDisplay: `${formatTelemetryBoundsDateDisplayUtc(bounds.first)} ${BOUNDS_DISPLAY_RANGE_SEPARATOR} ${formatTelemetryBoundsDateDisplayUtc(bounds.last)}`,
       minBound: new Date(bounds.first),
       maxBound: new Date(bounds.last),
       useUtcCalendar: true,

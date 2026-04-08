@@ -3,12 +3,17 @@ import { ClientConstants } from '../../../common/constants/clientConstants.const
 const { LOCALE } = ClientConstants.TimeFormat;
 const {
   BOUNDS_DISPLAY_FORMAT_OPTIONS,
+  BOUNDS_DISPLAY_FORMAT_OPTIONS_UTC,
   DATETIME_LOCAL_PAD_LENGTH,
   DATETIME_PAD_CHAR,
 } = ClientConstants.TelemetryInvestigationUi;
 
 export function formatTelemetryBoundsDateDisplay(iso: string): string {
   return new Date(iso).toLocaleString(LOCALE, BOUNDS_DISPLAY_FORMAT_OPTIONS);
+}
+
+export function formatTelemetryBoundsDateDisplayUtc(iso: string): string {
+  return new Date(iso).toLocaleString(LOCALE, BOUNDS_DISPLAY_FORMAT_OPTIONS_UTC);
 }
 
 export function isoTimestampToDatetimeLocalValue(isoString: string): string {
