@@ -70,18 +70,26 @@
         </div>
       </div>
 
-      @if (isInvalidRange) {
-        <div class="form-level-error">
-          <mat-icon>error</mat-icon>
-          <span>End time must be after start time</span>
-        </div>
-      }
-      @if (isOutOfDataBounds) {
-        <div class="form-level-error">
-          <mat-icon>error</mat-icon>
-          <span>Range must stay within the loaded data bounds (first through last timestamp).</span>
-        </div>
-      }
+      <div class="time-range-validation-messages" aria-live="polite">
+        @if (isInvalidRange) {
+          <div class="form-level-error">
+            <mat-icon>error</mat-icon>
+            <span>{{ msgEndBeforeStart }}</span>
+          </div>
+        }
+        @if (isStartBeforeTelemetryBounds) {
+          <div class="form-level-error">
+            <mat-icon>error</mat-icon>
+            <span>{{ msgStartBeforeFirstSample }}</span>
+          </div>
+        }
+        @if (isEndAfterTelemetryBounds) {
+          <div class="form-level-error">
+            <mat-icon>error</mat-icon>
+            <span>{{ msgEndAfterLastSample }}</span>
+          </div>
+        }
+      </div>
     </form>
   </div>
 

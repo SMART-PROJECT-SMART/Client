@@ -27,6 +27,9 @@ import {
   TimeRangeStartTimeShortLabel,
   TimeRangeTimeInputPlaceholder,
   TimeRangeTimesGroupTitle,
+  TimeRangeValidationEndAfterLastSampleMessage,
+  TimeRangeValidationEndBeforeStartMessage,
+  TimeRangeValidationStartBeforeFirstSampleMessage,
 } from './time-range-dialog.constants';
 import { computeNextCalendarSelection } from './time-range-calendar-selection.util';
 import {
@@ -40,7 +43,7 @@ import {
   TimeRangeFormRawValue,
 } from './time-range-dialog.models';
 import {
-  resolveSelectableRangeWithinBounds,
+  isClosedRangeFullyWithinTelemetryBounds,
   utcCalendarDayEndInstant,
   utcCalendarDayStartInstant,
 } from '../../utils/time-range-dialog-bounds.util';
@@ -67,6 +70,9 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
   readonly startTimeOpenPickerAriaLabel = `Open ${TimeRangeStartTimeLabel} picker`;
   readonly endTimeOpenPickerAriaLabel = `Open ${TimeRangeEndTimeLabel} picker`;
   readonly emptyPickerRanges: Record<string, [Dayjs, Dayjs]> = {};
+  readonly msgEndBeforeStart = TimeRangeValidationEndBeforeStartMessage;
+  readonly msgStartBeforeFirstSample = TimeRangeValidationStartBeforeFirstSampleMessage;
+  readonly msgEndAfterLastSample = TimeRangeValidationEndAfterLastSampleMessage;
   rangeForm!: FormGroup;
   boundsDisplay = '';
   minDayjs!: Dayjs;
@@ -158,7 +164,7 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
     if (this.rangeForm.invalid) return false;
     const result = this.buildResult();
     if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
-    return this.resolveAgainstBounds(result) !== null;
+    return isClosedRangeFullyWithinTelemetryBounds(result, this.minBound, this.maxBound);
   }
 
   get isInvalidRange(): boolean {
@@ -166,10 +172,18 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
     return result !== null && this.isFiniteRange(result) && result.from > result.to;
   }
 
-  get isOutOfDataBounds(): boolean {
+  get isStartBeforeTelemetryBounds(): boolean {
+    if (this.isInvalidRange) return false;
     const result = this.buildResult();
-    if (result === null || !this.isFiniteRange(result) || result.from > result.to) return false;
-    return this.resolveAgainstBounds(result) === null;
+    if (result === null || !this.isFiniteRange(result)) return false;
+    return result.from.getTime() < this.minBound.getTime();
+  }
+
+  get isEndAfterTelemetryBounds(): boolean {
+    if (this.isInvalidRange) return false;
+    const result = this.buildResult();
+    if (result === null || !this.isFiniteRange(result)) return false;
+    return result.to.getTime() > this.maxBound.getTime();
   }
 
   onCancel(): void {
@@ -354,11 +368,10 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
   onApply(): void {
     const result = this.buildResult();
     if (!result || !this.isFiniteRange(result) || result.from > result.to) return;
-    const clamped = this.resolveAgainstBounds(result);
-    if (!clamped) return;
+    if (!isClosedRangeFullyWithinTelemetryBounds(result, this.minBound, this.maxBound)) return;
     this.applied.emit({
-      from: clamped.from,
-      to: clamped.to,
+      from: result.from,
+      to: result.to,
     });
   }
 
@@ -502,15 +515,4 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
     return Number.isFinite(result.from.getTime()) && Number.isFinite(result.to.getTime());
   }
 
-  private resolveAgainstBounds(direct: TimeRangeDialogResult): TimeRangeDialogResult | null {
-    const raw = this.rangeForm.getRawValue() as TimeRangeFormRawValue;
-    return resolveSelectableRangeWithinBounds({
-      direct,
-      useUtcCalendar: this.useUtcCalendar,
-      calendarStartDate: raw.dateRange?.start ?? null,
-      calendarEndDate: raw.dateRange?.end ?? null,
-      minBound: this.minBound,
-      maxBound: this.maxBound,
-    });
-  }
 }

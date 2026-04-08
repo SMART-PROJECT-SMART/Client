@@ -18,6 +18,14 @@ export const TimeRangeTimeInputPlaceholder = 'HH:mm:ss';
 
 export const TimeRangeResetRangeLabel = 'Reset range';
 
+export const TimeRangeValidationEndBeforeStartMessage = 'End time must be after start time';
+
+export const TimeRangeValidationStartBeforeFirstSampleMessage =
+  'Start is before the earliest available timestamp in the loaded data.';
+
+export const TimeRangeValidationEndAfterLastSampleMessage =
+  'End is after the latest available timestamp in the loaded data.';
+
 export const CalendarDayStartTimeParts = {
   hour: 0,
   minute: 0,

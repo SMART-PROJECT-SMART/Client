@@ -10,6 +10,8 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 }
 
 .time-range-picker-panel {
+  display: flex;
+  flex-direction: column;
   background-color: $color-background-secondary;
   border-radius: $border-radius-md;
   overflow: hidden;
@@ -17,12 +19,13 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 }
 
 .panel-header {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: $spacing-xs $spacing-md;
   border-bottom: $border-width-thin solid $color-border-default;
-  min-height: 40px;
+  min-height: 36px;
   box-sizing: border-box;
 }
 
@@ -33,27 +36,26 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 }
 
 .panel-body {
+  flex: 0 1 auto;
   padding: 0;
   overflow: visible;
-  max-height: min(70vh, 560px);
-  overflow-y: auto;
 }
 
 .panel-form {
-  padding: $spacing-md;
+  padding: $spacing-sm $spacing-md;
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
+  gap: $spacing-sm;
   align-items: stretch;
-  min-height: 0;
 }
 
 .panel-actions {
+  flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: $spacing-sm;
-  padding: $spacing-sm $spacing-md $spacing-md;
+  padding: $spacing-xs $spacing-md $spacing-sm;
   border-top: $border-width-thin solid $color-border-default;
   background-color: $color-background-secondary;
 }
@@ -61,7 +63,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 .booking-calendar-wrap {
   flex-shrink: 0;
   width: 100%;
-  min-height: 240px;
+  min-height: 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -93,13 +95,13 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
     margin-left: auto;
     margin-right: auto;
     overflow: visible;
-    padding: $spacing-sm $spacing-md $spacing-md;
+    padding: $spacing-xs $spacing-sm $spacing-sm;
   }
 
   ::ng-deep .md-drppicker.double {
     width: 100%;
     max-width: $time-range-calendar-panel-max-width;
-    gap: $spacing-md;
+    gap: $spacing-sm;
   }
 
   ::ng-deep .md-drppicker.inline {
@@ -116,10 +118,10 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   }
 
   ::ng-deep .md-drppicker .calendar {
-    min-height: 220px;
-    max-width: calc(50% - #{$spacing-md} / 2);
-    width: calc(50% - #{$spacing-md} / 2);
-    flex: 1 1 calc(50% - #{$spacing-md} / 2);
+    min-height: 0;
+    max-width: calc(50% - #{$spacing-sm} / 2);
+    width: calc(50% - #{$spacing-sm} / 2);
+    flex: 1 1 calc(50% - #{$spacing-sm} / 2);
     min-width: 0;
   }
 
@@ -155,7 +157,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   }
 
   ::ng-deep .md-drppicker th.month {
-    padding-bottom: $spacing-sm;
+    padding-bottom: $spacing-xs;
   }
 
   ::ng-deep .md-drppicker table.table-condensed {
@@ -172,7 +174,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 
   ::ng-deep .md-drppicker table.table-condensed thead tr.week-days th {
     border-bottom: $border-width-thin solid $color-border-default;
-    padding-bottom: $spacing-xs;
+    padding-bottom: 2px;
   }
 
   ::ng-deep .md-drppicker td.off:not(.in-range) {
@@ -196,20 +198,21 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   ::ng-deep .md-drppicker th {
     color: $color-text-secondary;
     font-weight: 500;
-    padding: $spacing-xs $spacing-xs;
-    min-width: 28px;
+    padding: 1px 2px;
+    min-width: 24px;
     width: auto;
     height: auto;
-    line-height: 1.2;
+    line-height: 1.15;
+    font-size: $font-size-xs;
   }
 
   ::ng-deep .md-drppicker td {
     margin: 0;
-    padding: 2px;
-    min-width: 28px;
+    padding: 1px;
+    min-width: 24px;
     width: auto;
     height: auto;
-    line-height: 1.2;
+    line-height: 1.15;
     transform: none;
     opacity: 1;
   }
@@ -218,11 +221,12 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 30px;
-    min-height: 30px;
-    border-radius: $border-radius-md;
+    min-width: 26px;
+    min-height: 26px;
+    border-radius: $border-radius-sm;
     transform: none;
     transition: background-color 0.12s ease, color 0.12s ease;
+    font-size: $font-size-sm;
   }
 
   ::ng-deep .md-drppicker td.available:hover,
@@ -287,7 +291,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   display: flex;
   align-items: flex-start;
   gap: $spacing-sm;
-  padding: $spacing-md;
+  padding: $spacing-sm $spacing-md;
   background-color: rgba($color-primary, 0.08);
   border: $border-width-thin solid rgba($color-primary, 0.35);
   border-radius: $border-radius-sm;
@@ -318,10 +322,10 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 }
 
 .valid-range-value {
-  font-size: $font-size-sm;
+  font-size: $font-size-xs;
   font-variant-numeric: tabular-nums;
   color: $color-text-primary;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .time-range-times-shell {
@@ -342,8 +346,8 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   grid-template-rows: auto auto;
   align-items: center;
   column-gap: $spacing-sm;
-  row-gap: $spacing-xs;
-  padding: $spacing-sm $spacing-md;
+  row-gap: 2px;
+  padding: $spacing-xs $spacing-sm;
   border: $border-width-thin solid $color-border-light;
   border-radius: $border-radius-sm;
   background-color: $color-background-secondary;
@@ -392,14 +396,29 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   user-select: none;
 }
 
+.time-range-validation-messages {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
 .form-level-error {
   display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-sm $spacing-md;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
   background-color: rgba($color-error, 0.1);
   border-left: 3px solid $color-error;
   border-radius: $border-radius-sm;
   color: $color-error;
-  font-size: $font-size-sm;
+  font-size: $font-size-xs;
+  line-height: 1.35;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
 }
