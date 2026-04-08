@@ -7,8 +7,8 @@
 
 .time-input-wrapper {
   display: flex;
-  align-items: stretch;
-  min-height: 48px;
+  align-items: center;
+  min-height: $button-size-sm;
   border: $border-width-thin solid $color-border-light;
   border-radius: $border-radius-sm;
   background-color: $color-background-card;
@@ -17,14 +17,15 @@
   input {
     flex: 1;
     min-width: 0;
-    padding: $spacing-sm $spacing-sm $spacing-sm $spacing-md;
+    padding: $spacing-xs $spacing-sm;
     border: none;
     background: transparent;
     color: $color-text-primary;
     font-family: inherit;
-    font-size: $font-size-md;
+    font-size: $font-size-sm;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
+    line-height: 1.25;
     text-align: center;
     outline: none;
 
@@ -39,10 +40,9 @@
 
   .time-picker-trigger {
     flex-shrink: 0;
-    align-self: center;
-    width: 40px;
-    height: 40px;
-    margin: $spacing-xs $spacing-xs $spacing-xs 0;
+    width: $button-size-sm;
+    height: $button-size-sm;
+    margin: 0 $spacing-xs 0 0;
     padding: 0;
     border: none;
     border-radius: 50%;
@@ -56,13 +56,13 @@
 
     &:focus-visible {
       outline: 2px solid rgba($color-primary, 0.6);
-      outline-offset: 2px;
+      outline-offset: 1px;
     }
 
     mat-icon {
-      font-size: 22px;
-      width: 22px;
-      height: 22px;
+      font-size: $icon-size-sm;
+      width: $icon-size-sm;
+      height: $icon-size-sm;
     }
   }
 }
