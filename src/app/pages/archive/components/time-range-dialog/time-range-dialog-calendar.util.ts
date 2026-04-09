@@ -28,3 +28,11 @@ export function calendarDayStartForDate(d: Date, useUtcCalendar: boolean): Dayjs
 export function dayjsToUtcDateOnlyAnchor(d: Dayjs): Date {
   return new Date(Date.UTC(d.year(), d.month(), d.date()));
 }
+
+export function utcCalendarDatePlusDays(anchor: Date, days: number): Date {
+  return new Date(Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth(), anchor.getUTCDate() + days));
+}
+
+export function localCalendarDatePlusDays(anchor: Date, days: number): Date {
+  return new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate() + days);
+}

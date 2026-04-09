@@ -18,15 +18,22 @@ import type { Dayjs } from 'dayjs';
 import { DateTimeUtil } from '../../../../common/utils/date-time.util';
 import { DaterangepickerComponent } from 'ngx-daterangepicker-material';
 import {
-  CalendarDayEndTimeParts,
-  CalendarDayStartTimeParts,
+  TimeRangeCalendarOutsideMonthCellClass,
   TimeRangeEndTimeLabel,
   TimeRangeEndTimeShortLabel,
-  TimeRangeCalendarOutsideMonthCellClass,
+  TimeRangeOpenPickerAriaLabelLead,
+  TimeRangeOpenPickerAriaLabelTail,
+  TimeRangePanelApplyLabel,
+  TimeRangePanelCancelLabel,
+  TimeRangePanelCloseButtonAriaLabel,
+  TimeRangePanelTitle,
   TimeRangeStartTimeLabel,
   TimeRangeStartTimeShortLabel,
   TimeRangeTimeInputPlaceholder,
   TimeRangeTimesGroupTitle,
+  TimeRangeOvernightEndDateDayOffset,
+  TimeRangeSelectionDaySpan,
+  TimeRangeValidRangeBannerTitle,
   TimeRangeValidationEndAfterLastSampleMessage,
   TimeRangeValidationEndBeforeStartMessage,
   TimeRangeValidationStartBeforeFirstSampleMessage,
@@ -34,7 +41,9 @@ import {
 import { computeNextCalendarSelection } from './time-range-calendar-selection.util';
 import {
   dayjsToUtcDateOnlyAnchor,
+  localCalendarDatePlusDays,
   startOfCalendarDayFromMillis,
+  utcCalendarDatePlusDays,
 } from './time-range-dialog-calendar.util';
 import { createTimeRangeDialogInitialState } from './time-range-dialog-initial-state.factory';
 import {
@@ -44,8 +53,8 @@ import {
 } from './time-range-dialog.models';
 import {
   isClosedRangeFullyWithinTelemetryBounds,
-  utcCalendarDayEndInstant,
-  utcCalendarDayStartInstant,
+  telemetryIntervalClampedToLocalCalendarDay,
+  telemetryIntervalClampedToUtcCalendarDay,
 } from '../../utils/time-range-dialog-bounds.util';
 
 @Component({
@@ -67,8 +76,13 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
   readonly startTimeShortLabel = TimeRangeStartTimeShortLabel;
   readonly endTimeShortLabel = TimeRangeEndTimeShortLabel;
   readonly timeInputPlaceholder = TimeRangeTimeInputPlaceholder;
-  readonly startTimeOpenPickerAriaLabel = `Open ${TimeRangeStartTimeLabel} picker`;
-  readonly endTimeOpenPickerAriaLabel = `Open ${TimeRangeEndTimeLabel} picker`;
+  readonly panelTitle = TimeRangePanelTitle;
+  readonly validRangeBannerTitle = TimeRangeValidRangeBannerTitle;
+  readonly panelCloseAriaLabel = TimeRangePanelCloseButtonAriaLabel;
+  readonly panelCancelLabel = TimeRangePanelCancelLabel;
+  readonly panelApplyLabel = TimeRangePanelApplyLabel;
+  readonly startTimeOpenPickerAriaLabel = `${TimeRangeOpenPickerAriaLabelLead}${TimeRangeStartTimeLabel}${TimeRangeOpenPickerAriaLabelTail}`;
+  readonly endTimeOpenPickerAriaLabel = `${TimeRangeOpenPickerAriaLabelLead}${TimeRangeEndTimeLabel}${TimeRangeOpenPickerAriaLabelTail}`;
   readonly emptyPickerRanges: Record<string, [Dayjs, Dayjs]> = {};
   readonly msgEndBeforeStart = TimeRangeValidationEndBeforeStartMessage;
   readonly msgStartBeforeFirstSample = TimeRangeValidationStartBeforeFirstSampleMessage;
@@ -94,6 +108,8 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
 
   private unlistenCalendarCapture?: () => void;
   private pickerSyncSuppressed = false;
+  private lastUtcSelectionDaySpan: TimeRangeSelectionDaySpan | null = null;
+  private lastLocalSelectionDaySpan: TimeRangeSelectionDaySpan | null = null;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -146,6 +162,8 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
     this.pickerStart = initial.pickerStart;
     this.pickerEnd = initial.pickerEnd;
     this.rangeForm = initial.rangeForm;
+    this.lastUtcSelectionDaySpan = this.dayjsUtcPairSpan(this.pickerStart, this.pickerEnd);
+    this.lastLocalSelectionDaySpan = this.dayjsLocalPairSpan(this.pickerStart, this.pickerEnd);
   }
 
   get dateRangeGroup(): FormGroup {
@@ -407,11 +425,13 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
           start: dayjsToUtcDateOnlyAnchor(start),
           end: dayjsToUtcDateOnlyAnchor(end),
         });
+        this.syncTimesWhenUtcCalendarSpanCollapses();
       } else {
         this.dateRangeGroup.patchValue({
           start: start.toDate(),
           end: end.toDate(),
         });
+        this.syncTimesWhenLocalCalendarSpanCollapses();
       }
       return;
     }
@@ -423,12 +443,70 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
         start: dayjsToUtcDateOnlyAnchor(start),
         end: dayjsToUtcDateOnlyAnchor(end),
       });
+      this.syncTimesWhenUtcCalendarSpanCollapses();
     } else {
       this.dateRangeGroup.patchValue({
         start: start.toDate(),
         end: end.toDate(),
       });
+      this.syncTimesWhenLocalCalendarSpanCollapses();
     }
+  }
+
+  private dayjsUtcPairSpan(a: Dayjs, b: Dayjs | null): TimeRangeSelectionDaySpan {
+    if (b === null) {
+      return TimeRangeSelectionDaySpan.Single;
+    }
+    return a.utc(true).isSame(b.utc(true), 'day')
+      ? TimeRangeSelectionDaySpan.Single
+      : TimeRangeSelectionDaySpan.Multi;
+  }
+
+  private dayjsLocalPairSpan(a: Dayjs, b: Dayjs | null): TimeRangeSelectionDaySpan {
+    if (b === null) {
+      return TimeRangeSelectionDaySpan.Single;
+    }
+    return a.isSame(b, 'day') ? TimeRangeSelectionDaySpan.Single : TimeRangeSelectionDaySpan.Multi;
+  }
+
+  private syncTimesWhenUtcCalendarSpanCollapses(): void {
+    const next = this.dayjsUtcPairSpan(this.pickerStart, this.pickerEnd);
+    if (this.lastUtcSelectionDaySpan === TimeRangeSelectionDaySpan.Multi && next === TimeRangeSelectionDaySpan.Single) {
+      const anchor = dayjsToUtcDateOnlyAnchor(this.pickerStart);
+      const clipped = telemetryIntervalClampedToUtcCalendarDay(anchor, this.minBound, this.maxBound);
+      if (clipped) {
+        this.rangeForm.patchValue({
+          startTime: DateTimeUtil.utcWallClockForPicker(clipped.from),
+          endTime: DateTimeUtil.utcWallClockForPicker(clipped.to),
+        });
+      } else {
+        this.rangeForm.patchValue({
+          startTime: DateTimeUtil.utcWallClockForPicker(this.minBound),
+          endTime: DateTimeUtil.utcWallClockForPicker(this.maxBound),
+        });
+      }
+    }
+    this.lastUtcSelectionDaySpan = next;
+  }
+
+  private syncTimesWhenLocalCalendarSpanCollapses(): void {
+    const next = this.dayjsLocalPairSpan(this.pickerStart, this.pickerEnd);
+    if (this.lastLocalSelectionDaySpan === TimeRangeSelectionDaySpan.Multi && next === TimeRangeSelectionDaySpan.Single) {
+      const anchor = this.pickerStart.clone().startOf('day').toDate();
+      const clipped = telemetryIntervalClampedToLocalCalendarDay(anchor, this.minBound, this.maxBound);
+      if (clipped) {
+        this.rangeForm.patchValue({
+          startTime: DateTimeUtil.localTimeOfDayForPicker(clipped.from),
+          endTime: DateTimeUtil.localTimeOfDayForPicker(clipped.to),
+        });
+      } else {
+        this.rangeForm.patchValue({
+          startTime: DateTimeUtil.localTimeOfDayForPicker(this.minBound),
+          endTime: DateTimeUtil.localTimeOfDayForPicker(this.maxBound),
+        });
+      }
+    }
+    this.lastLocalSelectionDaySpan = next;
   }
 
   private buildResult(): TimeRangeDialogResult | null {
@@ -451,11 +529,15 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
       );
       const to = DateTimeUtil.combineUtcDateAndTime(endDate, timeEnd as string | Date);
       if (!Number.isFinite(from.getTime()) || !Number.isFinite(to.getTime())) return null;
-      if (from.getTime() > to.getTime() && this.sameUtcCalendarDay(startDate, endDate)) {
-        return {
-          from: utcCalendarDayStartInstant(startDate),
-          to: utcCalendarDayEndInstant(endDate),
-        };
+      const sameUtcDay = this.sameUtcCalendarDay(startDate, endDate);
+      const directFromGtTo = from.getTime() > to.getTime();
+      if (directFromGtTo && sameUtcDay) {
+        const overnightEndAnchor = utcCalendarDatePlusDays(startDate, TimeRangeOvernightEndDateDayOffset);
+        const overnightTo = DateTimeUtil.combineUtcDateAndTime(
+          overnightEndAnchor,
+          timeEnd as string | Date,
+        );
+        return { from, to: overnightTo };
       }
       return { from, to };
     }
@@ -463,36 +545,11 @@ export class TimeRangePickerPanelComponent implements OnInit, OnChanges, AfterVi
     const to = DateTimeUtil.combineDateAndTime(endDate, timeEnd);
     if (!Number.isFinite(from.getTime()) || !Number.isFinite(to.getTime())) return null;
     if (from.getTime() > to.getTime() && this.sameLocalCalendarDay(startDate, endDate)) {
-      return {
-        from: this.localStartOfCalendarDay(startDate),
-        to: this.localEndOfCalendarDay(endDate),
-      };
+      const overnightEndAnchor = localCalendarDatePlusDays(startDate, TimeRangeOvernightEndDateDayOffset);
+      const overnightTo = DateTimeUtil.combineDateAndTime(overnightEndAnchor, timeEnd);
+      return { from, to: overnightTo };
     }
     return { from, to };
-  }
-
-  private localStartOfCalendarDay(anchor: Date): Date {
-    return new Date(
-      anchor.getFullYear(),
-      anchor.getMonth(),
-      anchor.getDate(),
-      CalendarDayStartTimeParts.hour,
-      CalendarDayStartTimeParts.minute,
-      CalendarDayStartTimeParts.second,
-      CalendarDayStartTimeParts.millisecond,
-    );
-  }
-
-  private localEndOfCalendarDay(anchor: Date): Date {
-    return new Date(
-      anchor.getFullYear(),
-      anchor.getMonth(),
-      anchor.getDate(),
-      CalendarDayEndTimeParts.hour,
-      CalendarDayEndTimeParts.minute,
-      CalendarDayEndTimeParts.second,
-      CalendarDayEndTimeParts.millisecond,
-    );
   }
 
   private sameUtcCalendarDay(a: Date, b: Date): boolean {

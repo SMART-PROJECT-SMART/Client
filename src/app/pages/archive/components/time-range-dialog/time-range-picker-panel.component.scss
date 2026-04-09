@@ -1,9 +1,29 @@
 @use '../../../../../styles/constants' as *;
 
+$time-range-calendar-double-column-flex-basis: 50%;
 $time-range-calendar-panel-max-width: 560px;
 $time-range-calendar-range-bridge: rgba($color-primary, 0.32);
 $time-range-calendar-range-bridge-text: $color-text-primary;
 $time-range-calendar-off-in-range-text: $color-text-muted;
+
+$time-range-panel-header-min-height: 36px;
+$time-range-valid-range-fill-opacity: 0.08;
+$time-range-valid-range-border-opacity: 0.35;
+$time-range-valid-range-icon-offset-top: 2px;
+$time-range-label-letter-spacing: 0.5px;
+$time-range-copy-line-height-tight: 1.35;
+$time-range-times-grid-row-gap: 2px;
+$time-range-cal-weekday-header-padding-bottom: 2px;
+$time-range-cal-tight-padding-inline: 2px;
+$time-range-cal-cell-padding: 1px;
+$time-range-cal-header-cell-min-width: 24px;
+$time-range-cal-day-cell-size: 26px;
+$time-range-cal-line-height: 1.15;
+$time-range-cal-transition-duration: 0.12s;
+$time-range-error-background-opacity: 0.1;
+$time-range-error-border-left-width: 3px;
+$time-range-error-icon-size: 18px;
+$time-range-error-icon-margin-top: 1px;
 
 :host {
   display: block;
@@ -25,7 +45,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   align-items: center;
   padding: $spacing-xs $spacing-md;
   border-bottom: $border-width-thin solid $color-border-default;
-  min-height: 36px;
+  min-height: $time-range-panel-header-min-height;
   box-sizing: border-box;
 }
 
@@ -119,9 +139,9 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 
   ::ng-deep .md-drppicker .calendar {
     min-height: 0;
-    max-width: calc(50% - #{$spacing-sm} / 2);
-    width: calc(50% - #{$spacing-sm} / 2);
-    flex: 1 1 calc(50% - #{$spacing-sm} / 2);
+    max-width: calc(#{$time-range-calendar-double-column-flex-basis} - #{$spacing-sm} / 2);
+    width: calc(#{$time-range-calendar-double-column-flex-basis} - #{$spacing-sm} / 2);
+    flex: 1 1 calc(#{$time-range-calendar-double-column-flex-basis} - #{$spacing-sm} / 2);
     min-width: 0;
   }
 
@@ -174,7 +194,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 
   ::ng-deep .md-drppicker table.table-condensed thead tr.week-days th {
     border-bottom: $border-width-thin solid $color-border-default;
-    padding-bottom: 2px;
+    padding-bottom: $time-range-cal-weekday-header-padding-bottom;
   }
 
   ::ng-deep .md-drppicker td.off:not(.in-range) {
@@ -192,27 +212,28 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   ::ng-deep .md-drppicker th,
   ::ng-deep .md-drppicker td {
     border-radius: 0;
-    transition: background-color 0.12s ease, color 0.12s ease;
+    transition: background-color $time-range-cal-transition-duration ease,
+      color $time-range-cal-transition-duration ease;
   }
 
   ::ng-deep .md-drppicker th {
     color: $color-text-secondary;
     font-weight: 500;
-    padding: 1px 2px;
-    min-width: 24px;
+    padding: $time-range-cal-cell-padding $time-range-cal-tight-padding-inline;
+    min-width: $time-range-cal-header-cell-min-width;
     width: auto;
     height: auto;
-    line-height: 1.15;
+    line-height: $time-range-cal-line-height;
     font-size: $font-size-xs;
   }
 
   ::ng-deep .md-drppicker td {
     margin: 0;
-    padding: 1px;
-    min-width: 24px;
+    padding: $time-range-cal-cell-padding;
+    min-width: $time-range-cal-header-cell-min-width;
     width: auto;
     height: auto;
-    line-height: 1.15;
+    line-height: $time-range-cal-line-height;
     transform: none;
     opacity: 1;
   }
@@ -221,11 +242,12 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 26px;
-    min-height: 26px;
+    min-width: $time-range-cal-day-cell-size;
+    min-height: $time-range-cal-day-cell-size;
     border-radius: $border-radius-sm;
     transform: none;
-    transition: background-color 0.12s ease, color 0.12s ease;
+    transition: background-color $time-range-cal-transition-duration ease,
+      color $time-range-cal-transition-duration ease;
     font-size: $font-size-sm;
   }
 
@@ -292,8 +314,8 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   align-items: flex-start;
   gap: $spacing-sm;
   padding: $spacing-sm $spacing-md;
-  background-color: rgba($color-primary, 0.08);
-  border: $border-width-thin solid rgba($color-primary, 0.35);
+  background-color: rgba($color-primary, $time-range-valid-range-fill-opacity);
+  border: $border-width-thin solid rgba($color-primary, $time-range-valid-range-border-opacity);
   border-radius: $border-radius-sm;
 }
 
@@ -303,7 +325,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   height: $icon-size-md;
   color: $color-primary-light;
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: $time-range-valid-range-icon-offset-top;
 }
 
 .valid-range-copy {
@@ -318,14 +340,14 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   font-weight: 600;
   color: $color-text-secondary;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: $time-range-label-letter-spacing;
 }
 
 .valid-range-value {
   font-size: $font-size-xs;
   font-variant-numeric: tabular-nums;
   color: $color-text-primary;
-  line-height: 1.35;
+  line-height: $time-range-copy-line-height-tight;
 }
 
 .time-range-times-shell {
@@ -346,7 +368,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   grid-template-rows: auto auto;
   align-items: center;
   column-gap: $spacing-sm;
-  row-gap: 2px;
+  row-gap: $time-range-times-grid-row-gap;
   padding: $spacing-xs $spacing-sm;
   border: $border-width-thin solid $color-border-light;
   border-radius: $border-radius-sm;
@@ -356,7 +378,7 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 .time-segment-label {
   font-size: $font-size-xs;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: $time-range-label-letter-spacing;
   text-transform: uppercase;
   color: $color-text-muted;
   min-width: 0;
@@ -372,8 +394,8 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
 
 .time-range-label-spacer {
   display: block;
-  width: 1px;
-  height: 1px;
+  width: $border-width-thin;
+  height: $border-width-thin;
   visibility: hidden;
   pointer-events: none;
 }
@@ -407,18 +429,18 @@ $time-range-calendar-off-in-range-text: $color-text-muted;
   align-items: flex-start;
   gap: $spacing-xs;
   padding: $spacing-xs $spacing-sm;
-  background-color: rgba($color-error, 0.1);
-  border-left: 3px solid $color-error;
+  background-color: rgba($color-error, $time-range-error-background-opacity);
+  border-left: $time-range-error-border-left-width solid $color-error;
   border-radius: $border-radius-sm;
   color: $color-error;
   font-size: $font-size-xs;
-  line-height: 1.35;
+  line-height: $time-range-copy-line-height-tight;
 
   mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    font-size: $time-range-error-icon-size;
+    width: $time-range-error-icon-size;
+    height: $time-range-error-icon-size;
     flex-shrink: 0;
-    margin-top: 1px;
+    margin-top: $time-range-error-icon-margin-top;
   }
 }
