@@ -49,6 +49,13 @@ export namespace ClientConstants {
     export const INVESTIGATE_PATH_MARKER: string = 'archive/investigate';
   }
 
+  export namespace ArchiveDialogs {
+    export const FILTER_WIDTH: string = '380px';
+    export const DIFF_WIDTH: string = 'auto';
+    export const DIFF_MIN_WIDTH: string = '400px';
+    export const DIFF_MAX_WIDTH: string = '900px';
+  }
+
   export namespace TelemetryQueryParams {
     export const MISSION_ID: string = 'missionId';
     export const TAIL_ID: string = 'tailId';

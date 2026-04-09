@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import type { ArchiveAssignmentRo } from '../../models/archive';
-import type { ArchiveInvestigationUiSnapshot } from './archive-investigation-return-state.model';
-
-export interface ArchiveInvestigationRestorePayload {
-  snapshot: ArchiveInvestigationUiSnapshot;
-  diffRecord: ArchiveAssignmentRo | null;
-}
+import type {
+  ArchiveInvestigationRestorePayload,
+  ArchiveInvestigationUiSnapshot,
+} from './archive-investigation-return-state.model';
 
 @Injectable({ providedIn: 'root' })
 export class ArchiveInvestigationReturnStateService {

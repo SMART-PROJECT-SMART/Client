@@ -7,7 +7,11 @@ import { MissionStatusStorageService } from '../../../../services/mission/missio
 import { ClientConstants, EnumUtil } from '../../../../common';
 import { Priority, UAVType, BaseLocation } from '../../../../common/enums';
 
-const { TableConfig } = ClientConstants;
+const { TableConfig, FormDefaults } = ClientConstants;
+
+function normalizeActiveMissionsFilter(raw: string): string {
+  return raw.trim().toLowerCase();
+}
 
 @Component({
   selector: 'app-active-missions-table',
@@ -50,8 +54,7 @@ export class ActiveMissionsTableComponent implements OnInit {
   });
 
   private readonly _filterSyncEffect = effect(() => {
-    const v = this.filterValue();
-    const normalized = v.trim().toLowerCase();
+    const normalized = normalizeActiveMissionsFilter(this.filterValue());
     this.dataSource.filter = normalized;
     const el = this.searchInput()?.nativeElement;
     if (el && el.value !== normalized) {
@@ -85,13 +88,13 @@ export class ActiveMissionsTableComponent implements OnInit {
 
   public onFilterInput(event: Event): void {
     const raw = (event.target as HTMLInputElement).value;
-    this.filterValueChange.emit(raw.trim().toLowerCase());
+    this.filterValueChange.emit(normalizeActiveMissionsFilter(raw));
     this.paginator()?.firstPage();
   }
 
   public onClearSearch(input: HTMLInputElement): void {
-    input.value = '';
-    this.filterValueChange.emit('');
+    input.value = FormDefaults.EMPTY_STRING;
+    this.filterValueChange.emit(FormDefaults.EMPTY_STRING);
     this.paginator()?.firstPage();
   }
 

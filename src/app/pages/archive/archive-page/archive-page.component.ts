@@ -7,8 +7,10 @@ import { NavigationStart, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ArchiveApiService } from '../../../services/archive/archive-api.service';
 import { ArchiveInvestigationReturnStateService } from '../../../services/archive/archive-investigation-return-state.service';
-import type { ArchiveInvestigationRestorePayload } from '../../../services/archive/archive-investigation-return-state.service';
-import type { ArchiveInvestigationUiSnapshot } from '../../../services/archive/archive-investigation-return-state.model';
+import type {
+  ArchiveInvestigationRestorePayload,
+  ArchiveInvestigationUiSnapshot,
+} from '../../../services/archive/archive-investigation-return-state.model';
 import { DeviceManagerStorageService } from '../../../services/devices/device-manager-storage.service';
 import { MissionStatusStorageService } from '../../../services/mission/mission-status-storage.service';
 import type { ArchiveAssignmentRo } from '../../../models/archive';
@@ -19,6 +21,7 @@ import { buildComparisonRows, type ComparisonRow } from './archive-comparison.ut
 import { ClientConstants } from '../../../common';
 
 const { INVESTIGATE_PATH_MARKER } = ClientConstants.ArchiveRoutes;
+const { FILTER_WIDTH, DIFF_WIDTH, DIFF_MIN_WIDTH, DIFF_MAX_WIDTH } = ClientConstants.ArchiveDialogs;
 
 interface DisplayRecord {
   record: ArchiveAssignmentRo;
@@ -173,13 +176,7 @@ export class ArchivePageComponent implements OnInit {
 
     this.loading.set(true);
     try {
-      if (snapshot.selectedDate) {
-        const list = await firstValueFrom(this.archiveApi.getByDate(snapshot.selectedDate));
-        this.assignments.set(list ?? []);
-      } else {
-        const one = await firstValueFrom(this.archiveApi.getLatest());
-        this.assignments.set(one ? [one] : []);
-      }
+      await this.loadAssignmentsForSelectedContext(snapshot.selectedDate);
     } finally {
       this.loading.set(false);
     }
@@ -188,15 +185,27 @@ export class ArchivePageComponent implements OnInit {
 
     const record = this.resolveDiffRecord(diffRecord);
     if (record) {
-      queueMicrotask(() => {
-        this.dialog.open(ArchiveDiffDialogComponent, {
-          width: 'auto',
-          minWidth: '400px',
-          maxWidth: '900px',
-          data: record,
-        });
-      });
+      queueMicrotask(() => this.openArchiveDiffDialog(record));
     }
+  }
+
+  private async loadAssignmentsForSelectedContext(dateIso: string | null): Promise<void> {
+    if (dateIso) {
+      const list = await firstValueFrom(this.archiveApi.getByDate(dateIso));
+      this.assignments.set(list ?? []);
+      return;
+    }
+    const one = await firstValueFrom(this.archiveApi.getLatest());
+    this.assignments.set(one ? [one] : []);
+  }
+
+  private openArchiveDiffDialog(record: ArchiveAssignmentRo): void {
+    this.dialog.open(ArchiveDiffDialogComponent, {
+      width: DIFF_WIDTH,
+      minWidth: DIFF_MIN_WIDTH,
+      maxWidth: DIFF_MAX_WIDTH,
+      data: record,
+    });
   }
 
   private resolveDiffRecord(diffRecord: ArchiveAssignmentRo | null): ArchiveAssignmentRo | null {
@@ -215,8 +224,7 @@ export class ArchivePageComponent implements OnInit {
   async loadLatest(): Promise<void> {
     this.loading.set(true);
     try {
-      const one = await firstValueFrom(this.archiveApi.getLatest());
-      this.assignments.set(one ? [one] : []);
+      await this.loadAssignmentsForSelectedContext(null);
     } finally {
       this.loading.set(false);
     }
@@ -224,7 +232,7 @@ export class ArchivePageComponent implements OnInit {
 
   async openFilterDialog(): Promise<void> {
     const ref = this.dialog.open(ArchiveFilterDialogComponent, {
-      width: '380px',
+      width: FILTER_WIDTH,
       data: {
         date: this.selectedDate(),
         tailIds: this.tailIdFilter(),
@@ -265,12 +273,7 @@ export class ArchivePageComponent implements OnInit {
   }
 
   openDiffDialog(record: ArchiveAssignmentRo): void {
-    this.dialog.open(ArchiveDiffDialogComponent, {
-      width: 'auto',
-      minWidth: '400px',
-      maxWidth: '900px',
-      data: record,
-    });
+    this.openArchiveDiffDialog(record);
   }
 
   private formatDate(createdAt: string): string {
