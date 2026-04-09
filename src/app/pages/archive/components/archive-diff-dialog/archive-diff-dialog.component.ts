@@ -6,6 +6,7 @@ import { buildComparisonRows, type ComparisonRow, type RelevantUav } from '../..
 import { TelemetryField } from '../../../../common/enums';
 import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
+import { ArchiveInvestigationReturnStateService } from '../../../../services/archive/archive-investigation-return-state.service';
 
 const { INVESTIGATE } = ClientConstants.ArchiveRoutes;
 const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM } = ClientConstants.TelemetryQueryParams;
@@ -34,6 +35,7 @@ export interface TelemetryFieldEntry {
 export class ArchiveDiffDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<ArchiveDiffDialogComponent>);
   private readonly router = inject(Router);
+  private readonly investigationReturnState = inject(ArchiveInvestigationReturnStateService);
   private readonly data: ArchiveAssignmentRo = inject(MAT_DIALOG_DATA, { optional: true }) ?? {
     suggestedAssignments: [],
     actualAssignments: [],
@@ -147,6 +149,7 @@ export class ArchiveDiffDialogComponent {
       return;
     }
 
+    this.investigationReturnState.setDiffRecordForReturn(this.data);
     this.dialogRef.close();
     this.router.navigate([INVESTIGATE], {
       queryParams: { [MISSION_ID_PARAM]: row.missionId, [TAIL_ID_PARAM]: tailId },

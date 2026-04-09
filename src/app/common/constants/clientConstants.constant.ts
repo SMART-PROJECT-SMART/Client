@@ -46,6 +46,7 @@ export namespace ClientConstants {
   export namespace ArchiveRoutes {
     export const ARCHIVE: string = '/archive';
     export const INVESTIGATE: string = '/archive/investigate';
+    export const INVESTIGATE_PATH_MARKER: string = 'archive/investigate';
   }
 
   export namespace TelemetryQueryParams {

@@ -12,6 +12,7 @@ import { EnumUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin.util';
 import { ArchiveApiService } from '../../../../services/archive/archive-api.service';
+import { ArchiveInvestigationReturnStateService } from '../../../../services/archive/archive-investigation-return-state.service';
 import { MissionTelemetryFetchService } from '../../../../services/archive/mission-telemetry-fetch.service';
 import { MissionDetailsDialogComponent } from '../mission-details-dialog/mission-details-dialog.component';
 import type { TimeRangeDialogData, TimeRangeDialogResult } from '../time-range-dialog/time-range-dialog.models';
@@ -77,6 +78,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly archiveApi = inject(ArchiveApiService);
+  private readonly archiveInvestigationReturnState = inject(ArchiveInvestigationReturnStateService);
   private readonly missionTelemetryFetch = inject(MissionTelemetryFetchService);
 
   readonly investigationUi = ClientConstants.TelemetryInvestigationUi;
@@ -392,6 +394,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
+    this.archiveInvestigationReturnState.markRestorePending();
     this.router.navigate([ARCHIVE]);
   }
 

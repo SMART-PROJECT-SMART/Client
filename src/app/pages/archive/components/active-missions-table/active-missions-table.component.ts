@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, effect, viewChild, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, effect, viewChild, inject, input, output, ElementRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -17,8 +17,12 @@ const { TableConfig } = ClientConstants;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActiveMissionsTableComponent implements OnInit {
+  public readonly filterValue = input<string>('');
+  public readonly filterValueChange = output<string>();
+
   public readonly sort = viewChild<MatSort>(MatSort);
   public readonly paginator = viewChild<MatPaginator>(MatPaginator);
+  public readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   public readonly displayedColumns: string[] = [
     'tailId',
@@ -45,6 +49,16 @@ export class ActiveMissionsTableComponent implements OnInit {
     if (paginator) this.dataSource.paginator = paginator;
   });
 
+  private readonly _filterSyncEffect = effect(() => {
+    const v = this.filterValue();
+    const normalized = v.trim().toLowerCase();
+    this.dataSource.filter = normalized;
+    const el = this.searchInput()?.nativeElement;
+    if (el && el.value !== normalized) {
+      el.value = normalized;
+    }
+  });
+
   public ngOnInit(): void {
     this.dataSource.data = this.missionStatusStorage.activeMissionList();
     this.dataSource.sortingDataAccessor = (item: ActiveMissionRo, property: string): string | number => {
@@ -69,14 +83,15 @@ export class ActiveMissionsTableComponent implements OnInit {
     };
   }
 
-  public onSearch(event: Event): void {
-    this.dataSource.filter = (event.target as HTMLInputElement).value.trim().toLowerCase();
+  public onFilterInput(event: Event): void {
+    const raw = (event.target as HTMLInputElement).value;
+    this.filterValueChange.emit(raw.trim().toLowerCase());
     this.paginator()?.firstPage();
   }
 
   public onClearSearch(input: HTMLInputElement): void {
     input.value = '';
-    this.dataSource.filter = '';
+    this.filterValueChange.emit('');
     this.paginator()?.firstPage();
   }
 
