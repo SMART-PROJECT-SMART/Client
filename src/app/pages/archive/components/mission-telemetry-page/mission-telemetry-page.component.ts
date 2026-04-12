@@ -30,12 +30,16 @@ import {
 } from '../../utils/mission-telemetry-time-range.util';
 import { buildTelemetryChartRowConfig } from '../../utils/mission-telemetry-chart.util';
 import {
-  formatTelemetryBoundsDateDisplayUtc,
-  isoTimestampToDatetimeLocalValue,
+  formatTelemetryBoundsDateDisplayInvestigation,
+  isoTimestampToInvestigationWallClock,
 } from '../../utils/mission-telemetry-datetime.util';
 import { mergeMissionTelemetryRows } from '../../utils/mission-telemetry-merge.util';
 
 const { LOCALE, OPTIONS: TIME_FORMAT_OPTIONS } = ClientConstants.TimeFormat;
+const INVESTIGATION_CHART_TIME_OPTIONS: Intl.DateTimeFormatOptions = {
+  ...TIME_FORMAT_OPTIONS,
+  timeZone: ClientConstants.TelemetryInvestigationUi.INVESTIGATION_DISPLAY_TIME_ZONE,
+};
 
 const { DEFAULT_COLUMNS, DEFAULT_ITEM_COLS, DEFAULT_ITEM_ROWS, FIXED_ROW_HEIGHT,
   MARGIN, MIN_ITEM_COLS, MIN_ITEM_ROWS, DRAG_HANDLE_CLASS, NO_DRAG_CLASS,
@@ -130,7 +134,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
 
   private readonly timeLabels = computed<string[]>(() =>
     this.viewTelemetry().map((point) =>
-      new Date(point.timestamp).toLocaleTimeString(LOCALE, TIME_FORMAT_OPTIONS),
+      new Date(point.timestamp).toLocaleTimeString(LOCALE, INVESTIGATION_CHART_TIME_OPTIONS),
     ),
   );
 
@@ -225,14 +229,18 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   readonly boundsDisplay = computed<string>(() => {
     const bounds = this.missionTelemetryWindow();
     if (!bounds) return '';
-    return `${formatTelemetryBoundsDateDisplayUtc(bounds.first)} \u2014 ${formatTelemetryBoundsDateDisplayUtc(bounds.last)}`;
+    return `${formatTelemetryBoundsDateDisplayInvestigation(bounds.first)} \u2014 ${formatTelemetryBoundsDateDisplayInvestigation(bounds.last)}`;
   });
 
   readonly rangeDisplay = computed<string>(() => {
-    const from = this.fromInput();
-    const to = this.toInput();
-    if (!from || !to) return '';
-    return `${formatTelemetryBoundsDateDisplayUtc(new Date(from).toISOString())} \u2014 ${formatTelemetryBoundsDateDisplayUtc(new Date(to).toISOString())}`;
+    const startIso = this.activeStartTime();
+    const endIso = this.activeEndTime();
+    if (startIso && endIso) {
+      return `${formatTelemetryBoundsDateDisplayInvestigation(startIso)} \u2014 ${formatTelemetryBoundsDateDisplayInvestigation(endIso)}`;
+    }
+    const w = this.missionTelemetryWindow();
+    if (!w) return '';
+    return `${formatTelemetryBoundsDateDisplayInvestigation(w.first)} \u2014 ${formatTelemetryBoundsDateDisplayInvestigation(w.last)}`;
   });
 
   ngOnInit(): void {
@@ -276,8 +284,10 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
             const window = { first, last };
             this.originalBounds.set(window);
             this.telemetryMissionBounds.set(window);
-            this.fromInput.set(isoTimestampToDatetimeLocalValue(first));
-            this.toInput.set(isoTimestampToDatetimeLocalValue(last));
+            this.activeStartTime.set(first);
+            this.activeEndTime.set(last);
+            this.fromInput.set(isoTimestampToInvestigationWallClock(first));
+            this.toInput.set(isoTimestampToInvestigationWallClock(last));
           }
         },
       });
@@ -310,12 +320,17 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
 
           this.fetchingData.set(true);
           this.errorMessage.set('');
+          const fetchRange = this.resolveFetchIsoRange();
+          if (!fetchRange) {
+            this.fetchingData.set(false);
+            return [];
+          }
           return this.missionTelemetryFetch.fetchTelemetryRows(
             this.missionId,
             this.tailId(),
             newFields,
-            this.fromInput(),
-            this.toInput(),
+            fetchRange.start,
+            fetchRange.end,
           );
         }),
         takeUntil(this.destroy$),
@@ -329,8 +344,10 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
             const first = data[0].timestamp;
             const last = data[data.length - 1].timestamp;
             this.originalBounds.set({ first, last });
-            this.fromInput.set(isoTimestampToDatetimeLocalValue(first));
-            this.toInput.set(isoTimestampToDatetimeLocalValue(last));
+            this.activeStartTime.set(first);
+            this.activeEndTime.set(last);
+            this.fromInput.set(isoTimestampToInvestigationWallClock(first));
+            this.toInput.set(isoTimestampToInvestigationWallClock(last));
           }
 
           for (const point of data) {
@@ -537,24 +554,24 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     }
     const bounds = this.missionTelemetryWindow();
     if (!bounds) return;
-    let from = this.fromInput();
-    let to = this.toInput();
-    if (!from || !to) {
-      from = isoTimestampToDatetimeLocalValue(bounds.first);
-      to = isoTimestampToDatetimeLocalValue(bounds.last);
-      this.fromInput.set(from);
-      this.toInput.set(to);
-    }
+    const startIso = this.activeStartTime() || bounds.first;
+    const endIso = this.activeEndTime() || bounds.last;
+    this.fromInput.set(isoTimestampToInvestigationWallClock(startIso));
+    this.toInput.set(isoTimestampToInvestigationWallClock(endIso));
 
-    const seed = clampMillisecondsIntervalToTelemetryBounds(new Date(from).getTime(), new Date(to).getTime(), bounds);
+    const seed = clampMillisecondsIntervalToTelemetryBounds(
+      new Date(startIso).getTime(),
+      new Date(endIso).getTime(),
+      bounds,
+    );
 
     const data: TimeRangeDialogData = {
       from: new Date(seed.fromMs),
       to: new Date(seed.toMs),
-      boundsDisplay: `${formatTelemetryBoundsDateDisplayUtc(bounds.first)} ${BOUNDS_DISPLAY_RANGE_SEPARATOR} ${formatTelemetryBoundsDateDisplayUtc(bounds.last)}`,
+      boundsDisplay: `${formatTelemetryBoundsDateDisplayInvestigation(bounds.first)} ${BOUNDS_DISPLAY_RANGE_SEPARATOR} ${formatTelemetryBoundsDateDisplayInvestigation(bounds.last)}`,
       minBound: new Date(bounds.first),
       maxBound: new Date(bounds.last),
-      useUtcCalendar: true,
+      useUtcCalendar: false,
     };
 
     this.timeRangePickerConfig.set(data);
@@ -569,10 +586,12 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   }
 
   onTimeRangeApplied(result: TimeRangeDialogResult): void {
-    this.fromInput.set(isoTimestampToDatetimeLocalValue(result.from.toISOString()));
-    this.toInput.set(isoTimestampToDatetimeLocalValue(result.to.toISOString()));
-    this.activeStartTime.set(result.from.toISOString());
-    this.activeEndTime.set(result.to.toISOString());
+    const startIso = result.from.toISOString();
+    const endIso = result.to.toISOString();
+    this.activeStartTime.set(startIso);
+    this.activeEndTime.set(endIso);
+    this.fromInput.set(isoTimestampToInvestigationWallClock(startIso));
+    this.toInput.set(isoTimestampToInvestigationWallClock(endIso));
     this.rebuildDashboardItems();
     this.clampTilePagesToTotal();
   }
@@ -580,12 +599,25 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   resetTimeRange(): void {
     const bounds = this.missionTelemetryWindow();
     if (!bounds) return;
-    this.fromInput.set(isoTimestampToDatetimeLocalValue(bounds.first));
-    this.toInput.set(isoTimestampToDatetimeLocalValue(bounds.last));
     this.activeStartTime.set('');
     this.activeEndTime.set('');
+    this.fromInput.set(isoTimestampToInvestigationWallClock(bounds.first));
+    this.toInput.set(isoTimestampToInvestigationWallClock(bounds.last));
     this.rebuildDashboardItems();
     this.clampTilePagesToTotal();
+  }
+
+  private resolveFetchIsoRange(): { start: string; end: string } | null {
+    const start = this.activeStartTime();
+    const end = this.activeEndTime();
+    if (start && end) {
+      return { start, end };
+    }
+    const w = this.missionTelemetryWindow();
+    if (w) {
+      return { start: w.first, end: w.last };
+    }
+    return null;
   }
 
   openMissionDetails(): void {

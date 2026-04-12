@@ -280,6 +280,11 @@ export namespace ClientConstants {
       ...BOUNDS_DISPLAY_FORMAT_OPTIONS,
       timeZone: 'UTC',
     };
+    export const INVESTIGATION_DISPLAY_TIME_ZONE: string = 'Asia/Jerusalem';
+    export const BOUNDS_DISPLAY_FORMAT_OPTIONS_INVESTIGATION: Intl.DateTimeFormatOptions = {
+      ...BOUNDS_DISPLAY_FORMAT_OPTIONS,
+      timeZone: INVESTIGATION_DISPLAY_TIME_ZONE,
+    };
     export const BOUNDS_DISPLAY_RANGE_SEPARATOR: string = '\u2014';
   }
 
