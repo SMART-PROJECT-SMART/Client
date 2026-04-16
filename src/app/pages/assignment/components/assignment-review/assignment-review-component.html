@@ -16,6 +16,15 @@
     </div>
   </div>
 
+  <section class="map-preview-section" aria-label="Map preview">
+    <app-assignment-review-map
+      [pairings]="algorithmResult().pairings"
+      [uavTelemetryData]="algorithmResult().uavTelemetryData"
+      [availableUavs]="availableUavs()"
+      [selectedTailIds]="selectedTailIds()"
+    />
+  </section>
+
   @if (!validationResult().isValid) {
     <div class="violations-section">
       <div class="violations-header">
