@@ -9,22 +9,21 @@ import {
 } from '@angular/core';
 import * as L from 'leaflet';
 import { TelemetryField } from '../../../../common/enums';
+import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { AssignmentUtil } from '../../../../common/utils';
 import type { MissionAssignmentPairing, UAV } from '../../../../models';
 import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util';
-import { createMissionDivIcon, createUavDivIcon } from './assignment-review-map-markers';
-import {
-  ASSIGNMENT_REVIEW_MAP_DEFAULT_CENTER_LAT,
-  ASSIGNMENT_REVIEW_MAP_DEFAULT_CENTER_LON,
-  ASSIGNMENT_REVIEW_MAP_DEFAULT_ZOOM,
-  ASSIGNMENT_REVIEW_MAP_FIT_PADDING_PX,
-  ASSIGNMENT_REVIEW_MAP_LINE_HUES,
-  ASSIGNMENT_REVIEW_MAP_LINE_OPACITY,
-  ASSIGNMENT_REVIEW_MAP_LINE_WEIGHT,
-  ASSIGNMENT_REVIEW_MAP_OS_TILE_TEMPLATE,
-  ASSIGNMENT_REVIEW_MAP_TILE_ATTRIBUTION,
-  ASSIGNMENT_REVIEW_MAP_UAV_COLOR_UNASSIGNED,
-} from './assignment-review-map.constants';
+import { createMissionDivIcon, createUavDivIcon } from '../../utils/assignment-review-map-marker.util';
+
+const MAP = ClientConstants.AssignmentReviewMap;
+
+type AssignmentReviewMapRenderContext = {
+  pairings: MissionAssignmentPairing[];
+  selectedMap: Map<string, number>;
+  telemetry: Record<number, Record<TelemetryField, number>>;
+  missionColors: Map<string, string>;
+  tailColors: Map<number, string>;
+};
 
 @Component({
   selector: 'app-assignment-review-map',
@@ -74,11 +73,11 @@ export class AssignmentReviewMapComponent implements OnDestroy {
       return;
     }
     this.map = L.map(host).setView(
-      [ASSIGNMENT_REVIEW_MAP_DEFAULT_CENTER_LAT, ASSIGNMENT_REVIEW_MAP_DEFAULT_CENTER_LON],
-      ASSIGNMENT_REVIEW_MAP_DEFAULT_ZOOM,
+      [MAP.DEFAULT_CENTER_LAT, MAP.DEFAULT_CENTER_LON],
+      MAP.DEFAULT_ZOOM,
     );
-    L.tileLayer(ASSIGNMENT_REVIEW_MAP_OS_TILE_TEMPLATE, {
-      attribution: ASSIGNMENT_REVIEW_MAP_TILE_ATTRIBUTION,
+    L.tileLayer(MAP.OS_TILE_TEMPLATE, {
+      attribution: MAP.TILE_ATTRIBUTION,
     }).addTo(this.map);
     this.layerGroup = L.layerGroup().addTo(this.map);
   }
@@ -91,80 +90,127 @@ export class AssignmentReviewMapComponent implements OnDestroy {
     }
     group.clearLayers();
     const boundsPoints: L.LatLngExpression[] = [];
+    const context = this.buildRenderContext();
+    this.renderUavMarkers(group, boundsPoints, context);
+    this.renderMissionMarkersAndLinks(group, boundsPoints, context);
+    this.fitMapToPoints(map, boundsPoints);
+    queueMicrotask(() => map.invalidateSize());
+  }
+
+  private buildRenderContext(): AssignmentReviewMapRenderContext {
     const pairings = this.pairings();
     const selectedMap = this.selectedTailIds();
     const telemetry = this.uavTelemetryData();
     const missionColors = this.buildMissionColorMap(pairings);
     const tailColors = this.buildTailColorMap(pairings, selectedMap, missionColors);
+    return {
+      pairings,
+      selectedMap,
+      telemetry,
+      missionColors,
+      tailColors,
+    };
+  }
 
+  private renderUavMarkers(
+    group: L.LayerGroup,
+    boundsPoints: L.LatLngExpression[],
+    context: AssignmentReviewMapRenderContext,
+  ): void {
     for (const uav of this.availableUavs()) {
       const pos = extractLatLonFromUav(uav);
       if (!pos) {
         continue;
       }
-      const color = tailColors.get(uav.tailId) ?? ASSIGNMENT_REVIEW_MAP_UAV_COLOR_UNASSIGNED;
+      const color = context.tailColors.get(uav.tailId) ?? MAP.UAV_COLOR_UNASSIGNED;
       const marker = L.marker([pos.lat, pos.lon], {
         icon: createUavDivIcon(color),
       });
-      marker.bindTooltip(`UAV ${uav.tailId}`);
+      marker.bindTooltip(this.buildUavTooltip(uav.tailId));
       marker.addTo(group);
       boundsPoints.push([pos.lat, pos.lon]);
     }
+  }
 
-    pairings.forEach((pairing) => {
+  private renderMissionMarkersAndLinks(
+    group: L.LayerGroup,
+    boundsPoints: L.LatLngExpression[],
+    context: AssignmentReviewMapRenderContext,
+  ): void {
+    context.pairings.forEach((pairing) => {
       const loc = pairing.mission.location;
       boundsPoints.push([loc.latitude, loc.longitude]);
-      const missionColor = missionColors.get(pairing.mission.id) ?? ASSIGNMENT_REVIEW_MAP_UAV_COLOR_UNASSIGNED;
+      const missionColor =
+        context.missionColors.get(pairing.mission.id) ?? MAP.UAV_COLOR_UNASSIGNED;
       const missionMarker = L.marker([loc.latitude, loc.longitude], {
         icon: createMissionDivIcon(pairing.mission.requiredUAVType, missionColor),
       });
-      missionMarker.bindTooltip(`${pairing.mission.title} (${pairing.mission.requiredUAVType})`);
+      missionMarker.bindTooltip(
+        this.buildMissionTooltip(pairing.mission.title, pairing.mission.requiredUAVType),
+      );
       missionMarker.addTo(group);
 
-      const tailId = selectedMap.get(pairing.mission.id) ?? pairing.tailId;
-      const snap = telemetry[tailId];
-      if (!snap) {
-        return;
-      }
-      const uav = AssignmentUtil.buildUavFromTelemetry(tailId, snap);
-      const uavPos = extractLatLonFromUav(uav);
+      const uavPos = this.resolveAssignedUavPosition(pairing, context);
       if (!uavPos) {
         return;
       }
-      const lineColor = missionColor;
+
       L.polyline(
         [
           [uavPos.lat, uavPos.lon],
           [loc.latitude, loc.longitude],
         ],
         {
-          color: lineColor,
-          weight: ASSIGNMENT_REVIEW_MAP_LINE_WEIGHT,
-          opacity: ASSIGNMENT_REVIEW_MAP_LINE_OPACITY,
+          color: missionColor,
+          weight: MAP.LINE_WEIGHT,
+          opacity: MAP.LINE_OPACITY,
         },
       ).addTo(group);
     });
+  }
 
+  private resolveAssignedUavPosition(
+    pairing: MissionAssignmentPairing,
+    context: AssignmentReviewMapRenderContext,
+  ): { lat: number; lon: number } | null {
+    const tailId = context.selectedMap.get(pairing.mission.id) ?? pairing.tailId;
+    const snap = context.telemetry[tailId];
+    if (!snap) {
+      return null;
+    }
+    const uav = AssignmentUtil.buildUavFromTelemetry(tailId, snap);
+    return extractLatLonFromUav(uav);
+  }
+
+  private fitMapToPoints(map: L.Map, boundsPoints: L.LatLngExpression[]): void {
     if (boundsPoints.length > 0) {
       map.fitBounds(L.latLngBounds(boundsPoints), {
-        padding: [ASSIGNMENT_REVIEW_MAP_FIT_PADDING_PX, ASSIGNMENT_REVIEW_MAP_FIT_PADDING_PX],
+        padding: [MAP.FIT_PADDING_PX, MAP.FIT_PADDING_PX],
       });
-    } else {
-      map.setView(
-        [ASSIGNMENT_REVIEW_MAP_DEFAULT_CENTER_LAT, ASSIGNMENT_REVIEW_MAP_DEFAULT_CENTER_LON],
-        ASSIGNMENT_REVIEW_MAP_DEFAULT_ZOOM,
-      );
+      return;
     }
-    queueMicrotask(() => map.invalidateSize());
+    map.setView([MAP.DEFAULT_CENTER_LAT, MAP.DEFAULT_CENTER_LON], MAP.DEFAULT_ZOOM);
   }
 
   private buildMissionColorMap(pairings: MissionAssignmentPairing[]): Map<string, string> {
     const map = new Map<string, string>();
     pairings.forEach((pairing, index) => {
-      const hue = ASSIGNMENT_REVIEW_MAP_LINE_HUES[index % ASSIGNMENT_REVIEW_MAP_LINE_HUES.length];
-      map.set(pairing.mission.id, `hsl(${hue}, 70%, 40%)`);
+      const hue = MAP.LINE_HUES[index % MAP.LINE_HUES.length];
+      map.set(pairing.mission.id, this.buildLineColor(hue));
     });
     return map;
+  }
+
+  private buildLineColor(hue: number): string {
+    return `hsl(${hue}, ${MAP.LINE_SATURATION_PERCENT}%, ${MAP.LINE_LIGHTNESS_PERCENT}%)`;
+  }
+
+  private buildUavTooltip(tailId: number): string {
+    return `${MAP.TOOLTIP_UAV_PREFIX}${tailId}`;
+  }
+
+  private buildMissionTooltip(missionTitle: string, missionType: string): string {
+    return `${missionTitle}${MAP.TOOLTIP_MISSION_SUFFIX_OPEN}${missionType}${MAP.TOOLTIP_MISSION_SUFFIX_CLOSE}`;
   }
 
   private buildTailColorMap(
@@ -178,7 +224,7 @@ export class AssignmentReviewMapComponent implements OnDestroy {
       if (!map.has(tailId)) {
         map.set(
           tailId,
-          missionColors.get(pairing.mission.id) ?? ASSIGNMENT_REVIEW_MAP_UAV_COLOR_UNASSIGNED,
+          missionColors.get(pairing.mission.id) ?? MAP.UAV_COLOR_UNASSIGNED,
         );
       }
     }
