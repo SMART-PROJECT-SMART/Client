@@ -4,14 +4,19 @@ import { ClientConstants } from '../../../common/constants/clientConstants.const
 
 const MAP = ClientConstants.AssignmentReviewMap;
 
-function wrapSvg(pathD: string, fill: string, stroke: string): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${MAP.SVG_VIEWBOX}" width="${MAP.SVG_ICON_SIZE_PX}" height="${MAP.SVG_ICON_SIZE_PX}" aria-hidden="true"><path fill="${fill}" stroke="${stroke}" stroke-width="${MAP.SVG_STROKE_WIDTH}" d="${pathD}"/></svg>`;
+function createGlyphHtml(
+  glyphClass: string,
+  assetUrl: string,
+): string {
+  return `<div class="${glyphClass}" style="--ar-map-glyph-size:${MAP.GLYPH_SIZE_PX}px;--ar-map-mask-url:url('${assetUrl}')"></div>`;
 }
 
 export function createUavDivIcon(accentColor: string): L.DivIcon {
   const color = accentColor || MAP.DEFAULT_UAV_ACCENT;
-  const inner = wrapSvg(MAP.FLIGHT_SVG_PATH, color, MAP.BASE_COLOR_WHITE);
-  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="--ar-uav-accent:${color}">${inner}</div>`;
+  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="--ar-uav-accent:${color}">${createGlyphHtml(
+    `${MAP.GLYPH_CLASS} ${MAP.GLYPH_UAV_CLASS}`,
+    MAP.UAV_ICON_ASSET_URL,
+  )}</div>`;
   const w = MAP.UAV_ICON_WIDTH_PX;
   const h = MAP.UAV_ICON_HEIGHT_PX;
   return L.divIcon({
@@ -25,9 +30,18 @@ export function createUavDivIcon(accentColor: string): L.DivIcon {
 
 export function createMissionDivIcon(missionType: UAVType, accentColor: string): L.DivIcon {
   const color = accentColor || MAP.DEFAULT_MISSION_ACCENT;
-  const path = missionType === UAVType.Armed ? MAP.TARGET_SVG_PATH : MAP.PLACE_SVG_PATH;
-  const inner = wrapSvg(path, color, MAP.BASE_COLOR_WHITE);
-  const html = `<div class="${MAP.MISSION_ICON_CLASS}" style="--ar-mission-accent:${color}">${inner}</div>`;
+  const missionGlyphClass =
+    missionType === UAVType.Armed
+      ? MAP.GLYPH_MISSION_ARMED_CLASS
+      : MAP.GLYPH_MISSION_SURVEILLANCE_CLASS;
+  const missionAssetUrl =
+    missionType === UAVType.Armed
+      ? MAP.MISSION_ARMED_ICON_ASSET_URL
+      : MAP.MISSION_SURVEILLANCE_ICON_ASSET_URL;
+  const html = `<div class="${MAP.MISSION_ICON_CLASS}" style="--ar-mission-accent:${color}">${createGlyphHtml(
+    `${MAP.GLYPH_CLASS} ${missionGlyphClass}`,
+    missionAssetUrl,
+  )}</div>`;
   const w = MAP.MISSION_ICON_WIDTH_PX;
   const h = MAP.MISSION_ICON_HEIGHT_PX;
   return L.divIcon({

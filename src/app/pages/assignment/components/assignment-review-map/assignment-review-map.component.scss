@@ -32,12 +32,29 @@
     0 0 0 2px rgba(255, 255, 255, 0.95);
 }
 
+::ng-deep .ar-map-glyph {
+  width: var(--ar-map-glyph-size, 22px);
+  height: var(--ar-map-glyph-size, 22px);
+  display: inline-block;
+  background-color: currentColor;
+  mask-image: var(--ar-map-mask-url);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: var(--ar-map-mask-url);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
 ::ng-deep .ar-map-icon--uav {
   background: #fff;
   border: 2px solid var(--ar-uav-accent, #1976d2);
+  color: var(--ar-uav-accent, #1976d2);
 }
 
 ::ng-deep .ar-map-icon--mission {
   background: #fff;
   border: 2px solid var(--ar-mission-accent, #b71c1c);
+  color: var(--ar-mission-accent, #b71c1c);
 }

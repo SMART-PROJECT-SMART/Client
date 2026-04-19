@@ -359,7 +359,6 @@ export namespace ClientConstants {
     export const LINE_SATURATION_PERCENT = 70;
     export const LINE_LIGHTNESS_PERCENT = 40;
     export const UAV_COLOR_UNASSIGNED = '#9e9e9e';
-    export const BASE_COLOR_WHITE = '#ffffff';
     export const DEFAULT_UAV_ACCENT = '#1976d2';
     export const DEFAULT_MISSION_ACCENT = '#b71c1c';
     export const ICON_WRAPPER_CLASS = 'ar-map-div-icon';
@@ -368,15 +367,14 @@ export namespace ClientConstants {
     export const TOOLTIP_UAV_PREFIX = 'UAV ';
     export const TOOLTIP_MISSION_SUFFIX_OPEN = ' (';
     export const TOOLTIP_MISSION_SUFFIX_CLOSE = ')';
-    export const SVG_VIEWBOX = '0 0 24 24';
-    export const SVG_ICON_SIZE_PX = 22;
-    export const SVG_STROKE_WIDTH = 0.5;
-    export const FLIGHT_SVG_PATH =
-      'M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z';
-    export const PLACE_SVG_PATH =
-      'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z';
-    export const TARGET_SVG_PATH =
-      'M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.93V20h-2v-3.07A8.001 8.001 0 014.07 13H1v-2h3.07A8.001 8.001 0 0111 4.07V1h2v3.07A8.001 8.001 0 0119.93 11H23v2h-3.07A8.001 8.001 0 0113 16.93zM12 10a2 2 0 100 4 2 2 0 000-4z';
+    export const GLYPH_SIZE_PX = 22;
+    export const GLYPH_CLASS = 'ar-map-glyph';
+    export const GLYPH_UAV_CLASS = 'ar-map-glyph--uav';
+    export const GLYPH_MISSION_SURVEILLANCE_CLASS = 'ar-map-glyph--mission-surveillance';
+    export const GLYPH_MISSION_ARMED_CLASS = 'ar-map-glyph--mission-armed';
+    export const UAV_ICON_ASSET_URL = '/icons/map/uav.svg';
+    export const MISSION_SURVEILLANCE_ICON_ASSET_URL = '/icons/map/mission-surveillance.svg';
+    export const MISSION_ARMED_ICON_ASSET_URL = '/icons/map/mission-armed.svg';
     export const LINE_HUES: readonly number[] = [210, 120, 45, 280, 160, 330];
     export const OS_TILE_TEMPLATE = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     export const TILE_ATTRIBUTION =
