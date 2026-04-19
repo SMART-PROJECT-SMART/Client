@@ -12,7 +12,7 @@ import * as L from 'leaflet';
 import { Priority, TelemetryField, UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { AssignmentUtil, EnumUtil, TelemetryUtil } from '../../../../common/utils';
-import type { MissionAssignmentPairing, UAV } from '../../../../models';
+import type { Mission, MissionAssignmentPairing, UAV } from '../../../../models';
 import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util';
 import { createMissionDivIcon, createUavDivIcon } from '../../utils/assignment-review-map-marker.util';
 
@@ -158,7 +158,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
         ),
       });
       missionMarker.bindTooltip(
-        this.buildMissionTooltip(pairing.mission.title, pairing.mission.requiredUAVType),
+        this.buildMissionTooltip(pairing.mission),
       );
       missionMarker.addTo(group);
 
@@ -294,8 +294,25 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     return `${value.toFixed(precision)}${MAP.TOOLTIP_VALUE_SPACE}${unit}`;
   }
 
-  private buildMissionTooltip(missionTitle: string, missionType: string): string {
-    return `${missionTitle}${MAP.TOOLTIP_MISSION_SUFFIX_OPEN}${missionType}${MAP.TOOLTIP_MISSION_SUFFIX_CLOSE}`;
+  private buildMissionTooltip(mission: Mission): string {
+    const missionType = EnumUtil.getUAVTypeDisplay(mission.requiredUAVType);
+    const missionTitle = `${mission.title}${MAP.TOOLTIP_MISSION_SUFFIX_OPEN}${missionType}${MAP.TOOLTIP_MISSION_SUFFIX_CLOSE}`;
+    const priorityLabel = EnumUtil.getPriorityDisplay(mission.priority);
+    const priorityRow = `${MAP.TOOLTIP_MISSION_PRIORITY_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${priorityLabel}`;
+    const locationValue = this.buildMissionLocationValue(
+      mission.location.latitude,
+      mission.location.longitude,
+      mission.location.altitude,
+    );
+    const locationRow = `${MAP.TOOLTIP_MISSION_LOCATION_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${locationValue}`;
+    return [missionTitle, priorityRow, locationRow].join(MAP.TOOLTIP_LINE_BREAK);
+  }
+
+  private buildMissionLocationValue(latitude: number, longitude: number, altitude: number): string {
+    const latitudeValue = `${MAP.TOOLTIP_MISSION_LATITUDE_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${latitude.toFixed(MAP.TOOLTIP_LAT_LON_DECIMALS)}${MAP.TOOLTIP_VALUE_DEGREE_SUFFIX}`;
+    const longitudeValue = `${MAP.TOOLTIP_MISSION_LONGITUDE_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${longitude.toFixed(MAP.TOOLTIP_LAT_LON_DECIMALS)}${MAP.TOOLTIP_VALUE_DEGREE_SUFFIX}`;
+    const altitudeValue = `${MAP.TOOLTIP_MISSION_ALTITUDE_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${this.formatTelemetryValue(TelemetryField.Altitude, altitude)}`;
+    return [latitudeValue, longitudeValue, altitudeValue].join(MAP.TOOLTIP_MISSION_COORDINATE_SEPARATOR);
   }
 
   private buildTailColorMap(

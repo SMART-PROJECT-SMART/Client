@@ -387,6 +387,14 @@ export namespace ClientConstants {
     export const TOOLTIP_TOOLTIP_OFFSET_Y_PX = -16;
     export const TOOLTIP_MISSION_SUFFIX_OPEN = ' (';
     export const TOOLTIP_MISSION_SUFFIX_CLOSE = ')';
+    export const TOOLTIP_MISSION_PRIORITY_LABEL = 'Priority';
+    export const TOOLTIP_MISSION_LOCATION_LABEL = 'Location';
+    export const TOOLTIP_MISSION_ALTITUDE_LABEL = 'Alt';
+    export const TOOLTIP_MISSION_LATITUDE_LABEL = 'Lat';
+    export const TOOLTIP_MISSION_LONGITUDE_LABEL = 'Lon';
+    export const TOOLTIP_MISSION_COORDINATE_SEPARATOR = ', ';
+    export const TOOLTIP_MISSION_KEY_VALUE_SEPARATOR = ': ';
+    export const TOOLTIP_MISSION_LOCATION_PART_SEPARATOR = ' ';
     export const GLYPH_SIZE_PX = 22;
     export const GLYPH_CLASS = 'ar-map-glyph';
     export const GLYPH_UAV_CLASS = 'ar-map-glyph--uav';
