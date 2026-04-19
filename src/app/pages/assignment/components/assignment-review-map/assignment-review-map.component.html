@@ -1,1 +1,7 @@
-<div class="assignment-review-map-host" #mapHost role="application" aria-label="Assignment geographic preview"></div>
+<mat-expansion-panel class="assignment-review-map-panel" (opened)="onPanelOpened()">
+  <mat-expansion-panel-header>
+    <mat-panel-title>Map preview</mat-panel-title>
+    <mat-panel-description>UAV positions, mission targets, and flight vectors</mat-panel-description>
+  </mat-expansion-panel-header>
+  <div class="assignment-review-map-host" #mapHost role="application" aria-label="Assignment geographic preview"></div>
+</mat-expansion-panel>

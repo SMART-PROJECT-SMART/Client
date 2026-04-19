@@ -2,7 +2,6 @@ import {
   Component,
   ChangeDetectionStrategy,
   OnDestroy,
-  afterNextRender,
   effect,
   input,
   viewChild,
@@ -13,6 +12,7 @@ import { TelemetryField } from '../../../../common/enums';
 import { AssignmentUtil } from '../../../../common/utils';
 import type { MissionAssignmentPairing, UAV } from '../../../../models';
 import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util';
+import { createMissionDivIcon, createUavDivIcon } from './assignment-review-map-markers';
 import {
   ASSIGNMENT_REVIEW_MAP_DEFAULT_CENTER_LAT,
   ASSIGNMENT_REVIEW_MAP_DEFAULT_CENTER_LON,
@@ -21,14 +21,9 @@ import {
   ASSIGNMENT_REVIEW_MAP_LINE_HUES,
   ASSIGNMENT_REVIEW_MAP_LINE_OPACITY,
   ASSIGNMENT_REVIEW_MAP_LINE_WEIGHT,
-  ASSIGNMENT_REVIEW_MAP_MISSION_FILL,
-  ASSIGNMENT_REVIEW_MAP_MISSION_RADIUS_PX,
-  ASSIGNMENT_REVIEW_MAP_MISSION_STROKE,
   ASSIGNMENT_REVIEW_MAP_OS_TILE_TEMPLATE,
   ASSIGNMENT_REVIEW_MAP_TILE_ATTRIBUTION,
-  ASSIGNMENT_REVIEW_MAP_UAV_COLOR_ASSIGNED,
   ASSIGNMENT_REVIEW_MAP_UAV_COLOR_UNASSIGNED,
-  ASSIGNMENT_REVIEW_MAP_UAV_RADIUS_PX,
 } from './assignment-review-map.constants';
 
 @Component({
@@ -50,15 +45,6 @@ export class AssignmentReviewMapComponent implements OnDestroy {
   private layerGroup: L.LayerGroup | null = null;
 
   constructor() {
-    afterNextRender(() => {
-      this.ensureMap();
-      this.syncLayers();
-      const map = this.map;
-      if (map) {
-        queueMicrotask(() => map.invalidateSize());
-      }
-    });
-
     effect(() => {
       this.pairings();
       this.selectedTailIds();
@@ -68,6 +54,14 @@ export class AssignmentReviewMapComponent implements OnDestroy {
         return;
       }
       queueMicrotask(() => this.syncLayers());
+    });
+  }
+
+  onPanelOpened(): void {
+    queueMicrotask(() => {
+      this.ensureMap();
+      this.syncLayers();
+      this.map?.invalidateSize();
     });
   }
 
@@ -99,41 +93,32 @@ export class AssignmentReviewMapComponent implements OnDestroy {
     const boundsPoints: L.LatLngExpression[] = [];
     const pairings = this.pairings();
     const selectedMap = this.selectedTailIds();
-    const assignedTailIds = new Set<number>(selectedMap.values());
     const telemetry = this.uavTelemetryData();
+    const missionColors = this.buildMissionColorMap(pairings);
+    const tailColors = this.buildTailColorMap(pairings, selectedMap, missionColors);
 
     for (const uav of this.availableUavs()) {
       const pos = extractLatLonFromUav(uav);
       if (!pos) {
         continue;
       }
-      const isAssigned = assignedTailIds.has(uav.tailId);
-      const color = isAssigned
-        ? ASSIGNMENT_REVIEW_MAP_UAV_COLOR_ASSIGNED
-        : ASSIGNMENT_REVIEW_MAP_UAV_COLOR_UNASSIGNED;
-      const marker = L.circleMarker([pos.lat, pos.lon], {
-        radius: ASSIGNMENT_REVIEW_MAP_UAV_RADIUS_PX,
-        color,
-        fillColor: color,
-        fillOpacity: 0.9,
-        weight: 2,
+      const color = tailColors.get(uav.tailId) ?? ASSIGNMENT_REVIEW_MAP_UAV_COLOR_UNASSIGNED;
+      const marker = L.marker([pos.lat, pos.lon], {
+        icon: createUavDivIcon(color),
       });
       marker.bindTooltip(`UAV ${uav.tailId}`);
       marker.addTo(group);
       boundsPoints.push([pos.lat, pos.lon]);
     }
 
-    pairings.forEach((pairing, index) => {
+    pairings.forEach((pairing) => {
       const loc = pairing.mission.location;
       boundsPoints.push([loc.latitude, loc.longitude]);
-      const missionMarker = L.circleMarker([loc.latitude, loc.longitude], {
-        radius: ASSIGNMENT_REVIEW_MAP_MISSION_RADIUS_PX,
-        color: ASSIGNMENT_REVIEW_MAP_MISSION_STROKE,
-        fillColor: ASSIGNMENT_REVIEW_MAP_MISSION_FILL,
-        fillOpacity: 0.95,
-        weight: 2,
+      const missionColor = missionColors.get(pairing.mission.id) ?? ASSIGNMENT_REVIEW_MAP_UAV_COLOR_UNASSIGNED;
+      const missionMarker = L.marker([loc.latitude, loc.longitude], {
+        icon: createMissionDivIcon(pairing.mission.requiredUAVType, missionColor),
       });
-      missionMarker.bindTooltip(pairing.mission.title);
+      missionMarker.bindTooltip(`${pairing.mission.title} (${pairing.mission.requiredUAVType})`);
       missionMarker.addTo(group);
 
       const tailId = selectedMap.get(pairing.mission.id) ?? pairing.tailId;
@@ -146,8 +131,7 @@ export class AssignmentReviewMapComponent implements OnDestroy {
       if (!uavPos) {
         return;
       }
-      const hue = ASSIGNMENT_REVIEW_MAP_LINE_HUES[index % ASSIGNMENT_REVIEW_MAP_LINE_HUES.length];
-      const lineColor = `hsl(${hue}, 70%, 40%)`;
+      const lineColor = missionColor;
       L.polyline(
         [
           [uavPos.lat, uavPos.lon],
@@ -172,6 +156,33 @@ export class AssignmentReviewMapComponent implements OnDestroy {
       );
     }
     queueMicrotask(() => map.invalidateSize());
+  }
+
+  private buildMissionColorMap(pairings: MissionAssignmentPairing[]): Map<string, string> {
+    const map = new Map<string, string>();
+    pairings.forEach((pairing, index) => {
+      const hue = ASSIGNMENT_REVIEW_MAP_LINE_HUES[index % ASSIGNMENT_REVIEW_MAP_LINE_HUES.length];
+      map.set(pairing.mission.id, `hsl(${hue}, 70%, 40%)`);
+    });
+    return map;
+  }
+
+  private buildTailColorMap(
+    pairings: MissionAssignmentPairing[],
+    selectedMap: Map<string, number>,
+    missionColors: Map<string, string>,
+  ): Map<number, string> {
+    const map = new Map<number, string>();
+    for (const pairing of pairings) {
+      const tailId = selectedMap.get(pairing.mission.id) ?? pairing.tailId;
+      if (!map.has(tailId)) {
+        map.set(
+          tailId,
+          missionColors.get(pairing.mission.id) ?? ASSIGNMENT_REVIEW_MAP_UAV_COLOR_UNASSIGNED,
+        );
+      }
+    }
+    return map;
   }
 
   ngOnDestroy(): void {

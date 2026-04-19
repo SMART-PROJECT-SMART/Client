@@ -30,6 +30,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { OverlayModule } from '@angular/cdk/overlay';
 import {
   OwlDateTimeModule,
@@ -75,6 +76,7 @@ const MaterialModules = [
   MatToolbarModule,
   MatSidenavModule,
   MatMenuModule,
+  MatExpansionModule,
   OverlayModule,
   OwlDateTimeModule,
   OwlNativeDateTimeModule,

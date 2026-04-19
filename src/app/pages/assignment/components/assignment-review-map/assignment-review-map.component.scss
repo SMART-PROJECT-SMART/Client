@@ -1,3 +1,11 @@
+:host {
+  display: block;
+}
+
+.assignment-review-map-panel {
+  width: 100%;
+}
+
 .assignment-review-map-host {
   width: 100%;
   min-height: 320px;
@@ -5,4 +13,31 @@
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .ar-map-div-icon {
+  background: transparent;
+  border: none;
+}
+
+::ng-deep .ar-map-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.35),
+    0 0 0 2px rgba(255, 255, 255, 0.95);
+}
+
+::ng-deep .ar-map-icon--uav {
+  background: #fff;
+  border: 2px solid var(--ar-uav-accent, #1976d2);
+}
+
+::ng-deep .ar-map-icon--mission {
+  background: #fff;
+  border: 2px solid var(--ar-mission-accent, #b71c1c);
 }
