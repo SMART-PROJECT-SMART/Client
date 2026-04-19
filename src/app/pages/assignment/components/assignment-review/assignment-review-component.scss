@@ -1,12 +1,8 @@
 @use '../../../../../styles/constants' as *;
 
-.map-preview-section {
-  min-height: 0;
-}
-
 .review-page {
   display: grid;
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-rows: auto 1fr;
   height: 100vh;
   padding: $spacing-lg;
   gap: $spacing-lg;
@@ -29,6 +25,40 @@
 .header-actions {
   display: flex;
   gap: $spacing-md;
+}
+
+.review-tabs {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+::ng-deep .review-tabs .mat-mdc-tab-body-wrapper {
+  flex: 1;
+  min-height: 0;
+}
+
+::ng-deep .review-tabs .mat-mdc-tab-body-content {
+  height: 100%;
+  overflow: hidden;
+}
+
+.tab-content {
+  min-height: 0;
+  height: 100%;
+}
+
+.map-tab-content {
+  padding-top: 0;
+}
+
+.cards-tab-content {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: $spacing-md;
+  min-height: 0;
+  padding-top: $spacing-md;
 }
 
 .assignments-container {

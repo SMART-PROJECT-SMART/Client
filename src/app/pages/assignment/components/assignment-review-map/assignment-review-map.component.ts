@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  AfterViewInit,
   OnDestroy,
   effect,
   input,
@@ -32,7 +33,7 @@ type AssignmentReviewMapRenderContext = {
   styleUrl: './assignment-review-map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssignmentReviewMapComponent implements OnDestroy {
+export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   readonly pairings = input.required<MissionAssignmentPairing[]>();
   readonly uavTelemetryData = input.required<Record<number, Record<TelemetryField, number>>>();
   readonly availableUavs = input.required<UAV[]>();
@@ -56,7 +57,7 @@ export class AssignmentReviewMapComponent implements OnDestroy {
     });
   }
 
-  onPanelOpened(): void {
+  ngAfterViewInit(): void {
     queueMicrotask(() => {
       this.ensureMap();
       this.syncLayers();
