@@ -360,7 +360,12 @@ export namespace ClientConstants {
     export const LINE_LIGHTNESS_PERCENT = 40;
     export const UAV_COLOR_UNASSIGNED = '#9e9e9e';
     export const DEFAULT_UAV_ACCENT = '#1976d2';
-    export const DEFAULT_MISSION_ACCENT = '#b71c1c';
+    export const DEFAULT_MISSION_ACCENT = '#5e35b1';
+    export const PRIORITY_HIGH_OUTLINE_COLOR = '#d32f2f';
+    export const PRIORITY_MEDIUM_OUTLINE_COLOR = '#f9a825';
+    export const PRIORITY_LOW_OUTLINE_COLOR = '#2e7d32';
+    export const PRIORITY_OUTLINE_DEFAULT_COLOR = '#757575';
+    export const MISSION_PRIORITY_OUTLINE_WIDTH_PX = 4;
     export const ICON_WRAPPER_CLASS = 'ar-map-div-icon';
     export const UAV_ICON_CLASS = 'ar-map-icon ar-map-icon--uav';
     export const MISSION_ICON_CLASS = 'ar-map-icon ar-map-icon--mission';
@@ -375,7 +380,7 @@ export namespace ClientConstants {
     export const UAV_ICON_ASSET_URL = '/icons/map/uav.svg';
     export const MISSION_SURVEILLANCE_ICON_ASSET_URL = '/icons/map/mission-surveillance.svg';
     export const MISSION_ARMED_ICON_ASSET_URL = '/icons/map/mission-armed.svg';
-    export const LINE_HUES: readonly number[] = [210, 120, 45, 280, 160, 330];
+    export const LINE_HUES: readonly number[] = [200, 220, 240, 260, 280, 300];
     export const OS_TILE_TEMPLATE = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     export const TILE_ATTRIBUTION =
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';

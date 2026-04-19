@@ -8,7 +8,7 @@ import {
   ElementRef,
 } from '@angular/core';
 import * as L from 'leaflet';
-import { TelemetryField } from '../../../../common/enums';
+import { Priority, TelemetryField } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { AssignmentUtil } from '../../../../common/utils';
 import type { MissionAssignmentPairing, UAV } from '../../../../models';
@@ -143,7 +143,11 @@ export class AssignmentReviewMapComponent implements OnDestroy {
       const missionColor =
         context.missionColors.get(pairing.mission.id) ?? MAP.UAV_COLOR_UNASSIGNED;
       const missionMarker = L.marker([loc.latitude, loc.longitude], {
-        icon: createMissionDivIcon(pairing.mission.requiredUAVType, missionColor),
+        icon: createMissionDivIcon(
+          pairing.mission.requiredUAVType,
+          missionColor,
+          this.resolvePriorityOutlineColor(pairing.mission.priority),
+        ),
       });
       missionMarker.bindTooltip(
         this.buildMissionTooltip(pairing.mission.title, pairing.mission.requiredUAVType),
@@ -229,6 +233,19 @@ export class AssignmentReviewMapComponent implements OnDestroy {
       }
     }
     return map;
+  }
+
+  private resolvePriorityOutlineColor(priority: Priority): string {
+    if (priority === Priority.High) {
+      return MAP.PRIORITY_HIGH_OUTLINE_COLOR;
+    }
+    if (priority === Priority.Medium) {
+      return MAP.PRIORITY_MEDIUM_OUTLINE_COLOR;
+    }
+    if (priority === Priority.Low) {
+      return MAP.PRIORITY_LOW_OUTLINE_COLOR;
+    }
+    return MAP.PRIORITY_OUTLINE_DEFAULT_COLOR;
   }
 
   ngOnDestroy(): void {

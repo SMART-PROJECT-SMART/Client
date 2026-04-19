@@ -28,8 +28,13 @@ export function createUavDivIcon(accentColor: string): L.DivIcon {
   });
 }
 
-export function createMissionDivIcon(missionType: UAVType, accentColor: string): L.DivIcon {
+export function createMissionDivIcon(
+  missionType: UAVType,
+  accentColor: string,
+  priorityOutlineColor: string,
+): L.DivIcon {
   const color = accentColor || MAP.DEFAULT_MISSION_ACCENT;
+  const missionOutlineColor = priorityOutlineColor || MAP.PRIORITY_OUTLINE_DEFAULT_COLOR;
   const missionGlyphClass =
     missionType === UAVType.Armed
       ? MAP.GLYPH_MISSION_ARMED_CLASS
@@ -38,7 +43,7 @@ export function createMissionDivIcon(missionType: UAVType, accentColor: string):
     missionType === UAVType.Armed
       ? MAP.MISSION_ARMED_ICON_ASSET_URL
       : MAP.MISSION_SURVEILLANCE_ICON_ASSET_URL;
-  const html = `<div class="${MAP.MISSION_ICON_CLASS}" style="--ar-mission-accent:${color}">${createGlyphHtml(
+  const html = `<div class="${MAP.MISSION_ICON_CLASS}" style="--ar-mission-accent:${color};--ar-mission-priority-outline:${missionOutlineColor};--ar-mission-priority-outline-width:${MAP.MISSION_PRIORITY_OUTLINE_WIDTH_PX}px">${createGlyphHtml(
     `${MAP.GLYPH_CLASS} ${missionGlyphClass}`,
     missionAssetUrl,
   )}</div>`;
