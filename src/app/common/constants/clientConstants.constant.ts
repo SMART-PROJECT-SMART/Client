@@ -371,6 +371,11 @@ export namespace ClientConstants {
     export const UAV_ICON_CLASS = 'ar-map-icon ar-map-icon--uav';
     export const MISSION_ICON_CLASS = 'ar-map-icon ar-map-icon--mission';
     export const TOOLTIP_UAV_PREFIX = 'UAV ';
+    export const TOOLTIP_VALUE_UNAVAILABLE = 'N/A';
+    export const TOOLTIP_LINE_BREAK = '<br />';
+    export const TOOLTIP_VALUE_SPACE = ' ';
+    export const TOOLTIP_VALUE_DECIMALS = 2;
+    export const TOOLTIP_LAT_LON_DECIMALS = 6;
     export const TOOLTIP_MISSION_SUFFIX_OPEN = ' (';
     export const TOOLTIP_MISSION_SUFFIX_CLOSE = ')';
     export const GLYPH_SIZE_PX = 22;
