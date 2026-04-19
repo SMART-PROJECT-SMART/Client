@@ -17,11 +17,6 @@ import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util'
 import { createMissionDivIcon, createUavDivIcon } from '../../utils/assignment-review-map-marker.util';
 
 const MAP = ClientConstants.AssignmentReviewMap;
-const UAV_TOOLTIP_COMMON_FIELDS: readonly TelemetryField[] = [
-  TelemetryField.Latitude,
-  TelemetryField.Longitude,
-  TelemetryField.FuelAmount,
-];
 const UAV_TOOLTIP_ARMED_FIELDS: readonly TelemetryField[] = [TelemetryField.AmmoPercentage];
 const UAV_TOOLTIP_SURVEILLANCE_FIELDS: readonly TelemetryField[] = [TelemetryField.DataStorageUsedGB];
 
@@ -134,7 +129,12 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       const marker = L.marker([pos.lat, pos.lon], {
         icon: createUavDivIcon(color),
       });
-      marker.bindTooltip(this.buildUavTooltip(uav));
+      marker.bindTooltip(this.buildUavTooltip(uav), {
+        className: MAP.TOOLTIP_TOOLTIP_CLASS,
+        direction: 'top',
+        offset: [MAP.TOOLTIP_TOOLTIP_OFFSET_X_PX, MAP.TOOLTIP_TOOLTIP_OFFSET_Y_PX],
+        opacity: 1,
+      });
       marker.addTo(group);
       boundsPoints.push([pos.lat, pos.lon]);
     }
@@ -219,29 +219,59 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
 
   private buildUavTooltip(uav: UAV): string {
     const telemetry = this.resolveUavTooltipTelemetry(uav);
-    const rows = this.resolveUavTooltipFields(uav.uavType).map((field) =>
-      this.buildUavTooltipRow(field, telemetry[field]),
-    );
-    return `${MAP.TOOLTIP_UAV_PREFIX}${uav.tailId}${MAP.TOOLTIP_LINE_BREAK}${rows.join(MAP.TOOLTIP_LINE_BREAK)}`;
+    const title = `${MAP.TOOLTIP_UAV_PREFIX}${uav.tailId}`;
+    const type = EnumUtil.getUAVTypeDisplay(uav.uavType);
+    const positionRows = [
+      this.buildUavTooltipRow(TelemetryField.Latitude, telemetry[TelemetryField.Latitude]),
+      this.buildUavTooltipRow(TelemetryField.Longitude, telemetry[TelemetryField.Longitude]),
+    ];
+    const statusRows = this.resolveStatusRows(uav.uavType, telemetry);
+    return this.buildUavTooltipCard(title, type, positionRows, statusRows);
   }
 
   private resolveUavTooltipTelemetry(uav: UAV): Record<TelemetryField, number> {
     return this.uavTelemetryData()[uav.tailId] ?? uav.telemetryData;
   }
 
-  private resolveUavTooltipFields(uavType: UAVType): readonly TelemetryField[] {
-    if (uavType === UAVType.Armed) {
-      return [...UAV_TOOLTIP_COMMON_FIELDS, ...UAV_TOOLTIP_ARMED_FIELDS];
-    }
-    return [...UAV_TOOLTIP_COMMON_FIELDS, ...UAV_TOOLTIP_SURVEILLANCE_FIELDS];
+  private resolveStatusRows(
+    uavType: UAVType,
+    telemetry: Record<TelemetryField, number>,
+  ): string[] {
+    const fields =
+      uavType === UAVType.Armed
+        ? [TelemetryField.FuelAmount, ...UAV_TOOLTIP_ARMED_FIELDS]
+        : [TelemetryField.FuelAmount, ...UAV_TOOLTIP_SURVEILLANCE_FIELDS];
+    return fields.map((field) => this.buildUavTooltipRow(field, telemetry[field]));
+  }
+
+  private buildUavTooltipCard(
+    title: string,
+    type: string,
+    positionRows: string[],
+    statusRows: string[],
+  ): string {
+    return `
+      <div class="ar-map-tooltip-card">
+        <div class="ar-map-tooltip-card__header">
+          <span class="ar-map-tooltip-card__title">${title}</span>
+          <span class="${MAP.TOOLTIP_TYPE_BADGE_CLASS}">${type}</span>
+        </div>
+        <div class="ar-map-tooltip-card__section">
+          <div class="ar-map-tooltip-card__section-title">${MAP.TOOLTIP_POSITION_SECTION_TITLE}</div>
+          ${positionRows.join('')}
+        </div>
+        <div class="ar-map-tooltip-card__section ar-map-tooltip-card__section--status">
+          <div class="ar-map-tooltip-card__section-title">${MAP.TOOLTIP_STATUS_SECTION_TITLE}</div>
+          ${statusRows.join('')}
+        </div>
+      </div>
+    `;
   }
 
   private buildUavTooltipRow(field: TelemetryField, value: number | undefined): string {
     const label = EnumUtil.getTelemetryFieldDisplay(field);
-    const unit = TelemetryUtil.getUnit(field);
     const formattedValue = this.formatTelemetryValue(field, value);
-    const unitSuffix = unit ? `${MAP.TOOLTIP_VALUE_SPACE}${unit}` : '';
-    return `${label}: ${formattedValue}${unitSuffix}`;
+    return `<div class="ar-map-tooltip-card__row"><span class="ar-map-tooltip-card__label">${label}</span><span class="ar-map-tooltip-card__value">${formattedValue}</span></div>`;
   }
 
   private formatTelemetryValue(field: TelemetryField, value: number | undefined): string {
@@ -249,9 +279,19 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       return MAP.TOOLTIP_VALUE_UNAVAILABLE;
     }
     if (field === TelemetryField.Latitude || field === TelemetryField.Longitude) {
-      return value.toFixed(MAP.TOOLTIP_LAT_LON_DECIMALS);
+      return `${value.toFixed(MAP.TOOLTIP_LAT_LON_DECIMALS)}${MAP.TOOLTIP_VALUE_DEGREE_SUFFIX}`;
     }
-    return value.toFixed(MAP.TOOLTIP_VALUE_DECIMALS);
+    const unit = TelemetryUtil.getUnit(field).replace('(', '').replace(')', '');
+    const precision =
+      field === TelemetryField.FuelAmount ||
+      field === TelemetryField.AmmoPercentage ||
+      field === TelemetryField.DataStorageUsedGB
+        ? MAP.TOOLTIP_STATUS_VALUE_DECIMALS
+        : MAP.TOOLTIP_VALUE_DECIMALS;
+    if (!unit) {
+      return value.toFixed(precision);
+    }
+    return `${value.toFixed(precision)}${MAP.TOOLTIP_VALUE_SPACE}${unit}`;
   }
 
   private buildMissionTooltip(missionTitle: string, missionType: string): string {
