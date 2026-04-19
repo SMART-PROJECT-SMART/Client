@@ -18,13 +18,15 @@ import type {
   ValidationResult,
   Violation,
 } from '../../../../models';
-import { TelemetryField, ViolationType, PlatformType } from '../../../../common/enums';
+import { TelemetryField, ViolationType, PlatformType, UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../common/utils';
 import { ApplyAssignmentDto } from '../../../../models/dto/applyAssignmentDto.dto';
 import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
 
 const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
+const HIDDEN_FIELDS_FOR_ARMED = new Set<TelemetryField>([TelemetryField.DataStorageUsedGB]);
+const HIDDEN_FIELDS_FOR_SURVEILLANCE = new Set<TelemetryField>([TelemetryField.AmmoPercentage]);
 
 @Component({
   selector: 'app-assignment-review-component',
@@ -153,19 +155,26 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public getTelemetryEntries(uav: UAV): [TelemetryField, number][] {
+    const uavType = this.getUavType(uav);
     return (Object.entries(uav.telemetryData) as [TelemetryField, number][]).filter(
       ([field]) =>
         field !== TelemetryField.UAVTypeValue &&
         field !== TelemetryField.TailId &&
         field !== TelemetryField.PlatformType &&
         field !== TelemetryField.NearestSleeveId &&
-        field !== TelemetryField.MissionId,
+        field !== TelemetryField.MissionId &&
+        !this.isTelemetryFieldHiddenForUavType(field, uavType),
     );
   }
 
   public getPlatformType(uav: UAV): PlatformType {
     const platformValue = uav.telemetryData[TelemetryField.PlatformType];
     return this.platformTypesArray[platformValue];
+  }
+
+  public getUavType(uav: UAV): UAVType {
+    const platformType = this.getPlatformType(uav);
+    return EnumUtil.getUAVTypeFromPlatform(platformType);
   }
 
   public trackByMissionId(_index: number, pairing: MissionAssignmentPairing): string {
@@ -198,5 +207,15 @@ export class AssignmentReviewComponent implements OnInit {
       expanded.add(id);
     }
     expansionSignal.set(expanded);
+  }
+
+  private isTelemetryFieldHiddenForUavType(field: TelemetryField, uavType: UAVType): boolean {
+    if (uavType === UAVType.Armed) {
+      return HIDDEN_FIELDS_FOR_ARMED.has(field);
+    }
+    if (uavType === UAVType.Surveillance) {
+      return HIDDEN_FIELDS_FOR_SURVEILLANCE.has(field);
+    }
+    return false;
   }
 }

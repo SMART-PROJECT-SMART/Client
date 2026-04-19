@@ -195,6 +195,7 @@ export namespace ClientConstants {
     export const ROLL_DEG: string = 'deg';
     export const THRUST_AFTER_INFLUENCE: string = 'N';
     export const FUEL_AMOUNT: string = '%';
+    export const AMMO_PERCENTAGE: string = '%';
     export const DATA_STORAGE_USED_GB: string = 'GB';
     export const FLIGHT_TIME_SEC: string = 'sec';
     export const SIGNAL_STRENGTH: string = 'dBm';

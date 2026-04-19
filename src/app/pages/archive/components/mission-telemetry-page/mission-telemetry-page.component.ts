@@ -7,7 +7,7 @@ import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { GridType, CompactType } from 'angular-gridster2';
 import type { GridsterConfig } from 'angular-gridster2';
 import type { Plugin } from 'chart.js';
-import { TelemetryField } from '../../../../common/enums';
+import { TelemetryField, UAVType } from '../../../../common/enums';
 import { EnumUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin.util';
@@ -67,6 +67,9 @@ const NON_GRAPHABLE_FIELDS = new Set<string>([
   TelemetryField.MissionId,
   TelemetryField.LandingGearStatus,
 ]);
+
+const HIDDEN_FIELDS_FOR_ARMED = new Set<TelemetryField>([TelemetryField.DataStorageUsedGB]);
+const HIDDEN_FIELDS_FOR_SURVEILLANCE = new Set<TelemetryField>([TelemetryField.AmmoPercentage]);
 
 type TelemetryTableRowView = { timestamp: string; value: number | null; trackId: string };
 
@@ -253,8 +256,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const allFields = Object.values(TelemetryField).filter((f) => !NON_GRAPHABLE_FIELDS.has(f));
-    this.availableFields.set(allFields);
+    this.applyAvailableFieldsByReviewedUavType();
 
     this.subscribeMissionAndTelemetryBounds();
 
@@ -278,6 +280,7 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
             this.missionDetails.set(null);
             this.missionTitle.set('');
           }
+          this.applyAvailableFieldsByReviewedUavType();
           if (telemetryBoundsHasSamples(bounds)) {
             const first = bounds.firstTimestamp;
             const last = bounds.lastTimestamp;
@@ -616,6 +619,43 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
     const w = this.missionTelemetryWindow();
     if (w) {
       return { start: w.first, end: w.last };
+    }
+    return null;
+  }
+
+  private applyAvailableFieldsByReviewedUavType(): void {
+    const availableFields = this.resolveAvailableFieldsByReviewedUavType();
+    const allowedFields = new Set<TelemetryField>(availableFields);
+    const selectedFields = this.selectedFields().filter((field) => allowedFields.has(field));
+    this.availableFields.set(availableFields);
+    this.selectedFields.set(selectedFields);
+    this.rebuildDashboardItems();
+  }
+
+  private resolveAvailableFieldsByReviewedUavType(): TelemetryField[] {
+    const reviewedUavType = this.resolveReviewedUavType();
+    if (reviewedUavType === UAVType.Armed) {
+      return this.resolveBaseAvailableFields().filter((field) => !HIDDEN_FIELDS_FOR_ARMED.has(field));
+    }
+    if (reviewedUavType === UAVType.Surveillance) {
+      return this.resolveBaseAvailableFields().filter(
+        (field) => !HIDDEN_FIELDS_FOR_SURVEILLANCE.has(field),
+      );
+    }
+    return this.resolveBaseAvailableFields();
+  }
+
+  private resolveBaseAvailableFields(): TelemetryField[] {
+    return Object.values(TelemetryField).filter((field) => !NON_GRAPHABLE_FIELDS.has(field));
+  }
+
+  private resolveReviewedUavType(): UAVType | null {
+    const missionUavType = this.missionDetails()?.requiredUAVType;
+    if (missionUavType === UAVType.Armed) {
+      return UAVType.Armed;
+    }
+    if (missionUavType === UAVType.Surveillance) {
+      return UAVType.Surveillance;
     }
     return null;
   }
