@@ -10,7 +10,11 @@
   min-height: 100%;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: none;
+}
+
+::ng-deep .leaflet-container {
+  outline: none;
 }
 
 ::ng-deep .ar-map-div-icon {
