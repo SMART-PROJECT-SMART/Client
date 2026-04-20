@@ -224,6 +224,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     const positionRows = [
       this.buildUavTooltipRow(TelemetryField.Latitude, telemetry[TelemetryField.Latitude]),
       this.buildUavTooltipRow(TelemetryField.Longitude, telemetry[TelemetryField.Longitude]),
+      this.buildUavTooltipRow(TelemetryField.Altitude, telemetry[TelemetryField.Altitude]),
     ];
     const statusRows = this.resolveStatusRows(uav.uavType, telemetry);
     return this.buildUavTooltipCard(title, type, positionRows, statusRows);
