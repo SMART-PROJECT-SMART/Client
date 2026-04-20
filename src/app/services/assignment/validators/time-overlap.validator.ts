@@ -3,13 +3,7 @@ import type { MissionAssignmentPairing, Violation } from '../../../models';
 import { ViolationType } from '../../../common/enums';
 import type { AssignmentValidationContext } from './assignment-validation-context.interface';
 import type { AssignmentValidator } from './assignment-validator.interface';
-
-interface ScheduleEntry {
-  missionId: string;
-  missionTitle: string;
-  start: Date;
-  end: Date;
-}
+import type { ScheduleEntry } from '../../../models/assignment/scheduleEntry.model';
 
 @Injectable({
   providedIn: 'root',

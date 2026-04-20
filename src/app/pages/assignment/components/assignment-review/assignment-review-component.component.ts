@@ -17,17 +17,22 @@ import type {
   UAV,
   ApplyAssignmentRo,
   ValidationResult,
-  Violation,
 } from '../../../../models';
 import type { ActiveMissionRo } from '../../../../models/Ro/activeMissionRo.ro';
 import { TelemetryField, ViolationType, PlatformType, UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../common/utils';
-import { ApplyAssignmentDto } from '../../../../models/dto/applyAssignmentDto.dto';
 import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
 import { MissionStatusStorageService } from '../../../../services/mission/mission-status-storage.service';
 
-const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
+const {
+  BACK_LABEL,
+  APPLY_LABEL,
+  VIOLATION_TYPE_TIME_OVERLAP_LABEL,
+  VIOLATION_TYPE_TYPE_MISMATCH_LABEL,
+  VIOLATION_TYPE_DEFAULT_LABEL,
+  ACTIVE_MISSIONS_LOAD_ERROR_MESSAGE,
+} = ClientConstants.AssignmentPageConstants;
 const HIDDEN_FIELDS_FOR_ARMED = new Set<TelemetryField>([TelemetryField.DataStorageUsedGB]);
 const HIDDEN_FIELDS_FOR_SURVEILLANCE = new Set<TelemetryField>([TelemetryField.AmmoPercentage]);
 
@@ -41,7 +46,7 @@ const HIDDEN_FIELDS_FOR_SURVEILLANCE = new Set<TelemetryField>([TelemetryField.A
 export class AssignmentReviewComponent implements OnInit {
   constructor(
     private readonly validatorService: AssignmentValidatorService,
-    public readonly missionStatusStorage: MissionStatusStorageService,
+    private readonly missionStatusStorage: MissionStatusStorageService,
   ) {}
 
   public readonly algorithmResult = input.required<AssignmentAlgorithmRo>();
@@ -77,6 +82,8 @@ export class AssignmentReviewComponent implements OnInit {
     return this.validationResult().isValid;
   });
 
+  public readonly activeMissionsLoadError = signal<unknown | null>(null);
+
   public readonly activeMissions: Signal<ActiveMissionRo[]> = computed(() => {
     return this.missionStatusStorage.activeMissionList();
   });
@@ -84,11 +91,11 @@ export class AssignmentReviewComponent implements OnInit {
   public getViolationTypeLabel(type: ViolationType): string {
     switch (type) {
       case ViolationType.TimeOverlap:
-        return 'Time overlap';
+        return VIOLATION_TYPE_TIME_OVERLAP_LABEL;
       case ViolationType.TypeMismatch:
-        return 'Type mismatch';
+        return VIOLATION_TYPE_TYPE_MISMATCH_LABEL;
       default:
-        return 'Violation';
+        return VIOLATION_TYPE_DEFAULT_LABEL;
     }
   }
 
@@ -110,7 +117,17 @@ export class AssignmentReviewComponent implements OnInit {
 
   public ngOnInit(): void {
     this.initializeEditedAssignments();
-    firstValueFrom(this.missionStatusStorage.loadActiveMissions()).catch(() => {});
+    void this.loadActiveMissions();
+  }
+
+  private async loadActiveMissions(): Promise<void> {
+    this.activeMissionsLoadError.set(null);
+    try {
+      await firstValueFrom(this.missionStatusStorage.loadActiveMissions());
+    } catch (error) {
+      this.activeMissionsLoadError.set(error);
+      console.error(ACTIVE_MISSIONS_LOAD_ERROR_MESSAGE, error);
+    }
   }
 
   public onUavChange(missionId: string, uavTailId: number): void {

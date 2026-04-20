@@ -41,6 +41,10 @@ export namespace ClientConstants {
     export const APPLY_LABEL: string = 'Apply';
     export const BACK_LABEL: string = 'Back';
     export const NO_ASSIGNMENT_LABEL: string = 'Unassigned';
+    export const VIOLATION_TYPE_TIME_OVERLAP_LABEL: string = 'Time overlap';
+    export const VIOLATION_TYPE_TYPE_MISMATCH_LABEL: string = 'Type mismatch';
+    export const VIOLATION_TYPE_DEFAULT_LABEL: string = 'Violation';
+    export const ACTIVE_MISSIONS_LOAD_ERROR_MESSAGE: string = 'Failed to load active missions';
   }
 
   export namespace ArchiveRoutes {

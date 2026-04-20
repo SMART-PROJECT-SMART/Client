@@ -6,12 +6,9 @@ import { ClientConstants } from '../../../../common';
 import { EnumUtil, DateTimeUtil } from '../../../../common/utils';
 import { timeWindowValidator, futureDateValidator } from '../../../../common/validators';
 import type { Mission } from '../../../../models';
+import type { MissionEditDialogData } from '../../../../models/forms/missionEditDialogData.model';
 
 const { LocationValidation, MissionValidation } = ClientConstants.ValidationConstants;
-
-export interface MissionEditDialogData {
-  mission: Mission;
-}
 
 @Component({
   selector: 'app-mission-edit-dialog',

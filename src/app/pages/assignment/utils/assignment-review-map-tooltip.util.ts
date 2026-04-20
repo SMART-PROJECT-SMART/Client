@@ -2,7 +2,7 @@ import { TelemetryField, UAVType } from '../../../common/enums';
 import { ClientConstants } from '../../../common/constants/clientConstants.constant';
 import { EnumUtil, TelemetryUtil } from '../../../common/utils';
 import type { Mission, UAV } from '../../../models';
-import type { BuildUavTooltipOptions } from './assignment-review-map.types';
+import type { BuildUavTooltipOptions } from '../../../models/assignment/buildUavTooltipOptions.model';
 
 const MAP = ClientConstants.AssignmentReviewMap;
 const UAV_TOOLTIP_ARMED_FIELDS: readonly TelemetryField[] = [TelemetryField.AmmoPercentage];

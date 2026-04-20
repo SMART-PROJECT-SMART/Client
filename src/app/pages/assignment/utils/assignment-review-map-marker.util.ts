@@ -1,7 +1,7 @@
 import * as L from 'leaflet';
 import { UAVType } from '../../../common/enums';
 import { ClientConstants } from '../../../common/constants/clientConstants.constant';
-import type { CreateUavDivIconOptions } from './assignment-review-map.types';
+import type { CreateUavDivIconOptions } from '../../../models/assignment/createUavDivIconOptions.model';
 
 const MAP = ClientConstants.AssignmentReviewMap;
 

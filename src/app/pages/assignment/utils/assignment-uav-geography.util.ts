@@ -1,10 +1,6 @@
 import { TelemetryField } from '../../../common/enums';
 import type { UAV } from '../../../models';
-
-export interface UavLatLon {
-  lat: number;
-  lon: number;
-}
+import type { UavLatLon } from '../../../models/geographic/uavLatLon.model';
 
 export function extractLatLonFromUav(uav: UAV): UavLatLon | null {
   const lat = uav.telemetryData[TelemetryField.Latitude];

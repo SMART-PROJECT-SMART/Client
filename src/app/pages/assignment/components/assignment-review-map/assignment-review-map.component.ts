@@ -14,8 +14,12 @@ import { ClientConstants } from '../../../../common/constants/clientConstants.co
 import { AssignmentUtil } from '../../../../common/utils';
 import type { Mission, MissionAssignmentPairing, UAV } from '../../../../models';
 import type { ActiveMissionRo } from '../../../../models/Ro/activeMissionRo.ro';
+import type { AssignmentReviewMapRenderContext } from '../../../../models/assignment/assignmentReviewMapRenderContext.model';
 import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util';
-import { createMissionDivIcon, createUavDivIcon } from '../../utils/assignment-review-map-marker.util';
+import {
+  createMissionDivIcon,
+  createUavDivIcon,
+} from '../../utils/assignment-review-map-marker.util';
 import {
   buildMissionColorMap,
   buildTailColorMap,
@@ -27,15 +31,6 @@ import {
 } from '../../utils/assignment-review-map-tooltip.util';
 
 const MAP = ClientConstants.AssignmentReviewMap;
-
-type AssignmentReviewMapRenderContext = {
-  pairings: MissionAssignmentPairing[];
-  selectedMap: Map<string, number>;
-  telemetry: Record<number, Record<TelemetryField, number>>;
-  missionColors: Map<string, string>;
-  tailColors: Map<number, string>;
-  activeMissionByTailId: Map<number, Mission>;
-};
 
 @Component({
   selector: 'app-assignment-review-map',
@@ -131,7 +126,6 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   private buildActiveMissionByTailIdMap(): Map<number, Mission> {
     const map = new Map<number, Mission>();
     for (const row of this.activeMissions()) {
-      // If multiple entries exist for a tailId, the latest one wins.
       map.set(row.tailId, row.mission);
     }
     return map;
@@ -180,9 +174,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
           resolvePriorityOutlineColor(pairing.mission.priority),
         ),
       });
-      missionMarker.bindTooltip(
-        this.buildMissionTooltip(pairing.mission),
-      );
+      missionMarker.bindTooltip(this.buildMissionTooltip(pairing.mission));
       missionMarker.addTo(group);
 
       const uavPos = this.resolveAssignedUavPosition(pairing, context);
