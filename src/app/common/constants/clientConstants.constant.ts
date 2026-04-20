@@ -362,6 +362,11 @@ export namespace ClientConstants {
     export const UAV_COLOR_UNASSIGNED = '#9e9e9e';
     export const DEFAULT_UAV_ACCENT = '#1976d2';
     export const DEFAULT_MISSION_ACCENT = '#5e35b1';
+    export const ACTIVE_MISSION_BADGE_TEXT = 'M';
+    export const ACTIVE_MISSION_BADGE_BG_COLOR = '#00bcd4';
+    export const ACTIVE_MISSION_BADGE_TEXT_COLOR = '#ffffff';
+    export const ACTIVE_MISSION_BADGE_SIZE_PX = 16;
+    export const ACTIVE_MISSION_BADGE_FONT_SIZE_PX = 10;
     export const PRIORITY_HIGH_OUTLINE_COLOR = '#d32f2f';
     export const PRIORITY_MEDIUM_OUTLINE_COLOR = '#f9a825';
     export const PRIORITY_LOW_OUTLINE_COLOR = '#2e7d32';

@@ -18,9 +18,9 @@ export function createUavDivIcon(
 ): L.DivIcon {
   const color = accentColor || MAP.DEFAULT_UAV_ACCENT;
   const activeIndicator = options.isOnActiveMission
-    ? `<span class="ar-map-uav-active-indicator" aria-label="Active mission"></span>`
+    ? `<span class="ar-map-uav-active-indicator" aria-label="Active mission">${MAP.ACTIVE_MISSION_BADGE_TEXT}</span>`
     : '';
-  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="--ar-uav-accent:${color}">
+  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="--ar-uav-accent:${color};--ar-uav-active-mission-bg:${MAP.ACTIVE_MISSION_BADGE_BG_COLOR};--ar-uav-active-mission-fg:${MAP.ACTIVE_MISSION_BADGE_TEXT_COLOR};--ar-uav-active-mission-size:${MAP.ACTIVE_MISSION_BADGE_SIZE_PX}px;--ar-uav-active-mission-font-size:${MAP.ACTIVE_MISSION_BADGE_FONT_SIZE_PX}px">
     ${createGlyphHtml(`${MAP.GLYPH_CLASS} ${MAP.GLYPH_UAV_CLASS}`, MAP.UAV_ICON_ASSET_URL)}
     ${activeIndicator}
   </div>`;
