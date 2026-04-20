@@ -9,16 +9,23 @@ import {
   ElementRef,
 } from '@angular/core';
 import * as L from 'leaflet';
-import { Priority, TelemetryField, UAVType } from '../../../../common/enums';
+import { TelemetryField } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
-import { AssignmentUtil, EnumUtil, TelemetryUtil } from '../../../../common/utils';
+import { AssignmentUtil } from '../../../../common/utils';
 import type { Mission, MissionAssignmentPairing, UAV } from '../../../../models';
 import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util';
 import { createMissionDivIcon, createUavDivIcon } from '../../utils/assignment-review-map-marker.util';
+import {
+  buildMissionColorMap,
+  buildTailColorMap,
+  resolvePriorityOutlineColor,
+} from '../../utils/assignment-review-map-color.util';
+import {
+  buildMissionTooltipContent,
+  buildUavTooltipContent,
+} from '../../utils/assignment-review-map-tooltip.util';
 
 const MAP = ClientConstants.AssignmentReviewMap;
-const UAV_TOOLTIP_ARMED_FIELDS: readonly TelemetryField[] = [TelemetryField.AmmoPercentage];
-const UAV_TOOLTIP_SURVEILLANCE_FIELDS: readonly TelemetryField[] = [TelemetryField.DataStorageUsedGB];
 
 type AssignmentReviewMapRenderContext = {
   pairings: MissionAssignmentPairing[];
@@ -104,8 +111,8 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     const pairings = this.pairings();
     const selectedMap = this.selectedTailIds();
     const telemetry = this.uavTelemetryData();
-    const missionColors = this.buildMissionColorMap(pairings);
-    const tailColors = this.buildTailColorMap(pairings, selectedMap, missionColors);
+    const missionColors = buildMissionColorMap(pairings);
+    const tailColors = buildTailColorMap(pairings, selectedMap, missionColors);
     return {
       pairings,
       selectedMap,
@@ -154,7 +161,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
         icon: createMissionDivIcon(
           pairing.mission.requiredUAVType,
           missionColor,
-          this.resolvePriorityOutlineColor(pairing.mission.priority),
+          resolvePriorityOutlineColor(pairing.mission.priority),
         ),
       });
       missionMarker.bindTooltip(
@@ -204,147 +211,17 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     map.setView([MAP.DEFAULT_CENTER_LAT, MAP.DEFAULT_CENTER_LON], MAP.DEFAULT_ZOOM);
   }
 
-  private buildMissionColorMap(pairings: MissionAssignmentPairing[]): Map<string, string> {
-    const map = new Map<string, string>();
-    pairings.forEach((pairing, index) => {
-      const hue = MAP.LINE_HUES[index % MAP.LINE_HUES.length];
-      map.set(pairing.mission.id, this.buildLineColor(hue));
-    });
-    return map;
-  }
-
-  private buildLineColor(hue: number): string {
-    return `hsl(${hue}, ${MAP.LINE_SATURATION_PERCENT}%, ${MAP.LINE_LIGHTNESS_PERCENT}%)`;
-  }
-
   private buildUavTooltip(uav: UAV): string {
     const telemetry = this.resolveUavTooltipTelemetry(uav);
-    const title = `${MAP.TOOLTIP_UAV_PREFIX}${uav.tailId}`;
-    const type = EnumUtil.getUAVTypeDisplay(uav.uavType);
-    const positionRows = [
-      this.buildUavTooltipRow(TelemetryField.Latitude, telemetry[TelemetryField.Latitude]),
-      this.buildUavTooltipRow(TelemetryField.Longitude, telemetry[TelemetryField.Longitude]),
-      this.buildUavTooltipRow(TelemetryField.Altitude, telemetry[TelemetryField.Altitude]),
-    ];
-    const statusRows = this.resolveStatusRows(uav.uavType, telemetry);
-    return this.buildUavTooltipCard(title, type, positionRows, statusRows);
+    return buildUavTooltipContent(uav, telemetry);
   }
 
   private resolveUavTooltipTelemetry(uav: UAV): Record<TelemetryField, number> {
     return this.uavTelemetryData()[uav.tailId] ?? uav.telemetryData;
   }
 
-  private resolveStatusRows(
-    uavType: UAVType,
-    telemetry: Record<TelemetryField, number>,
-  ): string[] {
-    const fields =
-      uavType === UAVType.Armed
-        ? [TelemetryField.FuelAmount, ...UAV_TOOLTIP_ARMED_FIELDS]
-        : [TelemetryField.FuelAmount, ...UAV_TOOLTIP_SURVEILLANCE_FIELDS];
-    return fields.map((field) => this.buildUavTooltipRow(field, telemetry[field]));
-  }
-
-  private buildUavTooltipCard(
-    title: string,
-    type: string,
-    positionRows: string[],
-    statusRows: string[],
-  ): string {
-    return `
-      <div class="ar-map-tooltip-card">
-        <div class="ar-map-tooltip-card__header">
-          <span class="ar-map-tooltip-card__title">${title}</span>
-          <span class="${MAP.TOOLTIP_TYPE_BADGE_CLASS}">${type}</span>
-        </div>
-        <div class="ar-map-tooltip-card__section">
-          <div class="ar-map-tooltip-card__section-title">${MAP.TOOLTIP_POSITION_SECTION_TITLE}</div>
-          ${positionRows.join('')}
-        </div>
-        <div class="ar-map-tooltip-card__section ar-map-tooltip-card__section--status">
-          <div class="ar-map-tooltip-card__section-title">${MAP.TOOLTIP_STATUS_SECTION_TITLE}</div>
-          ${statusRows.join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  private buildUavTooltipRow(field: TelemetryField, value: number | undefined): string {
-    const label = EnumUtil.getTelemetryFieldDisplay(field);
-    const formattedValue = this.formatTelemetryValue(field, value);
-    return `<div class="ar-map-tooltip-card__row"><span class="ar-map-tooltip-card__label">${label}</span><span class="ar-map-tooltip-card__value">${formattedValue}</span></div>`;
-  }
-
-  private formatTelemetryValue(field: TelemetryField, value: number | undefined): string {
-    if (value === undefined || Number.isNaN(value)) {
-      return MAP.TOOLTIP_VALUE_UNAVAILABLE;
-    }
-    if (field === TelemetryField.Latitude || field === TelemetryField.Longitude) {
-      return `${value.toFixed(MAP.TOOLTIP_LAT_LON_DECIMALS)}${MAP.TOOLTIP_VALUE_DEGREE_SUFFIX}`;
-    }
-    const unit = TelemetryUtil.getUnit(field).replace('(', '').replace(')', '');
-    const precision =
-      field === TelemetryField.FuelAmount ||
-      field === TelemetryField.AmmoPercentage ||
-      field === TelemetryField.DataStorageUsedGB
-        ? MAP.TOOLTIP_STATUS_VALUE_DECIMALS
-        : MAP.TOOLTIP_VALUE_DECIMALS;
-    if (!unit) {
-      return value.toFixed(precision);
-    }
-    return `${value.toFixed(precision)}${MAP.TOOLTIP_VALUE_SPACE}${unit}`;
-  }
-
   private buildMissionTooltip(mission: Mission): string {
-    const missionType = EnumUtil.getUAVTypeDisplay(mission.requiredUAVType);
-    const missionTitle = `${mission.title}${MAP.TOOLTIP_MISSION_SUFFIX_OPEN}${missionType}${MAP.TOOLTIP_MISSION_SUFFIX_CLOSE}`;
-    const priorityLabel = EnumUtil.getPriorityDisplay(mission.priority);
-    const priorityRow = `${MAP.TOOLTIP_MISSION_PRIORITY_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${priorityLabel}`;
-    const locationValue = this.buildMissionLocationValue(
-      mission.location.latitude,
-      mission.location.longitude,
-      mission.location.altitude,
-    );
-    const locationRow = `${MAP.TOOLTIP_MISSION_LOCATION_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${locationValue}`;
-    return [missionTitle, priorityRow, locationRow].join(MAP.TOOLTIP_LINE_BREAK);
-  }
-
-  private buildMissionLocationValue(latitude: number, longitude: number, altitude: number): string {
-    const latitudeValue = `${MAP.TOOLTIP_MISSION_LATITUDE_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${latitude.toFixed(MAP.TOOLTIP_LAT_LON_DECIMALS)}${MAP.TOOLTIP_VALUE_DEGREE_SUFFIX}`;
-    const longitudeValue = `${MAP.TOOLTIP_MISSION_LONGITUDE_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${longitude.toFixed(MAP.TOOLTIP_LAT_LON_DECIMALS)}${MAP.TOOLTIP_VALUE_DEGREE_SUFFIX}`;
-    const altitudeValue = `${MAP.TOOLTIP_MISSION_ALTITUDE_LABEL}${MAP.TOOLTIP_MISSION_KEY_VALUE_SEPARATOR}${this.formatTelemetryValue(TelemetryField.Altitude, altitude)}`;
-    return [latitudeValue, longitudeValue, altitudeValue].join(MAP.TOOLTIP_MISSION_COORDINATE_SEPARATOR);
-  }
-
-  private buildTailColorMap(
-    pairings: MissionAssignmentPairing[],
-    selectedMap: Map<string, number>,
-    missionColors: Map<string, string>,
-  ): Map<number, string> {
-    const map = new Map<number, string>();
-    for (const pairing of pairings) {
-      const tailId = selectedMap.get(pairing.mission.id) ?? pairing.tailId;
-      if (!map.has(tailId)) {
-        map.set(
-          tailId,
-          missionColors.get(pairing.mission.id) ?? MAP.UAV_COLOR_UNASSIGNED,
-        );
-      }
-    }
-    return map;
-  }
-
-  private resolvePriorityOutlineColor(priority: Priority): string {
-    if (priority === Priority.High) {
-      return MAP.PRIORITY_HIGH_OUTLINE_COLOR;
-    }
-    if (priority === Priority.Medium) {
-      return MAP.PRIORITY_MEDIUM_OUTLINE_COLOR;
-    }
-    if (priority === Priority.Low) {
-      return MAP.PRIORITY_LOW_OUTLINE_COLOR;
-    }
-    return MAP.PRIORITY_OUTLINE_DEFAULT_COLOR;
+    return buildMissionTooltipContent(mission);
   }
 
   ngOnDestroy(): void {
