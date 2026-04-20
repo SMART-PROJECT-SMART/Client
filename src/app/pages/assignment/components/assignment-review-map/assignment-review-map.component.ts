@@ -86,12 +86,12 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     if (!host) {
       return;
     }
-    this.map = L.map(host).setView(
+    this.map = L.map(host, { attributionControl: false, zoomControl: false }).setView(
       [MAP.DEFAULT_CENTER_LAT, MAP.DEFAULT_CENTER_LON],
       MAP.DEFAULT_ZOOM,
     );
     L.tileLayer(MAP.OS_TILE_TEMPLATE, {
-      attribution: MAP.TILE_ATTRIBUTION,
+      attribution: '',
     }).addTo(this.map);
     this.layerGroup = L.layerGroup().addTo(this.map);
   }
