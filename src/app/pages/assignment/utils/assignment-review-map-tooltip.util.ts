@@ -2,6 +2,7 @@ import { TelemetryField, UAVType } from '../../../common/enums';
 import { ClientConstants } from '../../../common/constants/clientConstants.constant';
 import { EnumUtil, TelemetryUtil } from '../../../common/utils';
 import type { Mission, UAV } from '../../../models';
+import type { BuildUavTooltipOptions } from './assignment-review-map.types';
 
 const MAP = ClientConstants.AssignmentReviewMap;
 const UAV_TOOLTIP_ARMED_FIELDS: readonly TelemetryField[] = [TelemetryField.AmmoPercentage];
@@ -10,6 +11,7 @@ const UAV_TOOLTIP_SURVEILLANCE_FIELDS: readonly TelemetryField[] = [TelemetryFie
 export function buildUavTooltipContent(
   uav: UAV,
   telemetry: Record<TelemetryField, number>,
+  options: BuildUavTooltipOptions = {},
 ): string {
   const title = `${MAP.TOOLTIP_UAV_PREFIX}${uav.tailId}`;
   const type = EnumUtil.getUAVTypeDisplay(uav.uavType);
@@ -19,7 +21,8 @@ export function buildUavTooltipContent(
     buildUavTooltipRow(TelemetryField.Altitude, telemetry[TelemetryField.Altitude]),
   ];
   const statusRows = resolveUavStatusRows(uav.uavType, telemetry);
-  return buildUavTooltipCard(title, type, positionRows, statusRows);
+  const activeMissionSection = buildActiveMissionSection(options.activeMission ?? null);
+  return buildUavTooltipCard(title, type, positionRows, statusRows, activeMissionSection);
 }
 
 export function buildMissionTooltipContent(mission: Mission): string {
@@ -52,6 +55,7 @@ function buildUavTooltipCard(
   type: string,
   positionRows: string[],
   statusRows: string[],
+  activeMissionSection: string,
 ): string {
   return `
     <div class="ar-map-tooltip-card">
@@ -66,6 +70,24 @@ function buildUavTooltipCard(
       <div class="ar-map-tooltip-card__section ar-map-tooltip-card__section--status">
         <div class="ar-map-tooltip-card__section-title">${MAP.TOOLTIP_STATUS_SECTION_TITLE}</div>
         ${statusRows.join('')}
+      </div>
+      ${activeMissionSection}
+    </div>
+  `;
+}
+
+function buildActiveMissionSection(activeMission: Mission | null): string {
+  if (!activeMission) {
+    return '';
+  }
+  const missionType = EnumUtil.getUAVTypeDisplay(activeMission.requiredUAVType);
+  const missionTitle = `${activeMission.title}${MAP.TOOLTIP_MISSION_SUFFIX_OPEN}${missionType}${MAP.TOOLTIP_MISSION_SUFFIX_CLOSE}`;
+  return `
+    <div class="ar-map-tooltip-card__section ar-map-tooltip-card__section--active-mission">
+      <div class="ar-map-tooltip-card__section-title">${MAP.TOOLTIP_ACTIVE_MISSION_SECTION_TITLE}</div>
+      <div class="ar-map-tooltip-card__row">
+        <span class="ar-map-tooltip-card__label">${MAP.TOOLTIP_ACTIVE_MISSION_MISSION_LABEL}</span>
+        <span class="ar-map-tooltip-card__value">${missionTitle}</span>
       </div>
     </div>
   `;

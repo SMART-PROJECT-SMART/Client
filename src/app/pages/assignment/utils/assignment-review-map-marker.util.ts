@@ -1,6 +1,7 @@
 import * as L from 'leaflet';
 import { UAVType } from '../../../common/enums';
 import { ClientConstants } from '../../../common/constants/clientConstants.constant';
+import type { CreateUavDivIconOptions } from './assignment-review-map.types';
 
 const MAP = ClientConstants.AssignmentReviewMap;
 
@@ -11,12 +12,18 @@ function createGlyphHtml(
   return `<div class="${glyphClass}" style="--ar-map-glyph-size:${MAP.GLYPH_SIZE_PX}px;--ar-map-mask-url:url('${assetUrl}')"></div>`;
 }
 
-export function createUavDivIcon(accentColor: string): L.DivIcon {
+export function createUavDivIcon(
+  accentColor: string,
+  options: CreateUavDivIconOptions = {},
+): L.DivIcon {
   const color = accentColor || MAP.DEFAULT_UAV_ACCENT;
-  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="--ar-uav-accent:${color}">${createGlyphHtml(
-    `${MAP.GLYPH_CLASS} ${MAP.GLYPH_UAV_CLASS}`,
-    MAP.UAV_ICON_ASSET_URL,
-  )}</div>`;
+  const activeIndicator = options.isOnActiveMission
+    ? `<span class="ar-map-uav-active-indicator" aria-label="Active mission"></span>`
+    : '';
+  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="--ar-uav-accent:${color}">
+    ${createGlyphHtml(`${MAP.GLYPH_CLASS} ${MAP.GLYPH_UAV_CLASS}`, MAP.UAV_ICON_ASSET_URL)}
+    ${activeIndicator}
+  </div>`;
   const w = MAP.UAV_ICON_WIDTH_PX;
   const h = MAP.UAV_ICON_HEIGHT_PX;
   return L.divIcon({

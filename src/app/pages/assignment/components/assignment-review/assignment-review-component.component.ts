@@ -9,6 +9,7 @@ import {
   Signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import type {
   AssignmentAlgorithmRo,
   MissionAssignmentPairing,
@@ -18,11 +19,13 @@ import type {
   ValidationResult,
   Violation,
 } from '../../../../models';
+import type { ActiveMissionRo } from '../../../../models/Ro/activeMissionRo.ro';
 import { TelemetryField, ViolationType, PlatformType, UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../common/utils';
 import { ApplyAssignmentDto } from '../../../../models/dto/applyAssignmentDto.dto';
 import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
+import { MissionStatusStorageService } from '../../../../services/mission/mission-status-storage.service';
 
 const { BACK_LABEL, APPLY_LABEL } = ClientConstants.AssignmentPageConstants;
 const HIDDEN_FIELDS_FOR_ARMED = new Set<TelemetryField>([TelemetryField.DataStorageUsedGB]);
@@ -36,7 +39,10 @@ const HIDDEN_FIELDS_FOR_SURVEILLANCE = new Set<TelemetryField>([TelemetryField.A
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentReviewComponent implements OnInit {
-  constructor(private readonly validatorService: AssignmentValidatorService) {}
+  constructor(
+    private readonly validatorService: AssignmentValidatorService,
+    public readonly missionStatusStorage: MissionStatusStorageService,
+  ) {}
 
   public readonly algorithmResult = input.required<AssignmentAlgorithmRo>();
   public readonly availableUavs = input.required<UAV[]>();
@@ -71,6 +77,10 @@ export class AssignmentReviewComponent implements OnInit {
     return this.validationResult().isValid;
   });
 
+  public readonly activeMissions: Signal<ActiveMissionRo[]> = computed(() => {
+    return this.missionStatusStorage.activeMissionList();
+  });
+
   public getViolationTypeLabel(type: ViolationType): string {
     switch (type) {
       case ViolationType.TimeOverlap:
@@ -100,6 +110,7 @@ export class AssignmentReviewComponent implements OnInit {
 
   public ngOnInit(): void {
     this.initializeEditedAssignments();
+    firstValueFrom(this.missionStatusStorage.loadActiveMissions()).catch(() => {});
   }
 
   public onUavChange(missionId: string, uavTailId: number): void {

@@ -13,6 +13,7 @@ import { TelemetryField } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { AssignmentUtil } from '../../../../common/utils';
 import type { Mission, MissionAssignmentPairing, UAV } from '../../../../models';
+import type { ActiveMissionRo } from '../../../../models/Ro/activeMissionRo.ro';
 import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util';
 import { createMissionDivIcon, createUavDivIcon } from '../../utils/assignment-review-map-marker.util';
 import {
@@ -33,6 +34,7 @@ type AssignmentReviewMapRenderContext = {
   telemetry: Record<number, Record<TelemetryField, number>>;
   missionColors: Map<string, string>;
   tailColors: Map<number, string>;
+  activeMissionByTailId: Map<number, Mission>;
 };
 
 @Component({
@@ -47,6 +49,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   readonly uavTelemetryData = input.required<Record<number, Record<TelemetryField, number>>>();
   readonly availableUavs = input.required<UAV[]>();
   readonly selectedTailIds = input.required<Map<string, number>>();
+  readonly activeMissions = input<ActiveMissionRo[]>([]);
 
   readonly mapHost = viewChild<ElementRef<HTMLElement>>('mapHost');
 
@@ -59,6 +62,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       this.selectedTailIds();
       this.availableUavs();
       this.uavTelemetryData();
+      this.activeMissions();
       if (!this.map) {
         return;
       }
@@ -113,13 +117,24 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     const telemetry = this.uavTelemetryData();
     const missionColors = buildMissionColorMap(pairings);
     const tailColors = buildTailColorMap(pairings, selectedMap, missionColors);
+    const activeMissionByTailId = this.buildActiveMissionByTailIdMap();
     return {
       pairings,
       selectedMap,
       telemetry,
       missionColors,
       tailColors,
+      activeMissionByTailId,
     };
+  }
+
+  private buildActiveMissionByTailIdMap(): Map<number, Mission> {
+    const map = new Map<number, Mission>();
+    for (const row of this.activeMissions()) {
+      // If multiple entries exist for a tailId, the latest one wins.
+      map.set(row.tailId, row.mission);
+    }
+    return map;
   }
 
   private renderUavMarkers(
@@ -133,10 +148,11 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
         continue;
       }
       const color = context.tailColors.get(uav.tailId) ?? MAP.UAV_COLOR_UNASSIGNED;
+      const isOnActiveMission = context.activeMissionByTailId.has(uav.tailId);
       const marker = L.marker([pos.lat, pos.lon], {
-        icon: createUavDivIcon(color),
+        icon: createUavDivIcon(color, { isOnActiveMission }),
       });
-      marker.bindTooltip(this.buildUavTooltip(uav), {
+      marker.bindTooltip(this.buildUavTooltip(uav, context), {
         className: MAP.TOOLTIP_TOOLTIP_CLASS,
         direction: 'top',
         offset: [MAP.TOOLTIP_TOOLTIP_OFFSET_X_PX, MAP.TOOLTIP_TOOLTIP_OFFSET_Y_PX],
@@ -211,9 +227,10 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     map.setView([MAP.DEFAULT_CENTER_LAT, MAP.DEFAULT_CENTER_LON], MAP.DEFAULT_ZOOM);
   }
 
-  private buildUavTooltip(uav: UAV): string {
+  private buildUavTooltip(uav: UAV, context: AssignmentReviewMapRenderContext): string {
     const telemetry = this.resolveUavTooltipTelemetry(uav);
-    return buildUavTooltipContent(uav, telemetry);
+    const activeMission = context.activeMissionByTailId.get(uav.tailId) ?? null;
+    return buildUavTooltipContent(uav, telemetry, { activeMission });
   }
 
   private resolveUavTooltipTelemetry(uav: UAV): Record<TelemetryField, number> {
