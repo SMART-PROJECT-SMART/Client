@@ -71,6 +71,17 @@ export class AssignmentReviewComponent implements OnInit {
     return this.validationResult().isValid;
   });
 
+  public getViolationTypeLabel(type: ViolationType): string {
+    switch (type) {
+      case ViolationType.TimeOverlap:
+        return 'Time overlap';
+      case ViolationType.TypeMismatch:
+        return 'Type mismatch';
+      default:
+        return 'Violation';
+    }
+  }
+
   public readonly uavByMissionId: Signal<Map<string, UAV>> = computed(() => {
     const map = new Map<string, UAV>();
     const telemetryData = this.algorithmResult().uavTelemetryData;

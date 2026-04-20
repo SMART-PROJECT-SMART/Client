@@ -325,6 +325,19 @@
   gap: $spacing-xs;
 }
 
+.violation-type-badge {
+  align-self: flex-start;
+  background-color: rgba($color-warning, 0.2);
+  border: $border-width-thin solid rgba($color-warning, 0.55);
+  border-radius: 999px;
+  color: $color-warning;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 2px $spacing-sm;
+  text-transform: uppercase;
+}
+
 .violation-title {
   color: $color-text-primary;
   font-size: $font-size-md;
