@@ -404,9 +404,10 @@ export namespace ClientConstants {
     export const MISSION_SURVEILLANCE_ICON_ASSET_URL = '/icons/map/mission-surveillance.svg';
     export const MISSION_ARMED_ICON_ASSET_URL = '/icons/map/mission-armed.svg';
     export const LINE_HUES: readonly number[] = [200, 220, 240, 260, 280, 300];
-    export const OS_TILE_TEMPLATE = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    export const OS_TILE_TEMPLATE =
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
     export const TILE_ATTRIBUTION =
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
   }
 
   export namespace BaseLocationConfig {
