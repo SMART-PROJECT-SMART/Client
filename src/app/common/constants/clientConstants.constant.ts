@@ -361,6 +361,8 @@ export namespace ClientConstants {
     export const MISSION_ICON_HEIGHT_PX = 40;
     export const LINE_WEIGHT = 3;
     export const LINE_OPACITY = 0.85;
+    export const FILTER_DIMMED_OPACITY = 0.25;
+    export const FILTER_FULL_OPACITY = 1.0;
     export const LINE_SATURATION_PERCENT = 70;
     export const LINE_LIGHTNESS_PERCENT = 40;
     export const UAV_COLOR_UNASSIGNED = '#9e9e9e';

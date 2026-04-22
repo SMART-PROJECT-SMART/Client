@@ -19,12 +19,95 @@
   <mat-tab-group class="review-tabs">
     <mat-tab label="Map">
       <section class="tab-content map-tab-content" aria-label="Map preview">
+        <div class="map-toolbar">
+          <button
+            mat-stroked-button
+            type="button"
+            cdkOverlayOrigin
+            #mapFilterOrigin="cdkOverlayOrigin"
+            (click)="toggleMapFilter()"
+            aria-label="Map filters"
+          >
+            <mat-icon>filter_list</mat-icon>
+            Filters
+          </button>
+
+          @if (highlightMissionIds().size > 0 || highlightTailIds().size > 0) {
+            <button mat-button type="button" (click)="clearMapHighlights()">Clear</button>
+          }
+        </div>
+
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="mapFilterOrigin"
+          [cdkConnectedOverlayOpen]="isMapFilterOpen()"
+          [cdkConnectedOverlayHasBackdrop]="true"
+          (backdropClick)="closeMapFilter()"
+        >
+          <div class="map-filter-panel" (click)="$event.stopPropagation()">
+            <div class="map-filter-panel__header">
+              <div class="map-filter-panel__title">Filters</div>
+              <button mat-icon-button type="button" (click)="closeMapFilter()" aria-label="Close filters">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+
+            <mat-tab-group class="map-filter-tabs" animationDuration="0ms">
+              <mat-tab label="Missions">
+                <div class="map-filter-panel__section">
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
+                    <mat-label>Search missions</mat-label>
+                    <input matInput [formControl]="missionFilterControl" />
+                  </mat-form-field>
+
+                  <div class="map-filter-panel__list">
+                    @for (missionId of selectedMissionIdsForMap(); track missionId) {
+                      <mat-checkbox [checked]="true" (change)="removeHighlightedMission(missionId)">
+                        {{ mapMissionById().get(missionId) ?? missionId }}
+                      </mat-checkbox>
+                    }
+                    @for (opt of missionFilterOptions(); track opt.missionId) {
+                      <mat-checkbox [checked]="false" (change)="addHighlightedMission(opt.missionId)">
+                        {{ opt.title }}
+                      </mat-checkbox>
+                    }
+                  </div>
+                </div>
+              </mat-tab>
+
+              <mat-tab label="UAVs">
+                <div class="map-filter-panel__section">
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
+                    <mat-label>Search UAVs</mat-label>
+                    <input matInput [formControl]="uavFilterControl" placeholder="UAV-#" />
+                  </mat-form-field>
+
+                  <div class="map-filter-panel__list">
+                    @for (tailId of selectedTailIdsForMap(); track tailId) {
+                      <mat-checkbox [checked]="true" (change)="removeHighlightedUav(tailId)">
+                        UAV-{{ tailId }}
+                      </mat-checkbox>
+                    }
+                    @for (opt of uavFilterOptions(); track opt.tailId) {
+                      <mat-checkbox [checked]="false" (change)="addHighlightedUav(opt.tailId)">
+                        UAV-{{ opt.tailId }}
+                      </mat-checkbox>
+                    }
+                  </div>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+          </div>
+        </ng-template>
+
         <app-assignment-review-map
           [pairings]="algorithmResult().pairings"
           [uavTelemetryData]="algorithmResult().uavTelemetryData"
           [availableUavs]="availableUavs()"
           [selectedTailIds]="selectedTailIds()"
           [activeMissions]="activeMissions()"
+          [highlightMissionIds]="highlightMissionIds()"
+          [highlightTailIds]="highlightTailIds()"
         />
       </section>
     </mat-tab>

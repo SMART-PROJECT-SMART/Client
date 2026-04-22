@@ -17,6 +17,7 @@ export function createUavDivIcon(
   options: CreateUavDivIconOptions = {},
 ): L.DivIcon {
   const color = accentColor || MAP.DEFAULT_UAV_ACCENT;
+  const opacity = options.opacity ?? MAP.FILTER_FULL_OPACITY;
   const activeIndicator = options.isOnActiveMission
     ? `<span class="ar-map-uav-active-indicator" aria-label="Active mission">${MAP.ACTIVE_MISSION_BADGE_TEXT}</span>`
     : '';
@@ -27,7 +28,7 @@ export function createUavDivIcon(
   const w = MAP.UAV_ICON_WIDTH_PX;
   const h = MAP.UAV_ICON_HEIGHT_PX;
   return L.divIcon({
-    html,
+    html: `<div style="opacity:${opacity}">${html}</div>`,
     className: MAP.ICON_WRAPPER_CLASS,
     iconSize: [w, h],
     iconAnchor: [Math.floor(w / 2), h],
@@ -39,9 +40,11 @@ export function createMissionDivIcon(
   missionType: UAVType,
   accentColor: string,
   priorityOutlineColor: string,
+  options: { opacity?: number } = {},
 ): L.DivIcon {
   const color = accentColor || MAP.DEFAULT_MISSION_ACCENT;
   const missionOutlineColor = priorityOutlineColor || MAP.PRIORITY_OUTLINE_DEFAULT_COLOR;
+  const opacity = options.opacity ?? MAP.FILTER_FULL_OPACITY;
   const missionGlyphClass =
     missionType === UAVType.Armed
       ? MAP.GLYPH_MISSION_ARMED_CLASS
@@ -57,7 +60,7 @@ export function createMissionDivIcon(
   const w = MAP.MISSION_ICON_WIDTH_PX;
   const h = MAP.MISSION_ICON_HEIGHT_PX;
   return L.divIcon({
-    html,
+    html: `<div style="opacity:${opacity}">${html}</div>`,
     className: MAP.ICON_WRAPPER_CLASS,
     iconSize: [w, h],
     iconAnchor: [Math.floor(w / 2), h],
