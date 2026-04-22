@@ -1,0 +1,74 @@
+@use '../../../../../styles/constants' as *;
+
+:host {
+  display: block;
+}
+
+.map-toolbar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.map-filter-panel {
+  width: 420px;
+  max-width: min(92vw, 460px);
+  max-height: min(72vh, 720px);
+  display: flex;
+  flex-direction: column;
+  background: $color-background-card;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-md;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.map-filter-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-md;
+  border-bottom: $border-width-thin solid $color-border-default;
+}
+
+.map-filter-panel__title {
+  font-size: $font-size-lg;
+  font-weight: 800;
+  color: $color-text-primary;
+}
+
+.map-filter-tabs {
+  flex: 1;
+  min-height: 0;
+}
+
+::ng-deep .map-filter-tabs .mat-mdc-tab-body-wrapper {
+  flex: 1;
+  min-height: 0;
+}
+
+::ng-deep .map-filter-tabs .mat-mdc-tab-body-content {
+  height: 100%;
+  overflow: hidden;
+}
+
+.map-filter-panel__section {
+  padding: $spacing-sm $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  min-height: 0;
+}
+
+.map-filter-panel__search {
+  width: 100%;
+}
+
+.map-filter-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  overflow: auto;
+  padding-right: $spacing-xs;
+}
+

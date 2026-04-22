@@ -9,7 +9,6 @@ import {
   Signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import type {
   AssignmentAlgorithmRo,
@@ -20,6 +19,8 @@ import type {
   ValidationResult,
 } from '../../../../models';
 import type { ActiveMissionRo } from '../../../../models/Ro/activeMissionRo.ro';
+import type { AssignmentReviewMapMissionFilterOption } from '../../../../models/assignment/assignmentReviewMapMissionFilterOption.model';
+import type { AssignmentReviewMapUavFilterOption } from '../../../../models/assignment/assignmentReviewMapUavFilterOption.model';
 import { TelemetryField, ViolationType, PlatformType, UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../common/utils';
@@ -71,11 +72,8 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly expandedMissions: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
   public readonly expandedTelemetry: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
 
-  public readonly missionFilterControl = new FormControl<string>('', { nonNullable: true });
-  public readonly uavFilterControl = new FormControl<string>('', { nonNullable: true });
   public readonly selectedMissionIdsForMap = signal<string[]>([]);
   public readonly selectedTailIdsForMap = signal<number[]>([]);
-  public readonly isMapFilterOpen = signal(false);
 
   public readonly validationResult: Signal<ValidationResult> = computed(() => {
     return this.validatorService.validateAssignments(
@@ -111,37 +109,16 @@ export class AssignmentReviewComponent implements OnInit {
     return map;
   });
 
-  public readonly missionFilterOptions: Signal<{ missionId: string; title: string }[]> = computed(
-    () => {
-      const selected = new Set(this.selectedMissionIdsForMap());
-      const normalizedQuery = (this.missionFilterControl.value ?? '').trim().toLowerCase();
-      const missions = new Map<string, string>();
-      for (const p of this.algorithmResult().pairings) {
-        missions.set(p.mission.id, p.mission.title);
-      }
-      const out: { missionId: string; title: string }[] = [];
-      for (const [missionId, title] of missions.entries()) {
-        if (selected.has(missionId)) continue;
-        if (!normalizedQuery || title.toLowerCase().includes(normalizedQuery)) {
-          out.push({ missionId, title });
-        }
-      }
-      return out;
-    },
-  );
-
-  public readonly uavFilterOptions: Signal<{ tailId: number }[]> = computed(() => {
-    const selected = new Set(this.selectedTailIdsForMap());
-    const normalizedQuery = (this.uavFilterControl.value ?? '').trim().toLowerCase();
-    const out: { tailId: number }[] = [];
-    for (const uav of this.availableUavs()) {
-      if (selected.has(uav.tailId)) continue;
-      const label = `uav-${uav.tailId}`;
-      if (!normalizedQuery || label.includes(normalizedQuery) || uav.tailId.toString().includes(normalizedQuery)) {
-        out.push({ tailId: uav.tailId });
-      }
+  public readonly mapMissionOptions: Signal<AssignmentReviewMapMissionFilterOption[]> = computed(() => {
+    const missions = new Map<string, string>();
+    for (const p of this.algorithmResult().pairings) {
+      missions.set(p.mission.id, p.mission.title);
     }
-    return out;
+    return Array.from(missions.entries()).map(([missionId, title]) => ({ missionId, title }));
+  });
+
+  public readonly mapUavOptions: Signal<AssignmentReviewMapUavFilterOption[]> = computed(() => {
+    return this.availableUavs().map((u) => ({ tailId: u.tailId }));
   });
 
   public getViolationTypeLabel(type: ViolationType): string {
@@ -176,37 +153,9 @@ export class AssignmentReviewComponent implements OnInit {
     void this.loadActiveMissions();
   }
 
-  public addHighlightedMission(missionId: string): void {
-    this.selectedMissionIdsForMap.set([...this.selectedMissionIdsForMap(), missionId]);
-    this.missionFilterControl.setValue('');
-  }
-
-  public removeHighlightedMission(missionId: string): void {
-    this.selectedMissionIdsForMap.set(this.selectedMissionIdsForMap().filter((id) => id !== missionId));
-  }
-
-  public addHighlightedUav(tailId: number): void {
-    this.selectedTailIdsForMap.set([...this.selectedTailIdsForMap(), tailId]);
-    this.uavFilterControl.setValue('');
-  }
-
-  public removeHighlightedUav(tailId: number): void {
-    this.selectedTailIdsForMap.set(this.selectedTailIdsForMap().filter((id) => id !== tailId));
-  }
-
   public clearMapHighlights(): void {
     this.selectedMissionIdsForMap.set([]);
     this.selectedTailIdsForMap.set([]);
-    this.missionFilterControl.setValue('');
-    this.uavFilterControl.setValue('');
-  }
-
-  public toggleMapFilter(): void {
-    this.isMapFilterOpen.set(!this.isMapFilterOpen());
-  }
-
-  public closeMapFilter(): void {
-    this.isMapFilterOpen.set(false);
   }
 
   private async loadActiveMissions(): Promise<void> {

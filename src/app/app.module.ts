@@ -14,6 +14,7 @@ import { GridsterModule } from 'angular-gridster2';
 import { AssignmentManagementComponent } from './pages/assignment/components/assignment-management/assignment-management-component.component';
 import { AssignmentReviewComponent } from './pages/assignment/components/assignment-review/assignment-review-component.component';
 import { AssignmentReviewMapComponent } from './pages/assignment/components/assignment-review-map/assignment-review-map.component';
+import { AssignmentReviewMapFiltersComponent } from './pages/assignment/components/assignment-review-map-filters/assignment-review-map-filters.component';
 import { MissionComponentComponent } from './pages/assignment/components/mission/mission-component.component';
 import { MissionCreateDialogComponent } from './pages/assignment/components/mission-create-dialog/mission-create-dialog.component';
 import { MissionEditDialogComponent } from './pages/assignment/components/mission-edit-dialog/mission-edit-dialog.component';
@@ -57,6 +58,7 @@ import { MissionTimeRangePickerComponent } from './pages/archive/components/miss
     AssignmentManagementComponent,
     AssignmentReviewComponent,
     AssignmentReviewMapComponent,
+    AssignmentReviewMapFiltersComponent,
     SidebarComponent,
     LiveViewPageComponent,
     CesiumViewer,
