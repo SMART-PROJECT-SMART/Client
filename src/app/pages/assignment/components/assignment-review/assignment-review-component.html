@@ -18,6 +18,7 @@
 
   <mat-tab-group
     class="review-tabs"
+    [preserveContent]="true"
     [selectedIndex]="selectedReviewTabIndex()"
     (selectedIndexChange)="selectedReviewTabIndex.set($event)">
     <mat-tab label="Map">
