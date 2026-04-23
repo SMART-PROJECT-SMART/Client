@@ -21,8 +21,18 @@ export function resolveMissionHighlightOpacity(
     return fullOpacity;
   }
   const pairing = ctx.pairings.find((p) => p.mission.id === missionId);
-  if (pairing && ctx.highlightMissionTypes.has(pairing.mission.requiredUAVType)) {
+  if (!pairing) {
+    return dimmedOpacity;
+  }
+  if (ctx.highlightMissionTypes.has(pairing.mission.requiredUAVType)) {
     return fullOpacity;
+  }
+  if (ctx.highlightTailIds.size > 0) {
+    const assigned =
+      ctx.selectedTailIdsByMissionId.get(missionId) ?? pairing.tailId;
+    if (ctx.highlightTailIds.has(assigned)) {
+      return fullOpacity;
+    }
   }
   return dimmedOpacity;
 }
