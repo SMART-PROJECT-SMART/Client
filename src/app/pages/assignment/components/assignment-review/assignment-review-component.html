@@ -16,7 +16,10 @@
     </div>
   </div>
 
-  <mat-tab-group class="review-tabs">
+  <mat-tab-group
+    class="review-tabs"
+    [selectedIndex]="selectedReviewTabIndex()"
+    (selectedIndexChange)="selectedReviewTabIndex.set($event)">
     <mat-tab label="Map">
       <section class="tab-content map-tab-content" aria-label="Map preview">
         <app-assignment-review-map-filters
@@ -140,6 +143,14 @@
                     </div>
                   </div>
                 </div>
+
+                <app-assignment-review-algorithm-panel
+                  [missionId]="pairing.mission.id"
+                  [suggestedTailId]="pairing.tailId"
+                  [selectedTailId]="getSelectedTailIdForMission(pairing.mission.id, pairing.tailId)"
+                  [insight]="pairingInsightByMissionId().get(pairing.mission.id) ?? null"
+                  (showOnMap)="focusMissionOnMap($event)"
+                />
 
                 <fieldset class="collapsible-section">
                   <legend (click)="toggleMissionDetails(pairing.mission.id)" class="collapsible-legend">

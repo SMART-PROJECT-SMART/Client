@@ -18,6 +18,7 @@ import type {
   ValidationResult,
 } from '../../../../models';
 import type { ActiveMissionRo } from '../../../../models/Ro/activeMissionRo.ro';
+import type { AssignmentPairingInsight } from '../../../../models/assignment/assignmentPairingInsight.model';
 import type { AssignmentReviewMapMissionFilterOption } from '../../../../models/assignment/assignmentReviewMapMissionFilterOption.model';
 import type { AssignmentReviewMapMissionTypeFilterOption } from '../../../../models/assignment/assignmentReviewMapMissionTypeFilterOption.model';
 import type { AssignmentReviewMapUavFilterOption } from '../../../../models/assignment/assignmentReviewMapUavFilterOption.model';
@@ -81,6 +82,7 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly selectedMissionIdsForMap = signal<string[]>([]);
   public readonly selectedMissionTypesForMap = signal<UAVType[]>([]);
   public readonly selectedTailIdsForMap = signal<number[]>([]);
+  public readonly selectedReviewTabIndex = signal(0);
 
   public readonly validationResult: Signal<ValidationResult> = computed(() => {
     return this.validatorService.validateAssignments(
@@ -112,14 +114,6 @@ export class AssignmentReviewComponent implements OnInit {
     return new Set(this.selectedMissionTypesForMap());
   });
 
-  public readonly mapMissionById: Signal<Map<string, string>> = computed(() => {
-    const map = new Map<string, string>();
-    for (const p of this.algorithmResult().pairings) {
-      map.set(p.mission.id, p.mission.title);
-    }
-    return map;
-  });
-
   public readonly mapMissionOptions: Signal<AssignmentReviewMapMissionFilterOption[]> = computed(() => {
     return buildMapMissionFilterOptionsFromPairings(this.algorithmResult().pairings);
   });
@@ -130,6 +124,14 @@ export class AssignmentReviewComponent implements OnInit {
 
   public readonly mapMissionTypeOptions: Signal<AssignmentReviewMapMissionTypeFilterOption[]> = computed(() => {
     return buildMapMissionTypeFilterOptionsFromPairings(this.algorithmResult().pairings);
+  });
+
+  public readonly pairingInsightByMissionId: Signal<Map<string, AssignmentPairingInsight>> = computed(() => {
+    const insights = new Map<string, AssignmentPairingInsight>();
+    for (const insight of this.algorithmResult().pairingInsights) {
+      insights.set(insight.missionId, insight);
+    }
+    return insights;
   });
 
   public getViolationTypeLabel(type: ViolationType): string {
@@ -168,6 +170,16 @@ export class AssignmentReviewComponent implements OnInit {
     this.selectedMissionIdsForMap.set([]);
     this.selectedMissionTypesForMap.set([]);
     this.selectedTailIdsForMap.set([]);
+  }
+
+  public focusMissionOnMap(missionId: string): void {
+    const tailId =
+      this.selectedTailIds().get(missionId)
+      ?? this.algorithmResult().pairings.find((pairing) => pairing.mission.id === missionId)?.tailId;
+    this.selectedMissionIdsForMap.set([missionId]);
+    this.selectedMissionTypesForMap.set([]);
+    this.selectedTailIdsForMap.set(tailId !== undefined ? [tailId] : []);
+    this.selectedReviewTabIndex.set(0);
   }
 
   private async loadActiveMissions(): Promise<void> {
@@ -255,6 +267,10 @@ export class AssignmentReviewComponent implements OnInit {
       tailId,
       this.algorithmResult().uavTelemetryData[tailId],
     );
+  }
+
+  public getSelectedTailIdForMission(missionId: string, suggestedTailId: number): number {
+    return this.selectedTailIds().get(missionId) ?? suggestedTailId;
   }
 
   private initializeEditedAssignments(): void {

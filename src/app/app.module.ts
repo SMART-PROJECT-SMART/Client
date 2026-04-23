@@ -15,6 +15,8 @@ import { AssignmentManagementComponent } from './pages/assignment/components/ass
 import { AssignmentReviewComponent } from './pages/assignment/components/assignment-review/assignment-review-component.component';
 import { AssignmentReviewMapComponent } from './pages/assignment/components/assignment-review-map/assignment-review-map.component';
 import { AssignmentReviewMapFiltersComponent } from './pages/assignment/components/assignment-review-map-filters/assignment-review-map-filters.component';
+import { AssignmentReviewSummaryStripComponent } from './pages/assignment/components/assignment-review-summary-strip/assignment-review-summary-strip.component';
+import { AssignmentReviewAlgorithmPanelComponent } from './pages/assignment/components/assignment-review-algorithm-panel/assignment-review-algorithm-panel.component';
 import { MissionComponentComponent } from './pages/assignment/components/mission/mission-component.component';
 import { MissionCreateDialogComponent } from './pages/assignment/components/mission-create-dialog/mission-create-dialog.component';
 import { MissionEditDialogComponent } from './pages/assignment/components/mission-edit-dialog/mission-edit-dialog.component';
@@ -59,6 +61,8 @@ import { MissionTimeRangePickerComponent } from './pages/archive/components/miss
     AssignmentReviewComponent,
     AssignmentReviewMapComponent,
     AssignmentReviewMapFiltersComponent,
+    AssignmentReviewSummaryStripComponent,
+    AssignmentReviewAlgorithmPanelComponent,
     SidebarComponent,
     LiveViewPageComponent,
     CesiumViewer,

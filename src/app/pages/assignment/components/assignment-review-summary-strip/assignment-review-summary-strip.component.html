@@ -1,0 +1,43 @@
+<section class="summary-strip" aria-label="Assignment algorithm summary">
+  <div class="summary-strip__top-row">
+    <div class="summary-strip__title-block">
+      <h3>{{ summaryTitle }}</h3>
+      <div class="summary-strip__score">
+        <span class="summary-strip__score-label">{{ scoreLabel }}</span>
+        <span class="summary-strip__score-value">{{ fitnessScore() | number:'1.2-2' }}</span>
+        <span class="summary-strip__score-hint">{{ scoreHintLabel }}</span>
+      </div>
+    </div>
+    @if (hasViolations()) {
+      <div class="summary-strip__warning">Violations detected. Resolve before applying.</div>
+    }
+  </div>
+
+  <div class="summary-strip__reasons">
+    <div class="summary-strip__reason">
+      <span>{{ reasonDistanceLabel }}</span>
+      <strong>{{ reasonCount('distance') }} {{ reasonMissionSuffix }}</strong>
+    </div>
+    <div class="summary-strip__reason">
+      <span>{{ reasonTelemetryLabel }}</span>
+      <strong>{{ reasonCount('telemetry') }} {{ reasonMissionSuffix }}</strong>
+    </div>
+    <div class="summary-strip__reason">
+      <span>{{ reasonSafetyLabel }}</span>
+      <strong>{{ reasonCount('safety') }} {{ reasonMissionSuffix }}</strong>
+    </div>
+  </div>
+
+  <details class="summary-strip__glossary">
+    <summary>{{ whyScoreTitle }}</summary>
+    <p class="summary-strip__formula">{{ formulaLabel }}</p>
+    <div class="summary-strip__glossary-title">{{ glossaryTitle }}</div>
+    <ul>
+      <li>{{ glossaryTelemetry }}</li>
+      <li>{{ glossaryDistance }}</li>
+      <li>{{ glossaryPriority }}</li>
+      <li>{{ glossaryPenalties }}</li>
+      <li>{{ glossaryBonuses }}</li>
+    </ul>
+  </details>
+</section>

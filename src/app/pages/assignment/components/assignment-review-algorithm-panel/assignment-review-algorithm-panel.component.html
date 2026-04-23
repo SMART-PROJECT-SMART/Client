@@ -1,0 +1,64 @@
+<fieldset class="algorithm-panel">
+  <legend class="algorithm-panel__legend">{{ title }}</legend>
+
+  <div class="algorithm-panel__top">
+    <div class="algorithm-panel__score-chip">
+      <span>{{ suggestedLabel }}</span>
+      <strong>{{ withSign(insight()?.totalScore ?? null) }}</strong>
+      <span class="algorithm-panel__tail">UAV-{{ suggestedTailId() }}</span>
+    </div>
+    <div class="algorithm-panel__score-chip">
+      <span>{{ selectedLabel }}</span>
+      <strong>{{ withSign(selectedScore()) }}</strong>
+      <span class="algorithm-panel__tail">UAV-{{ selectedTailId() }}</span>
+    </div>
+    <div class="algorithm-panel__score-chip">
+      <span>{{ deltaLabel }}</span>
+      <strong [class.algorithm-panel__delta-negative]="(deltaVsSuggestion() ?? 0) < 0">
+        {{ withSign(deltaVsSuggestion()) }}
+      </strong>
+    </div>
+    <button mat-stroked-button type="button" (click)="onShowOnMap()">
+      {{ showOnMapLabel }}
+    </button>
+  </div>
+
+  <div class="algorithm-panel__metrics">
+    <div class="algorithm-panel__metric">
+      <span>{{ telemetryLabel }}</span>
+      <span>{{ withSign(insight()?.telemetryScore ?? null) }}</span>
+    </div>
+    <div class="algorithm-panel__metric">
+      <span>{{ distanceLabel }}</span>
+      <span>{{ withSign(insight()?.distanceScore ?? null) }}</span>
+    </div>
+    <div class="algorithm-panel__metric">
+      <span>{{ priorityLabel }}</span>
+      <span>{{ withSign(insight()?.priorityScore ?? null) }}</span>
+    </div>
+    <div class="algorithm-panel__metric">
+      <span>{{ mismatchLabel }}</span>
+      <span>{{ withSign(insight()?.typeMismatchPenalty ?? null) }}</span>
+    </div>
+    <div class="algorithm-panel__metric">
+      <span>{{ activeLabel }}</span>
+      <span>{{ withSign(insight()?.activeMissionPenalty ?? null) }}</span>
+    </div>
+  </div>
+
+  <div class="algorithm-panel__alternatives">
+    <div class="algorithm-panel__alternatives-title">{{ alternativesLabel }}</div>
+    @if (rankedAlternatives().length > 0) {
+      <div class="algorithm-panel__alternatives-list">
+        @for (alt of rankedAlternatives(); track alt.tailId) {
+          <div class="algorithm-panel__alternative-row">
+            <span>UAV-{{ alt.tailId }}</span>
+            <span>{{ withSign(alt.totalScore) }}</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="algorithm-panel__alternatives-empty">{{ alternativesEmpty }}</div>
+    }
+  </div>
+</fieldset>

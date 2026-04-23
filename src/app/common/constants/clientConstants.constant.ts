@@ -45,6 +45,52 @@ export namespace ClientConstants {
     export const VIOLATION_TYPE_TYPE_MISMATCH_LABEL: string = 'Type mismatch';
     export const VIOLATION_TYPE_DEFAULT_LABEL: string = 'Violation';
     export const ACTIVE_MISSIONS_LOAD_ERROR_MESSAGE: string = 'Failed to load active missions';
+    export const FITNESS_SCORE_LABEL: string = 'Fitness score';
+    export const FITNESS_SCORE_HINT_LABEL: string = 'Higher is better';
+    export const ALGORITHM_SUMMARY_TITLE: string = 'Algorithm summary';
+    export const ALGORITHM_GLOSSARY_TITLE: string = 'How to read the algorithm metrics';
+    export const ALGORITHM_GLOSSARY_TELEMETRY: string =
+      'Telemetry score: fit to mission telemetry preferences.';
+    export const ALGORITHM_GLOSSARY_DISTANCE: string =
+      'Distance score: proximity between assigned UAV and mission location.';
+    export const ALGORITHM_GLOSSARY_PRIORITY: string =
+      'Priority score: mission priority contribution to overall fitness.';
+    export const ALGORITHM_GLOSSARY_PENALTIES: string =
+      'Penalties are negative pressure from overlap, mismatch, or active assignments.';
+    export const ALGORITHM_GLOSSARY_BONUSES: string =
+      'Coverage bonus rewards assigning more unique missions.';
+    export const ALGORITHM_WHY_SCORE_TITLE: string = 'Why this score?';
+    export const ALGORITHM_FORMULA_LABEL: string =
+      'Final fitness = Telemetry + Distance + Priority + Coverage + Penalties';
+    export const ALGORITHM_KPI_STRONG_LABEL: string = 'Strong suggestions';
+    export const ALGORITHM_KPI_MARGIN_LABEL: string = 'Average margin';
+    export const ALGORITHM_KPI_RISK_LABEL: string = 'Risk flags';
+    export const ALGORITHM_KPI_MARGIN_SUFFIX: string = ' pts';
+    export const ALGORITHM_STRONG_MARGIN_THRESHOLD: number = 300;
+    export const ALGORITHM_REASON_DISTANCE_LABEL: string = 'Distance was the deciding factor';
+    export const ALGORITHM_REASON_TELEMETRY_LABEL: string = 'Telemetry fit was the deciding factor';
+    export const ALGORITHM_REASON_SAFETY_LABEL: string = 'Safer assignment (penalty avoidance) decided';
+    export const ALGORITHM_REASON_MISSION_SUFFIX: string = 'missions';
+    export const ALGORITHM_PANEL_TITLE: string = 'Algorithm';
+    export const ALGORITHM_SELECTED_LABEL: string = 'Your selection';
+    export const ALGORITHM_SUGGESTED_LABEL: string = 'Algorithm suggestion';
+    export const ALGORITHM_ALTERNATIVES_LABEL: string = 'Alternative UAVs';
+    export const ALGORITHM_ALTERNATIVES_EMPTY: string = 'No alternatives available';
+    export const SHOW_ON_MAP_LABEL: string = 'Show on map';
+    export const SCORE_DELTA_LABEL: string = 'Delta vs suggestion';
+    export const SCORE_DECIMALS: number = 2;
+    export const ALGORITHM_METRIC_TELEMETRY_LABEL: string = 'Telemetry';
+    export const ALGORITHM_METRIC_DISTANCE_LABEL: string = 'Distance';
+    export const ALGORITHM_METRIC_PRIORITY_LABEL: string = 'Priority';
+    export const ALGORITHM_METRIC_MISMATCH_LABEL: string = 'Type mismatch';
+    export const ALGORITHM_METRIC_ACTIVE_LABEL: string = 'Active mission';
+    export const FIT_BREAKDOWN_TELEMETRY_LABEL: string = 'Telemetry';
+    export const FIT_BREAKDOWN_DISTANCE_LABEL: string = 'Distance';
+    export const FIT_BREAKDOWN_PRIORITY_LABEL: string = 'Priority';
+    export const FIT_BREAKDOWN_OVERLAP_LABEL: string = 'Time overlap';
+    export const FIT_BREAKDOWN_MISMATCH_LABEL: string = 'Type mismatch';
+    export const FIT_BREAKDOWN_COVERAGE_LABEL: string = 'Coverage bonus';
+    export const FIT_BREAKDOWN_ACTIVE_LABEL: string = 'Active mission';
   }
 
   export namespace ArchiveRoutes {

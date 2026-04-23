@@ -1,0 +1,94 @@
+@use '../../../../../styles/constants' as *;
+
+:host {
+  display: block;
+}
+
+.algorithm-panel {
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-sm;
+  padding: $spacing-sm $spacing-md $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.algorithm-panel__legend {
+  color: $color-text-primary;
+  font-size: $font-size-md;
+  font-weight: 600;
+  padding: 0 $spacing-xs;
+}
+
+.algorithm-panel__top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  align-items: stretch;
+  margin-bottom: $spacing-sm;
+}
+
+.algorithm-panel__score-chip {
+  display: grid;
+  gap: 2px;
+  background: $color-background-elevated;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-sm;
+  padding: $spacing-xs $spacing-sm;
+  min-width: 130px;
+}
+
+.algorithm-panel__score-chip span {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.algorithm-panel__score-chip strong {
+  color: $color-text-primary;
+}
+
+.algorithm-panel__tail {
+  font-size: $font-size-xs;
+}
+
+.algorithm-panel__delta-negative {
+  color: $color-warning;
+}
+
+.algorithm-panel__metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: $spacing-xs $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.algorithm-panel__metric {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+}
+
+.algorithm-panel__alternatives-title {
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  margin-bottom: $spacing-xs;
+}
+
+.algorithm-panel__alternatives-list {
+  display: grid;
+  gap: $spacing-xs;
+}
+
+.algorithm-panel__alternative-row {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.algorithm-panel__alternatives-empty {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
