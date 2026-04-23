@@ -126,6 +126,13 @@ export class AssignmentReviewComponent implements OnInit {
     return buildMapMissionTypeFilterOptionsFromPairings(this.algorithmResult().pairings);
   });
 
+  public readonly uavTypeByTailId: Signal<Record<number, UAVType>> = computed(() => {
+    return this.availableUavs().reduce<Record<number, UAVType>>((accumulator, uav) => {
+      accumulator[uav.tailId] = uav.uavType;
+      return accumulator;
+    }, {});
+  });
+
   public readonly pairingInsightByMissionId: Signal<Map<string, AssignmentPairingInsight>> = computed(() => {
     const insights = new Map<string, AssignmentPairingInsight>();
     for (const insight of this.algorithmResult().pairingInsights) {

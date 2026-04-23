@@ -67,10 +67,12 @@
 
 
 .cards-tab-content {
-  display: grid;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
   gap: $spacing-md;
   min-height: 0;
+  height: 100%;
+  overflow-y: auto;
   padding-top: $spacing-md;
 }
 
@@ -78,7 +80,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: $spacing-md;
-  overflow-y: auto;
   padding: $spacing-xs;
   align-content: start;
   align-items: start;

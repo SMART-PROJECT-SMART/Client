@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import type { AssignmentPairingAlternative } from '../../../../models/assignment/assignmentPairingAlternative.model';
 import type { AssignmentPairingInsight } from '../../../../models/assignment/assignmentPairingInsight.model';
@@ -16,6 +17,8 @@ export class AssignmentReviewAlgorithmPanelComponent {
   readonly missionId = input.required<string>();
   readonly suggestedTailId = input.required<number>();
   readonly selectedTailId = input.required<number>();
+  readonly missionRequiredUavType = input.required<UAVType>();
+  readonly uavTypeByTailId = input.required<Record<number, UAVType>>();
   readonly insight = input<AssignmentPairingInsight | null>(null);
 
   readonly showOnMap = output<string>();
@@ -56,7 +59,13 @@ export class AssignmentReviewAlgorithmPanelComponent {
   });
 
   readonly rankedAlternatives = computed<AssignmentPairingAlternative[]>(() => {
-    return this.insight()?.alternatives ?? [];
+    const requiredUavType = this.missionRequiredUavType();
+    const uavTypes = this.uavTypeByTailId();
+
+    return (
+      this.insight()?.alternatives.filter((alternative) => uavTypes[alternative.tailId] === requiredUavType)
+      ?? []
+    );
   });
 
   onShowOnMap(): void {
