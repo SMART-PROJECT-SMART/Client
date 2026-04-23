@@ -11,7 +11,7 @@
     Filters
   </button>
 
-  @if (selectedMissionIds().length > 0 || selectedTailIds().length > 0) {
+  @if (selectedMissionIds().length > 0 || selectedMissionTypes().length > 0 || selectedTailIds().length > 0) {
     <button mat-button type="button" (click)="onClear()">Clear</button>
   }
 </div>
@@ -46,6 +46,21 @@
                 (change)="onToggleMission(m.missionId, $event.checked)"
               >
                 {{ m.title }}
+              </mat-checkbox>
+            }
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Mission type">
+        <div class="map-filter-panel__section">
+          <div class="map-filter-panel__list">
+            @for (t of missionTypes(); track t.uavType) {
+              <mat-checkbox
+                [checked]="selectedMissionTypeSet().has(t.uavType)"
+                (change)="onToggleMissionType(t.uavType, $event.checked)"
+              >
+                {{ t.label }}
               </mat-checkbox>
             }
           </div>

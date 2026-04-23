@@ -21,10 +21,13 @@
       <section class="tab-content map-tab-content" aria-label="Map preview">
         <app-assignment-review-map-filters
           [missions]="mapMissionOptions()"
+          [missionTypes]="mapMissionTypeOptions()"
           [uavs]="mapUavOptions()"
           [selectedMissionIds]="selectedMissionIdsForMap()"
+          [selectedMissionTypes]="selectedMissionTypesForMap()"
           [selectedTailIds]="selectedTailIdsForMap()"
           (selectedMissionIdsChange)="selectedMissionIdsForMap.set($event)"
+          (selectedMissionTypesChange)="selectedMissionTypesForMap.set($event)"
           (selectedTailIdsChange)="selectedTailIdsForMap.set($event)"
           (clear)="clearMapHighlights()"
         />
@@ -36,6 +39,7 @@
           [selectedTailIds]="selectedTailIds()"
           [activeMissions]="activeMissions()"
           [highlightMissionIds]="highlightMissionIds()"
+          [highlightMissionTypes]="highlightMissionTypes()"
           [highlightTailIds]="highlightTailIds()"
         />
       </section>

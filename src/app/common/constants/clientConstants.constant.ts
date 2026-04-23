@@ -360,6 +360,8 @@ export namespace ClientConstants {
     export const MISSION_ICON_WIDTH_PX = 36;
     export const MISSION_ICON_HEIGHT_PX = 40;
     export const LINE_WEIGHT = 3;
+    export const FILTER_UAV_SEARCH_PREFIX = 'uav-';
+    export const LEAFLET_TOOLTIP_BIND_OPACITY = 1;
     export const LINE_OPACITY = 0.85;
     export const FILTER_DIMMED_OPACITY = 0.25;
     export const FILTER_FULL_OPACITY = 1.0;

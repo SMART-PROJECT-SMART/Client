@@ -1,8 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
+import type { UAVType } from '../../../../common/enums';
+import { ClientConstants } from '../../../../common';
 import type { AssignmentReviewMapMissionFilterOption } from '../../../../models/assignment/assignmentReviewMapMissionFilterOption.model';
+import type { AssignmentReviewMapMissionTypeFilterOption } from '../../../../models/assignment/assignmentReviewMapMissionTypeFilterOption.model';
 import type { AssignmentReviewMapUavFilterOption } from '../../../../models/assignment/assignmentReviewMapUavFilterOption.model';
+import { applyUniqueSelection } from '../../utils/assignment-review-map-filter-selection.util';
+
+const MAP = ClientConstants.AssignmentReviewMap;
 
 @Component({
   selector: 'app-assignment-review-map-filters',
@@ -13,11 +19,14 @@ import type { AssignmentReviewMapUavFilterOption } from '../../../../models/assi
 })
 export class AssignmentReviewMapFiltersComponent {
   readonly missions = input.required<AssignmentReviewMapMissionFilterOption[]>();
+  readonly missionTypes = input.required<AssignmentReviewMapMissionTypeFilterOption[]>();
   readonly uavs = input.required<AssignmentReviewMapUavFilterOption[]>();
   readonly selectedMissionIds = input.required<string[]>();
+  readonly selectedMissionTypes = input.required<UAVType[]>();
   readonly selectedTailIds = input.required<number[]>();
 
   readonly selectedMissionIdsChange = output<string[]>();
+  readonly selectedMissionTypesChange = output<UAVType[]>();
   readonly selectedTailIdsChange = output<number[]>();
   readonly clear = output<void>();
 
@@ -27,6 +36,7 @@ export class AssignmentReviewMapFiltersComponent {
   readonly isOpen = signal(false);
 
   readonly selectedMissionIdSet = computed(() => new Set(this.selectedMissionIds()));
+  readonly selectedMissionTypeSet = computed(() => new Set(this.selectedMissionTypes()));
   readonly selectedTailIdSet = computed(() => new Set(this.selectedTailIds()));
 
   readonly filteredMissionOptions = computed(() => {
@@ -45,7 +55,10 @@ export class AssignmentReviewMapFiltersComponent {
     return this.uavs().filter((u: AssignmentReviewMapUavFilterOption) => {
       if (selected.has(u.tailId)) return true;
       if (!q) return true;
-      return `uav-${u.tailId}`.includes(q) || u.tailId.toString().includes(q);
+      return (
+        `${MAP.FILTER_UAV_SEARCH_PREFIX}${u.tailId}`.includes(q) ||
+        u.tailId.toString().includes(q)
+      );
     });
   });
 
@@ -58,19 +71,19 @@ export class AssignmentReviewMapFiltersComponent {
   }
 
   onToggleMission(missionId: string, checked: boolean): void {
-    const selected = this.selectedMissionIds();
-    const next = checked
-      ? [...selected, missionId].filter((v, i, a) => a.indexOf(v) === i)
-      : selected.filter((id: string) => id !== missionId);
-    this.selectedMissionIdsChange.emit(next);
+    this.selectedMissionIdsChange.emit(
+      applyUniqueSelection(this.selectedMissionIds(), missionId, checked),
+    );
   }
 
   onToggleUav(tailId: number, checked: boolean): void {
-    const selected = this.selectedTailIds();
-    const next = checked
-      ? [...selected, tailId].filter((v, i, a) => a.indexOf(v) === i)
-      : selected.filter((id: number) => id !== tailId);
-    this.selectedTailIdsChange.emit(next);
+    this.selectedTailIdsChange.emit(applyUniqueSelection(this.selectedTailIds(), tailId, checked));
+  }
+
+  onToggleMissionType(uavType: UAVType, checked: boolean): void {
+    this.selectedMissionTypesChange.emit(
+      applyUniqueSelection(this.selectedMissionTypes(), uavType, checked),
+    );
   }
 
   onClear(): void {

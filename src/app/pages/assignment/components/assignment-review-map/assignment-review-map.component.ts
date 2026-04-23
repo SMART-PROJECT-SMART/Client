@@ -9,12 +9,13 @@ import {
   ElementRef,
 } from '@angular/core';
 import * as L from 'leaflet';
-import { TelemetryField } from '../../../../common/enums';
+import { TelemetryField, UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { AssignmentUtil } from '../../../../common/utils';
 import type { Mission, MissionAssignmentPairing, UAV } from '../../../../models';
 import type { ActiveMissionRo } from '../../../../models/Ro/activeMissionRo.ro';
 import type { AssignmentReviewMapRenderContext } from '../../../../models/assignment/assignmentReviewMapRenderContext.model';
+import type { AssignmentReviewMapHighlightContext } from '../../../../models/assignment/assignmentReviewMapHighlightContext.model';
 import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util';
 import {
   createMissionDivIcon,
@@ -29,6 +30,11 @@ import {
   buildMissionTooltipContent,
   buildUavTooltipContent,
 } from '../../utils/assignment-review-map-tooltip.util';
+import {
+  resolveDimmedConnectorLineOpacity,
+  resolveMissionHighlightOpacity,
+  resolveUavHighlightOpacity,
+} from '../../utils/assignment-review-map-highlight.util';
 
 const MAP = ClientConstants.AssignmentReviewMap;
 
@@ -46,6 +52,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   readonly selectedTailIds = input.required<Map<string, number>>();
   readonly activeMissions = input<ActiveMissionRo[]>([]);
   readonly highlightMissionIds = input<Set<string>>(new Set());
+  readonly highlightMissionTypes = input<Set<UAVType>>(new Set());
   readonly highlightTailIds = input<Set<number>>(new Set());
 
   readonly mapHost = viewChild<ElementRef<HTMLElement>>('mapHost');
@@ -61,6 +68,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       this.uavTelemetryData();
       this.activeMissions();
       this.highlightMissionIds();
+      this.highlightMissionTypes();
       this.highlightTailIds();
       if (!this.map) {
         return;
@@ -104,8 +112,9 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     group.clearLayers();
     const boundsPoints: L.LatLngExpression[] = [];
     const context = this.buildRenderContext();
-    this.renderUavMarkers(group, boundsPoints, context);
-    this.renderMissionMarkersAndLinks(group, boundsPoints, context);
+    const highlightContext = this.buildHighlightContext();
+    this.renderUavMarkers(group, boundsPoints, context, highlightContext);
+    this.renderMissionMarkersAndLinks(group, boundsPoints, context, highlightContext);
     this.fitMapToPoints(map, boundsPoints);
     queueMicrotask(() => map.invalidateSize());
   }
@@ -135,12 +144,22 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     return map;
   }
 
+  private buildHighlightContext(): AssignmentReviewMapHighlightContext {
+    return {
+      pairings: this.pairings(),
+      selectedTailIdsByMissionId: this.selectedTailIds(),
+      highlightMissionIds: this.highlightMissionIds(),
+      highlightMissionTypes: this.highlightMissionTypes(),
+      highlightTailIds: this.highlightTailIds(),
+    };
+  }
+
   private renderUavMarkers(
     group: L.LayerGroup,
     boundsPoints: L.LatLngExpression[],
     context: AssignmentReviewMapRenderContext,
+    highlightContext: AssignmentReviewMapHighlightContext,
   ): void {
-    const opacity = this.resolveUavOpacity;
     for (const uav of this.availableUavs()) {
       const pos = extractLatLonFromUav(uav);
       if (!pos) {
@@ -148,7 +167,12 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       }
       const color = context.tailColors.get(uav.tailId) ?? MAP.UAV_COLOR_UNASSIGNED;
       const isOnActiveMission = context.activeMissionByTailId.has(uav.tailId);
-      const uavOpacity = opacity.call(this, uav.tailId);
+      const uavOpacity = resolveUavHighlightOpacity(
+        highlightContext,
+        uav.tailId,
+        MAP.FILTER_FULL_OPACITY,
+        MAP.FILTER_DIMMED_OPACITY,
+      );
       const marker = L.marker([pos.lat, pos.lon], {
         icon: createUavDivIcon(color, { isOnActiveMission, opacity: uavOpacity }),
       });
@@ -156,7 +180,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
         className: MAP.TOOLTIP_TOOLTIP_CLASS,
         direction: 'top',
         offset: [MAP.TOOLTIP_TOOLTIP_OFFSET_X_PX, MAP.TOOLTIP_TOOLTIP_OFFSET_Y_PX],
-        opacity: 1,
+        opacity: MAP.LEAFLET_TOOLTIP_BIND_OPACITY,
       });
       marker.addTo(group);
       boundsPoints.push([pos.lat, pos.lon]);
@@ -167,13 +191,19 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     group: L.LayerGroup,
     boundsPoints: L.LatLngExpression[],
     context: AssignmentReviewMapRenderContext,
+    highlightContext: AssignmentReviewMapHighlightContext,
   ): void {
     context.pairings.forEach((pairing) => {
       const loc = pairing.mission.location;
       boundsPoints.push([loc.latitude, loc.longitude]);
       const missionColor =
         context.missionColors.get(pairing.mission.id) ?? MAP.UAV_COLOR_UNASSIGNED;
-      const missionOpacity = this.resolveMissionOpacity(pairing.mission.id);
+      const missionOpacity = resolveMissionHighlightOpacity(
+        highlightContext,
+        pairing.mission.id,
+        MAP.FILTER_FULL_OPACITY,
+        MAP.FILTER_DIMMED_OPACITY,
+      );
       const missionMarker = L.marker([loc.latitude, loc.longitude], {
         icon: createMissionDivIcon(
           pairing.mission.requiredUAVType,
@@ -191,12 +221,20 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       }
 
       const tailId = context.selectedMap.get(pairing.mission.id) ?? pairing.tailId;
-      const uavOpacity = this.resolveUavOpacity(tailId);
-      const lineOpacity =
-        this.hasAnyHighlightSelection()
-        && (missionOpacity < MAP.FILTER_FULL_OPACITY || uavOpacity < MAP.FILTER_FULL_OPACITY)
-          ? MAP.FILTER_DIMMED_OPACITY
-          : MAP.LINE_OPACITY;
+      const uavOpacity = resolveUavHighlightOpacity(
+        highlightContext,
+        tailId,
+        MAP.FILTER_FULL_OPACITY,
+        MAP.FILTER_DIMMED_OPACITY,
+      );
+      const lineOpacity = resolveDimmedConnectorLineOpacity(
+        missionOpacity,
+        uavOpacity,
+        highlightContext,
+        MAP.FILTER_FULL_OPACITY,
+        MAP.FILTER_DIMMED_OPACITY,
+        MAP.LINE_OPACITY,
+      );
       L.polyline(
         [
           [uavPos.lat, uavPos.lon],
@@ -209,28 +247,6 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
         },
       ).addTo(group);
     });
-  }
-
-  private hasAnyHighlightSelection(): boolean {
-    return this.highlightMissionIds().size > 0 || this.highlightTailIds().size > 0;
-  }
-
-  private resolveMissionOpacity(missionId: string): number {
-    const hasAny = this.hasAnyHighlightSelection();
-    if (!hasAny) {
-      return MAP.FILTER_FULL_OPACITY;
-    }
-    return this.highlightMissionIds().has(missionId)
-      ? MAP.FILTER_FULL_OPACITY
-      : MAP.FILTER_DIMMED_OPACITY;
-  }
-
-  private resolveUavOpacity(tailId: number): number {
-    const hasAny = this.hasAnyHighlightSelection();
-    if (!hasAny) {
-      return MAP.FILTER_FULL_OPACITY;
-    }
-    return this.highlightTailIds().has(tailId) ? MAP.FILTER_FULL_OPACITY : MAP.FILTER_DIMMED_OPACITY;
   }
 
   private resolveAssignedUavPosition(

@@ -13,19 +13,25 @@ import { firstValueFrom } from 'rxjs';
 import type {
   AssignmentAlgorithmRo,
   MissionAssignmentPairing,
-  MissionToUavAssignment,
   UAV,
   ApplyAssignmentRo,
   ValidationResult,
 } from '../../../../models';
 import type { ActiveMissionRo } from '../../../../models/Ro/activeMissionRo.ro';
 import type { AssignmentReviewMapMissionFilterOption } from '../../../../models/assignment/assignmentReviewMapMissionFilterOption.model';
+import type { AssignmentReviewMapMissionTypeFilterOption } from '../../../../models/assignment/assignmentReviewMapMissionTypeFilterOption.model';
 import type { AssignmentReviewMapUavFilterOption } from '../../../../models/assignment/assignmentReviewMapUavFilterOption.model';
 import { TelemetryField, ViolationType, PlatformType, UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../common/utils';
 import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
 import { MissionStatusStorageService } from '../../../../services/mission/mission-status-storage.service';
+import { buildApplyAssignmentRoFromReviewState } from '../../utils/assignment-review-apply-payload.util';
+import {
+  buildMapMissionFilterOptionsFromPairings,
+  buildMapMissionTypeFilterOptionsFromPairings,
+  buildMapUavFilterOptionsFromUavs,
+} from '../../utils/assignment-review-map-filter-options.util';
 
 const {
   BACK_LABEL,
@@ -73,6 +79,7 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly expandedTelemetry: WritableSignal<Set<string>> = signal<Set<string>>(new Set());
 
   public readonly selectedMissionIdsForMap = signal<string[]>([]);
+  public readonly selectedMissionTypesForMap = signal<UAVType[]>([]);
   public readonly selectedTailIdsForMap = signal<number[]>([]);
 
   public readonly validationResult: Signal<ValidationResult> = computed(() => {
@@ -101,6 +108,10 @@ export class AssignmentReviewComponent implements OnInit {
     return new Set(this.selectedTailIdsForMap());
   });
 
+  public readonly highlightMissionTypes: Signal<Set<UAVType>> = computed(() => {
+    return new Set(this.selectedMissionTypesForMap());
+  });
+
   public readonly mapMissionById: Signal<Map<string, string>> = computed(() => {
     const map = new Map<string, string>();
     for (const p of this.algorithmResult().pairings) {
@@ -110,15 +121,15 @@ export class AssignmentReviewComponent implements OnInit {
   });
 
   public readonly mapMissionOptions: Signal<AssignmentReviewMapMissionFilterOption[]> = computed(() => {
-    const missions = new Map<string, string>();
-    for (const p of this.algorithmResult().pairings) {
-      missions.set(p.mission.id, p.mission.title);
-    }
-    return Array.from(missions.entries()).map(([missionId, title]) => ({ missionId, title }));
+    return buildMapMissionFilterOptionsFromPairings(this.algorithmResult().pairings);
   });
 
   public readonly mapUavOptions: Signal<AssignmentReviewMapUavFilterOption[]> = computed(() => {
-    return this.availableUavs().map((u) => ({ tailId: u.tailId }));
+    return buildMapUavFilterOptionsFromUavs(this.availableUavs());
+  });
+
+  public readonly mapMissionTypeOptions: Signal<AssignmentReviewMapMissionTypeFilterOption[]> = computed(() => {
+    return buildMapMissionTypeFilterOptionsFromPairings(this.algorithmResult().pairings);
   });
 
   public getViolationTypeLabel(type: ViolationType): string {
@@ -155,6 +166,7 @@ export class AssignmentReviewComponent implements OnInit {
 
   public clearMapHighlights(): void {
     this.selectedMissionIdsForMap.set([]);
+    this.selectedMissionTypesForMap.set([]);
     this.selectedTailIdsForMap.set([]);
   }
 
@@ -201,34 +213,13 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public onApply(): void {
-    const telemetryData = this.algorithmResult().uavTelemetryData;
-
-    const suggestedAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(
-      (p) => ({
-        mission: p.mission,
-        uavTailId: p.tailId,
-        startTime: p.timeWindow.start,
-        uavTelemetrySnapshot: telemetryData[p.tailId],
-      }),
+    this.apply.emit(
+      buildApplyAssignmentRoFromReviewState(
+        this.algorithmResult().pairings,
+        this.selectedTailIds(),
+        this.algorithmResult().uavTelemetryData,
+      ),
     );
-
-    const actualAssignments: MissionToUavAssignment[] = this.algorithmResult().pairings.map(
-      (p) => {
-        const tailId = this.selectedTailIds().get(p.mission.id) ?? p.tailId;
-        return {
-          mission: p.mission,
-          uavTailId: tailId,
-          startTime: p.timeWindow.start,
-          uavTelemetrySnapshot: telemetryData[tailId],
-        };
-      },
-    );
-    const assignmentResult: ApplyAssignmentRo = {
-      suggested: suggestedAssignments,
-      actual: actualAssignments,
-      allUavTelemetryData: telemetryData as Record<string, Record<string, number>>,
-    };
-    this.apply.emit(assignmentResult);
   }
 
   public getTelemetryEntries(uav: UAV): [TelemetryField, number][] {
