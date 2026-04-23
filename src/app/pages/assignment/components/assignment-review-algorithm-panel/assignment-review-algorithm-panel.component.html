@@ -1,64 +1,132 @@
-<fieldset class="algorithm-panel">
-  <legend class="algorithm-panel__legend">{{ title }}</legend>
+<fieldset class="collapsible-section algorithm-panel">
+  <legend (click)="togglePanel()" class="collapsible-legend">
+    <mat-icon class="expand-icon">
+      {{ isExpanded() ? 'expand_less' : 'expand_more' }}
+    </mat-icon>
+    {{ title }}
+  </legend>
+  @if (isExpanded()) {
+    <div class="algorithm-panel__content">
+    <div class="algorithm-panel__steps">
+    <div class="algorithm-panel__step">
+      <div class="algorithm-panel__step-title">{{ stepMissionNeedsLabel }}</div>
+      <div class="algorithm-panel__step-text">{{ missionNeedsSummary() }}</div>
+    </div>
 
-  <div class="algorithm-panel__top">
-    <div class="algorithm-panel__score-chip">
-      <span>{{ suggestedLabel }}</span>
-      <strong>{{ withSign(insight()?.totalScore ?? null) }}</strong>
-      <span class="algorithm-panel__tail">UAV-{{ suggestedTailId() }}</span>
-    </div>
-    <div class="algorithm-panel__score-chip">
-      <span>{{ selectedLabel }}</span>
-      <strong>{{ withSign(selectedScore()) }}</strong>
-      <span class="algorithm-panel__tail">UAV-{{ selectedTailId() }}</span>
-    </div>
-    <div class="algorithm-panel__score-chip">
-      <span>{{ deltaLabel }}</span>
-      <strong [class.algorithm-panel__delta-negative]="(deltaVsSuggestion() ?? 0) < 0">
-        {{ withSign(deltaVsSuggestion()) }}
-      </strong>
-    </div>
-    <button mat-stroked-button type="button" (click)="onShowOnMap()">
-      {{ showOnMapLabel }}
-    </button>
-  </div>
+    <div class="algorithm-panel__step">
+      <div class="algorithm-panel__step-title">{{ stepCandidatesLabel }}</div>
+      <div class="algorithm-panel__subsection-title">{{ alternativesLabel }}</div>
+      @if (candidateSummaries().length > 0) {
+        <ul class="algorithm-panel__list">
+          @for (candidateSummary of candidateSummaries(); track candidateSummary) {
+            <li>{{ candidateSummary }}</li>
+          }
+        </ul>
+      } @else {
+        <div class="algorithm-panel__step-text">{{ alternativesEmpty }}</div>
+      }
 
-  <div class="algorithm-panel__metrics">
-    <div class="algorithm-panel__metric">
-      <span>{{ telemetryLabel }}</span>
-      <span>{{ withSign(insight()?.telemetryScore ?? null) }}</span>
+      <div class="algorithm-panel__subsection-title">{{ blockedCandidatesLabel }}</div>
+      @if (blockedCandidateSummaries().length > 0) {
+        <ul class="algorithm-panel__blocked-list">
+          @for (blockedCandidate of blockedCandidateSummaries(); track blockedCandidate) {
+            <li>{{ blockedCandidate }}</li>
+          }
+        </ul>
+      } @else {
+        <div class="algorithm-panel__step-text">{{ blockedCandidatesEmptyLabel }}</div>
+      }
     </div>
-    <div class="algorithm-panel__metric">
-      <span>{{ distanceLabel }}</span>
-      <span>{{ withSign(insight()?.distanceScore ?? null) }}</span>
-    </div>
-    <div class="algorithm-panel__metric">
-      <span>{{ priorityLabel }}</span>
-      <span>{{ withSign(insight()?.priorityScore ?? null) }}</span>
-    </div>
-    <div class="algorithm-panel__metric">
-      <span>{{ mismatchLabel }}</span>
-      <span>{{ withSign(insight()?.typeMismatchPenalty ?? null) }}</span>
-    </div>
-    <div class="algorithm-panel__metric">
-      <span>{{ activeLabel }}</span>
-      <span>{{ withSign(insight()?.activeMissionPenalty ?? null) }}</span>
-    </div>
-  </div>
 
-  <div class="algorithm-panel__alternatives">
-    <div class="algorithm-panel__alternatives-title">{{ alternativesLabel }}</div>
-    @if (rankedAlternatives().length > 0) {
-      <div class="algorithm-panel__alternatives-list">
-        @for (alt of rankedAlternatives(); track alt.tailId) {
-          <div class="algorithm-panel__alternative-row">
-            <span>UAV-{{ alt.tailId }}</span>
-            <span>{{ withSign(alt.totalScore) }}</span>
+    <div class="algorithm-panel__step">
+      <div class="algorithm-panel__step-title">{{ stepDecisionLabel }}</div>
+      <ul class="algorithm-panel__list">
+        @for (decisionReason of decisionReasons(); track decisionReason) {
+          <li>{{ decisionReason }}</li>
+        }
+      </ul>
+    </div>
+
+    <div class="algorithm-panel__step">
+      <div class="algorithm-panel__step-title">{{ stepSelectionChangeLabel }}</div>
+      <div class="algorithm-panel__step-text">{{ selectedChangeSummary() }}</div>
+      @if (selectedWarnings().length > 0) {
+        <ul class="algorithm-panel__warnings">
+          @for (warning of selectedWarnings(); track warning) {
+            <li>{{ warningPrefixLabel }} {{ warning }}</li>
+          }
+        </ul>
+      }
+    </div>
+    </div>
+
+    <div class="algorithm-panel__actions">
+      <button mat-stroked-button type="button" (click)="onShowOnMap()">
+        {{ showOnMapLabel }}
+      </button>
+    </div>
+
+    <details class="algorithm-panel__details">
+      <summary>{{ technicalDetailsLabel }}</summary>
+
+      <div class="algorithm-panel__top">
+        <div class="algorithm-panel__score-chip">
+          <span>{{ suggestedLabel }}</span>
+          <strong>{{ withSign(insight()?.totalScore ?? null) }}</strong>
+          <span class="algorithm-panel__tail">UAV-{{ suggestedTailId() }}</span>
+        </div>
+        <div class="algorithm-panel__score-chip">
+          <span>{{ selectedLabel }}</span>
+          <strong>{{ withSign(selectedScore()) }}</strong>
+          <span class="algorithm-panel__tail">UAV-{{ selectedTailId() }}</span>
+        </div>
+        <div class="algorithm-panel__score-chip">
+          <span>{{ deltaLabel }}</span>
+          <strong [class.algorithm-panel__delta-negative]="(deltaVsSuggestion() ?? 0) < 0">
+            {{ withSign(deltaVsSuggestion()) }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="algorithm-panel__metrics">
+        <div class="algorithm-panel__metric">
+          <span>{{ telemetryLabel }}</span>
+          <span>{{ withSign(insight()?.telemetryScore ?? null) }}</span>
+        </div>
+        <div class="algorithm-panel__metric">
+          <span>{{ distanceLabel }}</span>
+          <span>{{ withSign(insight()?.distanceScore ?? null) }}</span>
+        </div>
+        <div class="algorithm-panel__metric">
+          <span>{{ priorityLabel }}</span>
+          <span>{{ withSign(insight()?.priorityScore ?? null) }}</span>
+        </div>
+        <div class="algorithm-panel__metric">
+          <span>{{ mismatchLabel }}</span>
+          <span>{{ withSign(insight()?.typeMismatchPenalty ?? null) }}</span>
+        </div>
+        <div class="algorithm-panel__metric">
+          <span>{{ activeLabel }}</span>
+          <span>{{ withSign(insight()?.activeMissionPenalty ?? null) }}</span>
+        </div>
+      </div>
+
+      <div class="algorithm-panel__alternatives">
+        <div class="algorithm-panel__alternatives-title">{{ alternativesLabel }}</div>
+        @if (rankedAlternatives().length > 0) {
+          <div class="algorithm-panel__alternatives-list">
+            @for (alt of rankedAlternatives(); track alt.tailId) {
+              <div class="algorithm-panel__alternative-row">
+                <span>UAV-{{ alt.tailId }}</span>
+                <span>{{ withSign(alt.totalScore) }}</span>
+              </div>
+            }
           </div>
+        } @else {
+          <div class="algorithm-panel__alternatives-empty">{{ alternativesEmpty }}</div>
         }
       </div>
-    } @else {
-      <div class="algorithm-panel__alternatives-empty">{{ alternativesEmpty }}</div>
-    }
-  </div>
+    </details>
+    </div>
+  }
 </fieldset>

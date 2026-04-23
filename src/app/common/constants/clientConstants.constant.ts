@@ -71,7 +71,54 @@ export namespace ClientConstants {
     export const ALGORITHM_REASON_TELEMETRY_LABEL: string = 'Telemetry fit was the deciding factor';
     export const ALGORITHM_REASON_SAFETY_LABEL: string = 'Safer assignment (penalty avoidance) decided';
     export const ALGORITHM_REASON_MISSION_SUFFIX: string = 'missions';
-    export const ALGORITHM_PANEL_TITLE: string = 'Algorithm';
+    export const ALGORITHM_PANEL_TITLE: string = 'Assignment explanation';
+    export const ALGORITHM_STEP_MISSION_NEEDS_LABEL: string = 'Step 1: Mission needs';
+    export const ALGORITHM_STEP_CANDIDATES_LABEL: string = 'Step 2: Candidate UAVs considered';
+    export const ALGORITHM_STEP_DECISION_LABEL: string = 'Step 3: Why this UAV was chosen';
+    export const ALGORITHM_STEP_SELECTION_CHANGE_LABEL: string = 'Step 4: If you choose a different UAV';
+    export const ALGORITHM_TECHNICAL_DETAILS_LABEL: string = 'Technical details';
+    export const ALGORITHM_MISSION_NEEDS_SENTENCE_LABEL: string =
+      'This mission needs a {type} UAV and has {priority} priority.';
+    export const ALGORITHM_CANDIDATE_BEST_FIT_LABEL: string = 'Best overall fit for this mission';
+    export const ALGORITHM_CANDIDATE_SUGGESTED_LABEL: string = 'Matches the suggested score';
+    export const ALGORITHM_CANDIDATE_WEAKER_LABEL: string = 'Possible, but lower by';
+    export const ALGORITHM_VALID_CANDIDATES_LABEL: string = 'Valid options';
+    export const ALGORITHM_BLOCKED_CANDIDATES_LABEL: string = 'Not chosen because...';
+    export const ALGORITHM_BLOCKED_CANDIDATES_EMPTY_LABEL: string =
+      'No blocked UAVs for this mission.';
+    export const ALGORITHM_BLOCKED_REASON_TYPE_MISMATCH_LABEL: string =
+      'UAV type does not match mission requirement.';
+    export const ALGORITHM_BLOCKED_REASON_ACTIVE_MISSION_LABEL: string =
+      'Reassigning this UAV from its active mission lowers the optimization score.';
+    export const ALGORITHM_BLOCKED_REASON_LOWER_SCORE_LABEL: string = 'Lower overall score by';
+    export const ALGORITHM_BLOCKED_REASON_CONFLICT_RISK_LABEL: string =
+      'May cause mission conflict.';
+    export const ALGORITHM_DECISION_BEST_SCORE_LABEL: string =
+      'Suggested UAV gives the strongest valid overall score.';
+    export const ALGORITHM_DECISION_BLOCKED_AVOIDED_LABEL: string =
+      'Other UAVs were not selected due to type mismatch or lower optimization score.';
+    export const ALGORITHM_DECISION_DISTANCE_LABEL: string = 'Distance strongly supports this choice.';
+    export const ALGORITHM_DECISION_TELEMETRY_LABEL: string =
+      'Telemetry fit strongly supports this choice.';
+    export const ALGORITHM_DECISION_PRIORITY_LABEL: string =
+      'Mission priority weighting supports this choice.';
+    export const ALGORITHM_DECISION_SAFETY_LABEL: string = 'No critical penalties on this choice.';
+    export const ALGORITHM_REASON_PRIORITY_LABEL: string = 'Mission priority is supported';
+    export const ALGORITHM_SELECTION_NO_CHANGE_LABEL: string =
+      'You kept the suggested UAV, so expected outcome stays the same.';
+    export const ALGORITHM_SELECTION_IMPROVED_LABEL: string = 'Your selection improves the score by';
+    export const ALGORITHM_SELECTION_WORSE_LABEL: string = 'Your selection lowers the score by';
+    export const ALGORITHM_SELECTION_UNKNOWN_LABEL: string =
+      'This selection cannot be scored from available alternatives.';
+    export const ALGORITHM_WARNING_PREFIX_LABEL: string = 'Risk:';
+    export const ALGORITHM_WARNING_TYPE_MISMATCH_LABEL: string =
+      'UAV type does not match this mission requirement.';
+    export const ALGORITHM_WARNING_ACTIVE_MISSION_LABEL: string =
+      'This UAV is already active on another mission.';
+    export const ALGORITHM_WARNING_CONFLICT_RISK_LABEL: string =
+      'This selection may introduce assignment conflicts.';
+    export const ALGORITHM_TOP_REASONS_LIMIT: number = 3;
+    export const ALGORITHM_CANDIDATE_SUMMARIES_LIMIT: number = 3;
     export const ALGORITHM_SELECTED_LABEL: string = 'Your selection';
     export const ALGORITHM_SUGGESTED_LABEL: string = 'Algorithm suggestion';
     export const ALGORITHM_ALTERNATIVES_LABEL: string = 'Alternative UAVs';
