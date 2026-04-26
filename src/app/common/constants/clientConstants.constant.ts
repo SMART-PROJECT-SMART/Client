@@ -132,6 +132,48 @@ export namespace ClientConstants {
     export const ALGORITHM_METRIC_PRIORITY_LABEL: string = 'Priority';
     export const ALGORITHM_METRIC_MISMATCH_LABEL: string = 'Type mismatch';
     export const ALGORITHM_METRIC_ACTIVE_LABEL: string = 'Active mission';
+    export const ASSIGNMENT_EXPLANATION_LABELS = {
+      title: ALGORITHM_PANEL_TITLE,
+      stepMissionNeeds: ALGORITHM_STEP_MISSION_NEEDS_LABEL,
+      stepCandidates: ALGORITHM_STEP_CANDIDATES_LABEL,
+      stepDecision: ALGORITHM_STEP_DECISION_LABEL,
+      stepSelectionChange: ALGORITHM_STEP_SELECTION_CHANGE_LABEL,
+      technicalDetails: ALGORITHM_TECHNICAL_DETAILS_LABEL,
+      alternatives: ALGORITHM_VALID_CANDIDATES_LABEL,
+      alternativesEmpty: ALGORITHM_ALTERNATIVES_EMPTY,
+      blockedCandidates: ALGORITHM_BLOCKED_CANDIDATES_LABEL,
+      blockedCandidatesEmpty: ALGORITHM_BLOCKED_CANDIDATES_EMPTY_LABEL,
+      showOnMap: SHOW_ON_MAP_LABEL,
+      candidateBestFit: ALGORITHM_CANDIDATE_BEST_FIT_LABEL,
+      candidateSuggested: ALGORITHM_CANDIDATE_SUGGESTED_LABEL,
+      candidateWeaker: ALGORITHM_CANDIDATE_WEAKER_LABEL,
+      decisionBestScore: ALGORITHM_DECISION_BEST_SCORE_LABEL,
+      reasonDistance: ALGORITHM_DECISION_DISTANCE_LABEL,
+      reasonTelemetry: ALGORITHM_DECISION_TELEMETRY_LABEL,
+      reasonPriority: ALGORITHM_DECISION_PRIORITY_LABEL,
+      reasonSafety: ALGORITHM_DECISION_SAFETY_LABEL,
+      blockedReasonTypeMismatch: ALGORITHM_BLOCKED_REASON_TYPE_MISMATCH_LABEL,
+      blockedReasonActiveMission: ALGORITHM_BLOCKED_REASON_ACTIVE_MISSION_LABEL,
+      blockedReasonLowerScore: ALGORITHM_BLOCKED_REASON_LOWER_SCORE_LABEL,
+      blockedReasonConflictRisk: ALGORITHM_BLOCKED_REASON_CONFLICT_RISK_LABEL,
+      selectionNoChange: ALGORITHM_SELECTION_NO_CHANGE_LABEL,
+      selectionImproved: ALGORITHM_SELECTION_IMPROVED_LABEL,
+      selectionWorse: ALGORITHM_SELECTION_WORSE_LABEL,
+      selectionUnknown: ALGORITHM_SELECTION_UNKNOWN_LABEL,
+      selectionReasonsSuffix: ALGORITHM_SELECTION_REASONS_SUFFIX_LABEL,
+      warningTypeMismatch: ALGORITHM_WARNING_TYPE_MISMATCH_LABEL,
+      warningActiveMission: ALGORITHM_WARNING_ACTIVE_MISSION_LABEL,
+      warningConflictRisk: ALGORITHM_WARNING_CONFLICT_RISK_LABEL,
+      missionNeedsSentence: ALGORITHM_MISSION_NEEDS_SENTENCE_LABEL,
+      selected: ALGORITHM_SELECTED_LABEL,
+      suggested: ALGORITHM_SUGGESTED_LABEL,
+      delta: SCORE_DELTA_LABEL,
+    } as const;
+    export const ASSIGNMENT_EXPLANATION_LIMITS = {
+      topReasons: ALGORITHM_TOP_REASONS_LIMIT,
+      candidateSummaries: ALGORITHM_CANDIDATE_SUMMARIES_LIMIT,
+      decimals: SCORE_DECIMALS,
+    } as const;
     export const FIT_BREAKDOWN_TELEMETRY_LABEL: string = 'Telemetry';
     export const FIT_BREAKDOWN_DISTANCE_LABEL: string = 'Distance';
     export const FIT_BREAKDOWN_PRIORITY_LABEL: string = 'Priority';

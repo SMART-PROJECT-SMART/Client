@@ -3,19 +3,19 @@
     <mat-icon class="expand-icon">
       {{ isExpanded() ? 'expand_less' : 'expand_more' }}
     </mat-icon>
-    {{ title }}
+    {{ labels.title }}
   </legend>
   @if (isExpanded()) {
     <div class="algorithm-panel__content">
     <div class="algorithm-panel__steps">
     <div class="algorithm-panel__step">
-      <div class="algorithm-panel__step-title">{{ stepMissionNeedsLabel }}</div>
+      <div class="algorithm-panel__step-title">{{ labels.stepMissionNeeds }}</div>
       <div class="algorithm-panel__step-text">{{ missionNeedsSummary() }}</div>
     </div>
 
     <div class="algorithm-panel__step">
-      <div class="algorithm-panel__step-title">{{ stepCandidatesLabel }}</div>
-      <div class="algorithm-panel__subsection-title">{{ alternativesLabel }}</div>
+      <div class="algorithm-panel__step-title">{{ labels.stepCandidates }}</div>
+      <div class="algorithm-panel__subsection-title">{{ labels.alternatives }}</div>
       @if (candidateSummaries().length > 0) {
         <ul class="algorithm-panel__list">
           @for (candidateSummary of candidateSummaries(); track candidateSummary) {
@@ -23,10 +23,10 @@
           }
         </ul>
       } @else {
-        <div class="algorithm-panel__step-text">{{ alternativesEmpty }}</div>
+        <div class="algorithm-panel__step-text">{{ labels.alternativesEmpty }}</div>
       }
 
-      <div class="algorithm-panel__subsection-title">{{ blockedCandidatesLabel }}</div>
+      <div class="algorithm-panel__subsection-title">{{ labels.blockedCandidates }}</div>
       @if (blockedCandidateSummaries().length > 0) {
         <ul class="algorithm-panel__blocked-list">
           @for (blockedCandidate of blockedCandidateSummaries(); track blockedCandidate) {
@@ -34,12 +34,12 @@
           }
         </ul>
       } @else {
-        <div class="algorithm-panel__step-text">{{ blockedCandidatesEmptyLabel }}</div>
+        <div class="algorithm-panel__step-text">{{ labels.blockedCandidatesEmpty }}</div>
       }
     </div>
 
     <div class="algorithm-panel__step">
-      <div class="algorithm-panel__step-title">{{ stepDecisionLabel }}</div>
+      <div class="algorithm-panel__step-title">{{ labels.stepDecision }}</div>
       <ul class="algorithm-panel__list">
         @for (decisionReason of decisionReasons(); track decisionReason) {
           <li>{{ decisionReason }}</li>
@@ -48,11 +48,11 @@
     </div>
 
     <div class="algorithm-panel__step">
-      <div class="algorithm-panel__step-title">{{ stepSelectionChangeLabel }}</div>
+      <div class="algorithm-panel__step-title">{{ labels.stepSelectionChange }}</div>
       <div class="algorithm-panel__step-text">
         {{ selectedChangeSummary() }}
         @if (selectedWarnings().length > 0) {
-          {{ selectionReasonsSuffixLabel }}
+          {{ labels.selectionReasonsSuffix }}
         }
       </div>
       @if (selectedWarnings().length > 0) {
@@ -67,26 +67,26 @@
 
     <div class="algorithm-panel__actions">
       <button mat-stroked-button type="button" (click)="onShowOnMap()">
-        {{ showOnMapLabel }}
+        {{ labels.showOnMap }}
       </button>
     </div>
 
     <details class="algorithm-panel__details">
-      <summary>{{ technicalDetailsLabel }}</summary>
+      <summary>{{ labels.technicalDetails }}</summary>
 
       <div class="algorithm-panel__top">
         <div class="algorithm-panel__score-chip">
-          <span>{{ suggestedLabel }}</span>
+          <span>{{ labels.suggested }}</span>
           <strong>{{ withSign(insight()?.totalScore ?? null) }}</strong>
           <span class="algorithm-panel__tail">UAV-{{ suggestedTailId() }}</span>
         </div>
         <div class="algorithm-panel__score-chip">
-          <span>{{ selectedLabel }}</span>
+          <span>{{ labels.selected }}</span>
           <strong>{{ withSign(selectedScore()) }}</strong>
           <span class="algorithm-panel__tail">UAV-{{ selectedTailId() }}</span>
         </div>
         <div class="algorithm-panel__score-chip">
-          <span>{{ deltaLabel }}</span>
+          <span>{{ labels.delta }}</span>
           <strong [class.algorithm-panel__delta-negative]="(deltaVsSuggestion() ?? 0) < 0">
             {{ withSign(deltaVsSuggestion()) }}
           </strong>

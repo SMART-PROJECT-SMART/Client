@@ -18,66 +18,21 @@ const CONFLICT_RISK_REASON_SCORE = 1;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentReviewAlgorithmPanelComponent {
-  readonly missionId = input.required<string>();
-  readonly suggestedTailId = input.required<number>();
-  readonly selectedTailId = input.required<number>();
-  readonly missionPriority = input.required<Priority>();
-  readonly missionRequiredUavType = input.required<UAVType>();
-  readonly uavTypeByTailId = input.required<Record<number, UAVType>>();
-  readonly insight = input<AssignmentPairingInsight | null>(null);
-  readonly isExpanded = signal(false);
+  public readonly missionId = input.required<string>();
+  public readonly suggestedTailId = input.required<number>();
+  public readonly selectedTailId = input.required<number>();
+  public readonly missionPriority = input.required<Priority>();
+  public readonly missionRequiredUavType = input.required<UAVType>();
+  public readonly uavTypeByTailId = input.required<Record<number, UAVType>>();
+  public readonly insight = input<AssignmentPairingInsight | null>(null);
+  public readonly isExpanded = signal(false);
 
-  readonly showOnMap = output<string>();
+  public readonly showOnMap = output<string>();
 
-  readonly title = AssignmentPageConstants.ALGORITHM_PANEL_TITLE;
-  readonly stepMissionNeedsLabel = AssignmentPageConstants.ALGORITHM_STEP_MISSION_NEEDS_LABEL;
-  readonly stepCandidatesLabel = AssignmentPageConstants.ALGORITHM_STEP_CANDIDATES_LABEL;
-  readonly stepDecisionLabel = AssignmentPageConstants.ALGORITHM_STEP_DECISION_LABEL;
-  readonly stepSelectionChangeLabel = AssignmentPageConstants.ALGORITHM_STEP_SELECTION_CHANGE_LABEL;
-  readonly technicalDetailsLabel = AssignmentPageConstants.ALGORITHM_TECHNICAL_DETAILS_LABEL;
-  readonly alternativesLabel = AssignmentPageConstants.ALGORITHM_VALID_CANDIDATES_LABEL;
-  readonly alternativesEmpty = AssignmentPageConstants.ALGORITHM_ALTERNATIVES_EMPTY;
-  readonly blockedCandidatesLabel = AssignmentPageConstants.ALGORITHM_BLOCKED_CANDIDATES_LABEL;
-  readonly blockedCandidatesEmptyLabel = AssignmentPageConstants.ALGORITHM_BLOCKED_CANDIDATES_EMPTY_LABEL;
-  readonly showOnMapLabel = AssignmentPageConstants.SHOW_ON_MAP_LABEL;
-  readonly candidateBestFitLabel = AssignmentPageConstants.ALGORITHM_CANDIDATE_BEST_FIT_LABEL;
-  readonly candidateSuggestedLabel = AssignmentPageConstants.ALGORITHM_CANDIDATE_SUGGESTED_LABEL;
-  readonly candidateWeakerLabel = AssignmentPageConstants.ALGORITHM_CANDIDATE_WEAKER_LABEL;
-  readonly decisionBestScoreLabel = AssignmentPageConstants.ALGORITHM_DECISION_BEST_SCORE_LABEL;
-  readonly reasonDistanceLabel = AssignmentPageConstants.ALGORITHM_DECISION_DISTANCE_LABEL;
-  readonly reasonTelemetryLabel = AssignmentPageConstants.ALGORITHM_DECISION_TELEMETRY_LABEL;
-  readonly reasonPriorityLabel = AssignmentPageConstants.ALGORITHM_DECISION_PRIORITY_LABEL;
-  readonly reasonSafetyLabel = AssignmentPageConstants.ALGORITHM_DECISION_SAFETY_LABEL;
-  readonly blockedReasonTypeMismatchLabel =
-    AssignmentPageConstants.ALGORITHM_BLOCKED_REASON_TYPE_MISMATCH_LABEL;
-  readonly blockedReasonActiveMissionLabel =
-    AssignmentPageConstants.ALGORITHM_BLOCKED_REASON_ACTIVE_MISSION_LABEL;
-  readonly blockedReasonLowerScoreLabel = AssignmentPageConstants.ALGORITHM_BLOCKED_REASON_LOWER_SCORE_LABEL;
-  readonly blockedReasonConflictRiskLabel =
-    AssignmentPageConstants.ALGORITHM_BLOCKED_REASON_CONFLICT_RISK_LABEL;
-  readonly selectionNoChangeLabel = AssignmentPageConstants.ALGORITHM_SELECTION_NO_CHANGE_LABEL;
-  readonly selectionImprovedLabel = AssignmentPageConstants.ALGORITHM_SELECTION_IMPROVED_LABEL;
-  readonly selectionWorseLabel = AssignmentPageConstants.ALGORITHM_SELECTION_WORSE_LABEL;
-  readonly selectionUnknownLabel = AssignmentPageConstants.ALGORITHM_SELECTION_UNKNOWN_LABEL;
-  readonly selectionReasonsSuffixLabel =
-    AssignmentPageConstants.ALGORITHM_SELECTION_REASONS_SUFFIX_LABEL;
-  readonly warningTypeMismatchLabel = AssignmentPageConstants.ALGORITHM_WARNING_TYPE_MISMATCH_LABEL;
-  readonly warningActiveMissionLabel = AssignmentPageConstants.ALGORITHM_WARNING_ACTIVE_MISSION_LABEL;
-  readonly warningConflictRiskLabel = AssignmentPageConstants.ALGORITHM_WARNING_CONFLICT_RISK_LABEL;
-  readonly missionNeedsSentenceLabel = AssignmentPageConstants.ALGORITHM_MISSION_NEEDS_SENTENCE_LABEL;
-  readonly selectedLabel = AssignmentPageConstants.ALGORITHM_SELECTED_LABEL;
-  readonly suggestedLabel = AssignmentPageConstants.ALGORITHM_SUGGESTED_LABEL;
-  readonly deltaLabel = AssignmentPageConstants.SCORE_DELTA_LABEL;
-  readonly topReasonsLimit = AssignmentPageConstants.ALGORITHM_TOP_REASONS_LIMIT;
-  readonly candidateSummariesLimit = AssignmentPageConstants.ALGORITHM_CANDIDATE_SUMMARIES_LIMIT;
-  readonly decimals = AssignmentPageConstants.SCORE_DECIMALS;
-  readonly telemetryLabel = AssignmentPageConstants.ALGORITHM_METRIC_TELEMETRY_LABEL;
-  readonly distanceLabel = AssignmentPageConstants.ALGORITHM_METRIC_DISTANCE_LABEL;
-  readonly priorityLabel = AssignmentPageConstants.ALGORITHM_METRIC_PRIORITY_LABEL;
-  readonly mismatchLabel = AssignmentPageConstants.ALGORITHM_METRIC_MISMATCH_LABEL;
-  readonly activeLabel = AssignmentPageConstants.ALGORITHM_METRIC_ACTIVE_LABEL;
+  public readonly labels = AssignmentPageConstants.ASSIGNMENT_EXPLANATION_LABELS;
+  public readonly limits = AssignmentPageConstants.ASSIGNMENT_EXPLANATION_LIMITS;
 
-  readonly selectedScore = computed<number | null>(() => {
+  public readonly selectedScore = computed<number | null>(() => {
     const insight = this.insight();
     if (!insight) {
       return null;
@@ -89,7 +44,7 @@ export class AssignmentReviewAlgorithmPanelComponent {
     return alt?.totalScore ?? null;
   });
 
-  readonly deltaVsSuggestion = computed<number | null>(() => {
+  public readonly deltaVsSuggestion = computed<number | null>(() => {
     const selected = this.selectedScore();
     const insight = this.insight();
     if (selected === null || !insight) {
@@ -98,7 +53,7 @@ export class AssignmentReviewAlgorithmPanelComponent {
     return selected - insight.totalScore;
   });
 
-  readonly rankedAlternatives = computed<AssignmentPairingAlternative[]>(() => {
+  public readonly rankedAlternatives = computed<AssignmentPairingAlternative[]>(() => {
     const requiredUavType = this.missionRequiredUavType();
     const uavTypes = this.uavTypeByTailId();
 
@@ -108,7 +63,7 @@ export class AssignmentReviewAlgorithmPanelComponent {
     );
   });
 
-  readonly blockedAlternatives = computed<AssignmentPairingAlternative[]>(() => {
+  public readonly blockedAlternatives = computed<AssignmentPairingAlternative[]>(() => {
     const insight = this.insight();
     if (!insight) {
       return [];
@@ -124,94 +79,94 @@ export class AssignmentReviewAlgorithmPanelComponent {
     });
   });
 
-  readonly missionNeedsSummary = computed<string>(() => {
+  public readonly missionNeedsSummary = computed<string>(() => {
     const missionType = EnumUtil.getUAVTypeDisplay(this.missionRequiredUavType());
     const missionPriority = EnumUtil.getPriorityDisplay(this.missionPriority());
-    return this.missionNeedsSentenceLabel
+    return this.labels.missionNeedsSentence
       .replace('{type}', missionType)
       .replace('{priority}', missionPriority);
   });
 
-  readonly candidateSummaries = computed<string[]>(() => {
+  public readonly candidateSummaries = computed<string[]>(() => {
     const insight = this.insight();
     if (!insight) {
       return [];
     }
 
-    const alternatives = this.rankedAlternatives().slice(0, this.candidateSummariesLimit);
+    const alternatives = this.rankedAlternatives().slice(0, this.limits.candidateSummaries);
     const summaries = [
-      `UAV-${insight.suggestedTailId}: ${this.candidateBestFitLabel}`,
+      `UAV-${insight.suggestedTailId}: ${this.labels.candidateBestFit}`,
     ];
 
     for (const alternative of alternatives) {
       const delta = alternative.totalScore - insight.totalScore;
       const relativeLabel =
         delta === NO_SCORE
-          ? this.candidateSuggestedLabel
-          : `${this.candidateWeakerLabel} ${this.withSign(delta)}`;
+          ? this.labels.candidateSuggested
+          : `${this.labels.candidateWeaker} ${this.withSign(delta)}`;
       summaries.push(`UAV-${alternative.tailId}: ${relativeLabel}`);
     }
 
     return summaries;
   });
 
-  readonly blockedCandidateSummaries = computed<string[]>(() => {
+  public readonly blockedCandidateSummaries = computed<string[]>(() => {
     const insight = this.insight();
     if (!insight) {
       return [];
     }
 
     return this.blockedAlternatives()
-      .slice(0, this.candidateSummariesLimit)
+      .slice(0, this.limits.candidateSummaries)
       .map((alternative) => {
         const reason = this.resolveBlockedReason(alternative, insight.totalScore);
         return `UAV-${alternative.tailId}: ${reason}`;
       });
   });
 
-  readonly decisionReasons = computed<string[]>(() => {
+  public readonly decisionReasons = computed<string[]>(() => {
     const insight = this.insight();
     if (!insight) {
       return [];
     }
 
     const reasonBuckets = [
-      { value: insight.distanceScore, label: this.reasonDistanceLabel },
-      { value: insight.telemetryScore, label: this.reasonTelemetryLabel },
-      { value: insight.priorityScore, label: this.reasonPriorityLabel },
+      { value: insight.distanceScore, label: this.labels.reasonDistance },
+      { value: insight.telemetryScore, label: this.labels.reasonTelemetry },
+      { value: insight.priorityScore, label: this.labels.reasonPriority },
       {
         value:
           insight.typeMismatchPenalty === NO_PENALTY && insight.activeMissionPenalty === NO_PENALTY
             ? CONFLICT_RISK_REASON_SCORE
             : NO_SCORE,
-        label: this.reasonSafetyLabel,
+        label: this.labels.reasonSafety,
       },
     ]
       .filter((bucket) => bucket.value > NO_SCORE)
       .sort((first, second) => second.value - first.value)
-      .slice(0, this.topReasonsLimit - 1)
+      .slice(0, this.limits.topReasons - 1)
       .map((bucket) => bucket.label);
 
-    const reasons = [this.decisionBestScoreLabel];
+    const reasons = [this.labels.decisionBestScore];
     reasons.push(...reasonBuckets);
-    return reasons.slice(0, this.topReasonsLimit);
+    return reasons.slice(0, this.limits.topReasons);
   });
 
-  readonly selectedChangeSummary = computed<string>(() => {
+  public readonly selectedChangeSummary = computed<string>(() => {
     const delta = this.deltaVsSuggestion();
     if (delta === null) {
-      return this.selectionUnknownLabel;
+      return this.labels.selectionUnknown;
     }
     if (delta === NO_SCORE) {
-      return this.selectionNoChangeLabel;
+      return this.labels.selectionNoChange;
     }
     if (delta > NO_SCORE) {
-      return `${this.selectionImprovedLabel} ${this.withSign(delta)}`;
+      return `${this.labels.selectionImproved} ${this.withSign(delta)}`;
     }
-    return `${this.selectionWorseLabel} ${this.withSign(delta)}`;
+    return `${this.labels.selectionWorse} ${this.withSign(delta)}`;
   });
 
-  readonly selectedWarnings = computed<string[]>(() => {
+  public readonly selectedWarnings = computed<string[]>(() => {
     const insight = this.insight();
     if (!insight) {
       return [];
@@ -224,33 +179,33 @@ export class AssignmentReviewAlgorithmPanelComponent {
 
     const selectedAlternative = insight.alternatives.find((alternative) => alternative.tailId === selectedTailId);
     if (!selectedAlternative) {
-      return [this.warningConflictRiskLabel];
+      return [this.labels.warningConflictRisk];
     }
 
     const warnings: string[] = [];
     if (selectedAlternative.typeMismatchPenalty < NO_PENALTY) {
-      warnings.push(this.warningTypeMismatchLabel);
+      warnings.push(this.labels.warningTypeMismatch);
     }
     if (selectedAlternative.activeMissionPenalty < NO_PENALTY) {
-      warnings.push(this.warningActiveMissionLabel);
+      warnings.push(this.labels.warningActiveMission);
     }
 
     return warnings;
   });
 
-  onShowOnMap(): void {
+  public onShowOnMap(): void {
     this.showOnMap.emit(this.missionId());
   }
 
-  togglePanel(): void {
+  public togglePanel(): void {
     this.isExpanded.update((expanded) => !expanded);
   }
 
-  withSign(value: number | null): string {
+  public withSign(value: number | null): string {
     if (value === null) {
       return 'N/A';
     }
-    return `${value > 0 ? '+' : ''}${value.toFixed(this.decimals)}`;
+    return `${value > 0 ? '+' : ''}${value.toFixed(this.limits.decimals)}`;
   }
 
   private resolveBlockedReason(alternative: AssignmentPairingAlternative, suggestedScore: number): string {
@@ -258,14 +213,14 @@ export class AssignmentReviewAlgorithmPanelComponent {
     const uavTypes = this.uavTypeByTailId();
     const isTypeMismatch = uavTypes[alternative.tailId] !== requiredUavType;
     if (isTypeMismatch || alternative.typeMismatchPenalty < NO_PENALTY) {
-      return this.blockedReasonTypeMismatchLabel;
+      return this.labels.blockedReasonTypeMismatch;
     }
     if (alternative.activeMissionPenalty < NO_PENALTY) {
-      return this.blockedReasonActiveMissionLabel;
+      return this.labels.blockedReasonActiveMission;
     }
     if (alternative.totalScore < suggestedScore) {
-      return `${this.blockedReasonLowerScoreLabel} ${this.withSign(alternative.totalScore - suggestedScore)}`;
+      return `${this.labels.blockedReasonLowerScore} ${this.withSign(alternative.totalScore - suggestedScore)}`;
     }
-    return this.blockedReasonConflictRiskLabel;
+    return this.labels.blockedReasonConflictRisk;
   }
 }
