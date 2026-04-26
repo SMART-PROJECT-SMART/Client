@@ -37,6 +37,7 @@ export class AssignmentReviewMapFiltersComponent {
   readonly separateOverlapsToggle = output<void>();
 
   readonly missionQueryControl = new FormControl<string>('', { nonNullable: true });
+  readonly missionTypeQueryControl = new FormControl<string>('', { nonNullable: true });
   readonly uavQueryControl = new FormControl<string>('', { nonNullable: true });
 
   readonly isOpen = signal(false);
@@ -68,6 +69,16 @@ export class AssignmentReviewMapFiltersComponent {
     });
   });
 
+  readonly filteredMissionTypeOptions = computed(() => {
+    const q = this.missionTypeQueryControl.value.trim().toLowerCase();
+    const selected = this.selectedMissionTypeSet();
+    return this.missionTypes().filter((missionTypeOption: AssignmentReviewMapMissionTypeFilterOption) => {
+      if (selected.has(missionTypeOption.uavType)) return true;
+      if (!q) return true;
+      return missionTypeOption.label.toLowerCase().includes(q);
+    });
+  });
+
   toggle(): void {
     this.isOpen.set(!this.isOpen());
   }
@@ -94,6 +105,7 @@ export class AssignmentReviewMapFiltersComponent {
 
   onClear(): void {
     this.missionQueryControl.setValue('');
+    this.missionTypeQueryControl.setValue('');
     this.uavQueryControl.setValue('');
     this.clear.emit();
   }

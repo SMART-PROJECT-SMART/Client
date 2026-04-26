@@ -64,8 +64,13 @@
 
       <mat-tab label="Mission type">
         <div class="map-filter-panel__section">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
+            <mat-label>Search mission types</mat-label>
+            <input matInput [formControl]="missionTypeQueryControl" />
+          </mat-form-field>
+
           <div class="map-filter-panel__list">
-            @for (t of missionTypes(); track t.uavType) {
+            @for (t of filteredMissionTypeOptions(); track t.uavType) {
               <mat-checkbox
                 [checked]="selectedMissionTypeSet().has(t.uavType)"
                 (change)="onToggleMissionType(t.uavType, $event.checked)"
