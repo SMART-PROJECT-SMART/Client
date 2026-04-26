@@ -110,9 +110,10 @@ export namespace ClientConstants {
     export const ALGORITHM_SELECTION_WORSE_LABEL: string = 'Your selection lowers the score by';
     export const ALGORITHM_SELECTION_UNKNOWN_LABEL: string =
       'This selection cannot be scored from available alternatives.';
+    export const ALGORITHM_SELECTION_REASONS_SUFFIX_LABEL: string = 'for the following reasons:';
     export const ALGORITHM_WARNING_PREFIX_LABEL: string = 'Risk:';
     export const ALGORITHM_WARNING_TYPE_MISMATCH_LABEL: string =
-      'UAV type does not match this mission requirement.';
+      'Invalid selection: UAV type does not match this mission requirement and cannot be assigned.';
     export const ALGORITHM_WARNING_ACTIVE_MISSION_LABEL: string =
       'This UAV is already active on another mission.';
     export const ALGORITHM_WARNING_CONFLICT_RISK_LABEL: string =

@@ -44,7 +44,6 @@ export class AssignmentReviewAlgorithmPanelComponent {
   readonly candidateSuggestedLabel = AssignmentPageConstants.ALGORITHM_CANDIDATE_SUGGESTED_LABEL;
   readonly candidateWeakerLabel = AssignmentPageConstants.ALGORITHM_CANDIDATE_WEAKER_LABEL;
   readonly decisionBestScoreLabel = AssignmentPageConstants.ALGORITHM_DECISION_BEST_SCORE_LABEL;
-  readonly decisionBlockedAvoidedLabel = AssignmentPageConstants.ALGORITHM_DECISION_BLOCKED_AVOIDED_LABEL;
   readonly reasonDistanceLabel = AssignmentPageConstants.ALGORITHM_DECISION_DISTANCE_LABEL;
   readonly reasonTelemetryLabel = AssignmentPageConstants.ALGORITHM_DECISION_TELEMETRY_LABEL;
   readonly reasonPriorityLabel = AssignmentPageConstants.ALGORITHM_DECISION_PRIORITY_LABEL;
@@ -60,10 +59,11 @@ export class AssignmentReviewAlgorithmPanelComponent {
   readonly selectionImprovedLabel = AssignmentPageConstants.ALGORITHM_SELECTION_IMPROVED_LABEL;
   readonly selectionWorseLabel = AssignmentPageConstants.ALGORITHM_SELECTION_WORSE_LABEL;
   readonly selectionUnknownLabel = AssignmentPageConstants.ALGORITHM_SELECTION_UNKNOWN_LABEL;
+  readonly selectionReasonsSuffixLabel =
+    AssignmentPageConstants.ALGORITHM_SELECTION_REASONS_SUFFIX_LABEL;
   readonly warningTypeMismatchLabel = AssignmentPageConstants.ALGORITHM_WARNING_TYPE_MISMATCH_LABEL;
   readonly warningActiveMissionLabel = AssignmentPageConstants.ALGORITHM_WARNING_ACTIVE_MISSION_LABEL;
   readonly warningConflictRiskLabel = AssignmentPageConstants.ALGORITHM_WARNING_CONFLICT_RISK_LABEL;
-  readonly warningPrefixLabel = AssignmentPageConstants.ALGORITHM_WARNING_PREFIX_LABEL;
   readonly missionNeedsSentenceLabel = AssignmentPageConstants.ALGORITHM_MISSION_NEEDS_SENTENCE_LABEL;
   readonly selectedLabel = AssignmentPageConstants.ALGORITHM_SELECTED_LABEL;
   readonly suggestedLabel = AssignmentPageConstants.ALGORITHM_SUGGESTED_LABEL;
@@ -193,9 +193,6 @@ export class AssignmentReviewAlgorithmPanelComponent {
       .map((bucket) => bucket.label);
 
     const reasons = [this.decisionBestScoreLabel];
-    if (this.blockedAlternatives().length > 0) {
-      reasons.push(this.decisionBlockedAvoidedLabel);
-    }
     reasons.push(...reasonBuckets);
     return reasons.slice(0, this.topReasonsLimit);
   });

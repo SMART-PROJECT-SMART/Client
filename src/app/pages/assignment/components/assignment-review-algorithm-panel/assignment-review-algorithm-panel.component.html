@@ -49,11 +49,16 @@
 
     <div class="algorithm-panel__step">
       <div class="algorithm-panel__step-title">{{ stepSelectionChangeLabel }}</div>
-      <div class="algorithm-panel__step-text">{{ selectedChangeSummary() }}</div>
+      <div class="algorithm-panel__step-text">
+        {{ selectedChangeSummary() }}
+        @if (selectedWarnings().length > 0) {
+          {{ selectionReasonsSuffixLabel }}
+        }
+      </div>
       @if (selectedWarnings().length > 0) {
         <ul class="algorithm-panel__warnings">
           @for (warning of selectedWarnings(); track warning) {
-            <li>{{ warningPrefixLabel }} {{ warning }}</li>
+            <li>{{ warning }}</li>
           }
         </ul>
       }
