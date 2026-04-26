@@ -458,6 +458,15 @@ export namespace ClientConstants {
     export const LINE_OPACITY = 0.85;
     export const FILTER_DIMMED_OPACITY = 0.25;
     export const FILTER_FULL_OPACITY = 1.0;
+    export const OVERLAP_TOGGLE_OFF_LABEL = 'Separate overlaps: Off';
+    export const OVERLAP_TOGGLE_ON_LABEL = 'Separate overlaps: On';
+    export const OVERLAP_THRESHOLD_PX = 14;
+    export const OVERLAP_FANOUT_RADIUS_PX = 24;
+    export const OVERLAP_VISIBILITY_THRESHOLD_DEGREES = 0.00008;
+    export const OVERLAP_CONNECTOR_COLOR = '#9e9e9e';
+    export const OVERLAP_CONNECTOR_OPACITY = 0.65;
+    export const OVERLAP_CONNECTOR_WEIGHT = 1;
+    export const OVERLAP_CONNECTOR_DASH = '2,4';
     export const LINE_SATURATION_PERCENT = 70;
     export const LINE_LIGHTNESS_PERCENT = 40;
     export const UAV_COLOR_UNASSIGNED = '#9e9e9e';

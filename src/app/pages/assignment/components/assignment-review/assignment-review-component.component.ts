@@ -28,6 +28,7 @@ import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../
 import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
 import { MissionStatusStorageService } from '../../../../services/mission/mission-status-storage.service';
 import { buildApplyAssignmentRoFromReviewState } from '../../utils/assignment-review-apply-payload.util';
+import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util';
 import {
   buildMapMissionFilterOptionsFromPairings,
   buildMapMissionTypeFilterOptionsFromPairings,
@@ -44,6 +45,7 @@ const {
 } = ClientConstants.AssignmentPageConstants;
 const HIDDEN_FIELDS_FOR_ARMED = new Set<TelemetryField>([TelemetryField.DataStorageUsedGB]);
 const HIDDEN_FIELDS_FOR_SURVEILLANCE = new Set<TelemetryField>([TelemetryField.AmmoPercentage]);
+const MAP = ClientConstants.AssignmentReviewMap;
 
 @Component({
   selector: 'app-assignment-review-component',
@@ -82,6 +84,7 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly selectedMissionIdsForMap = signal<string[]>([]);
   public readonly selectedMissionTypesForMap = signal<UAVType[]>([]);
   public readonly selectedTailIdsForMap = signal<number[]>([]);
+  public readonly separateOverlapsForMap = signal(false);
   public readonly selectedReviewTabIndex = signal(0);
 
   public readonly validationResult: Signal<ValidationResult> = computed(() => {
@@ -124,6 +127,44 @@ export class AssignmentReviewComponent implements OnInit {
 
   public readonly mapMissionTypeOptions: Signal<AssignmentReviewMapMissionTypeFilterOption[]> = computed(() => {
     return buildMapMissionTypeFilterOptionsFromPairings(this.algorithmResult().pairings);
+  });
+
+  public readonly shouldShowSeparateOverlapsToggle: Signal<boolean> = computed(() => {
+    const coordinates: Array<{ latitude: number; longitude: number }> = [];
+
+    for (const pairing of this.algorithmResult().pairings) {
+      coordinates.push({
+        latitude: pairing.mission.location.latitude,
+        longitude: pairing.mission.location.longitude,
+      });
+    }
+
+    for (const uav of this.availableUavs()) {
+      const position = extractLatLonFromUav(uav);
+      if (!position) {
+        continue;
+      }
+      coordinates.push({
+        latitude: position.lat,
+        longitude: position.lon,
+      });
+    }
+
+    for (let firstIndex = 0; firstIndex < coordinates.length; firstIndex += 1) {
+      for (let secondIndex = firstIndex + 1; secondIndex < coordinates.length; secondIndex += 1) {
+        const first = coordinates[firstIndex];
+        const second = coordinates[secondIndex];
+        const distance = Math.hypot(
+          first.latitude - second.latitude,
+          first.longitude - second.longitude,
+        );
+        if (distance <= MAP.OVERLAP_VISIBILITY_THRESHOLD_DEGREES) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   });
 
   public readonly uavTypeByTailId: Signal<Record<number, UAVType>> = computed(() => {
@@ -177,6 +218,10 @@ export class AssignmentReviewComponent implements OnInit {
     this.selectedMissionIdsForMap.set([]);
     this.selectedMissionTypesForMap.set([]);
     this.selectedTailIdsForMap.set([]);
+  }
+
+  public toggleSeparateMapOverlaps(): void {
+    this.separateOverlapsForMap.update((value) => !value);
   }
 
   public focusMissionOnMap(missionId: string): void {

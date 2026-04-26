@@ -11,6 +11,16 @@
     Filters
   </button>
 
+  @if (showSeparateOverlapsToggle()) {
+    <button mat-stroked-button type="button" (click)="onToggleSeparateOverlaps()">
+      {{
+        separateOverlapsEnabled()
+          ? separateOverlapsOnLabel
+          : separateOverlapsOffLabel
+      }}
+    </button>
+  }
+
   @if (selectedMissionIds().length > 0 || selectedMissionTypes().length > 0 || selectedTailIds().length > 0) {
     <button mat-button type="button" (click)="onClear()">Clear</button>
   }

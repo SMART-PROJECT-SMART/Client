@@ -30,9 +30,12 @@
           [selectedMissionIds]="selectedMissionIdsForMap()"
           [selectedMissionTypes]="selectedMissionTypesForMap()"
           [selectedTailIds]="selectedTailIdsForMap()"
+          [separateOverlapsEnabled]="separateOverlapsForMap()"
+          [showSeparateOverlapsToggle]="shouldShowSeparateOverlapsToggle()"
           (selectedMissionIdsChange)="selectedMissionIdsForMap.set($event)"
           (selectedMissionTypesChange)="selectedMissionTypesForMap.set($event)"
           (selectedTailIdsChange)="selectedTailIdsForMap.set($event)"
+          (separateOverlapsToggle)="toggleSeparateMapOverlaps()"
           (clear)="clearMapHighlights()"
         />
 
@@ -45,6 +48,7 @@
           [highlightMissionIds]="highlightMissionIds()"
           [highlightMissionTypes]="highlightMissionTypes()"
           [highlightTailIds]="highlightTailIds()"
+          [separateOverlaps]="separateOverlapsForMap()"
         />
       </section>
     </mat-tab>

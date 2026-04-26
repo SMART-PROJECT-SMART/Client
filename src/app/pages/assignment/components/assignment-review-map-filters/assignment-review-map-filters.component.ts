@@ -18,17 +18,23 @@ const MAP = ClientConstants.AssignmentReviewMap;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentReviewMapFiltersComponent {
+  readonly separateOverlapsOffLabel = MAP.OVERLAP_TOGGLE_OFF_LABEL;
+  readonly separateOverlapsOnLabel = MAP.OVERLAP_TOGGLE_ON_LABEL;
+
   readonly missions = input.required<AssignmentReviewMapMissionFilterOption[]>();
   readonly missionTypes = input.required<AssignmentReviewMapMissionTypeFilterOption[]>();
   readonly uavs = input.required<AssignmentReviewMapUavFilterOption[]>();
   readonly selectedMissionIds = input.required<string[]>();
   readonly selectedMissionTypes = input.required<UAVType[]>();
   readonly selectedTailIds = input.required<number[]>();
+  readonly separateOverlapsEnabled = input<boolean>(false);
+  readonly showSeparateOverlapsToggle = input<boolean>(false);
 
   readonly selectedMissionIdsChange = output<string[]>();
   readonly selectedMissionTypesChange = output<UAVType[]>();
   readonly selectedTailIdsChange = output<number[]>();
   readonly clear = output<void>();
+  readonly separateOverlapsToggle = output<void>();
 
   readonly missionQueryControl = new FormControl<string>('', { nonNullable: true });
   readonly uavQueryControl = new FormControl<string>('', { nonNullable: true });
@@ -90,6 +96,10 @@ export class AssignmentReviewMapFiltersComponent {
     this.missionQueryControl.setValue('');
     this.uavQueryControl.setValue('');
     this.clear.emit();
+  }
+
+  onToggleSeparateOverlaps(): void {
+    this.separateOverlapsToggle.emit();
   }
 }
 
