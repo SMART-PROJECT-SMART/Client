@@ -1,6 +1,7 @@
 import * as L from 'leaflet';
 import { UAVType } from '../../../common/enums/uavType.enum';
 import { ClientConstants } from '../../../common/constants/clientConstants.constant';
+import type { CreateMissionDivIconOptions } from '../../../models/assignment/createMissionDivIconOptions.model';
 import type { CreateUavDivIconOptions } from '../../../models/assignment/createUavDivIconOptions.model';
 
 const MAP = ClientConstants.AssignmentReviewMap;
@@ -48,7 +49,7 @@ export function createMissionDivIcon(
   missionType: UAVType,
   accentColor: string,
   priorityOutlineColor: string,
-  options: { opacity?: number } = {},
+  options: CreateMissionDivIconOptions = {},
 ): L.DivIcon {
   const color = accentColor || MAP.DEFAULT_MISSION_ACCENT;
   const missionOutlineColor = priorityOutlineColor || MAP.PRIORITY_OUTLINE_DEFAULT_COLOR;

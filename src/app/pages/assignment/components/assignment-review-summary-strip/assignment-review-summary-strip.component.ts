@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { ClientConstants } from '../../../../common';
+import type { AssignmentExplanationReasonCandidate } from '../../../../models/assignment/assignmentExplanationReasonCandidate.model';
+import type { AssignmentExplanationReasonKey } from '../../../../models/assignment/assignmentExplanationReasonKey.model';
 import type { AssignmentPairingInsight } from '../../../../models/assignment/assignmentPairingInsight.model';
 
 const { AssignmentPageConstants } = ClientConstants;
-type ReasonKey = 'distance' | 'telemetry' | 'safety';
 
 @Component({
   selector: 'app-assignment-review-summary-strip',
@@ -34,8 +35,8 @@ export class AssignmentReviewSummaryStripComponent {
   readonly glossaryBonuses = AssignmentPageConstants.ALGORITHM_GLOSSARY_BONUSES;
   readonly strongMarginThreshold = AssignmentPageConstants.ALGORITHM_STRONG_MARGIN_THRESHOLD;
 
-  readonly reasonCounts = computed<Record<ReasonKey, number>>(() => {
-    const counts: Record<ReasonKey, number> = { distance: 0, telemetry: 0, safety: 0 };
+  readonly reasonCounts = computed<Record<AssignmentExplanationReasonKey, number>>(() => {
+    const counts: Record<AssignmentExplanationReasonKey, number> = { distance: 0, telemetry: 0, safety: 0 };
     for (const insight of this.pairingInsights()) {
       const reason = this.resolvePrimaryReason(insight);
       if (reason) {
@@ -45,7 +46,7 @@ export class AssignmentReviewSummaryStripComponent {
     return counts;
   });
 
-  reasonCount(key: ReasonKey): number {
+  reasonCount(key: AssignmentExplanationReasonKey): number {
     return this.reasonCounts()[key];
   }
 
@@ -56,7 +57,7 @@ export class AssignmentReviewSummaryStripComponent {
     return insight.totalScore - runnerUpScore;
   }
 
-  private resolvePrimaryReason(insight: AssignmentPairingInsight): ReasonKey | null {
+  private resolvePrimaryReason(insight: AssignmentPairingInsight): AssignmentExplanationReasonKey | null {
     if (insight.alternatives.length === 0) {
       return null;
     }
@@ -68,7 +69,7 @@ export class AssignmentReviewSummaryStripComponent {
     const safetyAdvantage =
       (insight.activeMissionPenalty + insight.typeMismatchPenalty)
       - (runnerUp.activeMissionPenalty + runnerUp.typeMismatchPenalty);
-    const candidates: Array<{ key: ReasonKey; value: number }> = [
+    const candidates: AssignmentExplanationReasonCandidate[] = [
       { key: 'distance', value: distanceAdvantage },
       { key: 'telemetry', value: telemetryAdvantage },
       { key: 'safety', value: safetyAdvantage },
