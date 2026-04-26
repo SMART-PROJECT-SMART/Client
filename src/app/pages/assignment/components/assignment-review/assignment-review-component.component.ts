@@ -105,6 +105,10 @@ export class AssignmentReviewComponent implements OnInit {
     return this.missionStatusStorage.activeMissionList();
   });
 
+  public readonly activeMissionTailIds: Signal<Set<number>> = computed(() => {
+    return new Set(this.activeMissions().map((activeMission) => activeMission.tailId));
+  });
+
   public readonly highlightMissionIds: Signal<Set<string>> = computed(() => {
     return new Set(this.selectedMissionIdsForMap());
   });

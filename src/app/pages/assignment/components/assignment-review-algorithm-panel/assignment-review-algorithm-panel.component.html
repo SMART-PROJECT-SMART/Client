@@ -39,7 +39,7 @@
     </div>
 
     <div class="algorithm-panel__step">
-      <div class="algorithm-panel__step-title">{{ labels.stepDecision }}</div>
+      <div class="algorithm-panel__step-title">{{ stepDecisionLabel() }}</div>
       <ul class="algorithm-panel__list">
         @for (decisionReason of decisionReasons(); track decisionReason) {
           <li>{{ decisionReason }}</li>

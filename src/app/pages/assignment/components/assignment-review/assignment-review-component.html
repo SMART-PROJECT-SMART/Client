@@ -156,6 +156,7 @@
                   [missionPriority]="pairing.mission.priority"
                   [missionRequiredUavType]="pairing.mission.requiredUAVType"
                   [uavTypeByTailId]="uavTypeByTailId()"
+                  [activeMissionTailIds]="activeMissionTailIds()"
                   [insight]="pairingInsightByMissionId().get(pairing.mission.id) ?? null"
                   (showOnMap)="focusMissionOnMap($event)"
                 />

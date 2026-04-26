@@ -74,7 +74,7 @@ export namespace ClientConstants {
     export const ALGORITHM_PANEL_TITLE: string = 'Assignment explanation';
     export const ALGORITHM_STEP_MISSION_NEEDS_LABEL: string = 'Step 1: Mission needs';
     export const ALGORITHM_STEP_CANDIDATES_LABEL: string = 'Step 2: Candidate UAVs considered';
-    export const ALGORITHM_STEP_DECISION_LABEL: string = 'Step 3: Why this UAV was chosen';
+    export const ALGORITHM_STEP_DECISION_LABEL: string = 'Step 3: Why UAV-{tailId} was chosen';
     export const ALGORITHM_STEP_SELECTION_CHANGE_LABEL: string = 'Step 4: If you choose a different UAV';
     export const ALGORITHM_TECHNICAL_DETAILS_LABEL: string = 'Technical details';
     export const ALGORITHM_MISSION_NEEDS_SENTENCE_LABEL: string =
@@ -103,6 +103,10 @@ export namespace ClientConstants {
     export const ALGORITHM_DECISION_PRIORITY_LABEL: string =
       'Mission priority weighting supports this choice.';
     export const ALGORITHM_DECISION_SAFETY_LABEL: string = 'No critical penalties on this choice.';
+    export const ALGORITHM_DECISION_ACTIVE_MISSION_NEGATIVE_LABEL: string =
+      'Already in active mission: this lowers the optimization score.';
+    export const ALGORITHM_DECISION_NOT_ACTIVE_MISSION_LABEL: string =
+      'Not in active mission.';
     export const ALGORITHM_REASON_PRIORITY_LABEL: string = 'Mission priority is supported';
     export const ALGORITHM_SELECTION_NO_CHANGE_LABEL: string =
       'You kept the suggested UAV, so expected outcome stays the same.';
@@ -152,6 +156,8 @@ export namespace ClientConstants {
       reasonTelemetry: ALGORITHM_DECISION_TELEMETRY_LABEL,
       reasonPriority: ALGORITHM_DECISION_PRIORITY_LABEL,
       reasonSafety: ALGORITHM_DECISION_SAFETY_LABEL,
+      reasonActiveMissionNegative: ALGORITHM_DECISION_ACTIVE_MISSION_NEGATIVE_LABEL,
+      reasonNotInActiveMission: ALGORITHM_DECISION_NOT_ACTIVE_MISSION_LABEL,
       blockedReasonTypeMismatch: ALGORITHM_BLOCKED_REASON_TYPE_MISMATCH_LABEL,
       blockedReasonActiveMission: ALGORITHM_BLOCKED_REASON_ACTIVE_MISSION_LABEL,
       blockedReasonLowerScore: ALGORITHM_BLOCKED_REASON_LOWER_SCORE_LABEL,

@@ -8,7 +8,6 @@ import type { AssignmentPairingInsight } from '../../../../models/assignment/ass
 const { AssignmentPageConstants } = ClientConstants;
 const NO_PENALTY = 0;
 const NO_SCORE = 0;
-const CONFLICT_RISK_REASON_SCORE = 1;
 
 @Component({
   selector: 'app-assignment-review-algorithm-panel',
@@ -24,6 +23,7 @@ export class AssignmentReviewAlgorithmPanelComponent {
   public readonly missionPriority = input.required<Priority>();
   public readonly missionRequiredUavType = input.required<UAVType>();
   public readonly uavTypeByTailId = input.required<Record<number, UAVType>>();
+  public readonly activeMissionTailIds = input<Set<number>>(new Set());
   public readonly insight = input<AssignmentPairingInsight | null>(null);
   public readonly isExpanded = signal(false);
 
@@ -31,6 +31,13 @@ export class AssignmentReviewAlgorithmPanelComponent {
 
   public readonly labels = AssignmentPageConstants.ASSIGNMENT_EXPLANATION_LABELS;
   public readonly limits = AssignmentPageConstants.ASSIGNMENT_EXPLANATION_LIMITS;
+  public readonly stepDecisionLabel = computed<string>(() => {
+    const insight = this.insight();
+    if (!insight) {
+      return this.labels.stepDecision;
+    }
+    return this.labels.stepDecision.replace('{tailId}', String(insight.suggestedTailId));
+  });
 
   public readonly selectedScore = computed<number | null>(() => {
     const insight = this.insight();
@@ -58,7 +65,11 @@ export class AssignmentReviewAlgorithmPanelComponent {
     const uavTypes = this.uavTypeByTailId();
 
     return (
-      this.insight()?.alternatives.filter((alternative) => uavTypes[alternative.tailId] === requiredUavType)
+      this.insight()?.alternatives.filter((alternative) => {
+        const isTypeMatch = uavTypes[alternative.tailId] === requiredUavType;
+        const isNotActiveMissionPenalized = alternative.activeMissionPenalty >= NO_PENALTY;
+        return isTypeMatch && isNotActiveMissionPenalized;
+      })
       ?? []
     );
   });
@@ -130,26 +141,26 @@ export class AssignmentReviewAlgorithmPanelComponent {
       return [];
     }
 
+    const bestScoreReason = this.labels.decisionBestScore;
+    const activeMissionStatusReason = (
+      this.activeMissionTailIds().has(insight.suggestedTailId)
+        ? this.labels.reasonActiveMissionNegative
+        : this.labels.reasonNotInActiveMission
+    );
+
     const reasonBuckets = [
       { value: insight.distanceScore, label: this.labels.reasonDistance },
       { value: insight.telemetryScore, label: this.labels.reasonTelemetry },
       { value: insight.priorityScore, label: this.labels.reasonPriority },
-      {
-        value:
-          insight.typeMismatchPenalty === NO_PENALTY && insight.activeMissionPenalty === NO_PENALTY
-            ? CONFLICT_RISK_REASON_SCORE
-            : NO_SCORE,
-        label: this.labels.reasonSafety,
-      },
     ]
       .filter((bucket) => bucket.value > NO_SCORE)
       .sort((first, second) => second.value - first.value)
       .slice(0, this.limits.topReasons - 1)
       .map((bucket) => bucket.label);
 
-    const reasons = [this.labels.decisionBestScore];
+    const reasons = [bestScoreReason, activeMissionStatusReason];
     reasons.push(...reasonBuckets);
-    return reasons.slice(0, this.limits.topReasons);
+    return reasons.slice(0, this.limits.topReasons + 1);
   });
 
   public readonly selectedChangeSummary = computed<string>(() => {
