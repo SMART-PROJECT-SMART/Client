@@ -72,7 +72,7 @@ export function renderUavMarkers(
       MAP.FILTER_DIMMED_OPACITY,
     );
     const marker = L.marker([latitude, longitude], {
-      icon: createUavDivIcon(color, { isOnActiveMission, opacity: uavOpacity }),
+      icon: createUavDivIcon(color, { isOnActiveMission, opacity: uavOpacity, uavType: uav.uavType }),
     });
     marker.bindTooltip(buildUavTooltip(uav, context), {
       className: MAP.TOOLTIP_TOOLTIP_CLASS,

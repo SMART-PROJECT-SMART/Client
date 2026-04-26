@@ -558,9 +558,12 @@ export namespace ClientConstants {
     export const GLYPH_SIZE_PX = 22;
     export const GLYPH_CLASS = 'ar-map-glyph';
     export const GLYPH_UAV_CLASS = 'ar-map-glyph--uav';
+    export const GLYPH_UAV_SURVEILLANCE_CLASS = 'ar-map-glyph--uav-surveillance';
+    export const GLYPH_UAV_ARMED_CLASS = 'ar-map-glyph--uav-armed';
     export const GLYPH_MISSION_SURVEILLANCE_CLASS = 'ar-map-glyph--mission-surveillance';
     export const GLYPH_MISSION_ARMED_CLASS = 'ar-map-glyph--mission-armed';
-    export const UAV_ICON_ASSET_URL = '/icons/map/uav.svg';
+    export const UAV_SURVEILLANCE_ICON_ASSET_URL = '/icons/map/uav-surveillance.svg';
+    export const UAV_ARMED_ICON_ASSET_URL = '/icons/map/uav-armed.svg';
     export const MISSION_SURVEILLANCE_ICON_ASSET_URL = '/icons/map/mission-surveillance.svg';
     export const MISSION_ARMED_ICON_ASSET_URL = '/icons/map/mission-armed.svg';
     export const LINE_HUES: readonly number[] = [200, 220, 240, 260, 280, 300];
