@@ -545,6 +545,11 @@ export namespace ClientConstants {
     export const OVERLAP_CONNECTOR_OPACITY = 0.65;
     export const OVERLAP_CONNECTOR_WEIGHT = 1;
     export const OVERLAP_CONNECTOR_DASH = '2,4';
+    export const TEMP_DESTINATION_MARKER_RADIUS_PX = 8;
+    export const TEMP_DESTINATION_MARKER_COLOR = '#00e5ff';
+    export const TEMP_DESTINATION_MARKER_FILL_OPACITY = 0.35;
+    export const TEMP_DESTINATION_MARKER_STROKE_WEIGHT = 2;
+    export const TEMP_DESTINATION_MARKER_LABEL_PREFIX = 'Active mission destination: ';
     export const LINE_SATURATION_PERCENT = 70;
     export const LINE_LIGHTNESS_PERCENT = 40;
     export const UAV_COLOR_UNASSIGNED = '#9e9e9e';
@@ -586,10 +591,12 @@ export namespace ClientConstants {
     export const TOOLTIP_STATUS_VALUE_DECIMALS = 1;
     export const TOOLTIP_TOOLTIP_OFFSET_X_PX = 12;
     export const TOOLTIP_TOOLTIP_OFFSET_Y_PX = -16;
+    export const TOOLTIP_DIRECTION: 'auto' = 'auto';
     export const TOOLTIP_MISSION_SUFFIX_OPEN = ' (';
     export const TOOLTIP_MISSION_SUFFIX_CLOSE = ')';
     export const TOOLTIP_MISSION_PRIORITY_LABEL = 'Priority';
     export const TOOLTIP_MISSION_LOCATION_LABEL = 'Location';
+    export const TOOLTIP_MISSION_TIME_WINDOW_LABEL = 'Window';
     export const TOOLTIP_MISSION_ALTITUDE_LABEL = 'Alt';
     export const TOOLTIP_MISSION_LATITUDE_LABEL = 'Lat';
     export const TOOLTIP_MISSION_LONGITUDE_LABEL = 'Lon';

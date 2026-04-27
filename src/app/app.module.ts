@@ -14,6 +14,7 @@ import { GridsterModule } from 'angular-gridster2';
 import { AssignmentManagementComponent } from './pages/assignment/components/assignment-management/assignment-management-component.component';
 import { AssignmentReviewComponent } from './pages/assignment/components/assignment-review/assignment-review-component.component';
 import { AssignmentReviewMapComponent } from './pages/assignment/components/assignment-review-map/assignment-review-map.component';
+import { AssignmentReviewMapMissionTooltipComponent } from './pages/assignment/components/assignment-review-map-mission-tooltip/assignment-review-map-mission-tooltip.component';
 import { AssignmentReviewMapUavTooltipComponent } from './pages/assignment/components/assignment-review-map-uav-tooltip/assignment-review-map-uav-tooltip.component';
 import { AssignmentReviewMapFiltersComponent } from './pages/assignment/components/assignment-review-map-filters/assignment-review-map-filters.component';
 import { AssignmentReviewSummaryStripComponent } from './pages/assignment/components/assignment-review-summary-strip/assignment-review-summary-strip.component';
@@ -61,6 +62,7 @@ import { MissionTimeRangePickerComponent } from './pages/archive/components/miss
     AssignmentManagementComponent,
     AssignmentReviewComponent,
     AssignmentReviewMapComponent,
+    AssignmentReviewMapMissionTooltipComponent,
     AssignmentReviewMapUavTooltipComponent,
     AssignmentReviewMapFiltersComponent,
     AssignmentReviewSummaryStripComponent,

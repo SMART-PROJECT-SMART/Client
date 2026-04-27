@@ -28,9 +28,6 @@ import {
   resolvePriorityOutlineColor,
 } from '../../utils/assignment-review-map-color.util';
 import {
-  buildMissionTooltipContent,
-} from '../../utils/assignment-review-map-tooltip.util';
-import {
   renderMissionMarkersAndLinks,
   renderOverlapConnectors,
   renderUavMarkers,
@@ -38,6 +35,7 @@ import {
 import { buildMapMarkerAnchors } from '../../utils/assignment-review-map-anchor.util';
 import { fitMapToPointsOrDefault } from '../../utils/assignment-review-map-fit.util';
 import { resolveMapMarkerPlacements } from '../../utils/assignment-review-map-overlap.util';
+import { AssignmentReviewMapMissionTooltipComponent } from '../assignment-review-map-mission-tooltip/assignment-review-map-mission-tooltip.component';
 import { AssignmentReviewMapUavTooltipComponent } from '../assignment-review-map-uav-tooltip/assignment-review-map-uav-tooltip.component';
 
 const MAP = ClientConstants.AssignmentReviewMap;
@@ -65,7 +63,9 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
 
   private map: L.Map | null = null;
   private layerGroup: L.LayerGroup | null = null;
-  private tooltipComponentRefs: ComponentRef<AssignmentReviewMapUavTooltipComponent>[] = [];
+  private tooltipComponentRefs: ComponentRef<unknown>[] = [];
+  private temporaryDestinationMarker: L.CircleMarker | null = null;
+  private temporaryDestinationMarkerTailId: number | null = null;
 
   constructor(
     private readonly appRef: ApplicationRef,
@@ -121,6 +121,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     if (!map || !group) {
       return;
     }
+    this.clearTemporaryDestinationMarker();
     this.clearTooltipComponents();
     group.clearLayers();
     const boundsPoints: L.LatLngExpression[] = [];
@@ -136,6 +137,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       highlightContext,
       markerPlacements,
       this.buildUavTooltip.bind(this),
+      this.onUavMarkerClick.bind(this),
     );
     renderMissionMarkersAndLinks(
       group,
@@ -210,6 +212,44 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     }, {});
   }
 
+  private onUavMarkerClick(uav: UAV, context: AssignmentReviewMapRenderContext): void {
+    const activeMission = context.activeMissionByTailId.get(uav.tailId);
+    if (!activeMission || !this.layerGroup) {
+      return;
+    }
+
+    if (this.temporaryDestinationMarker && this.temporaryDestinationMarkerTailId === uav.tailId) {
+      this.clearTemporaryDestinationMarker();
+      return;
+    }
+
+    this.clearTemporaryDestinationMarker();
+
+    const destinationMarker = L.circleMarker(
+      [activeMission.location.latitude, activeMission.location.longitude],
+      {
+        radius: MAP.TEMP_DESTINATION_MARKER_RADIUS_PX,
+        color: MAP.TEMP_DESTINATION_MARKER_COLOR,
+        fillColor: MAP.TEMP_DESTINATION_MARKER_COLOR,
+        fillOpacity: MAP.TEMP_DESTINATION_MARKER_FILL_OPACITY,
+        weight: MAP.TEMP_DESTINATION_MARKER_STROKE_WEIGHT,
+      },
+    );
+
+    destinationMarker
+      .bindTooltip(`${MAP.TEMP_DESTINATION_MARKER_LABEL_PREFIX}${activeMission.title}`, {
+        className: MAP.TOOLTIP_TOOLTIP_CLASS,
+        direction: MAP.TOOLTIP_DIRECTION,
+        offset: [MAP.TOOLTIP_TOOLTIP_OFFSET_X_PX, MAP.TOOLTIP_TOOLTIP_OFFSET_Y_PX],
+        opacity: MAP.LEAFLET_TOOLTIP_BIND_OPACITY,
+      })
+      .addTo(this.layerGroup);
+    destinationMarker.openTooltip();
+
+    this.temporaryDestinationMarker = destinationMarker;
+    this.temporaryDestinationMarkerTailId = uav.tailId;
+  }
+
   private resolveAssignedUavPosition(
     pairing: MissionAssignmentPairing,
     context: AssignmentReviewMapRenderContext,
@@ -241,11 +281,18 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     return this.uavTelemetryData()[uav.tailId] ?? uav.telemetryData;
   }
 
-  private buildMissionTooltip(mission: Mission): string {
-    return buildMissionTooltipContent(mission);
+  private buildMissionTooltip(mission: Mission): HTMLElement {
+    const tooltipComponentRef = createComponent(AssignmentReviewMapMissionTooltipComponent, {
+      environmentInjector: this.environmentInjector,
+    });
+    tooltipComponentRef.setInput('mission', mission);
+    this.appRef.attachView(tooltipComponentRef.hostView);
+    this.tooltipComponentRefs.push(tooltipComponentRef);
+    return tooltipComponentRef.location.nativeElement as HTMLElement;
   }
 
   ngOnDestroy(): void {
+    this.clearTemporaryDestinationMarker();
     this.clearTooltipComponents();
     this.map?.remove();
     this.map = null;
@@ -258,5 +305,13 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       tooltipComponentRef.destroy();
     }
     this.tooltipComponentRefs = [];
+  }
+
+  private clearTemporaryDestinationMarker(): void {
+    if (this.temporaryDestinationMarker) {
+      this.temporaryDestinationMarker.remove();
+      this.temporaryDestinationMarker = null;
+    }
+    this.temporaryDestinationMarkerTailId = null;
   }
 }

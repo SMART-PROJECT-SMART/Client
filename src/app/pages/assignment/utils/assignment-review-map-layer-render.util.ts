@@ -54,6 +54,7 @@ export function renderUavMarkers(
   highlightContext: AssignmentReviewMapHighlightContext,
   markerPlacements: Map<string, AssignmentReviewMapMarkerPlacement>,
   buildUavTooltip: (uav: UAV, context: AssignmentReviewMapRenderContext) => HTMLElement,
+  onUavClick?: (uav: UAV, context: AssignmentReviewMapRenderContext) => void,
 ): void {
   for (const uav of availableUavs) {
     const pos = extractLatLonFromUav(uav);
@@ -76,10 +77,13 @@ export function renderUavMarkers(
     });
     marker.bindTooltip(buildUavTooltip(uav, context), {
       className: MAP.TOOLTIP_TOOLTIP_CLASS,
-      direction: 'top',
+      direction: MAP.TOOLTIP_DIRECTION,
       offset: [MAP.TOOLTIP_TOOLTIP_OFFSET_X_PX, MAP.TOOLTIP_TOOLTIP_OFFSET_Y_PX],
       opacity: MAP.LEAFLET_TOOLTIP_BIND_OPACITY,
     });
+    if (onUavClick) {
+      marker.on('click', () => onUavClick(uav, context));
+    }
     marker.addTo(group);
     boundsPoints.push([latitude, longitude]);
   }
@@ -92,7 +96,7 @@ export function renderMissionMarkersAndLinks(
   highlightContext: AssignmentReviewMapHighlightContext,
   markerPlacements: Map<string, AssignmentReviewMapMarkerPlacement>,
   resolvePriorityOutlineColor: (priority: Mission['priority']) => string,
-  buildMissionTooltip: (mission: Mission) => string,
+  buildMissionTooltip: (mission: Mission) => HTMLElement,
   resolveAssignedUavPosition: (
     pairing: AssignmentReviewMapRenderContext['pairings'][number],
     context: AssignmentReviewMapRenderContext,
@@ -119,7 +123,12 @@ export function renderMissionMarkersAndLinks(
         { opacity: missionOpacity },
       ),
     });
-    missionMarker.bindTooltip(buildMissionTooltip(pairing.mission));
+    missionMarker.bindTooltip(buildMissionTooltip(pairing.mission), {
+      className: MAP.TOOLTIP_TOOLTIP_CLASS,
+      direction: MAP.TOOLTIP_DIRECTION,
+      offset: [MAP.TOOLTIP_TOOLTIP_OFFSET_X_PX, MAP.TOOLTIP_TOOLTIP_OFFSET_Y_PX],
+      opacity: MAP.LEAFLET_TOOLTIP_BIND_OPACITY,
+    });
     missionMarker.addTo(group);
 
     const uavPos = resolveAssignedUavPosition(pairing, context);
