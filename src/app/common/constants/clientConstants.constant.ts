@@ -71,6 +71,8 @@ export namespace ClientConstants {
     export const ALGORITHM_REASON_TELEMETRY_LABEL: string = 'Telemetry fit was the deciding factor';
     export const ALGORITHM_REASON_SAFETY_LABEL: string = 'Safer assignment (penalty avoidance) decided';
     export const ALGORITHM_REASON_MISSION_SUFFIX: string = 'missions';
+    export const ALGORITHM_VIOLATIONS_WARNING_LABEL: string =
+      'Violations detected. Resolve before applying.';
     export const ALGORITHM_PANEL_TITLE: string = 'Assignment explanation';
     export const ALGORITHM_STEP_MISSION_NEEDS_LABEL: string = 'Step 1: Mission needs';
     export const ALGORITHM_STEP_CANDIDATES_LABEL: string = 'Step 2: Candidate UAVs considered';
@@ -201,6 +203,7 @@ export namespace ClientConstants {
       reasonTelemetryLabel: ALGORITHM_REASON_TELEMETRY_LABEL,
       reasonSafetyLabel: ALGORITHM_REASON_SAFETY_LABEL,
       reasonMissionSuffix: ALGORITHM_REASON_MISSION_SUFFIX,
+      violationsWarningLabel: ALGORITHM_VIOLATIONS_WARNING_LABEL,
       glossaryTitle: ALGORITHM_GLOSSARY_TITLE,
       glossaryTelemetry: ALGORITHM_GLOSSARY_TELEMETRY,
       glossaryDistance: ALGORITHM_GLOSSARY_DISTANCE,
@@ -538,6 +541,38 @@ export namespace ClientConstants {
     export const LINE_OPACITY = 0.85;
     export const FILTER_DIMMED_OPACITY = 0.25;
     export const FILTER_FULL_OPACITY = 1.0;
+    export const FILTER_TRIGGER_ARIA_LABEL = 'Map filters';
+    export const FILTER_TRIGGER_BUTTON_LABEL = 'Filters';
+    export const FILTER_CLEAR_BUTTON_LABEL = 'Clear';
+    export const FILTER_PANEL_TITLE = 'Filters';
+    export const FILTER_CLOSE_ARIA_LABEL = 'Close filters';
+    export const FILTER_TAB_MISSIONS_LABEL = 'Missions';
+    export const FILTER_TAB_MISSION_TYPE_LABEL = 'Mission type';
+    export const FILTER_TAB_UAVS_LABEL = 'UAVs';
+    export const FILTER_TAB_UAV_TYPE_LABEL = 'UAV type';
+    export const FILTER_SEARCH_MISSIONS_LABEL = 'Search missions';
+    export const FILTER_SEARCH_MISSION_TYPES_LABEL = 'Search mission types';
+    export const FILTER_SEARCH_UAVS_LABEL = 'Search UAVs';
+    export const FILTER_SEARCH_UAVS_PLACEHOLDER = 'UAV-#';
+    export const FILTER_SEARCH_UAV_TYPES_LABEL = 'Search UAV types';
+    export const FILTER_UAV_DISPLAY_PREFIX = 'UAV-';
+    export const FILTER_LABELS = {
+      triggerAriaLabel: FILTER_TRIGGER_ARIA_LABEL,
+      triggerButtonLabel: FILTER_TRIGGER_BUTTON_LABEL,
+      clearButtonLabel: FILTER_CLEAR_BUTTON_LABEL,
+      panelTitle: FILTER_PANEL_TITLE,
+      closeAriaLabel: FILTER_CLOSE_ARIA_LABEL,
+      tabMissionsLabel: FILTER_TAB_MISSIONS_LABEL,
+      tabMissionTypeLabel: FILTER_TAB_MISSION_TYPE_LABEL,
+      tabUavsLabel: FILTER_TAB_UAVS_LABEL,
+      tabUavTypeLabel: FILTER_TAB_UAV_TYPE_LABEL,
+      searchMissionsLabel: FILTER_SEARCH_MISSIONS_LABEL,
+      searchMissionTypesLabel: FILTER_SEARCH_MISSION_TYPES_LABEL,
+      searchUavsLabel: FILTER_SEARCH_UAVS_LABEL,
+      searchUavsPlaceholder: FILTER_SEARCH_UAVS_PLACEHOLDER,
+      searchUavTypesLabel: FILTER_SEARCH_UAV_TYPES_LABEL,
+      uavDisplayPrefix: FILTER_UAV_DISPLAY_PREFIX,
+    } as const;
     export const OVERLAP_TOGGLE_OFF_LABEL = 'Separate overlaps: Off';
     export const OVERLAP_TOGGLE_ON_LABEL = 'Separate overlaps: On';
     export const OVERLAP_THRESHOLD_PX = 14;
@@ -581,6 +616,11 @@ export namespace ClientConstants {
     export const TOOLTIP_ACTIVE_MISSION_TIME_WINDOW_LABEL = 'Window';
     export const TOOLTIP_TIME_WINDOW_RANGE_SEPARATOR = ' - ';
     export const TOOLTIP_DATE_TIME_LOCALE = 'en-GB';
+    export const TOOLTIP_DATE_PART_DAY = '2-digit';
+    export const TOOLTIP_DATE_PART_MONTH = '2-digit';
+    export const TOOLTIP_DATE_PART_HOUR = '2-digit';
+    export const TOOLTIP_DATE_PART_MINUTE = '2-digit';
+    export const TOOLTIP_ALTITUDE_UNIT = 'm';
     export const TOOLTIP_TOOLTIP_CLASS = 'ar-map-tooltip';
     export const TOOLTIP_VALUE_DEGREE_SUFFIX = '°';
     export const TOOLTIP_ROW_SEPARATOR = ':';

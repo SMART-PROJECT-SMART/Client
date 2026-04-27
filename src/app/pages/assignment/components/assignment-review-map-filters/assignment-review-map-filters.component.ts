@@ -20,6 +20,7 @@ const MAP = ClientConstants.AssignmentReviewMap;
 export class AssignmentReviewMapFiltersComponent {
   readonly separateOverlapsOffLabel = MAP.OVERLAP_TOGGLE_OFF_LABEL;
   readonly separateOverlapsOnLabel = MAP.OVERLAP_TOGGLE_ON_LABEL;
+  readonly labels = MAP.FILTER_LABELS;
 
   readonly missions = input.required<AssignmentReviewMapMissionFilterOption[]>();
   readonly missionTypes = input.required<AssignmentReviewMapMissionTypeFilterOption[]>();

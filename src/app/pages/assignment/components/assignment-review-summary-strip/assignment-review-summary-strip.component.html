@@ -9,7 +9,7 @@
       </div>
     </div>
     @if (hasViolations()) {
-      <div class="summary-strip__warning">Violations detected. Resolve before applying.</div>
+      <div class="summary-strip__warning">{{ labels.violationsWarningLabel }}</div>
     }
   </div>
 

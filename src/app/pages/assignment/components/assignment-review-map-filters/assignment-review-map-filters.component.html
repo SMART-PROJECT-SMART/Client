@@ -5,10 +5,10 @@
     cdkOverlayOrigin
     #origin="cdkOverlayOrigin"
     (click)="toggle()"
-    aria-label="Map filters"
+    [attr.aria-label]="labels.triggerAriaLabel"
   >
     <mat-icon>filter_list</mat-icon>
-    Filters
+    {{ labels.triggerButtonLabel }}
   </button>
 
   @if (showSeparateOverlapsToggle()) {
@@ -22,7 +22,7 @@
   }
 
   @if (selectedMissionIds().length > 0 || selectedMissionTypes().length > 0 || selectedUavTypes().length > 0 || selectedTailIds().length > 0) {
-    <button mat-button type="button" (click)="onClear()">Clear</button>
+    <button mat-button type="button" (click)="onClear()">{{ labels.clearButtonLabel }}</button>
   }
 </div>
 
@@ -35,17 +35,17 @@
 >
   <div class="map-filter-panel" (click)="$event.stopPropagation()">
     <div class="map-filter-panel__header">
-      <div class="map-filter-panel__title">Filters</div>
-      <button mat-icon-button type="button" (click)="close()" aria-label="Close filters">
+      <div class="map-filter-panel__title">{{ labels.panelTitle }}</div>
+      <button mat-icon-button type="button" (click)="close()" [attr.aria-label]="labels.closeAriaLabel">
         <mat-icon>close</mat-icon>
       </button>
     </div>
 
     <mat-tab-group class="map-filter-tabs" animationDuration="0ms">
-      <mat-tab label="Missions">
+      <mat-tab [label]="labels.tabMissionsLabel">
         <div class="map-filter-panel__section">
           <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
-            <mat-label>Search missions</mat-label>
+            <mat-label>{{ labels.searchMissionsLabel }}</mat-label>
             <input matInput [formControl]="missionQueryControl" />
           </mat-form-field>
 
@@ -62,10 +62,10 @@
         </div>
       </mat-tab>
 
-      <mat-tab label="Mission type">
+      <mat-tab [label]="labels.tabMissionTypeLabel">
         <div class="map-filter-panel__section">
           <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
-            <mat-label>Search mission types</mat-label>
+            <mat-label>{{ labels.searchMissionTypesLabel }}</mat-label>
             <input matInput [formControl]="missionTypeQueryControl" />
           </mat-form-field>
 
@@ -82,11 +82,11 @@
         </div>
       </mat-tab>
 
-      <mat-tab label="UAVs">
+      <mat-tab [label]="labels.tabUavsLabel">
         <div class="map-filter-panel__section">
           <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
-            <mat-label>Search UAVs</mat-label>
-            <input matInput [formControl]="uavQueryControl" placeholder="UAV-#" />
+            <mat-label>{{ labels.searchUavsLabel }}</mat-label>
+            <input matInput [formControl]="uavQueryControl" [placeholder]="labels.searchUavsPlaceholder" />
           </mat-form-field>
 
           <div class="map-filter-panel__list">
@@ -95,17 +95,17 @@
                 [checked]="selectedTailIdSet().has(u.tailId)"
                 (change)="onToggleUav(u.tailId, $event.checked)"
               >
-                UAV-{{ u.tailId }} ({{ u.label }})
+                {{ labels.uavDisplayPrefix }}{{ u.tailId }} ({{ u.label }})
               </mat-checkbox>
             }
           </div>
         </div>
       </mat-tab>
 
-      <mat-tab label="UAV type">
+      <mat-tab [label]="labels.tabUavTypeLabel">
         <div class="map-filter-panel__section">
           <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
-            <mat-label>Search UAV types</mat-label>
+            <mat-label>{{ labels.searchUavTypesLabel }}</mat-label>
             <input matInput [formControl]="uavTypeQueryControl" />
           </mat-form-field>
 

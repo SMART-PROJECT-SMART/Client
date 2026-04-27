@@ -37,7 +37,7 @@ export class AssignmentOrchestratorService {
       switchMap((response) => this.pollUntilComplete(response.assignmentId)),
       catchError((error) => {
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -45,7 +45,7 @@ export class AssignmentOrchestratorService {
     return this.assignmentApiService.applyAssignment(dto).pipe(
       catchError((error) => {
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -75,7 +75,7 @@ export class AssignmentOrchestratorService {
       switchMap(() => this.fetchResult(assignmentId)),
       catchError((error) => {
         return throwError(() => error);
-      })
+      }),
     );
   }
 

@@ -7,6 +7,12 @@ import type { Mission, UAV } from '../../../../models';
 const MAP = ClientConstants.AssignmentReviewMap;
 const UAV_TOOLTIP_ARMED_FIELDS: readonly TelemetryField[] = [TelemetryField.AmmoPercentage];
 const UAV_TOOLTIP_SURVEILLANCE_FIELDS: readonly TelemetryField[] = [TelemetryField.DataStorageUsedGB];
+const UAV_TOOLTIP_DATE_TIME_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  day: MAP.TOOLTIP_DATE_PART_DAY,
+  month: MAP.TOOLTIP_DATE_PART_MONTH,
+  hour: MAP.TOOLTIP_DATE_PART_HOUR,
+  minute: MAP.TOOLTIP_DATE_PART_MINUTE,
+};
 
 @Component({
   selector: 'app-assignment-review-map-uav-tooltip',
@@ -121,12 +127,10 @@ export class AssignmentReviewMapUavTooltipComponent {
       return MAP.TOOLTIP_VALUE_UNAVAILABLE;
     }
 
-    const dateTimeFormat = new Intl.DateTimeFormat(MAP.TOOLTIP_DATE_TIME_LOCALE, {
-      day: '2-digit',
-      month: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const dateTimeFormat = new Intl.DateTimeFormat(
+      MAP.TOOLTIP_DATE_TIME_LOCALE,
+      UAV_TOOLTIP_DATE_TIME_FORMAT_OPTIONS,
+    );
 
     return `${dateTimeFormat.format(startDate)}${MAP.TOOLTIP_TIME_WINDOW_RANGE_SEPARATOR}${dateTimeFormat.format(endDate)}`;
   }

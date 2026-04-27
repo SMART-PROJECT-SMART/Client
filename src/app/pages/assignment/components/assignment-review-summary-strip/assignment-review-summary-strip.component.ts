@@ -18,7 +18,7 @@ export class AssignmentReviewSummaryStripComponent {
   readonly pairingInsights = input.required<AssignmentPairingInsight[]>();
   readonly hasViolations = input.required<boolean>();
   readonly displayedRelativeScore = computed<number>(() =>
-    this.fitnessScore() > 0
+    this.fitnessScore() > AssignmentPageConstants.RELATIVE_SCORE_MIN
       ? AssignmentPageConstants.RELATIVE_SCORE_MAX
       : AssignmentPageConstants.RELATIVE_SCORE_MIN,
   );
@@ -38,13 +38,6 @@ export class AssignmentReviewSummaryStripComponent {
 
   reasonCount(key: AssignmentExplanationReasonKey): number {
     return this.reasonCounts()[key];
-  }
-
-  private resolveMarginAgainstRunnerUp(insight: AssignmentPairingInsight): number {
-    const runnerUpScore = insight.alternatives.length > 0
-      ? Math.max(...insight.alternatives.map((alt) => alt.totalScore))
-      : 0;
-    return insight.totalScore - runnerUpScore;
   }
 
   private resolvePrimaryReason(insight: AssignmentPairingInsight): AssignmentExplanationReasonKey | null {
