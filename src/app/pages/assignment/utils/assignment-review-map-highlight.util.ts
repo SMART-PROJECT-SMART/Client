@@ -4,6 +4,7 @@ export function hasAnyMapHighlightSelection(ctx: AssignmentReviewMapHighlightCon
   return (
     ctx.highlightMissionIds.size > 0 ||
     ctx.highlightMissionTypes.size > 0 ||
+    ctx.highlightUavTypes.size > 0 ||
     ctx.highlightTailIds.size > 0
   );
 }
@@ -34,6 +35,14 @@ export function resolveMissionHighlightOpacity(
       return fullOpacity;
     }
   }
+  if (ctx.highlightUavTypes.size > 0) {
+    const assigned =
+      ctx.selectedTailIdsByMissionId.get(missionId) ?? pairing.tailId;
+    const assignedType = ctx.uavTypeByTailId[assigned];
+    if (assignedType && ctx.highlightUavTypes.has(assignedType)) {
+      return fullOpacity;
+    }
+  }
   return dimmedOpacity;
 }
 
@@ -47,6 +56,10 @@ export function resolveUavHighlightOpacity(
     return fullOpacity;
   }
   if (ctx.highlightTailIds.has(tailId)) {
+    return fullOpacity;
+  }
+  const uavType = ctx.uavTypeByTailId[tailId];
+  if (uavType && ctx.highlightUavTypes.has(uavType)) {
     return fullOpacity;
   }
   if (isTailAssignedToHighlightedMission(ctx, tailId)) {

@@ -567,7 +567,13 @@ export namespace ClientConstants {
     export const TOOLTIP_POSITION_SECTION_TITLE = 'Position';
     export const TOOLTIP_STATUS_SECTION_TITLE = 'Status';
     export const TOOLTIP_ACTIVE_MISSION_SECTION_TITLE = 'Active mission';
+    export const TOOLTIP_ACTIVE_MISSION_ID_LABEL = 'Mission ID';
     export const TOOLTIP_ACTIVE_MISSION_MISSION_LABEL = 'Mission';
+    export const TOOLTIP_ACTIVE_MISSION_PRIORITY_LABEL = 'Priority';
+    export const TOOLTIP_ACTIVE_MISSION_LOCATION_LABEL = 'Location';
+    export const TOOLTIP_ACTIVE_MISSION_TIME_WINDOW_LABEL = 'Window';
+    export const TOOLTIP_TIME_WINDOW_RANGE_SEPARATOR = ' - ';
+    export const TOOLTIP_DATE_TIME_LOCALE = 'en-GB';
     export const TOOLTIP_TOOLTIP_CLASS = 'ar-map-tooltip';
     export const TOOLTIP_VALUE_DEGREE_SUFFIX = '°';
     export const TOOLTIP_ROW_SEPARATOR = ':';

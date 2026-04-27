@@ -4,7 +4,9 @@ import type { MissionAssignmentPairing } from '../mission/missionAssignmentPairi
 export type AssignmentReviewMapHighlightContext = {
   pairings: MissionAssignmentPairing[];
   selectedTailIdsByMissionId: Map<string, number>;
+  uavTypeByTailId: Record<number, UAVType>;
   highlightMissionIds: Set<string>;
   highlightMissionTypes: Set<UAVType>;
+  highlightUavTypes: Set<UAVType>;
   highlightTailIds: Set<number>;
 };

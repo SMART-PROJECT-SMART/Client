@@ -1,9 +1,13 @@
 import {
+  ApplicationRef,
   Component,
   ChangeDetectionStrategy,
   AfterViewInit,
   OnDestroy,
+  ComponentRef,
+  EnvironmentInjector,
   effect,
+  createComponent,
   input,
   viewChild,
   ElementRef,
@@ -25,7 +29,6 @@ import {
 } from '../../utils/assignment-review-map-color.util';
 import {
   buildMissionTooltipContent,
-  buildUavTooltipContent,
 } from '../../utils/assignment-review-map-tooltip.util';
 import {
   renderMissionMarkersAndLinks,
@@ -35,6 +38,7 @@ import {
 import { buildMapMarkerAnchors } from '../../utils/assignment-review-map-anchor.util';
 import { fitMapToPointsOrDefault } from '../../utils/assignment-review-map-fit.util';
 import { resolveMapMarkerPlacements } from '../../utils/assignment-review-map-overlap.util';
+import { AssignmentReviewMapUavTooltipComponent } from '../assignment-review-map-uav-tooltip/assignment-review-map-uav-tooltip.component';
 
 const MAP = ClientConstants.AssignmentReviewMap;
 
@@ -53,6 +57,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   readonly activeMissions = input<ActiveMissionRo[]>([]);
   readonly highlightMissionIds = input<Set<string>>(new Set());
   readonly highlightMissionTypes = input<Set<UAVType>>(new Set());
+  readonly highlightUavTypes = input<Set<UAVType>>(new Set());
   readonly highlightTailIds = input<Set<number>>(new Set());
   readonly separateOverlaps = input<boolean>(false);
 
@@ -60,8 +65,12 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
 
   private map: L.Map | null = null;
   private layerGroup: L.LayerGroup | null = null;
+  private tooltipComponentRefs: ComponentRef<AssignmentReviewMapUavTooltipComponent>[] = [];
 
-  constructor() {
+  constructor(
+    private readonly appRef: ApplicationRef,
+    private readonly environmentInjector: EnvironmentInjector,
+  ) {
     effect(() => {
       this.pairings();
       this.selectedTailIds();
@@ -70,6 +79,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       this.activeMissions();
       this.highlightMissionIds();
       this.highlightMissionTypes();
+      this.highlightUavTypes();
       this.highlightTailIds();
       this.separateOverlaps();
       if (!this.map) {
@@ -111,6 +121,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     if (!map || !group) {
       return;
     }
+    this.clearTooltipComponents();
     group.clearLayers();
     const boundsPoints: L.LatLngExpression[] = [];
     const context = this.buildRenderContext();
@@ -184,10 +195,19 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     return {
       pairings: this.pairings(),
       selectedTailIdsByMissionId: this.selectedTailIds(),
+      uavTypeByTailId: this.buildUavTypeByTailIdMap(),
       highlightMissionIds: this.highlightMissionIds(),
       highlightMissionTypes: this.highlightMissionTypes(),
+      highlightUavTypes: this.highlightUavTypes(),
       highlightTailIds: this.highlightTailIds(),
     };
+  }
+
+  private buildUavTypeByTailIdMap(): Record<number, UAVType> {
+    return this.availableUavs().reduce<Record<number, UAVType>>((accumulator: Record<number, UAVType>, uav: UAV) => {
+      accumulator[uav.tailId] = uav.uavType;
+      return accumulator;
+    }, {});
   }
 
   private resolveAssignedUavPosition(
@@ -203,10 +223,18 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     return extractLatLonFromUav(uav);
   }
 
-  private buildUavTooltip(uav: UAV, context: AssignmentReviewMapRenderContext): string {
+  private buildUavTooltip(uav: UAV, context: AssignmentReviewMapRenderContext): HTMLElement {
     const telemetry = this.resolveUavTooltipTelemetry(uav);
     const activeMission = context.activeMissionByTailId.get(uav.tailId) ?? null;
-    return buildUavTooltipContent(uav, telemetry, { activeMission });
+    const tooltipComponentRef = createComponent(AssignmentReviewMapUavTooltipComponent, {
+      environmentInjector: this.environmentInjector,
+    });
+    tooltipComponentRef.setInput('uav', uav);
+    tooltipComponentRef.setInput('telemetry', telemetry);
+    tooltipComponentRef.setInput('activeMission', activeMission);
+    this.appRef.attachView(tooltipComponentRef.hostView);
+    this.tooltipComponentRefs.push(tooltipComponentRef);
+    return tooltipComponentRef.location.nativeElement as HTMLElement;
   }
 
   private resolveUavTooltipTelemetry(uav: UAV): Record<TelemetryField, number> {
@@ -218,8 +246,17 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clearTooltipComponents();
     this.map?.remove();
     this.map = null;
     this.layerGroup = null;
+  }
+
+  private clearTooltipComponents(): void {
+    for (const tooltipComponentRef of this.tooltipComponentRefs) {
+      this.appRef.detachView(tooltipComponentRef.hostView);
+      tooltipComponentRef.destroy();
+    }
+    this.tooltipComponentRefs = [];
   }
 }

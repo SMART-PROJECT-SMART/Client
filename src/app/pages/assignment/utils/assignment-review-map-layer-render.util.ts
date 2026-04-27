@@ -53,7 +53,7 @@ export function renderUavMarkers(
   context: AssignmentReviewMapRenderContext,
   highlightContext: AssignmentReviewMapHighlightContext,
   markerPlacements: Map<string, AssignmentReviewMapMarkerPlacement>,
-  buildUavTooltip: (uav: UAV, context: AssignmentReviewMapRenderContext) => string,
+  buildUavTooltip: (uav: UAV, context: AssignmentReviewMapRenderContext) => HTMLElement,
 ): void {
   for (const uav of availableUavs) {
     const pos = extractLatLonFromUav(uav);

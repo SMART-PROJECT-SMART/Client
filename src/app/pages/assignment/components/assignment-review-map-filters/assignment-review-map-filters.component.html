@@ -21,7 +21,7 @@
     </button>
   }
 
-  @if (selectedMissionIds().length > 0 || selectedMissionTypes().length > 0 || selectedTailIds().length > 0) {
+  @if (selectedMissionIds().length > 0 || selectedMissionTypes().length > 0 || selectedUavTypes().length > 0 || selectedTailIds().length > 0) {
     <button mat-button type="button" (click)="onClear()">Clear</button>
   }
 </div>
@@ -95,7 +95,27 @@
                 [checked]="selectedTailIdSet().has(u.tailId)"
                 (change)="onToggleUav(u.tailId, $event.checked)"
               >
-                UAV-{{ u.tailId }}
+                UAV-{{ u.tailId }} ({{ u.label }})
+              </mat-checkbox>
+            }
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="UAV type">
+        <div class="map-filter-panel__section">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
+            <mat-label>Search UAV types</mat-label>
+            <input matInput [formControl]="uavTypeQueryControl" />
+          </mat-form-field>
+
+          <div class="map-filter-panel__list">
+            @for (t of filteredUavTypeOptions(); track t.uavType) {
+              <mat-checkbox
+                [checked]="selectedUavTypeSet().has(t.uavType)"
+                (change)="onToggleUavType(t.uavType, $event.checked)"
+              >
+                {{ t.label }}
               </mat-checkbox>
             }
           </div>

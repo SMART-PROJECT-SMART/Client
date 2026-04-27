@@ -32,6 +32,7 @@ import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util'
 import {
   buildMapMissionFilterOptionsFromPairings,
   buildMapMissionTypeFilterOptionsFromPairings,
+  buildMapUavTypeFilterOptionsFromUavs,
   buildMapUavFilterOptionsFromUavs,
 } from '../../utils/assignment-review-map-filter-options.util';
 
@@ -83,6 +84,7 @@ export class AssignmentReviewComponent implements OnInit {
 
   public readonly selectedMissionIdsForMap = signal<string[]>([]);
   public readonly selectedMissionTypesForMap = signal<UAVType[]>([]);
+  public readonly selectedUavTypesForMap = signal<UAVType[]>([]);
   public readonly selectedTailIdsForMap = signal<number[]>([]);
   public readonly separateOverlapsForMap = signal(false);
   public readonly selectedReviewTabIndex = signal(0);
@@ -121,12 +123,20 @@ export class AssignmentReviewComponent implements OnInit {
     return new Set(this.selectedMissionTypesForMap());
   });
 
+  public readonly highlightUavTypes: Signal<Set<UAVType>> = computed(() => {
+    return new Set(this.selectedUavTypesForMap());
+  });
+
   public readonly mapMissionOptions: Signal<AssignmentReviewMapMissionFilterOption[]> = computed(() => {
     return buildMapMissionFilterOptionsFromPairings(this.algorithmResult().pairings);
   });
 
   public readonly mapUavOptions: Signal<AssignmentReviewMapUavFilterOption[]> = computed(() => {
     return buildMapUavFilterOptionsFromUavs(this.availableUavs());
+  });
+
+  public readonly mapUavTypeOptions: Signal<AssignmentReviewMapMissionTypeFilterOption[]> = computed(() => {
+    return buildMapUavTypeFilterOptionsFromUavs(this.availableUavs());
   });
 
   public readonly mapMissionTypeOptions: Signal<AssignmentReviewMapMissionTypeFilterOption[]> = computed(() => {
@@ -221,6 +231,7 @@ export class AssignmentReviewComponent implements OnInit {
   public clearMapHighlights(): void {
     this.selectedMissionIdsForMap.set([]);
     this.selectedMissionTypesForMap.set([]);
+    this.selectedUavTypesForMap.set([]);
     this.selectedTailIdsForMap.set([]);
   }
 
@@ -234,6 +245,7 @@ export class AssignmentReviewComponent implements OnInit {
       ?? this.algorithmResult().pairings.find((pairing) => pairing.mission.id === missionId)?.tailId;
     this.selectedMissionIdsForMap.set([missionId]);
     this.selectedMissionTypesForMap.set([]);
+    this.selectedUavTypesForMap.set([]);
     this.selectedTailIdsForMap.set(tailId !== undefined ? [tailId] : []);
     this.selectedReviewTabIndex.set(0);
   }

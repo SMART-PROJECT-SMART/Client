@@ -23,27 +23,32 @@ export class AssignmentReviewMapFiltersComponent {
 
   readonly missions = input.required<AssignmentReviewMapMissionFilterOption[]>();
   readonly missionTypes = input.required<AssignmentReviewMapMissionTypeFilterOption[]>();
+  readonly uavTypes = input.required<AssignmentReviewMapMissionTypeFilterOption[]>();
   readonly uavs = input.required<AssignmentReviewMapUavFilterOption[]>();
   readonly selectedMissionIds = input.required<string[]>();
   readonly selectedMissionTypes = input.required<UAVType[]>();
+  readonly selectedUavTypes = input.required<UAVType[]>();
   readonly selectedTailIds = input.required<number[]>();
   readonly separateOverlapsEnabled = input<boolean>(false);
   readonly showSeparateOverlapsToggle = input<boolean>(false);
 
   readonly selectedMissionIdsChange = output<string[]>();
   readonly selectedMissionTypesChange = output<UAVType[]>();
+  readonly selectedUavTypesChange = output<UAVType[]>();
   readonly selectedTailIdsChange = output<number[]>();
   readonly clear = output<void>();
   readonly separateOverlapsToggle = output<void>();
 
   readonly missionQueryControl = new FormControl<string>('', { nonNullable: true });
   readonly missionTypeQueryControl = new FormControl<string>('', { nonNullable: true });
+  readonly uavTypeQueryControl = new FormControl<string>('', { nonNullable: true });
   readonly uavQueryControl = new FormControl<string>('', { nonNullable: true });
 
   readonly isOpen = signal(false);
 
   readonly selectedMissionIdSet = computed(() => new Set(this.selectedMissionIds()));
   readonly selectedMissionTypeSet = computed(() => new Set(this.selectedMissionTypes()));
+  readonly selectedUavTypeSet = computed(() => new Set(this.selectedUavTypes()));
   readonly selectedTailIdSet = computed(() => new Set(this.selectedTailIds()));
 
   readonly filteredMissionOptions = computed(() => {
@@ -64,7 +69,8 @@ export class AssignmentReviewMapFiltersComponent {
       if (!q) return true;
       return (
         `${MAP.FILTER_UAV_SEARCH_PREFIX}${u.tailId}`.includes(q) ||
-        u.tailId.toString().includes(q)
+        u.tailId.toString().includes(q) ||
+        u.label.toLowerCase().includes(q)
       );
     });
   });
@@ -76,6 +82,16 @@ export class AssignmentReviewMapFiltersComponent {
       if (selected.has(missionTypeOption.uavType)) return true;
       if (!q) return true;
       return missionTypeOption.label.toLowerCase().includes(q);
+    });
+  });
+
+  readonly filteredUavTypeOptions = computed(() => {
+    const q = this.uavTypeQueryControl.value.trim().toLowerCase();
+    const selected = this.selectedUavTypeSet();
+    return this.uavTypes().filter((uavTypeOption: AssignmentReviewMapMissionTypeFilterOption) => {
+      if (selected.has(uavTypeOption.uavType)) return true;
+      if (!q) return true;
+      return uavTypeOption.label.toLowerCase().includes(q);
     });
   });
 
@@ -103,9 +119,16 @@ export class AssignmentReviewMapFiltersComponent {
     );
   }
 
+  onToggleUavType(uavType: UAVType, checked: boolean): void {
+    this.selectedUavTypesChange.emit(
+      applyUniqueSelection(this.selectedUavTypes(), uavType, checked),
+    );
+  }
+
   onClear(): void {
     this.missionQueryControl.setValue('');
     this.missionTypeQueryControl.setValue('');
+    this.uavTypeQueryControl.setValue('');
     this.uavQueryControl.setValue('');
     this.clear.emit();
   }

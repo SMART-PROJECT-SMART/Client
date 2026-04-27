@@ -33,5 +33,25 @@ export function buildMapMissionTypeFilterOptionsFromPairings(
 }
 
 export function buildMapUavFilterOptionsFromUavs(uavs: UAV[]): AssignmentReviewMapUavFilterOption[] {
-  return uavs.map((u) => ({ tailId: u.tailId }));
+  return uavs.map((u) => ({
+    tailId: u.tailId,
+    uavType: u.uavType,
+    label: EnumUtil.getUAVTypeDisplay(u.uavType),
+  }));
+}
+
+export function buildMapUavTypeFilterOptionsFromUavs(
+  uavs: UAV[],
+): AssignmentReviewMapMissionTypeFilterOption[] {
+  const seen = new Set<UAVType>();
+  const out: AssignmentReviewMapMissionTypeFilterOption[] = [];
+  for (const uav of uavs) {
+    if (seen.has(uav.uavType)) {
+      continue;
+    }
+    seen.add(uav.uavType);
+    out.push({ uavType: uav.uavType, label: EnumUtil.getUAVTypeDisplay(uav.uavType) });
+  }
+  out.sort((a, b) => a.label.localeCompare(b.label));
+  return out;
 }

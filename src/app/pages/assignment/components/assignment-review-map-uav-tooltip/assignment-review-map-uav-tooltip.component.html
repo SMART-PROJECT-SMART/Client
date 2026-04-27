@@ -1,0 +1,39 @@
+<div class="ar-map-tooltip-card">
+  <div class="ar-map-tooltip-card__header">
+    <span class="ar-map-tooltip-card__title">{{ title() }}</span>
+    <span [class]="labels.typeBadgeClass">{{ uavTypeLabel() }}</span>
+  </div>
+
+  <div class="ar-map-tooltip-card__section">
+    <div class="ar-map-tooltip-card__section-title">{{ labels.positionSectionTitle }}</div>
+    @for (row of positionRows(); track row.label) {
+      <div class="ar-map-tooltip-card__row">
+        <span class="ar-map-tooltip-card__label">{{ row.label }}</span>
+        <span class="ar-map-tooltip-card__value">{{ row.value }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="ar-map-tooltip-card__section ar-map-tooltip-card__section--status">
+    <div class="ar-map-tooltip-card__section-title">{{ labels.statusSectionTitle }}</div>
+    @for (row of statusRows(); track row.label) {
+      <div class="ar-map-tooltip-card__row">
+        <span class="ar-map-tooltip-card__label">{{ row.label }}</span>
+        <span class="ar-map-tooltip-card__value">{{ row.value }}</span>
+      </div>
+    }
+  </div>
+
+  @if (hasActiveMission()) {
+    <div class="ar-map-tooltip-card__section ar-map-tooltip-card__section--active-mission">
+      <div class="ar-map-tooltip-card__section-title">{{ labels.activeMissionSectionTitle }}</div>
+      @for (row of activeMissionRows(); track row.label) {
+        <div class="ar-map-tooltip-card__row">
+          <span class="ar-map-tooltip-card__label">{{ row.label }}</span>
+          <span class="ar-map-tooltip-card__value">{{ row.value }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>
+
