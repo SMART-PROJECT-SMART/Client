@@ -129,7 +129,14 @@ export namespace ClientConstants {
     export const ALGORITHM_ALTERNATIVES_LABEL: string = 'Alternative UAVs';
     export const ALGORITHM_ALTERNATIVES_EMPTY: string = 'No alternatives available';
     export const SHOW_ON_MAP_LABEL: string = 'Show on map';
-    export const SCORE_DELTA_LABEL: string = 'Delta vs suggestion';
+    export const SCORE_DELTA_LABEL: string = 'Relative score vs suggestion';
+    export const RELATIVE_SCORE_LABEL: string = 'Relative score';
+    export const RELATIVE_SCORE_HINT_LABEL: string = 'Suggestion is always 100';
+    export const CANDIDATE_RELATIVE_SCORE_LABEL: string = 'Relative score';
+    export const SELECTION_RELATIVE_SCORE_LABEL: string = 'Your selection score';
+    export const RELATIVE_SCORE_SUFFIX: string = '%';
+    export const RELATIVE_SCORE_MIN: number = 0;
+    export const RELATIVE_SCORE_MAX: number = 100;
     export const SCORE_DECIMALS: number = 2;
     export const ALGORITHM_METRIC_TELEMETRY_LABEL: string = 'Telemetry';
     export const ALGORITHM_METRIC_DISTANCE_LABEL: string = 'Distance';
@@ -174,11 +181,33 @@ export namespace ClientConstants {
       selected: ALGORITHM_SELECTED_LABEL,
       suggested: ALGORITHM_SUGGESTED_LABEL,
       delta: SCORE_DELTA_LABEL,
+      relativeScore: RELATIVE_SCORE_LABEL,
+      candidateRelativeScore: CANDIDATE_RELATIVE_SCORE_LABEL,
+      selectionRelativeScore: SELECTION_RELATIVE_SCORE_LABEL,
+      relativeScoreSuffix: RELATIVE_SCORE_SUFFIX,
     } as const;
     export const ASSIGNMENT_EXPLANATION_LIMITS = {
       topReasons: ALGORITHM_TOP_REASONS_LIMIT,
       candidateSummaries: ALGORITHM_CANDIDATE_SUMMARIES_LIMIT,
       decimals: SCORE_DECIMALS,
+    } as const;
+    export const ASSIGNMENT_SUMMARY_STRIP_LABELS = {
+      summaryTitle: ALGORITHM_SUMMARY_TITLE,
+      scoreLabel: RELATIVE_SCORE_LABEL,
+      scoreHintLabel: RELATIVE_SCORE_HINT_LABEL,
+      whyScoreTitle: ALGORITHM_WHY_SCORE_TITLE,
+      formulaLabel: ALGORITHM_FORMULA_LABEL,
+      reasonDistanceLabel: ALGORITHM_REASON_DISTANCE_LABEL,
+      reasonTelemetryLabel: ALGORITHM_REASON_TELEMETRY_LABEL,
+      reasonSafetyLabel: ALGORITHM_REASON_SAFETY_LABEL,
+      reasonMissionSuffix: ALGORITHM_REASON_MISSION_SUFFIX,
+      glossaryTitle: ALGORITHM_GLOSSARY_TITLE,
+      glossaryTelemetry: ALGORITHM_GLOSSARY_TELEMETRY,
+      glossaryDistance: ALGORITHM_GLOSSARY_DISTANCE,
+      glossaryPriority: ALGORITHM_GLOSSARY_PRIORITY,
+      glossaryPenalties: ALGORITHM_GLOSSARY_PENALTIES,
+      glossaryBonuses: ALGORITHM_GLOSSARY_BONUSES,
+      strongMarginThreshold: ALGORITHM_STRONG_MARGIN_THRESHOLD,
     } as const;
     export const FIT_BREAKDOWN_TELEMETRY_LABEL: string = 'Telemetry';
     export const FIT_BREAKDOWN_DISTANCE_LABEL: string = 'Distance';

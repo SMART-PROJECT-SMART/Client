@@ -17,23 +17,13 @@ export class AssignmentReviewSummaryStripComponent {
   readonly fitnessScore = input.required<number>();
   readonly pairingInsights = input.required<AssignmentPairingInsight[]>();
   readonly hasViolations = input.required<boolean>();
+  readonly displayedRelativeScore = computed<number>(() =>
+    this.fitnessScore() > 0
+      ? AssignmentPageConstants.RELATIVE_SCORE_MAX
+      : AssignmentPageConstants.RELATIVE_SCORE_MIN,
+  );
 
-  readonly summaryTitle = AssignmentPageConstants.ALGORITHM_SUMMARY_TITLE;
-  readonly scoreLabel = AssignmentPageConstants.FITNESS_SCORE_LABEL;
-  readonly scoreHintLabel = AssignmentPageConstants.FITNESS_SCORE_HINT_LABEL;
-  readonly whyScoreTitle = AssignmentPageConstants.ALGORITHM_WHY_SCORE_TITLE;
-  readonly formulaLabel = AssignmentPageConstants.ALGORITHM_FORMULA_LABEL;
-  readonly reasonDistanceLabel = AssignmentPageConstants.ALGORITHM_REASON_DISTANCE_LABEL;
-  readonly reasonTelemetryLabel = AssignmentPageConstants.ALGORITHM_REASON_TELEMETRY_LABEL;
-  readonly reasonSafetyLabel = AssignmentPageConstants.ALGORITHM_REASON_SAFETY_LABEL;
-  readonly reasonMissionSuffix = AssignmentPageConstants.ALGORITHM_REASON_MISSION_SUFFIX;
-  readonly glossaryTitle = AssignmentPageConstants.ALGORITHM_GLOSSARY_TITLE;
-  readonly glossaryTelemetry = AssignmentPageConstants.ALGORITHM_GLOSSARY_TELEMETRY;
-  readonly glossaryDistance = AssignmentPageConstants.ALGORITHM_GLOSSARY_DISTANCE;
-  readonly glossaryPriority = AssignmentPageConstants.ALGORITHM_GLOSSARY_PRIORITY;
-  readonly glossaryPenalties = AssignmentPageConstants.ALGORITHM_GLOSSARY_PENALTIES;
-  readonly glossaryBonuses = AssignmentPageConstants.ALGORITHM_GLOSSARY_BONUSES;
-  readonly strongMarginThreshold = AssignmentPageConstants.ALGORITHM_STRONG_MARGIN_THRESHOLD;
+  readonly labels = AssignmentPageConstants.ASSIGNMENT_SUMMARY_STRIP_LABELS;
 
   readonly reasonCounts = computed<Record<AssignmentExplanationReasonKey, number>>(() => {
     const counts: Record<AssignmentExplanationReasonKey, number> = { distance: 0, telemetry: 0, safety: 0 };

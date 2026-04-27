@@ -77,18 +77,18 @@
       <div class="algorithm-panel__top">
         <div class="algorithm-panel__score-chip">
           <span>{{ labels.suggested }}</span>
-          <strong>{{ withSign(insight()?.totalScore ?? null) }}</strong>
+          <strong>{{ withPercent(suggestedRelativeScore()) }}</strong>
           <span class="algorithm-panel__tail">UAV-{{ suggestedTailId() }}</span>
         </div>
         <div class="algorithm-panel__score-chip">
           <span>{{ labels.selected }}</span>
-          <strong>{{ withSign(selectedScore()) }}</strong>
+          <strong>{{ withPercent(selectedRelativeScore()) }}</strong>
           <span class="algorithm-panel__tail">UAV-{{ selectedTailId() }}</span>
         </div>
         <div class="algorithm-panel__score-chip">
-          <span>{{ labels.delta }}</span>
-          <strong [class.algorithm-panel__delta-negative]="(deltaVsSuggestion() ?? 0) < 0">
-            {{ withSign(deltaVsSuggestion()) }}
+          <span>{{ labels.relativeScore }}</span>
+          <strong>
+            {{ withPercent(selectedRelativeScore()) }}
           </strong>
         </div>
       </div>

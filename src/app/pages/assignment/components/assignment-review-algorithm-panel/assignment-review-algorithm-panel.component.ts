@@ -4,10 +4,10 @@ import { ClientConstants } from '../../../../common';
 import { EnumUtil } from '../../../../common/utils';
 import type { AssignmentPairingAlternative } from '../../../../models/assignment/assignmentPairingAlternative.model';
 import type { AssignmentPairingInsight } from '../../../../models/assignment/assignmentPairingInsight.model';
+import { resolveRelativeScore } from '../../utils/assignment-relative-score.util';
 
 const { AssignmentPageConstants } = ClientConstants;
 const NO_PENALTY = 0;
-const NO_SCORE = 0;
 
 @Component({
   selector: 'app-assignment-review-algorithm-panel',
@@ -51,13 +51,21 @@ export class AssignmentReviewAlgorithmPanelComponent {
     return alt?.totalScore ?? null;
   });
 
-  public readonly deltaVsSuggestion = computed<number | null>(() => {
+  public readonly suggestedRelativeScore = computed<number | null>(() => {
+    const insight = this.insight();
+    if (!insight) {
+      return null;
+    }
+    return AssignmentPageConstants.RELATIVE_SCORE_MAX;
+  });
+
+  public readonly selectedRelativeScore = computed<number | null>(() => {
     const selected = this.selectedScore();
     const insight = this.insight();
     if (selected === null || !insight) {
       return null;
     }
-    return selected - insight.totalScore;
+    return resolveRelativeScore(insight.totalScore, selected);
   });
 
   public readonly rankedAlternatives = computed<AssignmentPairingAlternative[]>(() => {
@@ -110,11 +118,8 @@ export class AssignmentReviewAlgorithmPanelComponent {
     ];
 
     for (const alternative of alternatives) {
-      const delta = alternative.totalScore - insight.totalScore;
-      const relativeLabel =
-        delta === NO_SCORE
-          ? this.labels.candidateSuggested
-          : `${this.labels.candidateWeaker} ${this.withSign(delta)}`;
+      const relativeScore = resolveRelativeScore(insight.totalScore, alternative.totalScore);
+      const relativeLabel = `${this.labels.candidateRelativeScore} ${this.withPercent(relativeScore)}`;
       summaries.push(`UAV-${alternative.tailId}: ${relativeLabel}`);
     }
 
@@ -153,7 +158,7 @@ export class AssignmentReviewAlgorithmPanelComponent {
       { value: insight.telemetryScore, label: this.labels.reasonTelemetry },
       { value: insight.priorityScore, label: this.labels.reasonPriority },
     ]
-      .filter((bucket) => bucket.value > NO_SCORE)
+      .filter((bucket) => bucket.value > 0)
       .sort((first, second) => second.value - first.value)
       .slice(0, this.limits.topReasons - 1)
       .map((bucket) => bucket.label);
@@ -164,17 +169,11 @@ export class AssignmentReviewAlgorithmPanelComponent {
   });
 
   public readonly selectedChangeSummary = computed<string>(() => {
-    const delta = this.deltaVsSuggestion();
-    if (delta === null) {
+    const relativeScore = this.selectedRelativeScore();
+    if (relativeScore === null) {
       return this.labels.selectionUnknown;
     }
-    if (delta === NO_SCORE) {
-      return this.labels.selectionNoChange;
-    }
-    if (delta > NO_SCORE) {
-      return `${this.labels.selectionImproved} ${this.withSign(delta)}`;
-    }
-    return `${this.labels.selectionWorse} ${this.withSign(delta)}`;
+    return `${this.labels.selectionRelativeScore} ${this.withPercent(relativeScore)}`;
   });
 
   public readonly selectedWarnings = computed<string[]>(() => {
@@ -219,6 +218,13 @@ export class AssignmentReviewAlgorithmPanelComponent {
     return `${value > 0 ? '+' : ''}${value.toFixed(this.limits.decimals)}`;
   }
 
+  public withPercent(value: number | null): string {
+    if (value === null) {
+      return 'N/A';
+    }
+    return `${value.toFixed(this.limits.decimals)}${this.labels.relativeScoreSuffix}`;
+  }
+
   private resolveBlockedReason(alternative: AssignmentPairingAlternative, suggestedScore: number): string {
     const requiredUavType = this.missionRequiredUavType();
     const uavTypes = this.uavTypeByTailId();
@@ -230,7 +236,8 @@ export class AssignmentReviewAlgorithmPanelComponent {
       return this.labels.blockedReasonActiveMission;
     }
     if (alternative.totalScore < suggestedScore) {
-      return `${this.labels.blockedReasonLowerScore} ${this.withSign(alternative.totalScore - suggestedScore)}`;
+      const relativeScore = resolveRelativeScore(suggestedScore, alternative.totalScore);
+      return `${this.labels.blockedReasonLowerScore} ${this.withPercent(relativeScore)}`;
     }
     return this.labels.blockedReasonConflictRisk;
   }
