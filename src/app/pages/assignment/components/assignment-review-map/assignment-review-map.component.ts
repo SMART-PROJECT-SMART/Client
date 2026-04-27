@@ -7,7 +7,6 @@ import {
   ComponentRef,
   EnvironmentInjector,
   effect,
-  createComponent,
   input,
   viewChild,
   ElementRef,
@@ -35,6 +34,14 @@ import {
 import { buildMapMarkerAnchors } from '../../utils/assignment-review-map-anchor.util';
 import { fitMapToPointsOrDefault } from '../../utils/assignment-review-map-fit.util';
 import { resolveMapMarkerPlacements } from '../../utils/assignment-review-map-overlap.util';
+import {
+  createTemporaryDestinationMarker,
+  removeTemporaryDestinationMarker,
+} from '../../utils/assignment-review-map-temporary-marker.util';
+import {
+  createTooltipHostElement,
+  destroyTooltipHostElements,
+} from '../../utils/assignment-review-map-tooltip-host.util';
 import { AssignmentReviewMapMissionTooltipComponent } from '../assignment-review-map-mission-tooltip/assignment-review-map-mission-tooltip.component';
 import { AssignmentReviewMapUavTooltipComponent } from '../assignment-review-map-uav-tooltip/assignment-review-map-uav-tooltip.component';
 
@@ -224,29 +231,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     }
 
     this.clearTemporaryDestinationMarker();
-
-    const destinationMarker = L.circleMarker(
-      [activeMission.location.latitude, activeMission.location.longitude],
-      {
-        radius: MAP.TEMP_DESTINATION_MARKER_RADIUS_PX,
-        color: MAP.TEMP_DESTINATION_MARKER_COLOR,
-        fillColor: MAP.TEMP_DESTINATION_MARKER_COLOR,
-        fillOpacity: MAP.TEMP_DESTINATION_MARKER_FILL_OPACITY,
-        weight: MAP.TEMP_DESTINATION_MARKER_STROKE_WEIGHT,
-      },
-    );
-
-    destinationMarker
-      .bindTooltip(`${MAP.TEMP_DESTINATION_MARKER_LABEL_PREFIX}${activeMission.title}`, {
-        className: MAP.TOOLTIP_TOOLTIP_CLASS,
-        direction: MAP.TOOLTIP_DIRECTION,
-        offset: [MAP.TOOLTIP_TOOLTIP_OFFSET_X_PX, MAP.TOOLTIP_TOOLTIP_OFFSET_Y_PX],
-        opacity: MAP.LEAFLET_TOOLTIP_BIND_OPACITY,
-      })
-      .addTo(this.layerGroup);
-    destinationMarker.openTooltip();
-
-    this.temporaryDestinationMarker = destinationMarker;
+    this.temporaryDestinationMarker = createTemporaryDestinationMarker(this.layerGroup, activeMission);
     this.temporaryDestinationMarkerTailId = uav.tailId;
   }
 
@@ -266,15 +251,17 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   private buildUavTooltip(uav: UAV, context: AssignmentReviewMapRenderContext): HTMLElement {
     const telemetry = this.resolveUavTooltipTelemetry(uav);
     const activeMission = context.activeMissionByTailId.get(uav.tailId) ?? null;
-    const tooltipComponentRef = createComponent(AssignmentReviewMapUavTooltipComponent, {
-      environmentInjector: this.environmentInjector,
-    });
-    tooltipComponentRef.setInput('uav', uav);
-    tooltipComponentRef.setInput('telemetry', telemetry);
-    tooltipComponentRef.setInput('activeMission', activeMission);
-    this.appRef.attachView(tooltipComponentRef.hostView);
-    this.tooltipComponentRefs.push(tooltipComponentRef);
-    return tooltipComponentRef.location.nativeElement as HTMLElement;
+    return createTooltipHostElement(
+      this.appRef,
+      this.environmentInjector,
+      AssignmentReviewMapUavTooltipComponent,
+      (tooltipComponentRef) => {
+        tooltipComponentRef.setInput('uav', uav);
+        tooltipComponentRef.setInput('telemetry', telemetry);
+        tooltipComponentRef.setInput('activeMission', activeMission);
+      },
+      this.tooltipComponentRefs,
+    );
   }
 
   private resolveUavTooltipTelemetry(uav: UAV): Record<TelemetryField, number> {
@@ -282,13 +269,15 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   }
 
   private buildMissionTooltip(mission: Mission): HTMLElement {
-    const tooltipComponentRef = createComponent(AssignmentReviewMapMissionTooltipComponent, {
-      environmentInjector: this.environmentInjector,
-    });
-    tooltipComponentRef.setInput('mission', mission);
-    this.appRef.attachView(tooltipComponentRef.hostView);
-    this.tooltipComponentRefs.push(tooltipComponentRef);
-    return tooltipComponentRef.location.nativeElement as HTMLElement;
+    return createTooltipHostElement(
+      this.appRef,
+      this.environmentInjector,
+      AssignmentReviewMapMissionTooltipComponent,
+      (tooltipComponentRef) => {
+        tooltipComponentRef.setInput('mission', mission);
+      },
+      this.tooltipComponentRefs,
+    );
   }
 
   ngOnDestroy(): void {
@@ -300,18 +289,12 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   }
 
   private clearTooltipComponents(): void {
-    for (const tooltipComponentRef of this.tooltipComponentRefs) {
-      this.appRef.detachView(tooltipComponentRef.hostView);
-      tooltipComponentRef.destroy();
-    }
-    this.tooltipComponentRefs = [];
+    destroyTooltipHostElements(this.appRef, this.tooltipComponentRefs);
   }
 
   private clearTemporaryDestinationMarker(): void {
-    if (this.temporaryDestinationMarker) {
-      this.temporaryDestinationMarker.remove();
-      this.temporaryDestinationMarker = null;
-    }
+    removeTemporaryDestinationMarker(this.temporaryDestinationMarker);
+    this.temporaryDestinationMarker = null;
     this.temporaryDestinationMarkerTailId = null;
   }
 }
