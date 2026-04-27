@@ -303,6 +303,8 @@ export namespace ClientConstants {
 
     export namespace PollingConstants {
       export const POLLING_INTERVAL_MS: number = 1000;
+      export const POLLING_MAX_ATTEMPTS: number = 180;
+      export const STATUS_REQUEST_TIMEOUT_MS: number = 10000;
     }
 
     export namespace Messages {
@@ -327,7 +329,7 @@ export namespace ClientConstants {
       export const SUBMIT_MISSIONS_ERROR: string = 'Error submitting missions';
       export const POLL_STATUS_ERROR: string = 'Error polling assignment status';
       export const APPLY_ASSIGNMENT_ERROR: string = 'Error applying assignment';
-      export const POLLING_IN_PROGRESS: string = 'Polling in progress';
+      export const POLLING_IN_PROGRESS: string = 'Assignment polling timed out';
     }
   }
 
