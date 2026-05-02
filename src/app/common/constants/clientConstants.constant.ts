@@ -78,7 +78,6 @@ export namespace ClientConstants {
     export const ALGORITHM_STEP_CANDIDATES_LABEL: string = 'Step 2: Candidate UAVs considered';
     export const ALGORITHM_STEP_DECISION_LABEL: string = 'Step 3: Why UAV-{tailId} was chosen';
     export const ALGORITHM_STEP_SELECTION_CHANGE_LABEL: string = 'Step 4: If you choose a different UAV';
-    export const ALGORITHM_TECHNICAL_DETAILS_LABEL: string = 'Technical details';
     export const ALGORITHM_MISSION_NEEDS_SENTENCE_LABEL: string =
       'This mission needs a {type} UAV and has {priority} priority.';
     export const ALGORITHM_CANDIDATE_BEST_FIT_LABEL: string = 'Best overall fit for this mission';
@@ -151,7 +150,6 @@ export namespace ClientConstants {
       stepCandidates: ALGORITHM_STEP_CANDIDATES_LABEL,
       stepDecision: ALGORITHM_STEP_DECISION_LABEL,
       stepSelectionChange: ALGORITHM_STEP_SELECTION_CHANGE_LABEL,
-      technicalDetails: ALGORITHM_TECHNICAL_DETAILS_LABEL,
       alternatives: ALGORITHM_VALID_CANDIDATES_LABEL,
       alternativesEmpty: ALGORITHM_ALTERNATIVES_EMPTY,
       blockedCandidates: ALGORITHM_BLOCKED_CANDIDATES_LABEL,

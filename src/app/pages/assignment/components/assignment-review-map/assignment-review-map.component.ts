@@ -55,18 +55,18 @@ const MAP = ClientConstants.AssignmentReviewMap;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
-  readonly pairings = input.required<MissionAssignmentPairing[]>();
-  readonly uavTelemetryData = input.required<Record<number, Record<TelemetryField, number>>>();
-  readonly availableUavs = input.required<UAV[]>();
-  readonly selectedTailIds = input.required<Map<string, number>>();
-  readonly activeMissions = input<ActiveMissionRo[]>([]);
-  readonly highlightMissionIds = input<Set<string>>(new Set());
-  readonly highlightMissionTypes = input<Set<UAVType>>(new Set());
-  readonly highlightUavTypes = input<Set<UAVType>>(new Set());
-  readonly highlightTailIds = input<Set<number>>(new Set());
-  readonly separateOverlaps = input<boolean>(false);
+  public readonly pairings = input.required<MissionAssignmentPairing[]>();
+  public readonly uavTelemetryData = input.required<Record<number, Record<TelemetryField, number>>>();
+  public readonly availableUavs = input.required<UAV[]>();
+  public readonly selectedTailIds = input.required<Map<string, number>>();
+  public readonly activeMissions = input<ActiveMissionRo[]>([]);
+  public readonly highlightMissionIds = input<Set<string>>(new Set());
+  public readonly highlightMissionTypes = input<Set<UAVType>>(new Set());
+  public readonly highlightUavTypes = input<Set<UAVType>>(new Set());
+  public readonly highlightTailIds = input<Set<number>>(new Set());
+  public readonly separateOverlaps = input<boolean>(false);
 
-  readonly mapHost = viewChild<ElementRef<HTMLElement>>('mapHost');
+  public readonly mapHost = viewChild<ElementRef<HTMLElement>>('mapHost');
 
   private map: L.Map | null = null;
   private layerGroup: L.LayerGroup | null = null;
@@ -74,7 +74,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   private temporaryDestinationMarker: L.CircleMarker | null = null;
   private temporaryDestinationMarkerTailId: number | null = null;
 
-  constructor(
+  public constructor(
     private readonly appRef: ApplicationRef,
     private readonly environmentInjector: EnvironmentInjector,
   ) {
@@ -96,7 +96,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     queueMicrotask(() => {
       this.ensureMap();
       this.syncLayers();
@@ -280,7 +280,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.clearTemporaryDestinationMarker();
     this.clearTooltipComponents();
     this.map?.remove();

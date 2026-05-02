@@ -47,16 +47,10 @@ export class AssignmentReviewAlgorithmPanelComponent {
     if (this.selectedTailId() === insight.suggestedTailId) {
       return insight.totalScore;
     }
-    const alt = insight.alternatives.find((a) => a.tailId === this.selectedTailId());
+    const alt = insight.alternatives.find(
+      (alternative: AssignmentPairingAlternative) => alternative.tailId === this.selectedTailId(),
+    );
     return alt?.totalScore ?? null;
-  });
-
-  public readonly suggestedRelativeScore = computed<number | null>(() => {
-    const insight = this.insight();
-    if (!insight) {
-      return null;
-    }
-    return AssignmentPageConstants.RELATIVE_SCORE_MAX;
   });
 
   public readonly selectedRelativeScore = computed<number | null>(() => {
@@ -73,7 +67,7 @@ export class AssignmentReviewAlgorithmPanelComponent {
     const uavTypes = this.uavTypeByTailId();
 
     return (
-      this.insight()?.alternatives.filter((alternative) => {
+      this.insight()?.alternatives.filter((alternative: AssignmentPairingAlternative) => {
         const isTypeMatch = uavTypes[alternative.tailId] === requiredUavType;
         const isNotActiveMissionPenalized = alternative.activeMissionPenalty >= NO_PENALTY;
         return isTypeMatch && isNotActiveMissionPenalized;
@@ -91,7 +85,7 @@ export class AssignmentReviewAlgorithmPanelComponent {
     const requiredUavType = this.missionRequiredUavType();
     const uavTypes = this.uavTypeByTailId();
 
-    return insight.alternatives.filter((alternative) => {
+    return insight.alternatives.filter((alternative: AssignmentPairingAlternative) => {
       const isTypeMismatch = uavTypes[alternative.tailId] !== requiredUavType;
       const hasActiveMissionPenalty = alternative.activeMissionPenalty < NO_PENALTY;
       return isTypeMismatch || hasActiveMissionPenalty;
@@ -134,7 +128,7 @@ export class AssignmentReviewAlgorithmPanelComponent {
 
     return this.blockedAlternatives()
       .slice(0, this.limits.candidateSummaries)
-      .map((alternative) => {
+      .map((alternative: AssignmentPairingAlternative) => {
         const reason = this.resolveBlockedReason(alternative, insight.totalScore);
         return `UAV-${alternative.tailId}: ${reason}`;
       });
@@ -187,7 +181,9 @@ export class AssignmentReviewAlgorithmPanelComponent {
       return [];
     }
 
-    const selectedAlternative = insight.alternatives.find((alternative) => alternative.tailId === selectedTailId);
+    const selectedAlternative = insight.alternatives.find(
+      (alternative: AssignmentPairingAlternative) => alternative.tailId === selectedTailId,
+    );
     if (!selectedAlternative) {
       return [this.labels.warningConflictRisk];
     }
@@ -208,14 +204,7 @@ export class AssignmentReviewAlgorithmPanelComponent {
   }
 
   public togglePanel(): void {
-    this.isExpanded.update((expanded) => !expanded);
-  }
-
-  public withSign(value: number | null): string {
-    if (value === null) {
-      return 'N/A';
-    }
-    return `${value > 0 ? '+' : ''}${value.toFixed(this.limits.decimals)}`;
+    this.isExpanded.update((expanded: boolean) => !expanded);
   }
 
   public withPercent(value: number | null): string {

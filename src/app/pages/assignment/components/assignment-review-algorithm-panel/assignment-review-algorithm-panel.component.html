@@ -70,30 +70,6 @@
         {{ labels.showOnMap }}
       </button>
     </div>
-
-    <details class="algorithm-panel__details">
-      <summary>{{ labels.technicalDetails }}</summary>
-
-      <div class="algorithm-panel__top">
-        <div class="algorithm-panel__score-chip">
-          <span>{{ labels.suggested }}</span>
-          <strong>{{ withPercent(suggestedRelativeScore()) }}</strong>
-          <span class="algorithm-panel__tail">UAV-{{ suggestedTailId() }}</span>
-        </div>
-        <div class="algorithm-panel__score-chip">
-          <span>{{ labels.selected }}</span>
-          <strong>{{ withPercent(selectedRelativeScore()) }}</strong>
-          <span class="algorithm-panel__tail">UAV-{{ selectedTailId() }}</span>
-        </div>
-        <div class="algorithm-panel__score-chip">
-          <span>{{ labels.relativeScore }}</span>
-          <strong>
-            {{ withPercent(selectedRelativeScore()) }}
-          </strong>
-        </div>
-      </div>
-
-    </details>
     </div>
   }
 </fieldset>

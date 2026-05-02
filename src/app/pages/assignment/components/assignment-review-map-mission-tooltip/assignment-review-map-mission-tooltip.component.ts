@@ -18,15 +18,15 @@ const MISSION_TOOLTIP_DATE_TIME_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentReviewMapMissionTooltipComponent {
-  readonly mission = input.required<Mission>();
+  public readonly mission = input.required<Mission>();
 
-  readonly title = computed<string>(() => this.mission().title);
-  readonly missionType = computed<string>(() => EnumUtil.getUAVTypeDisplay(this.mission().requiredUAVType));
-  readonly priority = computed<string>(() => EnumUtil.getPriorityDisplay(this.mission().priority));
-  readonly windowValue = computed<string>(() =>
+  public readonly title = computed<string>(() => this.mission().title);
+  public readonly missionType = computed<string>(() => EnumUtil.getUAVTypeDisplay(this.mission().requiredUAVType));
+  public readonly priority = computed<string>(() => EnumUtil.getPriorityDisplay(this.mission().priority));
+  public readonly windowValue = computed<string>(() =>
     this.formatMissionTimeWindow(this.mission().timeWindow.start, this.mission().timeWindow.end),
   );
-  readonly locationValue = computed<string>(() =>
+  public readonly locationValue = computed<string>(() =>
     this.buildMissionLocationValue(
       this.mission().location.latitude,
       this.mission().location.longitude,
@@ -34,7 +34,7 @@ export class AssignmentReviewMapMissionTooltipComponent {
     ),
   );
 
-  readonly labels = {
+  public readonly labels = {
     missionPriority: MAP.TOOLTIP_MISSION_PRIORITY_LABEL,
     missionWindow: MAP.TOOLTIP_MISSION_TIME_WINDOW_LABEL,
     missionLocation: MAP.TOOLTIP_MISSION_LOCATION_LABEL,

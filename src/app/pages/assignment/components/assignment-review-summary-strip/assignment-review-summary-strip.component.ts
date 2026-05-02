@@ -14,18 +14,18 @@ const { AssignmentPageConstants } = ClientConstants;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentReviewSummaryStripComponent {
-  readonly fitnessScore = input.required<number>();
-  readonly pairingInsights = input.required<AssignmentPairingInsight[]>();
-  readonly hasViolations = input.required<boolean>();
-  readonly displayedRelativeScore = computed<number>(() =>
+  public readonly fitnessScore = input.required<number>();
+  public readonly pairingInsights = input.required<AssignmentPairingInsight[]>();
+  public readonly hasViolations = input.required<boolean>();
+  public readonly displayedRelativeScore = computed<number>(() =>
     this.fitnessScore() > AssignmentPageConstants.RELATIVE_SCORE_MIN
       ? AssignmentPageConstants.RELATIVE_SCORE_MAX
       : AssignmentPageConstants.RELATIVE_SCORE_MIN,
   );
 
-  readonly labels = AssignmentPageConstants.ASSIGNMENT_SUMMARY_STRIP_LABELS;
+  public readonly labels = AssignmentPageConstants.ASSIGNMENT_SUMMARY_STRIP_LABELS;
 
-  readonly reasonCounts = computed<Record<AssignmentExplanationReasonKey, number>>(() => {
+  public readonly reasonCounts = computed<Record<AssignmentExplanationReasonKey, number>>(() => {
     const counts: Record<AssignmentExplanationReasonKey, number> = { distance: 0, telemetry: 0, safety: 0 };
     for (const insight of this.pairingInsights()) {
       const reason = this.resolvePrimaryReason(insight);
@@ -36,7 +36,7 @@ export class AssignmentReviewSummaryStripComponent {
     return counts;
   });
 
-  reasonCount(key: AssignmentExplanationReasonKey): number {
+  public reasonCount(key: AssignmentExplanationReasonKey): number {
     return this.reasonCounts()[key];
   }
 

@@ -18,41 +18,41 @@ const MAP = ClientConstants.AssignmentReviewMap;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentReviewMapFiltersComponent {
-  readonly separateOverlapsOffLabel = MAP.OVERLAP_TOGGLE_OFF_LABEL;
-  readonly separateOverlapsOnLabel = MAP.OVERLAP_TOGGLE_ON_LABEL;
-  readonly labels = MAP.FILTER_LABELS;
+  public readonly separateOverlapsOffLabel = MAP.OVERLAP_TOGGLE_OFF_LABEL;
+  public readonly separateOverlapsOnLabel = MAP.OVERLAP_TOGGLE_ON_LABEL;
+  public readonly labels = MAP.FILTER_LABELS;
 
-  readonly missions = input.required<AssignmentReviewMapMissionFilterOption[]>();
-  readonly missionTypes = input.required<AssignmentReviewMapMissionTypeFilterOption[]>();
-  readonly uavTypes = input.required<AssignmentReviewMapMissionTypeFilterOption[]>();
-  readonly uavs = input.required<AssignmentReviewMapUavFilterOption[]>();
-  readonly selectedMissionIds = input.required<string[]>();
-  readonly selectedMissionTypes = input.required<UAVType[]>();
-  readonly selectedUavTypes = input.required<UAVType[]>();
-  readonly selectedTailIds = input.required<number[]>();
-  readonly separateOverlapsEnabled = input<boolean>(false);
-  readonly showSeparateOverlapsToggle = input<boolean>(false);
+  public readonly missions = input.required<AssignmentReviewMapMissionFilterOption[]>();
+  public readonly missionTypes = input.required<AssignmentReviewMapMissionTypeFilterOption[]>();
+  public readonly uavTypes = input.required<AssignmentReviewMapMissionTypeFilterOption[]>();
+  public readonly uavs = input.required<AssignmentReviewMapUavFilterOption[]>();
+  public readonly selectedMissionIds = input.required<string[]>();
+  public readonly selectedMissionTypes = input.required<UAVType[]>();
+  public readonly selectedUavTypes = input.required<UAVType[]>();
+  public readonly selectedTailIds = input.required<number[]>();
+  public readonly separateOverlapsEnabled = input<boolean>(false);
+  public readonly showSeparateOverlapsToggle = input<boolean>(false);
 
-  readonly selectedMissionIdsChange = output<string[]>();
-  readonly selectedMissionTypesChange = output<UAVType[]>();
-  readonly selectedUavTypesChange = output<UAVType[]>();
-  readonly selectedTailIdsChange = output<number[]>();
-  readonly clear = output<void>();
-  readonly separateOverlapsToggle = output<void>();
+  public readonly selectedMissionIdsChange = output<string[]>();
+  public readonly selectedMissionTypesChange = output<UAVType[]>();
+  public readonly selectedUavTypesChange = output<UAVType[]>();
+  public readonly selectedTailIdsChange = output<number[]>();
+  public readonly clear = output<void>();
+  public readonly separateOverlapsToggle = output<void>();
 
-  readonly missionQueryControl = new FormControl<string>('', { nonNullable: true });
-  readonly missionTypeQueryControl = new FormControl<string>('', { nonNullable: true });
-  readonly uavTypeQueryControl = new FormControl<string>('', { nonNullable: true });
-  readonly uavQueryControl = new FormControl<string>('', { nonNullable: true });
+  public readonly missionQueryControl = new FormControl<string>('', { nonNullable: true });
+  public readonly missionTypeQueryControl = new FormControl<string>('', { nonNullable: true });
+  public readonly uavTypeQueryControl = new FormControl<string>('', { nonNullable: true });
+  public readonly uavQueryControl = new FormControl<string>('', { nonNullable: true });
 
-  readonly isOpen = signal(false);
+  public readonly isOpen = signal(false);
 
-  readonly selectedMissionIdSet = computed(() => new Set(this.selectedMissionIds()));
-  readonly selectedMissionTypeSet = computed(() => new Set(this.selectedMissionTypes()));
-  readonly selectedUavTypeSet = computed(() => new Set(this.selectedUavTypes()));
-  readonly selectedTailIdSet = computed(() => new Set(this.selectedTailIds()));
+  public readonly selectedMissionIdSet = computed(() => new Set(this.selectedMissionIds()));
+  public readonly selectedMissionTypeSet = computed(() => new Set(this.selectedMissionTypes()));
+  public readonly selectedUavTypeSet = computed(() => new Set(this.selectedUavTypes()));
+  public readonly selectedTailIdSet = computed(() => new Set(this.selectedTailIds()));
 
-  readonly filteredMissionOptions = computed(() => {
+  public readonly filteredMissionOptions = computed(() => {
     const q = this.missionQueryControl.value.trim().toLowerCase();
     const selected = this.selectedMissionIdSet();
     return this.missions().filter((m: AssignmentReviewMapMissionFilterOption) => {
@@ -62,7 +62,7 @@ export class AssignmentReviewMapFiltersComponent {
     });
   });
 
-  readonly filteredUavOptions = computed(() => {
+  public readonly filteredUavOptions = computed(() => {
     const q = this.uavQueryControl.value.trim().toLowerCase();
     const selected = this.selectedTailIdSet();
     return this.uavs().filter((u: AssignmentReviewMapUavFilterOption) => {
@@ -76,7 +76,7 @@ export class AssignmentReviewMapFiltersComponent {
     });
   });
 
-  readonly filteredMissionTypeOptions = computed(() => {
+  public readonly filteredMissionTypeOptions = computed(() => {
     const q = this.missionTypeQueryControl.value.trim().toLowerCase();
     const selected = this.selectedMissionTypeSet();
     return this.missionTypes().filter((missionTypeOption: AssignmentReviewMapMissionTypeFilterOption) => {
@@ -86,7 +86,7 @@ export class AssignmentReviewMapFiltersComponent {
     });
   });
 
-  readonly filteredUavTypeOptions = computed(() => {
+  public readonly filteredUavTypeOptions = computed(() => {
     const q = this.uavTypeQueryControl.value.trim().toLowerCase();
     const selected = this.selectedUavTypeSet();
     return this.uavTypes().filter((uavTypeOption: AssignmentReviewMapMissionTypeFilterOption) => {
@@ -96,37 +96,37 @@ export class AssignmentReviewMapFiltersComponent {
     });
   });
 
-  toggle(): void {
+  public toggle(): void {
     this.isOpen.set(!this.isOpen());
   }
 
-  close(): void {
+  public close(): void {
     this.isOpen.set(false);
   }
 
-  onToggleMission(missionId: string, checked: boolean): void {
+  public onToggleMission(missionId: string, checked: boolean): void {
     this.selectedMissionIdsChange.emit(
       applyUniqueSelection(this.selectedMissionIds(), missionId, checked),
     );
   }
 
-  onToggleUav(tailId: number, checked: boolean): void {
+  public onToggleUav(tailId: number, checked: boolean): void {
     this.selectedTailIdsChange.emit(applyUniqueSelection(this.selectedTailIds(), tailId, checked));
   }
 
-  onToggleMissionType(uavType: UAVType, checked: boolean): void {
+  public onToggleMissionType(uavType: UAVType, checked: boolean): void {
     this.selectedMissionTypesChange.emit(
       applyUniqueSelection(this.selectedMissionTypes(), uavType, checked),
     );
   }
 
-  onToggleUavType(uavType: UAVType, checked: boolean): void {
+  public onToggleUavType(uavType: UAVType, checked: boolean): void {
     this.selectedUavTypesChange.emit(
       applyUniqueSelection(this.selectedUavTypes(), uavType, checked),
     );
   }
 
-  onClear(): void {
+  public onClear(): void {
     this.missionQueryControl.setValue('');
     this.missionTypeQueryControl.setValue('');
     this.uavTypeQueryControl.setValue('');
@@ -134,7 +134,7 @@ export class AssignmentReviewMapFiltersComponent {
     this.clear.emit();
   }
 
-  onToggleSeparateOverlaps(): void {
+  public onToggleSeparateOverlaps(): void {
     this.separateOverlapsToggle.emit();
   }
 }

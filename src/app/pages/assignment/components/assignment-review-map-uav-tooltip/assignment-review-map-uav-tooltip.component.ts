@@ -21,14 +21,14 @@ const UAV_TOOLTIP_DATE_TIME_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentReviewMapUavTooltipComponent {
-  readonly uav = input.required<UAV>();
-  readonly telemetry = input.required<Record<TelemetryField, number>>();
-  readonly activeMission = input<Mission | null>(null);
+  public readonly uav = input.required<UAV>();
+  public readonly telemetry = input.required<Record<TelemetryField, number>>();
+  public readonly activeMission = input<Mission | null>(null);
 
-  readonly title = computed<string>(() => `${MAP.TOOLTIP_UAV_PREFIX}${this.uav().tailId}`);
-  readonly uavTypeLabel = computed<string>(() => EnumUtil.getUAVTypeDisplay(this.uav().uavType));
+  public readonly title = computed<string>(() => `${MAP.TOOLTIP_UAV_PREFIX}${this.uav().tailId}`);
+  public readonly uavTypeLabel = computed<string>(() => EnumUtil.getUAVTypeDisplay(this.uav().uavType));
 
-  readonly positionRows = computed<Array<{ label: string; value: string }>>(() => {
+  public readonly positionRows = computed<Array<{ label: string; value: string }>>(() => {
     const telemetry = this.telemetry();
     return [
       this.buildRow(TelemetryField.Latitude, telemetry[TelemetryField.Latitude]),
@@ -37,7 +37,7 @@ export class AssignmentReviewMapUavTooltipComponent {
     ];
   });
 
-  readonly statusRows = computed<Array<{ label: string; value: string }>>(() => {
+  public readonly statusRows = computed<Array<{ label: string; value: string }>>(() => {
     const telemetry = this.telemetry();
     const fields =
       this.uav().uavType === UAVType.Armed
@@ -46,9 +46,9 @@ export class AssignmentReviewMapUavTooltipComponent {
     return fields.map((field) => this.buildRow(field, telemetry[field]));
   });
 
-  readonly hasActiveMission = computed<boolean>(() => this.activeMission() !== null);
+  public readonly hasActiveMission = computed<boolean>(() => this.activeMission() !== null);
 
-  readonly activeMissionRows = computed<Array<{ label: string; value: string }>>(() => {
+  public readonly activeMissionRows = computed<Array<{ label: string; value: string }>>(() => {
     const activeMission = this.activeMission();
     if (!activeMission) {
       return [];
@@ -74,7 +74,7 @@ export class AssignmentReviewMapUavTooltipComponent {
     ];
   });
 
-  readonly labels = {
+  public readonly labels = {
     positionSectionTitle: MAP.TOOLTIP_POSITION_SECTION_TITLE,
     statusSectionTitle: MAP.TOOLTIP_STATUS_SECTION_TITLE,
     activeMissionSectionTitle: MAP.TOOLTIP_ACTIVE_MISSION_SECTION_TITLE,
