@@ -18,6 +18,11 @@ export function resolveMissionHighlightOpacity(
   if (!hasAnyMapHighlightSelection(ctx)) {
     return fullOpacity;
   }
+
+  if (ctx.focusedMissionId && ctx.highlightMissionIds.size > 0) {
+    return ctx.highlightMissionIds.has(missionId) ? fullOpacity : dimmedOpacity;
+  }
+
   if (ctx.highlightMissionIds.has(missionId)) {
     return fullOpacity;
   }

@@ -5,6 +5,7 @@ export type AssignmentReviewMapHighlightContext = {
   pairings: MissionAssignmentPairing[];
   selectedTailIdsByMissionId: Map<string, number>;
   uavTypeByTailId: Record<number, UAVType>;
+  focusedMissionId: string | null;
   highlightMissionIds: Set<string>;
   highlightMissionTypes: Set<UAVType>;
   highlightUavTypes: Set<UAVType>;

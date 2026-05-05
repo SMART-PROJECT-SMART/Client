@@ -221,6 +221,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       pairings: this.pairings(),
       selectedTailIdsByMissionId: this.selectedTailIds(),
       uavTypeByTailId: this.buildUavTypeByTailIdMap(),
+      focusedMissionId: this.focusedMissionId(),
       highlightMissionIds: this.highlightMissionIds(),
       highlightMissionTypes: this.highlightMissionTypes(),
       highlightUavTypes: this.highlightUavTypes(),
