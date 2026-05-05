@@ -8,6 +8,7 @@ import {
   EnvironmentInjector,
   effect,
   input,
+  output,
   viewChild,
   ElementRef,
 } from '@angular/core';
@@ -66,7 +67,11 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   public readonly highlightMissionTypes = input<Set<UAVType>>(new Set());
   public readonly highlightUavTypes = input<Set<UAVType>>(new Set());
   public readonly highlightTailIds = input<Set<number>>(new Set());
+  public readonly focusedMissionId = input<string | null>(null);
+  public readonly compatibleTailIds = input<Set<number>>(new Set());
+  public readonly relativeScoreByTailId = input<Map<number, number>>(new Map());
   public readonly separateOverlaps = input<boolean>(false);
+  public readonly missionMarkerClick = output<string>();
 
   public readonly mapHost = viewChild<ElementRef<HTMLElement>>('mapHost');
 
@@ -91,6 +96,9 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       this.highlightMissionTypes();
       this.highlightUavTypes();
       this.highlightTailIds();
+      this.focusedMissionId();
+      this.compatibleTailIds();
+      this.relativeScoreByTailId();
       this.separateOverlaps();
       if (!this.map) {
         return;
@@ -158,6 +166,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       resolvePriorityOutlineColor,
       this.buildMissionTooltip.bind(this),
       this.resolveAssignedUavPosition.bind(this),
+      this.onMissionMarkerClick.bind(this),
     );
     this.renderHighlightedActiveMissionConnectors(group, boundsPoints, context);
     fitMapToPointsOrDefault(map, boundsPoints);
@@ -193,6 +202,9 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       missionColors,
       tailColors,
       activeMissionByTailId,
+      focusedMissionId: this.focusedMissionId(),
+      compatibleTailIds: this.compatibleTailIds(),
+      relativeScoreByTailId: this.relativeScoreByTailId(),
     };
   }
 
@@ -228,7 +240,14 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     boundsPoints: L.LatLngExpression[],
     context: AssignmentReviewMapRenderContext,
   ): void {
-    for (const tailId of this.highlightTailIds()) {
+    const renderedDestinationMissionIds = new Set<string>();
+    const focusedMissionId = context.focusedMissionId;
+    const tailIds =
+      focusedMissionId
+        ? context.compatibleTailIds
+        : this.highlightTailIds();
+
+    for (const tailId of tailIds) {
       const activeMission = context.activeMissionByTailId.get(tailId);
       if (!activeMission) {
         continue;
@@ -256,6 +275,20 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
           dashArray: MAP.TEMP_DESTINATION_CONNECTOR_DASH,
         },
       ).addTo(group);
+
+      if (!renderedDestinationMissionIds.has(activeMission.id)) {
+        L.circleMarker(
+          [activeMission.location.latitude, activeMission.location.longitude],
+          {
+            radius: MAP.TEMP_DESTINATION_MARKER_RADIUS_PX,
+            color: MAP.TEMP_DESTINATION_MARKER_COLOR,
+            fillColor: MAP.TEMP_DESTINATION_MARKER_COLOR,
+            fillOpacity: MAP.TEMP_DESTINATION_MARKER_FILL_OPACITY,
+            weight: MAP.TEMP_DESTINATION_MARKER_STROKE_WEIGHT,
+          },
+        ).addTo(group);
+        renderedDestinationMissionIds.add(activeMission.id);
+      }
 
       boundsPoints.push([uavPosition.lat, uavPosition.lon]);
       boundsPoints.push([activeMission.location.latitude, activeMission.location.longitude]);
@@ -303,6 +336,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   private buildUavTooltip(uav: UAV, context: AssignmentReviewMapRenderContext): HTMLElement {
     const telemetry = this.resolveUavTooltipTelemetry(uav);
     const activeMission = context.activeMissionByTailId.get(uav.tailId) ?? null;
+    const relativeScore = context.relativeScoreByTailId.get(uav.tailId) ?? null;
     return createTooltipHostElement(
       this.appRef,
       this.environmentInjector,
@@ -311,6 +345,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
         tooltipComponentRef.setInput('uav', uav);
         tooltipComponentRef.setInput('telemetry', telemetry);
         tooltipComponentRef.setInput('activeMission', activeMission);
+        tooltipComponentRef.setInput('relativeScore', relativeScore);
       },
       this.tooltipComponentRefs,
     );
@@ -330,6 +365,10 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       },
       this.tooltipComponentRefs,
     );
+  }
+
+  private onMissionMarkerClick(missionId: string): void {
+    this.missionMarkerClick.emit(missionId);
   }
 
   public ngOnDestroy(): void {

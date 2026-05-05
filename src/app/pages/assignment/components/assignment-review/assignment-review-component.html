@@ -52,7 +52,11 @@
           [highlightMissionTypes]="highlightMissionTypes()"
           [highlightUavTypes]="highlightUavTypes()"
           [highlightTailIds]="highlightTailIds()"
+          [focusedMissionId]="tacticalFocusedMissionId()"
+          [compatibleTailIds]="tacticalCompatibleTailIdSet()"
+          [relativeScoreByTailId]="tacticalRelativeScoreByTailId()"
           [separateOverlaps]="separateOverlapsForMap()"
+          (missionMarkerClick)="onMapMissionClick($event)"
         />
       </section>
     </mat-tab>

@@ -30,8 +30,12 @@ export function createUavDivIcon(
   const activeIndicator = options.isOnActiveMission
     ? `<span class="ar-map-uav-active-indicator" aria-label="Active mission">${MAP.ACTIVE_MISSION_BADGE_TEXT}</span>`
     : '';
-  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="--ar-uav-accent:${color};--ar-uav-active-mission-bg:${MAP.ACTIVE_MISSION_BADGE_BG_COLOR};--ar-uav-active-mission-fg:${MAP.ACTIVE_MISSION_BADGE_TEXT_COLOR};--ar-uav-active-mission-size:${MAP.ACTIVE_MISSION_BADGE_SIZE_PX}px;--ar-uav-active-mission-font-size:${MAP.ACTIVE_MISSION_BADGE_FONT_SIZE_PX}px">
+  const relativeScoreBadge = options.relativeScoreText
+    ? `<span class="ar-map-uav-score-badge" aria-label="${MAP.UAV_SCORE_BADGE_ARIA_LABEL}">${options.relativeScoreText}</span>`
+    : '';
+  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="--ar-uav-accent:${color};--ar-uav-active-mission-bg:${MAP.ACTIVE_MISSION_BADGE_BG_COLOR};--ar-uav-active-mission-fg:${MAP.ACTIVE_MISSION_BADGE_TEXT_COLOR};--ar-uav-active-mission-size:${MAP.ACTIVE_MISSION_BADGE_SIZE_PX}px;--ar-uav-active-mission-font-size:${MAP.ACTIVE_MISSION_BADGE_FONT_SIZE_PX}px;--ar-uav-score-bg:${MAP.UAV_SCORE_BADGE_BG_COLOR};--ar-uav-score-fg:${MAP.UAV_SCORE_BADGE_TEXT_COLOR};--ar-uav-score-min-width:${MAP.UAV_SCORE_BADGE_MIN_WIDTH_PX}px;--ar-uav-score-height:${MAP.UAV_SCORE_BADGE_HEIGHT_PX}px;--ar-uav-score-font-size:${MAP.UAV_SCORE_BADGE_FONT_SIZE_PX}px;--ar-uav-score-top:${MAP.UAV_SCORE_BADGE_OFFSET_TOP_PX}px;--ar-uav-score-left:${MAP.UAV_SCORE_BADGE_OFFSET_LEFT_PX}px">
     ${createGlyphHtml(`${MAP.GLYPH_CLASS} ${MAP.GLYPH_UAV_CLASS} ${uavGlyphClass}`, uavAssetUrl)}
+    ${relativeScoreBadge}
     ${activeIndicator}
   </div>`;
   const w = MAP.UAV_ICON_WIDTH_PX;

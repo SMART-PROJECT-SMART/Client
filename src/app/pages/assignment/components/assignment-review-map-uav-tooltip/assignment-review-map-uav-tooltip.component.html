@@ -24,6 +24,16 @@
     }
   </div>
 
+  @if (hasRelativeScore() && relativeScoreRow(); as relativeScoreRowValue) {
+    <div class="ar-map-tooltip-card__section ar-map-tooltip-card__section--score">
+      <div class="ar-map-tooltip-card__section-title">{{ labels.relativeScoreSectionTitle }}</div>
+      <div class="ar-map-tooltip-card__row">
+        <span class="ar-map-tooltip-card__label">{{ relativeScoreRowValue.label }}</span>
+        <span class="ar-map-tooltip-card__value">{{ relativeScoreRowValue.value }}</span>
+      </div>
+    </div>
+  }
+
   @if (hasActiveMission()) {
     <div class="ar-map-tooltip-card__section ar-map-tooltip-card__section--active-mission">
       <div class="ar-map-tooltip-card__section-title">{{ labels.activeMissionSectionTitle }}</div>

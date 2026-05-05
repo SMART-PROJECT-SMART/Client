@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { TelemetryField, UAVType } from '../../../../common/enums';
 import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
+import { TelemetryDisplayValueUtil } from '../../../../common/utils/telemetry-display-value.util';
 import type { Mission, UAV } from '../../../../models';
 
 const MAP = ClientConstants.AssignmentReviewMap;
@@ -24,6 +25,7 @@ export class AssignmentReviewMapUavTooltipComponent {
   public readonly uav = input.required<UAV>();
   public readonly telemetry = input.required<Record<TelemetryField, number>>();
   public readonly activeMission = input<Mission | null>(null);
+  public readonly relativeScore = input<number | null>(null);
 
   public readonly title = computed<string>(() => `${MAP.TOOLTIP_UAV_PREFIX}${this.uav().tailId}`);
   public readonly uavTypeLabel = computed<string>(() => EnumUtil.getUAVTypeDisplay(this.uav().uavType));
@@ -47,6 +49,19 @@ export class AssignmentReviewMapUavTooltipComponent {
   });
 
   public readonly hasActiveMission = computed<boolean>(() => this.activeMission() !== null);
+  public readonly hasRelativeScore = computed<boolean>(() => this.relativeScore() !== null);
+
+  public readonly relativeScoreRow = computed<{ label: string; value: string } | null>(() => {
+    const relativeScore = this.relativeScore();
+    if (relativeScore === null) {
+      return null;
+    }
+
+    return {
+      label: MAP.TOOLTIP_RELATIVE_SCORE_LABEL,
+      value: `${relativeScore.toFixed(MAP.TACTICAL_SCORE_TOOLTIP_DECIMALS)}${MAP.TACTICAL_SCORE_SUFFIX}`,
+    };
+  });
 
   public readonly activeMissionRows = computed<Array<{ label: string; value: string }>>(() => {
     const activeMission = this.activeMission();
@@ -77,6 +92,7 @@ export class AssignmentReviewMapUavTooltipComponent {
   public readonly labels = {
     positionSectionTitle: MAP.TOOLTIP_POSITION_SECTION_TITLE,
     statusSectionTitle: MAP.TOOLTIP_STATUS_SECTION_TITLE,
+    relativeScoreSectionTitle: MAP.TOOLTIP_RELATIVE_SCORE_SECTION_TITLE,
     activeMissionSectionTitle: MAP.TOOLTIP_ACTIVE_MISSION_SECTION_TITLE,
     typeBadgeClass: MAP.TOOLTIP_TYPE_BADGE_CLASS,
   } as const;
@@ -96,18 +112,23 @@ export class AssignmentReviewMapUavTooltipComponent {
       return `${value.toFixed(MAP.TOOLTIP_LAT_LON_DECIMALS)}${MAP.TOOLTIP_VALUE_DEGREE_SUFFIX}`;
     }
 
+    const displayValue = TelemetryDisplayValueUtil.toChartOrTableValue(
+      field,
+      value,
+      this.telemetry(),
+    );
     const unit = TelemetryUtil.getUnit(field).replace('(', '').replace(')', '');
     const precision =
-      field === TelemetryField.FuelAmount ||
-      field === TelemetryField.AmmoPercentage ||
-      field === TelemetryField.DataStorageUsedGB
+      field === TelemetryField.FuelAmount || field === TelemetryField.DataStorageUsedGB
         ? MAP.TOOLTIP_STATUS_VALUE_DECIMALS
-        : MAP.TOOLTIP_VALUE_DECIMALS;
+        : field === TelemetryField.AmmoPercentage
+          ? 0
+          : MAP.TOOLTIP_VALUE_DECIMALS;
 
     if (!unit) {
-      return value.toFixed(precision);
+      return displayValue.toFixed(precision);
     }
-    return `${value.toFixed(precision)}${MAP.TOOLTIP_VALUE_SPACE}${unit}`;
+    return `${displayValue.toFixed(precision)}${MAP.TOOLTIP_VALUE_SPACE}${unit}`;
   }
 
   private buildMissionLocationValue(latitude: number, longitude: number, altitude: number): string {

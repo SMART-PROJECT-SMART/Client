@@ -34,7 +34,7 @@ export class EnumUtil {
       [TelemetryField.RollDeg]: 'Roll',
       [TelemetryField.ThrustAfterInfluence]: 'Thrust After Influence',
       [TelemetryField.FuelAmount]: 'Fuel Amount',
-      [TelemetryField.AmmoPercentage]: 'Ammo Percentage',
+      [TelemetryField.AmmoPercentage]: 'Ammo',
       [TelemetryField.DataStorageUsedGB]: 'Data Storage Used',
       [TelemetryField.FlightTimeSec]: 'Flight Time',
       [TelemetryField.SignalStrength]: 'Signal Strength',

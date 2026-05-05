@@ -2,6 +2,7 @@ import type { ChartConfiguration, ChartDataset } from 'chart.js';
 import { TelemetryField } from '../../../common/enums';
 import { EnumUtil, TelemetryUtil } from '../../../common/utils';
 import { ClientConstants } from '../../../common/constants/clientConstants.constant';
+import { TelemetryDisplayValueUtil } from '../../../common/utils/telemetry-display-value.util';
 import type { ChartRowConfig, MissionTelemetryRo } from '../../../models/archive';
 
 const {
@@ -30,7 +31,11 @@ export function buildTelemetryChartRowConfig(params: {
   const datasets: ChartDataset<'line'>[] = [
     {
       label: EnumUtil.getTelemetryFieldDisplay(field),
-      data: viewTelemetry.map((point) => point.fields[field] ?? null),
+      data: viewTelemetry.map((point) => {
+        const rawValue = point.fields[field];
+        if (rawValue === undefined || rawValue === null) return null;
+        return TelemetryDisplayValueUtil.toChartOrTableValue(field, rawValue, point.fields);
+      }),
       borderColor: color,
       backgroundColor: color + BACKGROUND_ALPHA,
       pointRadius: POINT_RADIUS,

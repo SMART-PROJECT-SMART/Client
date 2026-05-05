@@ -4,5 +4,6 @@ export type CreateUavDivIconOptions = {
   isOnActiveMission?: boolean;
   opacity?: number;
   uavType?: UAVType;
+  relativeScoreText?: string | null;
 };
 

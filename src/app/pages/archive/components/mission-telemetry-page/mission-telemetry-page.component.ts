@@ -11,6 +11,7 @@ import { TelemetryField, UAVType } from '../../../../common/enums';
 import { EnumUtil } from '../../../../common/utils';
 import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
 import { createCrosshairPlugin } from '../../../../common/utils/crosshair-plugin.util';
+import { TelemetryDisplayValueUtil } from '../../../../common/utils/telemetry-display-value.util';
 import { ArchiveApiService } from '../../../../services/archive/archive-api.service';
 import { ArchiveInvestigationReturnStateService } from '../../../../services/archive/archive-investigation-return-state.service';
 import { MissionTelemetryFetchService } from '../../../../services/archive/mission-telemetry-fetch.service';
@@ -431,10 +432,16 @@ export class MissionTelemetryPageComponent implements OnInit, OnDestroy {
   getFieldTableData(field: TelemetryField): { timestamp: string; value: number | null }[] {
     const data = this.viewTelemetry();
     const labels = this.timeLabels();
-    return data.map((point, index) => ({
-      timestamp: labels[index],
-      value: point.fields[field] ?? null,
-    }));
+    return data.map((point, index) => {
+      const rawValue = point.fields[field];
+      return {
+        timestamp: labels[index],
+        value:
+          rawValue === undefined || rawValue === null
+            ? null
+            : TelemetryDisplayValueUtil.toChartOrTableValue(field, rawValue, point.fields),
+      };
+    });
   }
 
   getPageSize(rows: number): number {

@@ -22,6 +22,7 @@ import type { AssignmentPairingInsight } from '../../../../models/assignment/ass
 import type { AssignmentReviewMapMissionFilterOption } from '../../../../models/assignment/assignmentReviewMapMissionFilterOption.model';
 import type { AssignmentReviewMapMissionTypeFilterOption } from '../../../../models/assignment/assignmentReviewMapMissionTypeFilterOption.model';
 import type { AssignmentReviewMapUavFilterOption } from '../../../../models/assignment/assignmentReviewMapUavFilterOption.model';
+import type { MapHighlightSnapshot } from '../../../../models/assignment/mapHighlightSnapshot.model';
 import { TelemetryField, ViolationType, PlatformType, UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../common/utils';
@@ -109,6 +110,9 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly selectedTailIdsForMap = signal<number[]>([]);
   public readonly separateOverlapsForMap = signal(false);
   public readonly selectedReviewTabIndex = signal(0);
+  public readonly tacticalFocusedMissionId = signal<string | null>(null);
+  private readonly tacticalCompatibleTailIds = signal<number[]>([]);
+  private readonly tacticalHighlightSnapshot = signal<MapHighlightSnapshot | null>(null);
 
   public readonly validationResult: Signal<ValidationResult> = computed(() => {
     return this.validatorService.validateAssignments(
@@ -129,7 +133,7 @@ export class AssignmentReviewComponent implements OnInit {
   });
 
   public readonly activeMissionTailIds: Signal<Set<number>> = computed(() => {
-    return new Set(this.activeMissions().map((activeMission) => activeMission.tailId));
+    return new Set(this.activeMissions().map((activeMission: ActiveMissionRo) => activeMission.tailId));
   });
 
   public readonly highlightMissionIds: Signal<Set<string>> = computed(() => {
@@ -162,6 +166,31 @@ export class AssignmentReviewComponent implements OnInit {
 
   public readonly mapMissionTypeOptions: Signal<AssignmentReviewMapMissionTypeFilterOption[]> = computed(() => {
     return buildMapMissionTypeFilterOptionsFromPairings(this.algorithmResult().pairings);
+  });
+
+  public readonly tacticalCompatibleTailIdSet: Signal<Set<number>> = computed(() => {
+    return new Set(this.tacticalCompatibleTailIds());
+  });
+
+  public readonly tacticalRelativeScoreByTailId: Signal<Map<number, number>> = computed(() => {
+    const focusedMissionId = this.tacticalFocusedMissionId();
+    if (!focusedMissionId) {
+      return new Map<number, number>();
+    }
+
+    const insight = this.pairingInsightByMissionId().get(focusedMissionId);
+    if (!insight) {
+      return new Map<number, number>();
+    }
+
+    const scores = new Map<number, number>();
+    const compatibleTailIds = this.tacticalCompatibleTailIds();
+    for (const tailId of compatibleTailIds) {
+      const selectedTotalScore = this.resolveSelectedTotalScore(insight, tailId);
+      scores.set(tailId, this.clampRelativeScore(resolveRelativeScore(insight.totalScore, selectedTotalScore)));
+    }
+
+    return scores;
   });
 
   public readonly shouldShowSeparateOverlapsToggle: Signal<boolean> = computed(() => {
@@ -203,7 +232,7 @@ export class AssignmentReviewComponent implements OnInit {
   });
 
   public readonly uavTypeByTailId: Signal<Record<number, UAVType>> = computed(() => {
-    return this.availableUavs().reduce<Record<number, UAVType>>((accumulator, uav) => {
+    return this.availableUavs().reduce<Record<number, UAVType>>((accumulator: Record<number, UAVType>, uav: UAV) => {
       accumulator[uav.tailId] = uav.uavType;
       return accumulator;
     }, {});
@@ -233,7 +262,7 @@ export class AssignmentReviewComponent implements OnInit {
     const telemetryData = this.algorithmResult().uavTelemetryData;
     const selectedIds = this.selectedTailIds();
 
-    this.algorithmResult().pairings.forEach((pairing) => {
+    this.algorithmResult().pairings.forEach((pairing: MissionAssignmentPairing) => {
       const tailId = selectedIds.get(pairing.mission.id) ?? pairing.tailId;
       const uav = AssignmentUtil.buildUavFromTelemetry(tailId, telemetryData[tailId]);
       map.set(pairing.mission.id, uav);
@@ -250,6 +279,7 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public clearMapHighlights(): void {
+    this.clearTacticalMissionFocusState();
     this.selectedMissionIdsForMap.set([]);
     this.selectedMissionTypesForMap.set([]);
     this.selectedUavTypesForMap.set([]);
@@ -257,18 +287,52 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public toggleSeparateMapOverlaps(): void {
-    this.separateOverlapsForMap.update((value) => !value);
+    this.separateOverlapsForMap.update((value: boolean) => !value);
   }
 
   public focusMissionOnMap(missionId: string): void {
+    this.clearTacticalMissionFocusState();
     const tailId =
       this.selectedTailIds().get(missionId)
-      ?? this.algorithmResult().pairings.find((pairing) => pairing.mission.id === missionId)?.tailId;
+      ?? this.algorithmResult().pairings.find((pairing: MissionAssignmentPairing) => pairing.mission.id === missionId)?.tailId;
     this.selectedMissionIdsForMap.set([missionId]);
     this.selectedMissionTypesForMap.set([]);
     this.selectedUavTypesForMap.set([]);
     this.selectedTailIdsForMap.set(tailId !== undefined ? [tailId] : []);
     this.selectedReviewTabIndex.set(0);
+  }
+
+  public onMapMissionClick(missionId: string): void {
+    const currentFocusedMissionId = this.tacticalFocusedMissionId();
+    if (currentFocusedMissionId === missionId) {
+      this.restoreTacticalMapHighlights();
+      return;
+    }
+
+    if (!this.tacticalHighlightSnapshot()) {
+      this.tacticalHighlightSnapshot.set({
+        missionIds: [...this.selectedMissionIdsForMap()],
+        missionTypes: [...this.selectedMissionTypesForMap()],
+        uavTypes: [...this.selectedUavTypesForMap()],
+        tailIds: [...this.selectedTailIdsForMap()],
+      });
+    }
+
+    const mission = this.algorithmResult().pairings.find((pairing: MissionAssignmentPairing) => pairing.mission.id === missionId)?.mission;
+    if (!mission) {
+      this.restoreTacticalMapHighlights();
+      return;
+    }
+
+    const compatibleTailIds = this.availableUavs()
+      .filter((uav: UAV) => uav.uavType === mission.requiredUAVType)
+      .map((uav: UAV) => uav.tailId);
+    this.tacticalFocusedMissionId.set(missionId);
+    this.tacticalCompatibleTailIds.set(compatibleTailIds);
+    this.selectedMissionIdsForMap.set([missionId]);
+    this.selectedMissionTypesForMap.set([]);
+    this.selectedUavTypesForMap.set([]);
+    this.selectedTailIdsForMap.set(compatibleTailIds);
   }
 
   private async loadActiveMissions(): Promise<void> {
@@ -304,7 +368,7 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public isAssignmentModified(missionId: string): boolean {
-    const originalPairing = this.algorithmResult().pairings.find((p) => p.mission.id === missionId);
+    const originalPairing = this.algorithmResult().pairings.find((p: MissionAssignmentPairing) => p.mission.id === missionId);
     const selectedTailId = this.selectedTailIds().get(missionId);
     return originalPairing?.tailId !== selectedTailId;
   }
@@ -386,7 +450,7 @@ export class AssignmentReviewComponent implements OnInit {
   }
 
   public getCardScoreFill(relativeScore: number): string {
-    return `${this.clampRelativeScore(relativeScore)}%`;
+    return `${this.clampRelativeScore(relativeScore)}${RELATIVE_SCORE_SUFFIX}`;
   }
 
   private initializeEditedAssignments(): void {
@@ -397,6 +461,23 @@ export class AssignmentReviewComponent implements OnInit {
     });
 
     this.selectedTailIds.set(initialMap);
+  }
+
+  private restoreTacticalMapHighlights(): void {
+    const snapshot = this.tacticalHighlightSnapshot();
+    if (snapshot) {
+      this.selectedMissionIdsForMap.set(snapshot.missionIds);
+      this.selectedMissionTypesForMap.set(snapshot.missionTypes);
+      this.selectedUavTypesForMap.set(snapshot.uavTypes);
+      this.selectedTailIdsForMap.set(snapshot.tailIds);
+    }
+    this.clearTacticalMissionFocusState();
+  }
+
+  private clearTacticalMissionFocusState(): void {
+    this.tacticalFocusedMissionId.set(null);
+    this.tacticalCompatibleTailIds.set([]);
+    this.tacticalHighlightSnapshot.set(null);
   }
 
   private resolveSelectedTotalScore(insight: AssignmentPairingInsight, selectedTailId: number): number {

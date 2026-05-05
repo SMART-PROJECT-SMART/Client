@@ -70,6 +70,11 @@ export function renderUavMarkers(
     const longitude = placement?.placedLongitude ?? pos.lon;
     const color = context.tailColors.get(uav.tailId) ?? MAP.UAV_COLOR_UNASSIGNED;
     const isOnActiveMission = context.activeMissionByTailId.has(uav.tailId);
+    const relativeScore = context.relativeScoreByTailId.get(uav.tailId);
+    const relativeScoreText =
+      relativeScore !== undefined
+        ? `${relativeScore.toFixed(MAP.TACTICAL_SCORE_BADGE_DECIMALS)}${MAP.TACTICAL_SCORE_SUFFIX}`
+        : null;
     const uavOpacity = resolveUavHighlightOpacity(
       highlightContext,
       uav.tailId,
@@ -77,7 +82,12 @@ export function renderUavMarkers(
       MAP.FILTER_DIMMED_OPACITY,
     );
     const marker = L.marker([latitude, longitude], {
-      icon: createUavDivIcon(color, { isOnActiveMission, opacity: uavOpacity, uavType: uav.uavType }),
+      icon: createUavDivIcon(color, {
+        isOnActiveMission,
+        opacity: uavOpacity,
+        uavType: uav.uavType,
+        relativeScoreText,
+      }),
     });
     marker.bindTooltip(buildUavTooltip(uav, context), {
       className: MAP.TOOLTIP_TOOLTIP_CLASS,
@@ -105,6 +115,7 @@ export function renderMissionMarkersAndLinks(
     pairing: AssignmentReviewMapRenderContext['pairings'][number],
     context: AssignmentReviewMapRenderContext,
   ) => { lat: number; lon: number } | null,
+  onMissionClick?: (missionId: string) => void,
 ): void {
   context.pairings.forEach((pairing) => {
     const loc = pairing.mission.location;
@@ -133,6 +144,9 @@ export function renderMissionMarkersAndLinks(
       offset: [MAP.TOOLTIP_TOOLTIP_OFFSET_X_PX, MAP.TOOLTIP_TOOLTIP_OFFSET_Y_PX],
       opacity: MAP.LEAFLET_TOOLTIP_BIND_OPACITY,
     });
+    if (onMissionClick) {
+      missionMarker.on('click', () => onMissionClick(pairing.mission.id));
+    }
     missionMarker.addTo(group);
 
     const uavPos = resolveAssignedUavPosition(pairing, context);

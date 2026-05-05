@@ -9,5 +9,8 @@ export type AssignmentReviewMapRenderContext = {
   missionColors: Map<string, string>;
   tailColors: Map<number, string>;
   activeMissionByTailId: Map<number, Mission>;
+  focusedMissionId: string | null;
+  compatibleTailIds: Set<number>;
+  relativeScoreByTailId: Map<number, number>;
 };
 
