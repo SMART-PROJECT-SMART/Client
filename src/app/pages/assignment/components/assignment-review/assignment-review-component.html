@@ -92,6 +92,8 @@
 
         <div class="assignments-container">
           @for (pairing of algorithmResult().pairings; track trackByMissionId($index, pairing)) {
+            @let cardRelativeScore = getCardRelativeScore(pairing.mission.id);
+            @let scoreBand = getCardScoreBand(cardRelativeScore);
             <mat-card
               class="assignment-card"
               [class.modified]="isAssignmentModified(pairing.mission.id)">
@@ -102,6 +104,20 @@
                     @if (isAssignmentModified(pairing.mission.id)) {
                       <mat-icon class="modified-icon" color="warn">edit</mat-icon>
                     }
+                  </div>
+                  <div
+                    class="score-circle"
+                    [class.score-circle--high]="scoreBand === scoreBandHigh"
+                    [class.score-circle--medium]="scoreBand === scoreBandMedium"
+                    [class.score-circle--low]="scoreBand === scoreBandLow"
+                    [style.--score-circle-fill]="getCardScoreFill(cardRelativeScore)"
+                    [style.--score-circle-inner-size]="cardScoreCircleInnerSize"
+                    [style.width.px]="cardScoreCircleSizePx"
+                    [style.height.px]="cardScoreCircleSizePx"
+                  >
+                    <span class="score-circle__value">
+                      {{ cardRelativeScore | number:'1.0-2' }}{{ relativeScoreSuffix }}
+                    </span>
                   </div>
                 </div>
 

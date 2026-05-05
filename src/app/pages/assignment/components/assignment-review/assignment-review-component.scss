@@ -125,6 +125,52 @@
   display: flex;
   align-items: center;
   gap: $spacing-sm;
+  min-width: 0;
+}
+
+.score-circle {
+  --score-circle-fill: 0%;
+  --score-circle-inner-size: 52px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  color: $color-error;
+  background: conic-gradient(
+    currentColor var(--score-circle-fill),
+    rgba($color-border-default, 0.35) var(--score-circle-fill)
+  );
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: var(--score-circle-inner-size);
+    height: var(--score-circle-inner-size);
+    border-radius: 50%;
+    background-color: $color-background-card;
+  }
+}
+
+.score-circle__value {
+  position: relative;
+  z-index: 1;
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  font-weight: 700;
+}
+
+.score-circle--high {
+  color: $color-success;
+}
+
+.score-circle--medium {
+  color: $color-warning;
+}
+
+.score-circle--low {
+  color: $color-error;
 }
 
 .card-layout {

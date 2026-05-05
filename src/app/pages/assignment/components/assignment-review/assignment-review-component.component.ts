@@ -28,6 +28,7 @@ import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../
 import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
 import { MissionStatusStorageService } from '../../../../services/mission/mission-status-storage.service';
 import { buildApplyAssignmentRoFromReviewState } from '../../utils/assignment-review-apply-payload.util';
+import { resolveRelativeScore } from '../../utils/assignment-relative-score.util';
 import { extractLatLonFromUav } from '../../utils/assignment-uav-geography.util';
 import {
   buildMapMissionFilterOptionsFromPairings,
@@ -41,6 +42,16 @@ const {
   APPLY_LABEL,
   REVIEW_TAB_OPERATIONAL_MAP_LABEL,
   REVIEW_TAB_MISSION_BRIEF_CARDS_LABEL,
+  RELATIVE_SCORE_SUFFIX,
+  RELATIVE_SCORE_MIN,
+  RELATIVE_SCORE_MAX,
+  CARD_SCORE_BAND_HIGH,
+  CARD_SCORE_BAND_MEDIUM,
+  CARD_SCORE_BAND_LOW,
+  CARD_SCORE_HIGH_MIN,
+  CARD_SCORE_MEDIUM_MIN,
+  CARD_SCORE_CIRCLE_SIZE_PX,
+  CARD_SCORE_CIRCLE_INNER_SIZE_PX,
   VIOLATION_TYPE_TIME_OVERLAP_LABEL,
   VIOLATION_TYPE_TYPE_MISMATCH_LABEL,
   VIOLATION_TYPE_DEFAULT_LABEL,
@@ -72,6 +83,12 @@ export class AssignmentReviewComponent implements OnInit {
   public readonly applyLabel: string = APPLY_LABEL;
   public readonly operationalMapTabLabel: string = REVIEW_TAB_OPERATIONAL_MAP_LABEL;
   public readonly missionBriefCardsTabLabel: string = REVIEW_TAB_MISSION_BRIEF_CARDS_LABEL;
+  public readonly relativeScoreSuffix: string = RELATIVE_SCORE_SUFFIX;
+  public readonly scoreBandHigh: string = CARD_SCORE_BAND_HIGH;
+  public readonly scoreBandMedium: string = CARD_SCORE_BAND_MEDIUM;
+  public readonly scoreBandLow: string = CARD_SCORE_BAND_LOW;
+  public readonly cardScoreCircleSizePx: number = CARD_SCORE_CIRCLE_SIZE_PX;
+  public readonly cardScoreCircleInnerSize: string = `${CARD_SCORE_CIRCLE_INNER_SIZE_PX}px`;
   public readonly TelemetryField = TelemetryField;
   public readonly ViolationType = ViolationType;
   public readonly PlatformType = PlatformType;
@@ -345,6 +362,33 @@ export class AssignmentReviewComponent implements OnInit {
     return this.selectedTailIds().get(missionId) ?? suggestedTailId;
   }
 
+  public getCardRelativeScore(missionId: string): number {
+    const insight = this.pairingInsightByMissionId().get(missionId);
+    if (!insight) {
+      return RELATIVE_SCORE_MIN;
+    }
+
+    const selectedTailId = this.getSelectedTailIdForMission(missionId, insight.suggestedTailId);
+    const selectedTotalScore = this.resolveSelectedTotalScore(insight, selectedTailId);
+    return this.clampRelativeScore(resolveRelativeScore(insight.totalScore, selectedTotalScore));
+  }
+
+  public getCardScoreBand(relativeScore: number): string {
+    if (relativeScore >= CARD_SCORE_HIGH_MIN) {
+      return CARD_SCORE_BAND_HIGH;
+    }
+
+    if (relativeScore >= CARD_SCORE_MEDIUM_MIN) {
+      return CARD_SCORE_BAND_MEDIUM;
+    }
+
+    return CARD_SCORE_BAND_LOW;
+  }
+
+  public getCardScoreFill(relativeScore: number): string {
+    return `${this.clampRelativeScore(relativeScore)}%`;
+  }
+
   private initializeEditedAssignments(): void {
     const initialMap: Map<string, number> = new Map<string, number>();
 
@@ -353,6 +397,19 @@ export class AssignmentReviewComponent implements OnInit {
     });
 
     this.selectedTailIds.set(initialMap);
+  }
+
+  private resolveSelectedTotalScore(insight: AssignmentPairingInsight, selectedTailId: number): number {
+    if (selectedTailId === insight.suggestedTailId) {
+      return insight.totalScore;
+    }
+
+    const selectedAlternative = insight.alternatives.find((alternative) => alternative.tailId === selectedTailId);
+    return selectedAlternative?.totalScore ?? RELATIVE_SCORE_MIN;
+  }
+
+  private clampRelativeScore(relativeScore: number): number {
+    return Math.min(RELATIVE_SCORE_MAX, Math.max(RELATIVE_SCORE_MIN, relativeScore));
   }
 
   private toggleExpansion(expansionSignal: WritableSignal<Set<string>>, id: string): void {

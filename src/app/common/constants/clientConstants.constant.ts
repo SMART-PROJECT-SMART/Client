@@ -141,6 +141,13 @@ export namespace ClientConstants {
     export const RELATIVE_SCORE_MIN: number = 0;
     export const RELATIVE_SCORE_MAX: number = 100;
     export const SCORE_DECIMALS: number = 2;
+    export const CARD_SCORE_BAND_HIGH: string = 'high';
+    export const CARD_SCORE_BAND_MEDIUM: string = 'medium';
+    export const CARD_SCORE_BAND_LOW: string = 'low';
+    export const CARD_SCORE_HIGH_MIN: number = 90;
+    export const CARD_SCORE_MEDIUM_MIN: number = 70;
+    export const CARD_SCORE_CIRCLE_SIZE_PX: number = 68;
+    export const CARD_SCORE_CIRCLE_INNER_SIZE_PX: number = 52;
     export const ALGORITHM_METRIC_TELEMETRY_LABEL: string = 'Telemetry';
     export const ALGORITHM_METRIC_DISTANCE_LABEL: string = 'Distance';
     export const ALGORITHM_METRIC_PRIORITY_LABEL: string = 'Priority';
