@@ -119,6 +119,8 @@ export function renderMissionMarkersAndLinks(
 ): void {
   context.pairings.forEach((pairing) => {
     const loc = pairing.mission.location;
+    const selectedTailId = context.selectedMap.get(pairing.mission.id);
+    const isAssignmentModified = selectedTailId !== undefined && selectedTailId !== pairing.tailId;
     const missionPlacement = markerPlacements.get(buildMapMissionPlacementKey(pairing.mission.id));
     const missionLatitude = missionPlacement?.placedLatitude ?? loc.latitude;
     const missionLongitude = missionPlacement?.placedLongitude ?? loc.longitude;
@@ -154,7 +156,7 @@ export function renderMissionMarkersAndLinks(
       return;
     }
 
-    const tailId = context.selectedMap.get(pairing.mission.id) ?? pairing.tailId;
+    const tailId = selectedTailId ?? pairing.tailId;
     const uavPlacement = markerPlacements.get(buildMapUavPlacementKey(tailId));
     const uavLatitude = uavPlacement?.placedLatitude ?? uavPos.lat;
     const uavLongitude = uavPlacement?.placedLongitude ?? uavPos.lon;
@@ -178,9 +180,10 @@ export function renderMissionMarkersAndLinks(
         [missionLatitude, missionLongitude],
       ],
       {
-        color: missionColor,
-        weight: MAP.LINE_WEIGHT,
+        color: isAssignmentModified ? MAP.MODIFIED_ASSIGNMENT_LINE_COLOR : missionColor,
+        weight: isAssignmentModified ? MAP.MODIFIED_ASSIGNMENT_LINE_WEIGHT : MAP.LINE_WEIGHT,
         opacity: lineOpacity,
+        dashArray: isAssignmentModified ? MAP.MODIFIED_ASSIGNMENT_LINE_DASH : undefined,
       },
     ).addTo(group);
   });

@@ -660,6 +660,10 @@ export namespace ClientConstants {
     export const PRIORITY_LOW_OUTLINE_COLOR = '#2e7d32';
     export const PRIORITY_OUTLINE_DEFAULT_COLOR = '#757575';
     export const MISSION_PRIORITY_OUTLINE_WIDTH_PX = 4;
+    export const MODIFIED_ASSIGNMENT_OUTLINE_COLOR = '#f9a825';
+    export const MODIFIED_ASSIGNMENT_LINE_COLOR = '#f9a825';
+    export const MODIFIED_ASSIGNMENT_LINE_WEIGHT = 4;
+    export const MODIFIED_ASSIGNMENT_LINE_DASH = '6,4';
     export const ICON_WRAPPER_CLASS = 'ar-map-div-icon';
     export const UAV_ICON_CLASS = 'ar-map-icon ar-map-icon--uav';
     export const MISSION_ICON_CLASS = 'ar-map-icon ar-map-icon--mission';

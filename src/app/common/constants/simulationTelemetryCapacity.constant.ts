@@ -7,7 +7,7 @@ export const TELEMETRY_PLATFORM_TYPE_ORDER: readonly PlatformType[] = Object.fre
 export const SimulationTelemetryCapacity = {
   FUEL_TANK_KG: {
     [PlatformType.Hermes900]: 350,
-    [PlatformType.HeronTP]: 450,
+    [PlatformType.HeronTP]: 600,
     [PlatformType.Hermes450]: 180,
     [PlatformType.Searcher]: 120,
   } as const satisfies Record<PlatformType, number>,
