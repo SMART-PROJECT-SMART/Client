@@ -71,12 +71,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 2;
   }
 
   .ar-map-uav-score-badge {
     position: absolute;
     top: var(--ar-uav-score-top, -5px);
-    left: var(--ar-uav-score-left, -6px);
+    left: 50%;
+    transform: translateX(-50%);
     min-width: var(--ar-uav-score-min-width, 30px);
     height: var(--ar-uav-score-height, 14px);
     border-radius: 999px;
@@ -90,6 +92,12 @@
     align-items: center;
     justify-content: center;
     padding: 0 4px;
+    z-index: 3;
+  }
+
+  .ar-map-uav-score-badge + .ar-map-uav-active-indicator {
+    top: 10px;
+    right: -5px;
   }
 }
 
