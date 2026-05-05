@@ -21,7 +21,7 @@
     [preserveContent]="true"
     [selectedIndex]="selectedReviewTabIndex()"
     (selectedIndexChange)="selectedReviewTabIndex.set($event)">
-    <mat-tab label="Map">
+    <mat-tab [label]="operationalMapTabLabel">
       <section class="tab-content map-tab-content" aria-label="Map preview">
         <app-assignment-review-map-filters
           [missions]="mapMissionOptions()"
@@ -57,7 +57,7 @@
       </section>
     </mat-tab>
 
-    <mat-tab label="Cards">
+    <mat-tab [label]="missionBriefCardsTabLabel">
       <section class="tab-content cards-tab-content" aria-label="Assignment cards">
         @if (!validationResult().isValid) {
           <div class="violations-section">

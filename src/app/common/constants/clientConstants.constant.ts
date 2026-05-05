@@ -40,6 +40,8 @@ export namespace ClientConstants {
     export const SUBMIT_LABEL: string = 'Submit';
     export const APPLY_LABEL: string = 'Apply';
     export const BACK_LABEL: string = 'Back';
+    export const REVIEW_TAB_OPERATIONAL_MAP_LABEL: string = 'Operational Map';
+    export const REVIEW_TAB_MISSION_BRIEF_CARDS_LABEL: string = 'Mission Brief Cards';
     export const NO_ASSIGNMENT_LABEL: string = 'Unassigned';
     export const VIOLATION_TYPE_TIME_OVERLAP_LABEL: string = 'Time overlap';
     export const VIOLATION_TYPE_TYPE_MISMATCH_LABEL: string = 'Type mismatch';

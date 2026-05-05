@@ -39,6 +39,8 @@ import {
 const {
   BACK_LABEL,
   APPLY_LABEL,
+  REVIEW_TAB_OPERATIONAL_MAP_LABEL,
+  REVIEW_TAB_MISSION_BRIEF_CARDS_LABEL,
   VIOLATION_TYPE_TIME_OVERLAP_LABEL,
   VIOLATION_TYPE_TYPE_MISMATCH_LABEL,
   VIOLATION_TYPE_DEFAULT_LABEL,
@@ -68,6 +70,8 @@ export class AssignmentReviewComponent implements OnInit {
 
   public readonly backLabel: string = BACK_LABEL;
   public readonly applyLabel: string = APPLY_LABEL;
+  public readonly operationalMapTabLabel: string = REVIEW_TAB_OPERATIONAL_MAP_LABEL;
+  public readonly missionBriefCardsTabLabel: string = REVIEW_TAB_MISSION_BRIEF_CARDS_LABEL;
   public readonly TelemetryField = TelemetryField;
   public readonly ViolationType = ViolationType;
   public readonly PlatformType = PlatformType;
