@@ -217,6 +217,41 @@ export namespace ClientConstants {
     export const FIT_BREAKDOWN_MISMATCH_LABEL: string = 'Type mismatch';
     export const FIT_BREAKDOWN_COVERAGE_LABEL: string = 'Coverage bonus';
     export const FIT_BREAKDOWN_ACTIVE_LABEL: string = 'Active mission';
+
+    export namespace QuickAddMissionNaming {
+      export const HOUR_IN_MS: number = 60 * 60 * 1000;
+      export const STRESS_TEST_MISSION_COUNT: number = 20;
+      export const LOCATION_LABELS = {
+        TEL_AVIV: 'Tel Aviv',
+        JERUSALEM: 'Jerusalem',
+        HADERA: 'Hadera',
+        BEERSHEBA: 'Beersheba',
+        HERZLIYA: 'Herzliya',
+        GUSH_DAN: 'Gush Dan',
+      } as const;
+      export const STRESS_TEST_LOCATION_LABELS = [
+        'Tel Aviv Coast',
+        'Sharon Plain',
+        'Hadera Corridor',
+        'Menashe Foothills',
+        'Carmel Approach',
+        'Haifa Bay',
+        'Lower Galilee',
+        'Tiberias Corridor',
+        'Golan Foothills',
+        'Upper Galilee East',
+        'Hula Valley',
+        'Golan Heights',
+        'Hermon Approach',
+        'Jordan Rift North',
+        'Northern Border East',
+        'Hermon Ridge',
+        'Deep Northern Frontier',
+        'Golan Northeast',
+        'Border Arc East',
+        'Northeast Frontier',
+      ] as const;
+    }
   }
 
   export namespace ArchiveRoutes {
