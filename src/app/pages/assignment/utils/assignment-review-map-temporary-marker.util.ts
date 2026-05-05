@@ -32,10 +32,36 @@ export function createTemporaryDestinationMarker(
   return marker;
 }
 
+export function createTemporaryDestinationConnector(
+  layerGroup: L.LayerGroup,
+  from: { latitude: number; longitude: number },
+  mission: Mission,
+): L.Polyline {
+  return L.polyline(
+    [
+      [from.latitude, from.longitude],
+      [mission.location.latitude, mission.location.longitude],
+    ],
+    {
+      color: MAP.TEMP_DESTINATION_MARKER_COLOR,
+      weight: MAP.TEMP_DESTINATION_CONNECTOR_WEIGHT,
+      opacity: MAP.TEMP_DESTINATION_CONNECTOR_OPACITY,
+      dashArray: MAP.TEMP_DESTINATION_CONNECTOR_DASH,
+    },
+  ).addTo(layerGroup);
+}
+
 export function removeTemporaryDestinationMarker(marker: L.CircleMarker | null): void {
   if (!marker) {
     return;
   }
   marker.remove();
+}
+
+export function removeTemporaryDestinationConnector(connector: L.Polyline | null): void {
+  if (!connector) {
+    return;
+  }
+  connector.remove();
 }
 

@@ -629,6 +629,9 @@ export namespace ClientConstants {
     export const TEMP_DESTINATION_MARKER_FILL_OPACITY = 0.35;
     export const TEMP_DESTINATION_MARKER_STROKE_WEIGHT = 2;
     export const TEMP_DESTINATION_MARKER_LABEL_PREFIX = 'Active mission destination: ';
+    export const TEMP_DESTINATION_CONNECTOR_WEIGHT = 2;
+    export const TEMP_DESTINATION_CONNECTOR_OPACITY = 0.85;
+    export const TEMP_DESTINATION_CONNECTOR_DASH = '4,6';
     export const LINE_SATURATION_PERCENT = 70;
     export const LINE_LIGHTNESS_PERCENT = 40;
     export const UAV_COLOR_UNASSIGNED = '#9e9e9e';

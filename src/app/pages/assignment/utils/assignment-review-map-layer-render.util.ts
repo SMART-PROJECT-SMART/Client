@@ -54,7 +54,11 @@ export function renderUavMarkers(
   highlightContext: AssignmentReviewMapHighlightContext,
   markerPlacements: Map<string, AssignmentReviewMapMarkerPlacement>,
   buildUavTooltip: (uav: UAV, context: AssignmentReviewMapRenderContext) => HTMLElement,
-  onUavClick?: (uav: UAV, context: AssignmentReviewMapRenderContext) => void,
+  onUavClick?: (
+    uav: UAV,
+    context: AssignmentReviewMapRenderContext,
+    markerPosition: { latitude: number; longitude: number },
+  ) => void,
 ): void {
   for (const uav of availableUavs) {
     const pos = extractLatLonFromUav(uav);
@@ -82,7 +86,7 @@ export function renderUavMarkers(
       opacity: MAP.LEAFLET_TOOLTIP_BIND_OPACITY,
     });
     if (onUavClick) {
-      marker.on('click', () => onUavClick(uav, context));
+      marker.on('click', () => onUavClick(uav, context, { latitude, longitude }));
     }
     marker.addTo(group);
     boundsPoints.push([latitude, longitude]);

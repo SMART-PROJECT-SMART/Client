@@ -35,7 +35,9 @@ import { buildMapMarkerAnchors } from '../../utils/assignment-review-map-anchor.
 import { fitMapToPointsOrDefault } from '../../utils/assignment-review-map-fit.util';
 import { resolveMapMarkerPlacements } from '../../utils/assignment-review-map-overlap.util';
 import {
+  createTemporaryDestinationConnector,
   createTemporaryDestinationMarker,
+  removeTemporaryDestinationConnector,
   removeTemporaryDestinationMarker,
 } from '../../utils/assignment-review-map-temporary-marker.util';
 import {
@@ -72,6 +74,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
   private layerGroup: L.LayerGroup | null = null;
   private tooltipComponentRefs: ComponentRef<unknown>[] = [];
   private temporaryDestinationMarker: L.CircleMarker | null = null;
+  private temporaryDestinationConnector: L.Polyline | null = null;
   private temporaryDestinationMarkerTailId: number | null = null;
 
   public constructor(
@@ -156,6 +159,7 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       this.buildMissionTooltip.bind(this),
       this.resolveAssignedUavPosition.bind(this),
     );
+    this.renderHighlightedActiveMissionConnectors(group, boundsPoints, context);
     fitMapToPointsOrDefault(map, boundsPoints);
     queueMicrotask(() => map.invalidateSize());
   }
@@ -219,7 +223,50 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     }, {});
   }
 
-  private onUavMarkerClick(uav: UAV, context: AssignmentReviewMapRenderContext): void {
+  private renderHighlightedActiveMissionConnectors(
+    group: L.LayerGroup,
+    boundsPoints: L.LatLngExpression[],
+    context: AssignmentReviewMapRenderContext,
+  ): void {
+    for (const tailId of this.highlightTailIds()) {
+      const activeMission = context.activeMissionByTailId.get(tailId);
+      if (!activeMission) {
+        continue;
+      }
+
+      const uav = this.availableUavs().find((candidate: UAV) => candidate.tailId === tailId);
+      if (!uav) {
+        continue;
+      }
+
+      const uavPosition = extractLatLonFromUav(uav);
+      if (!uavPosition) {
+        continue;
+      }
+
+      L.polyline(
+        [
+          [uavPosition.lat, uavPosition.lon],
+          [activeMission.location.latitude, activeMission.location.longitude],
+        ],
+        {
+          color: MAP.TEMP_DESTINATION_MARKER_COLOR,
+          weight: MAP.TEMP_DESTINATION_CONNECTOR_WEIGHT,
+          opacity: MAP.TEMP_DESTINATION_CONNECTOR_OPACITY,
+          dashArray: MAP.TEMP_DESTINATION_CONNECTOR_DASH,
+        },
+      ).addTo(group);
+
+      boundsPoints.push([uavPosition.lat, uavPosition.lon]);
+      boundsPoints.push([activeMission.location.latitude, activeMission.location.longitude]);
+    }
+  }
+
+  private onUavMarkerClick(
+    uav: UAV,
+    context: AssignmentReviewMapRenderContext,
+    markerPosition: { latitude: number; longitude: number },
+  ): void {
     const activeMission = context.activeMissionByTailId.get(uav.tailId);
     if (!activeMission || !this.layerGroup) {
       return;
@@ -232,6 +279,11 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
 
     this.clearTemporaryDestinationMarker();
     this.temporaryDestinationMarker = createTemporaryDestinationMarker(this.layerGroup, activeMission);
+    this.temporaryDestinationConnector = createTemporaryDestinationConnector(
+      this.layerGroup,
+      markerPosition,
+      activeMission,
+    );
     this.temporaryDestinationMarkerTailId = uav.tailId;
   }
 
@@ -294,7 +346,9 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
 
   private clearTemporaryDestinationMarker(): void {
     removeTemporaryDestinationMarker(this.temporaryDestinationMarker);
+    removeTemporaryDestinationConnector(this.temporaryDestinationConnector);
     this.temporaryDestinationMarker = null;
+    this.temporaryDestinationConnector = null;
     this.temporaryDestinationMarkerTailId = null;
   }
 }
