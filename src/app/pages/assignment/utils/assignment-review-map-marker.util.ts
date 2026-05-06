@@ -4,6 +4,7 @@ import { ClientConstants } from '../../../common/constants/clientConstants.const
 import type { CreateMissionDivIconOptions } from '../../../models/assignment/createMissionDivIconOptions.model';
 import type { CreateUavDivIconOptions } from '../../../models/assignment/createUavDivIconOptions.model';
 import { buildUavMarkerIconAdapter } from './assignment-review-map-uav-marker-adapter.util';
+import { buildMissionMarkerIconAdapter } from './assignment-review-map-mission-marker-adapter.util';
 
 const MAP = ClientConstants.AssignmentReviewMap;
 
@@ -41,25 +42,20 @@ export function createMissionDivIcon(
   priorityOutlineColor: string,
   options: CreateMissionDivIconOptions = {},
 ): L.DivIcon {
-  const color = accentColor || MAP.DEFAULT_MISSION_ACCENT;
-  const missionOutlineColor = priorityOutlineColor || MAP.PRIORITY_OUTLINE_DEFAULT_COLOR;
-  const opacity = options.opacity ?? MAP.FILTER_FULL_OPACITY;
-  const missionGlyphClass =
-    missionType === UAVType.Armed
-      ? MAP.GLYPH_MISSION_ARMED_CLASS
-      : MAP.GLYPH_MISSION_SURVEILLANCE_CLASS;
-  const missionAssetUrl =
-    missionType === UAVType.Armed
-      ? MAP.MISSION_ARMED_ICON_ASSET_URL
-      : MAP.MISSION_SURVEILLANCE_ICON_ASSET_URL;
-  const html = `<div class="${MAP.MISSION_ICON_CLASS}" style="--ar-mission-accent:${color};--ar-mission-priority-outline:${missionOutlineColor};--ar-mission-priority-outline-width:${MAP.MISSION_PRIORITY_OUTLINE_WIDTH_PX}px">${createGlyphHtml(
-    `${MAP.GLYPH_CLASS} ${missionGlyphClass}`,
-    missionAssetUrl,
+  const missionMarkerIconAdapter = buildMissionMarkerIconAdapter(
+    missionType,
+    accentColor,
+    priorityOutlineColor,
+    options,
+  );
+  const html = `<div class="${MAP.MISSION_ICON_CLASS}" style="${missionMarkerIconAdapter.cssVariableStyle}">${createGlyphHtml(
+    missionMarkerIconAdapter.glyphClass,
+    missionMarkerIconAdapter.assetUrl,
   )}</div>`;
   const w = MAP.MISSION_ICON_WIDTH_PX;
   const h = MAP.MISSION_ICON_HEIGHT_PX;
   return L.divIcon({
-    html: `<div style="opacity:${opacity}">${html}</div>`,
+    html: `<div style="opacity:${missionMarkerIconAdapter.opacity}">${html}</div>`,
     className: MAP.ICON_WRAPPER_CLASS,
     iconSize: [w, h],
     iconAnchor: [Math.floor(w / 2), h],
