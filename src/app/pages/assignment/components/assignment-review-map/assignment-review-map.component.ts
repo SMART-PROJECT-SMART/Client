@@ -32,7 +32,7 @@ import {
   buildAssignmentReviewMapRenderContext,
 } from '../../utils/assignment-review-map-context.util';
 import { renderActiveMissionConnectors } from '../../utils/assignment-review-map-active-connectors.util';
-import { AssignmentReviewMapUavInteractionFacade } from '../../utils/assignment-review-map-uav-interaction.facade';
+import { AssignmentReviewMapUavInteractionFacade, UavMarkerClickResultType } from '../../utils/assignment-review-map-uav-interaction.facade';
 import { AssignmentReviewMapTooltipFacade } from '../../utils/assignment-review-map-tooltip.facade';
 import { AssignmentReviewMapMissionTooltipComponent } from '../assignment-review-map-mission-tooltip/assignment-review-map-mission-tooltip.component';
 import { AssignmentReviewMapUavTooltipComponent } from '../assignment-review-map-uav-tooltip/assignment-review-map-uav-tooltip.component';
@@ -203,15 +203,23 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
     context: AssignmentReviewMapRenderContext,
     markerPosition: { latitude: number; longitude: number },
   ): void {
-    const fitPoints = this.uavInteractionFacade.onUavMarkerClick(
+    const interactionResult = this.uavInteractionFacade.onUavMarkerClick(
       uav,
       context,
       markerPosition,
+      this.map,
       this.layerGroup,
     );
-    if (this.map && fitPoints) {
-      fitMapToPointsOrDefault(this.map, fitPoints);
+    if (!this.map || !interactionResult) {
+      return;
     }
+
+    if (interactionResult.type === UavMarkerClickResultType.Fit) {
+      fitMapToPointsOrDefault(this.map, interactionResult.points);
+      return;
+    }
+
+    this.map.setView(interactionResult.viewport.center, interactionResult.viewport.zoom);
   }
 
   private resolveAssignedUavPosition(
