@@ -3,6 +3,7 @@ import { UAVType } from '../../../common/enums/uavType.enum';
 import { ClientConstants } from '../../../common/constants/clientConstants.constant';
 import type { CreateMissionDivIconOptions } from '../../../models/assignment/createMissionDivIconOptions.model';
 import type { CreateUavDivIconOptions } from '../../../models/assignment/createUavDivIconOptions.model';
+import { buildUavMarkerIconAdapter } from './assignment-review-map-uav-marker-adapter.util';
 
 const MAP = ClientConstants.AssignmentReviewMap;
 
@@ -17,31 +18,16 @@ export function createUavDivIcon(
   accentColor: string,
   options: CreateUavDivIconOptions = {},
 ): L.DivIcon {
-  const color = accentColor || MAP.DEFAULT_UAV_ACCENT;
-  const opacity = options.opacity ?? MAP.FILTER_FULL_OPACITY;
-  const uavGlyphClass =
-    options.uavType === UAVType.Armed
-      ? MAP.GLYPH_UAV_ARMED_CLASS
-      : MAP.GLYPH_UAV_SURVEILLANCE_CLASS;
-  const uavAssetUrl =
-    options.uavType === UAVType.Armed
-      ? MAP.UAV_ARMED_ICON_ASSET_URL
-      : MAP.UAV_SURVEILLANCE_ICON_ASSET_URL;
-  const activeIndicator = options.isOnActiveMission
-    ? `<span class="ar-map-uav-active-indicator" aria-label="Active mission">${MAP.ACTIVE_MISSION_BADGE_TEXT}</span>`
-    : '';
-  const relativeScoreBadge = options.relativeScoreText
-    ? `<span class="ar-map-uav-score-badge" aria-label="${MAP.UAV_SCORE_BADGE_ARIA_LABEL}">${options.relativeScoreText}</span>`
-    : '';
-  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="--ar-uav-accent:${color};--ar-uav-active-mission-bg:${MAP.ACTIVE_MISSION_BADGE_BG_COLOR};--ar-uav-active-mission-fg:${MAP.ACTIVE_MISSION_BADGE_TEXT_COLOR};--ar-uav-active-mission-size:${MAP.ACTIVE_MISSION_BADGE_SIZE_PX}px;--ar-uav-active-mission-font-size:${MAP.ACTIVE_MISSION_BADGE_FONT_SIZE_PX}px;--ar-uav-score-bg:${MAP.UAV_SCORE_BADGE_BG_COLOR};--ar-uav-score-fg:${MAP.UAV_SCORE_BADGE_TEXT_COLOR};--ar-uav-score-min-width:${MAP.UAV_SCORE_BADGE_MIN_WIDTH_PX}px;--ar-uav-score-height:${MAP.UAV_SCORE_BADGE_HEIGHT_PX}px;--ar-uav-score-font-size:${MAP.UAV_SCORE_BADGE_FONT_SIZE_PX}px;--ar-uav-score-top:${MAP.UAV_SCORE_BADGE_OFFSET_TOP_PX}px;--ar-uav-score-left:${MAP.UAV_SCORE_BADGE_OFFSET_LEFT_PX}px">
-    ${createGlyphHtml(`${MAP.GLYPH_CLASS} ${MAP.GLYPH_UAV_CLASS} ${uavGlyphClass}`, uavAssetUrl)}
-    ${relativeScoreBadge}
-    ${activeIndicator}
+  const uavMarkerIconAdapter = buildUavMarkerIconAdapter(accentColor, options);
+  const html = `<div class="${MAP.UAV_ICON_CLASS}" style="${uavMarkerIconAdapter.cssVariableStyle}">
+    ${createGlyphHtml(uavMarkerIconAdapter.glyphClass, uavMarkerIconAdapter.assetUrl)}
+    ${uavMarkerIconAdapter.relativeScoreBadgeHtml}
+    ${uavMarkerIconAdapter.activeIndicatorHtml}
   </div>`;
   const w = MAP.UAV_ICON_WIDTH_PX;
   const h = MAP.UAV_ICON_HEIGHT_PX;
   return L.divIcon({
-    html: `<div style="opacity:${opacity}">${html}</div>`,
+    html: `<div style="opacity:${uavMarkerIconAdapter.opacity}">${html}</div>`,
     className: MAP.ICON_WRAPPER_CLASS,
     iconSize: [w, h],
     iconAnchor: [Math.floor(w / 2), h],

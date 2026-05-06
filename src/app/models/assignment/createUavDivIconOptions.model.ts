@@ -5,5 +5,6 @@ export type CreateUavDivIconOptions = {
   opacity?: number;
   uavType?: UAVType;
   relativeScoreText?: string | null;
+  relativeScoreBand?: string | null;
 };
 

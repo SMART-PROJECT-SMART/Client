@@ -17,6 +17,7 @@ import {
 import { extractLatLonFromUav } from './assignment-uav-geography.util';
 
 const MAP = ClientConstants.AssignmentReviewMap;
+const ASSIGNMENT = ClientConstants.AssignmentPageConstants;
 
 export function renderOverlapConnectors(
   group: L.LayerGroup,
@@ -75,6 +76,10 @@ export function renderUavMarkers(
       relativeScore !== undefined
         ? `${relativeScore.toFixed(MAP.TACTICAL_SCORE_BADGE_DECIMALS)}${MAP.TACTICAL_SCORE_SUFFIX}`
         : null;
+    const relativeScoreBand =
+      relativeScore === undefined
+        ? null
+        : resolveRelativeScoreBand(relativeScore);
     const uavOpacity = resolveUavHighlightOpacity(
       highlightContext,
       uav.tailId,
@@ -87,6 +92,7 @@ export function renderUavMarkers(
         opacity: uavOpacity,
         uavType: uav.uavType,
         relativeScoreText,
+        relativeScoreBand,
       }),
     });
     marker.bindTooltip(buildUavTooltip(uav, context), {
@@ -101,6 +107,18 @@ export function renderUavMarkers(
     marker.addTo(group);
     boundsPoints.push([latitude, longitude]);
   }
+}
+
+function resolveRelativeScoreBand(relativeScore: number): string {
+  if (relativeScore >= ASSIGNMENT.CARD_SCORE_HIGH_MIN) {
+    return MAP.UAV_SCORE_BAND_HIGH;
+  }
+
+  if (relativeScore >= ASSIGNMENT.CARD_SCORE_MEDIUM_MIN) {
+    return MAP.UAV_SCORE_BAND_MEDIUM;
+  }
+
+  return MAP.UAV_SCORE_BAND_LOW;
 }
 
 export function renderMissionMarkersAndLinks(
