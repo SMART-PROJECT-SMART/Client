@@ -319,6 +319,15 @@ export class AssignmentReviewMapComponent implements AfterViewInit, OnDestroy {
       activeMission,
     );
     this.temporaryDestinationMarkerTailId = uav.tailId;
+    if (this.map) {
+      fitMapToPointsOrDefault(
+        this.map,
+        [
+          [markerPosition.latitude, markerPosition.longitude],
+          [activeMission.location.latitude, activeMission.location.longitude],
+        ],
+      );
+    }
   }
 
   private resolveAssignedUavPosition(
