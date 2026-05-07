@@ -26,6 +26,7 @@ import type { MapHighlightSnapshot } from '../../../../models/assignment/mapHigh
 import { TelemetryField, ViolationType, PlatformType, UAVType } from '../../../../common/enums';
 import { ClientConstants } from '../../../../common';
 import { TelemetryUtil, EnumUtil, AssignmentUtil, ImageUtil } from '../../../../common/utils';
+import { TelemetryDisplayValueUtil } from '../../../../common/utils/telemetry-display-value.util';
 import { AssignmentValidatorService } from '../../../../services/assignment/assignment-validator.service';
 import { MissionStatusStorageService } from '../../../../services/mission/mission-status-storage.service';
 import { buildApplyAssignmentRoFromReviewState } from '../../utils/assignment-review-apply-payload.util';
@@ -389,15 +390,20 @@ export class AssignmentReviewComponent implements OnInit {
 
   public getTelemetryEntries(uav: UAV): [TelemetryField, number][] {
     const uavType = this.getUavType(uav);
-    return (Object.entries(uav.telemetryData) as [TelemetryField, number][]).filter(
-      ([field]) =>
-        field !== TelemetryField.UAVTypeValue &&
-        field !== TelemetryField.TailId &&
-        field !== TelemetryField.PlatformType &&
-        field !== TelemetryField.NearestSleeveId &&
-        field !== TelemetryField.MissionId &&
-        !this.isTelemetryFieldHiddenForUavType(field, uavType),
-    );
+    return (Object.entries(uav.telemetryData) as [TelemetryField, number][])
+      .filter(
+        ([field]) =>
+          field !== TelemetryField.UAVTypeValue &&
+          field !== TelemetryField.TailId &&
+          field !== TelemetryField.PlatformType &&
+          field !== TelemetryField.NearestSleeveId &&
+          field !== TelemetryField.MissionId &&
+          !this.isTelemetryFieldHiddenForUavType(field, uavType),
+      )
+      .map(([field, value]) => [
+        field,
+        TelemetryDisplayValueUtil.toChartOrTableValue(field, value, uav.telemetryData),
+      ]);
   }
 
   public getPlatformType(uav: UAV): PlatformType {
