@@ -1,0 +1,68 @@
+@use '../../../../../styles/constants' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.time-input-wrapper {
+  display: flex;
+  align-items: center;
+  min-height: $button-size-sm;
+  border: $border-width-thin solid $color-border-light;
+  border-radius: $border-radius-sm;
+  background-color: $color-background-card;
+  overflow: hidden;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: $spacing-xs $spacing-sm;
+    border: none;
+    background: transparent;
+    color: $color-text-primary;
+    font-family: inherit;
+    font-size: $font-size-sm;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+    text-align: center;
+    outline: none;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  .time-picker-trigger {
+    flex-shrink: 0;
+    width: $button-size-sm;
+    height: $button-size-sm;
+    margin: 0 $spacing-xs 0 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: $color-primary-light;
+
+    &:hover {
+      color: $color-primary;
+      background-color: rgba($color-primary, 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba($color-primary, 0.6);
+      outline-offset: 1px;
+    }
+
+    mat-icon {
+      font-size: $icon-size-sm;
+      width: $icon-size-sm;
+      height: $icon-size-sm;
+    }
+  }
+}

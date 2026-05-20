@@ -22,4 +22,5 @@ export const defaultWantedFields: TelemetryField[] = [
   TelemetryField.RollDeg,
   TelemetryField.CurrentSpeedKmph,
   TelemetryField.PlatformType,
+  TelemetryField.AmmoPercentage,
 ];

@@ -17,6 +17,9 @@ export type { ApplyAssignmentRo } from './Ro/applyAssignmentRo.ro';
 
 export type { Violation } from './assignment/violation.model';
 export type { ValidationResult } from './assignment/validationResult.model';
+export type { AssignmentFitnessBreakdown } from './assignment/assignmentFitnessBreakdown.model';
+export type { AssignmentPairingAlternative } from './assignment/assignmentPairingAlternative.model';
+export type { AssignmentPairingInsight } from './assignment/assignmentPairingInsight.model';
 
 export type { UAVTelemetryData } from './lts/uavTelemetryData.model';
 export type { TelemetryBroadcastDto } from './lts/telemetryBroadcastDto.model';

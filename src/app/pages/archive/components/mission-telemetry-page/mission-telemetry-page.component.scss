@@ -1,0 +1,119 @@
+@use '../../../../../styles/constants' as *;
+
+$empty-icon-size: 100px;
+$tile-reveal-delay: 80ms;
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: $color-background-primary;
+  color: $color-text-primary;
+}
+
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: $color-text-secondary;
+
+  mat-icon {
+    font-size: $icon-size-xl;
+    width: $icon-size-xl;
+    height: $icon-size-xl;
+    margin-bottom: $spacing-md;
+  }
+
+  .error-icon {
+    color: $color-error;
+  }
+
+  .info-icon {
+    color: $color-info;
+  }
+
+  p {
+    font-size: $font-size-md;
+    margin: $spacing-sm 0 0;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: $spacing-xl;
+  background: linear-gradient(135deg, rgba($color-primary, 0.05), transparent);
+  border: $border-width-medium solid $color-border-default;
+  border-radius: $border-radius-lg;
+  margin: $spacing-lg;
+  text-align: center;
+
+  .empty-icon {
+    font-size: $empty-icon-size;
+    width: $empty-icon-size;
+    height: $empty-icon-size;
+    color: $color-text-muted;
+    margin-bottom: $spacing-lg;
+  }
+
+  h2 {
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin: 0 0 $spacing-sm 0;
+  }
+
+  p {
+    font-size: $font-size-md;
+    color: $color-text-secondary;
+    margin: 0 0 $spacing-lg 0;
+  }
+
+  button {
+    mat-icon {
+      margin-right: $spacing-xs;
+    }
+  }
+}
+
+.gridster-wrapper {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.fetch-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-overlay;
+  z-index: 10;
+  pointer-events: none;
+}
+
+:host ::ng-deep .gridster-wrapper gridster {
+  background: $color-background-primary !important;
+}
+
+:host ::ng-deep .gridster-wrapper gridster-item {
+  background: $color-background-secondary !important;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-md;
+  display: flex !important;
+  flex-direction: column;
+  animation: tileReveal 0s $tile-reveal-delay forwards;
+  opacity: 0;
+}
+
+@keyframes tileReveal {
+  to {
+    opacity: 1;
+  }
+}

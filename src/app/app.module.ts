@@ -3,13 +3,22 @@ import { BrowserModule } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
 
 import { AppRoutingModule } from './app-routing.module';
 import { App } from './app';
 import { MatModule } from './modules/mat.module';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { GridsterModule } from 'angular-gridster2';
 
 import { AssignmentManagementComponent } from './pages/assignment/components/assignment-management/assignment-management-component.component';
 import { AssignmentReviewComponent } from './pages/assignment/components/assignment-review/assignment-review-component.component';
+import { AssignmentReviewMapComponent } from './pages/assignment/components/assignment-review-map/assignment-review-map.component';
+import { AssignmentReviewMapMissionTooltipComponent } from './pages/assignment/components/assignment-review-map-mission-tooltip/assignment-review-map-mission-tooltip.component';
+import { AssignmentReviewMapUavTooltipComponent } from './pages/assignment/components/assignment-review-map-uav-tooltip/assignment-review-map-uav-tooltip.component';
+import { AssignmentReviewMapFiltersComponent } from './pages/assignment/components/assignment-review-map-filters/assignment-review-map-filters.component';
+import { AssignmentReviewSummaryStripComponent } from './pages/assignment/components/assignment-review-summary-strip/assignment-review-summary-strip.component';
+import { AssignmentReviewAlgorithmPanelComponent } from './pages/assignment/components/assignment-review-algorithm-panel/assignment-review-algorithm-panel.component';
 import { MissionComponentComponent } from './pages/assignment/components/mission/mission-component.component';
 import { MissionCreateDialogComponent } from './pages/assignment/components/mission-create-dialog/mission-create-dialog.component';
 import { MissionEditDialogComponent } from './pages/assignment/components/mission-edit-dialog/mission-edit-dialog.component';
@@ -33,6 +42,14 @@ import { ArchiveDiffDialogComponent } from './pages/archive/components/archive-d
 import { ArchiveFilterDialogComponent } from './pages/archive/components/archive-filter-dialog/archive-filter-dialog.component';
 import { ActiveMissionsTableComponent } from './pages/archive/components/active-missions-table/active-missions-table.component';
 import { ScenarioSelectDialogComponent } from './pages/assignment/components/scenario-select-dialog/scenario-select-dialog.component';
+import { MissionTelemetryPageComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-page.component';
+import { MissionTelemetryPageHeaderComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-page-header.component';
+import { MissionTelemetryInvestigationToolbarComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-investigation-toolbar.component';
+import { MissionTelemetryTileComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-tile.component';
+import { MissionDetailsDialogComponent } from './pages/archive/components/mission-details-dialog/mission-details-dialog.component';
+import { TimeRangePickerPanelComponent } from './pages/archive/components/time-range-dialog/time-range-picker-panel.component';
+import { TimeRangeOwlTimerSegmentComponent } from './pages/archive/components/time-range-dialog/time-range-owl-timer-segment.component';
+import { MissionTimeRangePickerComponent } from './pages/archive/components/mission-telemetry-page/mission-time-range-picker.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +61,12 @@ import { ScenarioSelectDialogComponent } from './pages/assignment/components/sce
     AssignmentPageComponentComponent,
     AssignmentManagementComponent,
     AssignmentReviewComponent,
+    AssignmentReviewMapComponent,
+    AssignmentReviewMapMissionTooltipComponent,
+    AssignmentReviewMapUavTooltipComponent,
+    AssignmentReviewMapFiltersComponent,
+    AssignmentReviewSummaryStripComponent,
+    AssignmentReviewAlgorithmPanelComponent,
     SidebarComponent,
     LiveViewPageComponent,
     CesiumViewer,
@@ -60,16 +83,27 @@ import { ScenarioSelectDialogComponent } from './pages/assignment/components/sce
     ArchiveFilterDialogComponent,
     ActiveMissionsTableComponent,
     ScenarioSelectDialogComponent,
+    MissionTelemetryPageComponent,
+    MissionTelemetryPageHeaderComponent,
+    MissionTelemetryInvestigationToolbarComponent,
+    MissionTelemetryTileComponent,
+    MissionDetailsDialogComponent,
+    TimeRangePickerPanelComponent,
+    MissionTimeRangePickerComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MatModule,
     ReactiveFormsModule,
+    NgxDaterangepickerMd.forRoot(),
     NumericInputDirective,
     TimeInputDirective,
+    BaseChartDirective,
+    GridsterModule,
+    TimeRangeOwlTimerSegmentComponent,
   ],
-  providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient()],
+  providers: [provideBrowserGlobalErrorListeners(), provideAnimationsAsync(), provideHttpClient(), provideCharts(withDefaultRegisterables())],
   bootstrap: [App],
 })
 export class AppModule {}

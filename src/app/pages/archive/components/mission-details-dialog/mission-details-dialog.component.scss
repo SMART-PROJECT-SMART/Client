@@ -1,0 +1,96 @@
+@use '../../../../../styles/constants' as *;
+
+.dialog-container {
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  h2 {
+    margin: 0;
+    font-size: $font-size-xxl;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+}
+
+.summary-content {
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.summary-section {
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin: 0 0 $spacing-md 0;
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-primary-light;
+
+    mat-icon {
+      font-size: $icon-size-md;
+      width: $icon-size-md;
+      height: $icon-size-md;
+    }
+  }
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+  border-bottom: $border-width-thin solid $color-border-default;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .label {
+    color: $color-text-secondary;
+    font-size: $font-size-md;
+  }
+
+  .value {
+    color: $color-text-primary;
+    font-size: $font-size-md;
+    font-weight: 500;
+  }
+}
+
+.priority-badge {
+  padding: 2px $spacing-sm;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+
+  &[data-priority='High'] {
+    background-color: rgba($color-error, 0.2);
+    color: $color-error;
+  }
+
+  &[data-priority='Medium'] {
+    background-color: rgba($color-warning, 0.2);
+    color: $color-warning;
+  }
+
+  &[data-priority='Low'] {
+    background-color: rgba($color-success, 0.2);
+    color: $color-success;
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: $spacing-md $spacing-lg;
+  border-top: $border-width-thin solid $color-border-default;
+}

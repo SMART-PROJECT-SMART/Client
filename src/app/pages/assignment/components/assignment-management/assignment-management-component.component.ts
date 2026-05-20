@@ -11,6 +11,7 @@ import type { Mission, TimeWindow } from '../../../../models';
 
 const { ADD_MISSION_LABEL, SUBMIT_LABEL } = ClientConstants.AssignmentPageConstants;
 const { MISSION_DIALOG_WIDTH, MISSION_SUMMARY_DIALOG_WIDTH, SCENARIO_DIALOG_WIDTH, PANEL_CLASS } = ClientConstants.DialogConfig;
+const DUPLICATE_TITLE_SEPARATOR = ' #';
 
 @Component({
   selector: 'app-assignment-management-component',
@@ -104,7 +105,10 @@ export class AssignmentManagementComponent implements OnInit {
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((missions: Mission[] | undefined) => {
       if (missions?.length) {
-        this.missionList.update((list) => [...list, ...missions]);
+        this.missionList.update((list) => {
+          const missionsWithUniqueTitles = this.ensureUniqueMissionTitles(list, missions);
+          return [...list, ...missionsWithUniqueTitles];
+        });
         this.hasModifications.set(true);
       }
     });
@@ -132,5 +136,34 @@ export class AssignmentManagementComponent implements OnInit {
       });
     };
     return `${formatDate(timeWindow.start)} - ${formatDate(timeWindow.end)}`;
+  }
+
+  private ensureUniqueMissionTitles(existingMissions: Mission[], incomingMissions: Mission[]): Mission[] {
+    const usedTitles = new Set<string>();
+
+    for (const mission of existingMissions) {
+      usedTitles.add(this.normalizeTitle(mission.title));
+    }
+
+    return incomingMissions.map((mission) => {
+      const baseTitle = mission.title.trim();
+      let uniqueTitle = baseTitle;
+      let duplicateCounter = 2;
+
+      while (usedTitles.has(this.normalizeTitle(uniqueTitle))) {
+        uniqueTitle = `${baseTitle}${DUPLICATE_TITLE_SEPARATOR}${duplicateCounter}`;
+        duplicateCounter += 1;
+      }
+
+      usedTitles.add(this.normalizeTitle(uniqueTitle));
+      return {
+        ...mission,
+        title: uniqueTitle,
+      };
+    });
+  }
+
+  private normalizeTitle(title: string): string {
+    return title.trim().toLowerCase();
   }
 }

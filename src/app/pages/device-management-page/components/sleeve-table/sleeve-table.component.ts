@@ -64,11 +64,13 @@ export class SleeveTableComponent implements OnInit {
 
   public onSearch(event: Event): void {
     this.dataSource.filter = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.paginator()?.firstPage();
   }
 
   public onClearSearch(input: HTMLInputElement): void {
     input.value = '';
     this.dataSource.filter = '';
+    this.paginator()?.firstPage();
   }
 
   public onAddSleeve(): void {

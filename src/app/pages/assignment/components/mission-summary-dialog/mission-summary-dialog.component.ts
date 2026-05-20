@@ -2,10 +2,7 @@ import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EnumUtil } from '../../../../common/utils';
 import type { Mission } from '../../../../models';
-
-export interface MissionSummaryDialogData {
-  mission: Mission;
-}
+import type { MissionSummaryDialogData } from '../../../../models/forms/missionSummaryDialogData.model';
 
 @Component({
   selector: 'app-mission-summary-dialog',

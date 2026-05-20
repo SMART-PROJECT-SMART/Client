@@ -1,0 +1,446 @@
+@use '../../../../../styles/constants' as *;
+
+$time-range-calendar-double-column-flex-basis: 50%;
+$time-range-calendar-panel-max-width: 560px;
+$time-range-calendar-range-bridge: rgba($color-primary, 0.32);
+$time-range-calendar-range-bridge-text: $color-text-primary;
+$time-range-calendar-off-in-range-text: $color-text-muted;
+
+$time-range-panel-header-min-height: 36px;
+$time-range-valid-range-fill-opacity: 0.08;
+$time-range-valid-range-border-opacity: 0.35;
+$time-range-valid-range-icon-offset-top: 2px;
+$time-range-label-letter-spacing: 0.5px;
+$time-range-copy-line-height-tight: 1.35;
+$time-range-times-grid-row-gap: 2px;
+$time-range-cal-weekday-header-padding-bottom: 2px;
+$time-range-cal-tight-padding-inline: 2px;
+$time-range-cal-cell-padding: 1px;
+$time-range-cal-header-cell-min-width: 24px;
+$time-range-cal-day-cell-size: 26px;
+$time-range-cal-line-height: 1.15;
+$time-range-cal-transition-duration: 0.12s;
+$time-range-error-background-opacity: 0.1;
+$time-range-error-border-left-width: 3px;
+$time-range-error-icon-size: 18px;
+$time-range-error-icon-margin-top: 1px;
+
+:host {
+  display: block;
+}
+
+.time-range-picker-panel {
+  display: flex;
+  flex-direction: column;
+  background-color: $color-background-secondary;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.panel-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xs $spacing-md;
+  border-bottom: $border-width-thin solid $color-border-default;
+  min-height: $time-range-panel-header-min-height;
+  box-sizing: border-box;
+}
+
+.panel-title {
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.panel-body {
+  flex: 0 1 auto;
+  padding: 0;
+  overflow: visible;
+}
+
+.panel-form {
+  padding: $spacing-sm $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  align-items: stretch;
+}
+
+.panel-actions {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-xs $spacing-md $spacing-sm;
+  border-top: $border-width-thin solid $color-border-default;
+  background-color: $color-background-secondary;
+}
+
+.booking-calendar-wrap {
+  flex-shrink: 0;
+  width: 100%;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: visible;
+  overflow-y: visible;
+
+  ngx-daterangepicker-material {
+    display: block;
+    width: 100%;
+    max-width: $time-range-calendar-panel-max-width;
+  }
+
+  ::ng-deep .md-drppicker {
+    margin-top: 0;
+    box-shadow: none;
+    background-color: $color-background-card;
+    border-radius: $border-radius-md;
+    border: $border-width-thin solid $color-border-light;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    max-width: $time-range-calendar-panel-max-width;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: visible;
+    padding: $spacing-xs $spacing-sm $spacing-sm;
+  }
+
+  ::ng-deep .md-drppicker.double {
+    width: 100%;
+    max-width: $time-range-calendar-panel-max-width;
+    gap: $spacing-sm;
+  }
+
+  ::ng-deep .md-drppicker.inline {
+    transform: none !important;
+    transform-origin: center top;
+  }
+
+  ::ng-deep .md-drppicker.shown.drops-down-center {
+    transform-origin: center top;
+  }
+
+  ::ng-deep .md-drppicker.inline.shown {
+    transform: none !important;
+  }
+
+  ::ng-deep .md-drppicker .calendar {
+    min-height: 0;
+    max-width: calc(#{$time-range-calendar-double-column-flex-basis} - #{$spacing-sm} / 2);
+    width: calc(#{$time-range-calendar-double-column-flex-basis} - #{$spacing-sm} / 2);
+    flex: 1 1 calc(#{$time-range-calendar-double-column-flex-basis} - #{$spacing-sm} / 2);
+    min-width: 0;
+  }
+
+  ::ng-deep .md-drppicker.ltr .calendar.left,
+  ::ng-deep .md-drppicker.ltr .calendar.right {
+    float: none;
+    clear: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  ::ng-deep .md-drppicker.ltr .calendar.left .calendar-table {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  ::ng-deep .md-drppicker .calendar-table {
+    background-color: transparent;
+    border: none;
+    border-radius: $border-radius-sm;
+    padding: 0;
+  }
+
+  ::ng-deep .md-drppicker .dropdowns select {
+    background-color: $color-background-elevated;
+    color: $color-text-primary;
+    border-color: $color-border-light;
+    border-radius: $border-radius-sm;
+  }
+
+  ::ng-deep .md-drppicker .dropdowns {
+    color: $color-text-primary;
+  }
+
+  ::ng-deep .md-drppicker th.month {
+    padding-bottom: $spacing-xs;
+  }
+
+  ::ng-deep .md-drppicker table.table-condensed {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    background-color: transparent;
+  }
+
+  ::ng-deep .md-drppicker table.table-condensed th,
+  ::ng-deep .md-drppicker table.table-condensed td {
+    border: none;
+  }
+
+  ::ng-deep .md-drppicker table.table-condensed thead tr.week-days th {
+    border-bottom: $border-width-thin solid $color-border-default;
+    padding-bottom: $time-range-cal-weekday-header-padding-bottom;
+  }
+
+  ::ng-deep .md-drppicker td.off:not(.in-range) {
+    background-color: transparent;
+  }
+
+  ::ng-deep .md-drppicker td.time-range-cal-outside-month {
+    pointer-events: none;
+  }
+
+  ::ng-deep .md-drppicker td.time-range-cal-outside-month span {
+    visibility: hidden;
+  }
+
+  ::ng-deep .md-drppicker th,
+  ::ng-deep .md-drppicker td {
+    border-radius: 0;
+    transition: background-color $time-range-cal-transition-duration ease,
+      color $time-range-cal-transition-duration ease;
+  }
+
+  ::ng-deep .md-drppicker th {
+    color: $color-text-secondary;
+    font-weight: 500;
+    padding: $time-range-cal-cell-padding $time-range-cal-tight-padding-inline;
+    min-width: $time-range-cal-header-cell-min-width;
+    width: auto;
+    height: auto;
+    line-height: $time-range-cal-line-height;
+    font-size: $font-size-xs;
+  }
+
+  ::ng-deep .md-drppicker td {
+    margin: 0;
+    padding: $time-range-cal-cell-padding;
+    min-width: $time-range-cal-header-cell-min-width;
+    width: auto;
+    height: auto;
+    line-height: $time-range-cal-line-height;
+    transform: none;
+    opacity: 1;
+  }
+
+  ::ng-deep .md-drppicker td span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: $time-range-cal-day-cell-size;
+    min-height: $time-range-cal-day-cell-size;
+    border-radius: $border-radius-sm;
+    transform: none;
+    transition: background-color $time-range-cal-transition-duration ease,
+      color $time-range-cal-transition-duration ease;
+    font-size: $font-size-sm;
+  }
+
+  ::ng-deep .md-drppicker td.available:hover,
+  ::ng-deep .md-drppicker th.available:hover {
+    transform: none;
+  }
+
+  ::ng-deep .md-drppicker td.in-range {
+    background-color: $time-range-calendar-range-bridge;
+    color: $time-range-calendar-range-bridge-text;
+    border-radius: 0;
+  }
+
+  ::ng-deep .md-drppicker td.off.in-range {
+    color: $time-range-calendar-off-in-range-text;
+  }
+
+  ::ng-deep .md-drppicker td.start-date,
+  ::ng-deep .md-drppicker td.end-date {
+    background-color: transparent;
+  }
+
+  ::ng-deep .md-drppicker td.start-date {
+    border-radius: 0;
+  }
+
+  ::ng-deep .md-drppicker td.end-date {
+    border-radius: 0;
+  }
+
+  ::ng-deep .md-drppicker td.start-date.end-date {
+    border-radius: $border-radius-sm;
+  }
+
+  ::ng-deep .md-drppicker td.off.active.start-date,
+  ::ng-deep .md-drppicker td.off.active.end-date {
+    background-color: transparent;
+  }
+
+  ::ng-deep .md-drppicker td.active:not(.in-range):not(.start-date):not(.end-date),
+  ::ng-deep .md-drppicker td.active:not(.in-range):not(.start-date):not(.end-date):hover {
+    background-color: transparent;
+    color: inherit;
+  }
+
+  ::ng-deep .md-drppicker td.active span,
+  ::ng-deep .md-drppicker td.active:hover span {
+    background-color: $color-primary;
+    color: $color-background-primary;
+  }
+
+  ::ng-deep .md-drppicker td.available {
+    color: $color-text-primary;
+  }
+
+  ::ng-deep .md-drppicker td.off {
+    color: $color-text-muted;
+  }
+}
+
+.valid-range-panel {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: rgba($color-primary, $time-range-valid-range-fill-opacity);
+  border: $border-width-thin solid rgba($color-primary, $time-range-valid-range-border-opacity);
+  border-radius: $border-radius-sm;
+}
+
+.valid-range-icon {
+  font-size: $icon-size-md;
+  width: $icon-size-md;
+  height: $icon-size-md;
+  color: $color-primary-light;
+  flex-shrink: 0;
+  margin-top: $time-range-valid-range-icon-offset-top;
+}
+
+.valid-range-copy {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  min-width: 0;
+}
+
+.valid-range-title {
+  font-size: $font-size-xs;
+  font-weight: 600;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: $time-range-label-letter-spacing;
+}
+
+.valid-range-value {
+  font-size: $font-size-xs;
+  font-variant-numeric: tabular-nums;
+  color: $color-text-primary;
+  line-height: $time-range-copy-line-height-tight;
+}
+
+.time-range-times-shell {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.time-range-times-heading {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: $color-text-secondary;
+}
+
+.time-range-times-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: $spacing-sm;
+  row-gap: $time-range-times-grid-row-gap;
+  padding: $spacing-xs $spacing-sm;
+  border: $border-width-thin solid $color-border-light;
+  border-radius: $border-radius-sm;
+  background-color: $color-background-secondary;
+}
+
+.time-segment-label {
+  font-size: $font-size-xs;
+  font-weight: 600;
+  letter-spacing: $time-range-label-letter-spacing;
+  text-transform: uppercase;
+  color: $color-text-muted;
+  min-width: 0;
+
+  &:nth-child(1) {
+    justify-self: start;
+  }
+
+  &:nth-child(3) {
+    justify-self: end;
+  }
+}
+
+.time-range-label-spacer {
+  display: block;
+  width: $border-width-thin;
+  height: $border-width-thin;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.time-range-time-cell {
+  min-width: 0;
+}
+
+.time-range-separator {
+  grid-row: 2;
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 $spacing-xs;
+  color: $color-text-muted;
+  font-size: $font-size-md;
+  font-weight: 500;
+  line-height: 1;
+  user-select: none;
+}
+
+.time-range-validation-messages {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.form-level-error {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  background-color: rgba($color-error, $time-range-error-background-opacity);
+  border-left: $time-range-error-border-left-width solid $color-error;
+  border-radius: $border-radius-sm;
+  color: $color-error;
+  font-size: $font-size-xs;
+  line-height: $time-range-copy-line-height-tight;
+
+  mat-icon {
+    font-size: $time-range-error-icon-size;
+    width: $time-range-error-icon-size;
+    height: $time-range-error-icon-size;
+    flex-shrink: 0;
+    margin-top: $time-range-error-icon-margin-top;
+  }
+}

@@ -1,0 +1,43 @@
+<div class="toolbar-row">
+  <div class="selected-chips">
+    @if (showParameterSearch) {
+      <mat-form-field appearance="outline" class="param-search-field" subscriptSizing="dynamic">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          #paramSearchInput
+          [value]="parameterSearch"
+          (input)="onParameterSearchInput($event)"
+          [matAutocomplete]="paramAuto"
+          [placeholder]="investigationUi.PARAMETER_SEARCH_PLACEHOLDER"
+        />
+        <mat-autocomplete
+          #paramAuto="matAutocomplete"
+          (optionSelected)="onParameterSelected($event, paramSearchInput)"
+        >
+          @for (field of filteredUnselectedFields; track field) {
+            <mat-option [value]="field">{{ getFieldLabel(field) }}</mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    }
+    @for (field of selectedFields; track field) {
+      <span class="selected-chip">
+        {{ getFieldLabel(field) }}
+        <mat-icon class="chip-remove" (click)="removeField.emit(field)">close</mat-icon>
+      </span>
+    }
+  </div>
+  @if (showTimeRangeControls) {
+    <app-mission-time-range-picker
+      [rangeDisplay]="rangeDisplay"
+      [isRangeModified]="isRangeModified"
+      [open]="timeRangeOverlayOpen"
+      (openChange)="timeRangeOpenChange.emit($event)"
+      [config]="timeRangePickerConfig"
+      (toggleOpen)="timeRangeToggle.emit()"
+      (applied)="timeRangeApplied.emit($event)"
+      (resetTimeRange)="resetTimeRange.emit()"
+    />
+  }
+</div>

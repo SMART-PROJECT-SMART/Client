@@ -1,0 +1,105 @@
+@use '../../../../../styles/constants' as *;
+
+:host {
+  display: block;
+}
+
+.summary-strip {
+  background: $color-background-card;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-md;
+  padding: $spacing-md;
+  display: grid;
+  gap: $spacing-md;
+}
+
+.summary-strip__top-row {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-md;
+  align-items: flex-start;
+}
+
+.summary-strip__title-block h3 {
+  margin: 0 0 $spacing-xs;
+  color: $color-text-primary;
+}
+
+.summary-strip__score {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-sm;
+}
+
+.summary-strip__score-label {
+  color: $color-text-secondary;
+}
+
+.summary-strip__score-value {
+  color: $color-text-primary;
+  font-size: $font-size-lg;
+  font-weight: 700;
+}
+
+.summary-strip__score-hint {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.summary-strip__warning {
+  color: $color-warning;
+  font-size: $font-size-sm;
+  font-weight: 600;
+}
+
+.summary-strip__reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.summary-strip__reason {
+  min-width: 180px;
+  background: $color-background-elevated;
+  border: $border-width-thin solid $color-border-default;
+  border-radius: $border-radius-sm;
+  padding: $spacing-xs $spacing-sm;
+  display: grid;
+  gap: 2px;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.summary-strip__reason strong {
+  color: $color-text-primary;
+  font-size: $font-size-md;
+  font-weight: 700;
+}
+
+.summary-strip__glossary {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.summary-strip__glossary summary {
+  cursor: pointer;
+  color: $color-text-primary;
+  font-weight: 600;
+}
+
+.summary-strip__formula {
+  margin: $spacing-sm 0;
+  color: $color-text-primary;
+}
+
+.summary-strip__glossary-title {
+  color: $color-text-primary;
+  font-weight: 600;
+}
+
+.summary-strip__glossary ul {
+  margin: $spacing-sm 0 0;
+  padding-left: $spacing-lg;
+  display: grid;
+  gap: $spacing-xs;
+}

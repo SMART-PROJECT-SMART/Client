@@ -4,6 +4,7 @@ import { AssignmentPageComponentComponent } from './pages/assignment/assignment-
 import { LiveViewPageComponent } from './pages/live-view/live-view-page/live-view-page-component.component';
 import { DeviceManagementPageComponent } from './pages/device-management-page/device-management-page.component';
 import { ArchivePageComponent } from './pages/archive/archive-page/archive-page.component';
+import { MissionTelemetryPageComponent } from './pages/archive/components/mission-telemetry-page/mission-telemetry-page.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'assignment-page', pathMatch: 'full' },
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path: 'live-view-page', component: LiveViewPageComponent },
   { path: 'device-management-page', component: DeviceManagementPageComponent },
   { path: 'archive', component: ArchivePageComponent },
+  { path: 'archive/investigate', component: MissionTelemetryPageComponent },
   { path: '**', redirectTo: '' },
 ];
 

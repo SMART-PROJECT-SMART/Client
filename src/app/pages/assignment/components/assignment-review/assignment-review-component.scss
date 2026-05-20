@@ -1,12 +1,21 @@
 @use '../../../../../styles/constants' as *;
 
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .review-page {
   display: grid;
-  grid-template-rows: auto auto 1fr;
-  height: 100vh;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  min-height: 0;
   padding: $spacing-lg;
   gap: $spacing-lg;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -27,11 +36,50 @@
   gap: $spacing-md;
 }
 
+.review-tabs {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+::ng-deep .review-tabs .mat-mdc-tab-body-wrapper {
+  flex: 1;
+  min-height: 0;
+}
+
+::ng-deep .review-tabs .mat-mdc-tab-body-content {
+  height: 100%;
+  overflow: hidden;
+}
+
+.tab-content {
+  min-height: 0;
+  height: 100%;
+}
+
+.map-tab-content {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: $spacing-md;
+  padding-top: 0;
+}
+
+
+.cards-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  padding-top: $spacing-md;
+}
+
 .assignments-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: $spacing-md;
-  overflow-y: auto;
   padding: $spacing-xs;
   align-content: start;
   align-items: start;
@@ -77,6 +125,52 @@
   display: flex;
   align-items: center;
   gap: $spacing-sm;
+  min-width: 0;
+}
+
+.score-circle {
+  --score-circle-fill: 0%;
+  --score-circle-inner-size: 52px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  color: $color-error;
+  background: conic-gradient(
+    currentColor var(--score-circle-fill),
+    rgba($color-border-default, 0.35) var(--score-circle-fill)
+  );
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: var(--score-circle-inner-size);
+    height: var(--score-circle-inner-size);
+    border-radius: 50%;
+    background-color: $color-background-card;
+  }
+}
+
+.score-circle__value {
+  position: relative;
+  z-index: 1;
+  color: $color-text-primary;
+  font-size: $font-size-sm;
+  font-weight: 700;
+}
+
+.score-circle--high {
+  color: $color-success;
+}
+
+.score-circle--medium {
+  color: $color-warning;
+}
+
+.score-circle--low {
+  color: $color-error;
 }
 
 .card-layout {
@@ -280,6 +374,19 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-xs;
+}
+
+.violation-type-badge {
+  align-self: flex-start;
+  background-color: rgba($color-warning, 0.2);
+  border: $border-width-thin solid rgba($color-warning, 0.55);
+  border-radius: 999px;
+  color: $color-warning;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 2px $spacing-sm;
+  text-transform: uppercase;
 }
 
 .violation-title {

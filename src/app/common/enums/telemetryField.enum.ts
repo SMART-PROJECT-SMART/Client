@@ -13,6 +13,7 @@ export enum TelemetryField {
   RollDeg = 'RollDeg',
   ThrustAfterInfluence = 'ThrustAfterInfluence',
   FuelAmount = 'FuelAmount',
+  AmmoPercentage = 'AmmoPercentage',
   DataStorageUsedGB = 'DataStorageUsedGB',
   FlightTimeSec = 'FlightTimeSec',
   SignalStrength = 'SignalStrength',
@@ -22,4 +23,5 @@ export enum TelemetryField {
   TailId = 'TailId',
   UAVTypeValue = 'UAVTypeValue',
   PlatformType = 'PlatformType',
+  MissionId = 'MissionId',
 }

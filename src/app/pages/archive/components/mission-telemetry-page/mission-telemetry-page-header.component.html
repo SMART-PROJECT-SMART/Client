@@ -1,0 +1,15 @@
+<div class="page-header">
+  <div class="header-left">
+    <button mat-icon-button (click)="back.emit()" [attr.aria-label]="investigationUi.BACK_ARIA_LABEL">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>{{ missionTitle }}</h1>
+    <span class="header-meta">{{ investigationUi.TAIL_LABEL_PREFIX }}{{ tailId }}</span>
+  </div>
+  @if (hasMissionDetails) {
+    <button mat-stroked-button class="mission-details-btn" (click)="openMissionDetails.emit()">
+      <mat-icon>info_outline</mat-icon>
+      {{ investigationUi.MISSION_DETAILS_LABEL }}
+    </button>
+  }
+</div>

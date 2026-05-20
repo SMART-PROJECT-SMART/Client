@@ -1,15 +1,22 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import type { ArchiveAssignmentRo } from '../../../../models/archive';
 import { buildComparisonRows, type ComparisonRow, type RelevantUav } from '../../archive-page/archive-comparison.utils';
 import { TelemetryField } from '../../../../common/enums';
 import { EnumUtil, TelemetryUtil } from '../../../../common/utils';
+import { ClientConstants } from '../../../../common/constants/clientConstants.constant';
+import { ArchiveInvestigationReturnStateService } from '../../../../services/archive/archive-investigation-return-state.service';
+
+const { INVESTIGATE } = ClientConstants.ArchiveRoutes;
+const { MISSION_ID: MISSION_ID_PARAM, TAIL_ID: TAIL_ID_PARAM } = ClientConstants.TelemetryQueryParams;
 
 const EXCLUDED_TELEMETRY_FIELDS = new Set<string>([
   TelemetryField.TailId,
   TelemetryField.UAVTypeValue,
   TelemetryField.PlatformType,
   TelemetryField.NearestSleeveId,
+  TelemetryField.MissionId,
 ]);
 
 export interface TelemetryFieldEntry {
@@ -27,6 +34,8 @@ export interface TelemetryFieldEntry {
 })
 export class ArchiveDiffDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<ArchiveDiffDialogComponent>);
+  private readonly router = inject(Router);
+  private readonly investigationReturnState = inject(ArchiveInvestigationReturnStateService);
   private readonly data: ArchiveAssignmentRo = inject(MAT_DIALOG_DATA, { optional: true }) ?? {
     suggestedAssignments: [],
     actualAssignments: [],
@@ -133,6 +142,18 @@ export class ArchiveDiffDialogComponent {
         suggestedValue: suggested?.[field] ?? null,
         actualValue: actual?.[field] ?? null,
       }));
+  }
+
+  openTelemetryInvestigation(row: ComparisonRow, tailId: number): void {
+    if (!row.missionId) {
+      return;
+    }
+
+    this.investigationReturnState.setDiffRecordForReturn(this.data);
+    this.dialogRef.close();
+    this.router.navigate([INVESTIGATE], {
+      queryParams: { [MISSION_ID_PARAM]: row.missionId, [TAIL_ID_PARAM]: tailId },
+    });
   }
 
   close(): void {

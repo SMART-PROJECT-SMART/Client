@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import {
   Observable,
-  interval,
+  EMPTY,
+  timer,
+  throwIfEmpty,
   switchMap,
-  takeWhile,
+  exhaustMap,
+  take,
   catchError,
   throwError,
-  filter,
-  take,
+  map,
+  timeout,
 } from 'rxjs';
 import { AssignmentApiService } from './api/assignment-api.service';
 import type {
@@ -30,12 +33,11 @@ export class AssignmentOrchestratorService {
 
   public submitMissionsAndPoll(missions: Mission[]): Observable<AssignmentAlgorithmRo> {
     const dto: AssignmentSuggestionDto = { missions };
-
     return this.assignmentApiService.createAssignmentSuggestion(dto).pipe(
       switchMap((response) => this.pollUntilComplete(response.assignmentId)),
       catchError((error) => {
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -43,20 +45,37 @@ export class AssignmentOrchestratorService {
     return this.assignmentApiService.applyAssignment(dto).pipe(
       catchError((error) => {
         return throwError(() => error);
-      })
+      }),
     );
   }
 
   private pollUntilComplete(assignmentId: string): Observable<AssignmentAlgorithmRo> {
-    return interval(PollingConstants.POLLING_INTERVAL_MS).pipe(
-      switchMap(() => this.checkStatus(assignmentId)),
-      takeWhile((status: AssignmentStatusRo) => status.status !== AssignmentStatus.Completed, true),
-      filter((status: AssignmentStatusRo) => status.status === AssignmentStatus.Completed),
+    return timer(0, PollingConstants.POLLING_INTERVAL_MS).pipe(
+      take(PollingConstants.POLLING_MAX_ATTEMPTS),
+      exhaustMap((attemptIndex: number) =>
+        this.checkStatus(assignmentId).pipe(
+          timeout(PollingConstants.STATUS_REQUEST_TIMEOUT_MS),
+          map((status: AssignmentStatusRo) => ({ status, attempt: attemptIndex + 1 })),
+        ),
+      ),
+      switchMap(({ status }) => {
+        if (status.status === AssignmentStatus.Completed) {
+          return [status];
+        }
+        if (
+          status.status === AssignmentStatus.Pending ||
+          status.status === AssignmentStatus.Processing
+        ) {
+          return EMPTY;
+        }
+        return throwError(() => new Error(ErrorMessages.POLL_STATUS_ERROR));
+      }),
       take(1),
+      throwIfEmpty(() => new Error(ErrorMessages.POLLING_IN_PROGRESS)),
       switchMap(() => this.fetchResult(assignmentId)),
       catchError((error) => {
         return throwError(() => error);
-      })
+      }),
     );
   }
 

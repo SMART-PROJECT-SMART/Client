@@ -68,3 +68,8 @@ body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+
+.time-range-overlay-panel {
+  max-width: min(100vw - 32px, 680px);
+  overflow: visible;
+}

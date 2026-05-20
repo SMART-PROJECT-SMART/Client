@@ -7,7 +7,7 @@
     <div class="header-actions">
       <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
         <mat-label>Search</mat-label>
-        <input matInput #searchInput (keyup)="onSearch($event)" placeholder="Tail ID, Mission, Priority..." />
+        <input matInput #searchInput (input)="onFilterInput($event)" placeholder="Tail ID, Mission, Priority..." />
         @if (searchInput.value) {
           <button mat-icon-button matSuffix (click)="onClearSearch(searchInput)" aria-label="Clear">
             <mat-icon>close</mat-icon>

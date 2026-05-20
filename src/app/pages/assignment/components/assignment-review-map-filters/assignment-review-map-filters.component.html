@@ -1,0 +1,127 @@
+<div class="map-toolbar">
+  <button
+    mat-stroked-button
+    type="button"
+    cdkOverlayOrigin
+    #origin="cdkOverlayOrigin"
+    (click)="toggle()"
+    [attr.aria-label]="labels.triggerAriaLabel"
+  >
+    <mat-icon>filter_list</mat-icon>
+    {{ labels.triggerButtonLabel }}
+  </button>
+
+  @if (showSeparateOverlapsToggle()) {
+    <button mat-stroked-button type="button" (click)="onToggleSeparateOverlaps()">
+      {{
+        separateOverlapsEnabled()
+          ? separateOverlapsOnLabel
+          : separateOverlapsOffLabel
+      }}
+    </button>
+  }
+
+  @if (selectedMissionIds().length > 0 || selectedMissionTypes().length > 0 || selectedUavTypes().length > 0 || selectedTailIds().length > 0) {
+    <button mat-button type="button" (click)="onClear()">{{ labels.clearButtonLabel }}</button>
+  }
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="isOpen()"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  (backdropClick)="close()"
+>
+  <div class="map-filter-panel" (click)="$event.stopPropagation()">
+    <div class="map-filter-panel__header">
+      <div class="map-filter-panel__title">{{ labels.panelTitle }}</div>
+      <button mat-icon-button type="button" (click)="close()" [attr.aria-label]="labels.closeAriaLabel">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <mat-tab-group class="map-filter-tabs" animationDuration="0ms">
+      <mat-tab [label]="labels.tabMissionsLabel">
+        <div class="map-filter-panel__section">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
+            <mat-label>{{ labels.searchMissionsLabel }}</mat-label>
+            <input matInput [formControl]="missionQueryControl" />
+          </mat-form-field>
+
+          <div class="map-filter-panel__list">
+            @for (m of filteredMissionOptions(); track m.missionId) {
+              <mat-checkbox
+                [checked]="selectedMissionIdSet().has(m.missionId)"
+                (change)="onToggleMission(m.missionId, $event.checked)"
+              >
+                {{ m.title }}
+              </mat-checkbox>
+            }
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="labels.tabMissionTypeLabel">
+        <div class="map-filter-panel__section">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
+            <mat-label>{{ labels.searchMissionTypesLabel }}</mat-label>
+            <input matInput [formControl]="missionTypeQueryControl" />
+          </mat-form-field>
+
+          <div class="map-filter-panel__list">
+            @for (t of filteredMissionTypeOptions(); track t.uavType) {
+              <mat-checkbox
+                [checked]="selectedMissionTypeSet().has(t.uavType)"
+                (change)="onToggleMissionType(t.uavType, $event.checked)"
+              >
+                {{ t.label }}
+              </mat-checkbox>
+            }
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="labels.tabUavsLabel">
+        <div class="map-filter-panel__section">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
+            <mat-label>{{ labels.searchUavsLabel }}</mat-label>
+            <input matInput [formControl]="uavQueryControl" [placeholder]="labels.searchUavsPlaceholder" />
+          </mat-form-field>
+
+          <div class="map-filter-panel__list">
+            @for (u of filteredUavOptions(); track u.tailId) {
+              <mat-checkbox
+                [checked]="selectedTailIdSet().has(u.tailId)"
+                (change)="onToggleUav(u.tailId, $event.checked)"
+              >
+                {{ labels.uavDisplayPrefix }}{{ u.tailId }} ({{ u.label }})
+              </mat-checkbox>
+            }
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="labels.tabUavTypeLabel">
+        <div class="map-filter-panel__section">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="map-filter-panel__search">
+            <mat-label>{{ labels.searchUavTypesLabel }}</mat-label>
+            <input matInput [formControl]="uavTypeQueryControl" />
+          </mat-form-field>
+
+          <div class="map-filter-panel__list">
+            @for (t of filteredUavTypeOptions(); track t.uavType) {
+              <mat-checkbox
+                [checked]="selectedUavTypeSet().has(t.uavType)"
+                (change)="onToggleUavType(t.uavType, $event.checked)"
+              >
+                {{ t.label }}
+              </mat-checkbox>
+            }
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</ng-template>
+

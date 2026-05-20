@@ -67,6 +67,17 @@
           @if (isRowExpanded(row.title)) {
             <tr class="telemetry-detail-row">
               <td colspan="7">
+                @if (row.missionId && row.actualTailId !== null) {
+                  <div class="investigate-actions">
+                    <button
+                      mat-button
+                      class="investigate-btn"
+                      (click)="openTelemetryInvestigation(row, row.actualTailId); $event.stopPropagation()">
+                      <mat-icon>insights</mat-icon>
+                      Investigate Telemetry
+                    </button>
+                  </div>
+                }
                 @if (row.relevantUavs.length > 0) {
                   <table class="telemetry-table">
                     <thead>

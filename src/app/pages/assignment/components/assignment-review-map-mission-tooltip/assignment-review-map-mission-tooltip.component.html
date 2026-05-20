@@ -1,0 +1,22 @@
+<div class="ar-map-tooltip-card">
+  <div class="ar-map-tooltip-card__header">
+    <span class="ar-map-tooltip-card__title">{{ title() }}</span>
+    <span [class]="labels.typeBadgeClass">{{ missionType() }}</span>
+  </div>
+
+  <div class="ar-map-tooltip-card__section ar-map-tooltip-card__section--status">
+    <div class="ar-map-tooltip-card__row">
+      <span class="ar-map-tooltip-card__label">{{ labels.missionPriority }}</span>
+      <span class="ar-map-tooltip-card__value">{{ priority() }}</span>
+    </div>
+    <div class="ar-map-tooltip-card__row">
+      <span class="ar-map-tooltip-card__label">{{ labels.missionWindow }}</span>
+      <span class="ar-map-tooltip-card__value">{{ windowValue() }}</span>
+    </div>
+    <div class="ar-map-tooltip-card__row">
+      <span class="ar-map-tooltip-card__label">{{ labels.missionLocation }}</span>
+      <span class="ar-map-tooltip-card__value">{{ locationValue() }}</span>
+    </div>
+  </div>
+</div>
+

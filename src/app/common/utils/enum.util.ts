@@ -34,6 +34,7 @@ export class EnumUtil {
       [TelemetryField.RollDeg]: 'Roll',
       [TelemetryField.ThrustAfterInfluence]: 'Thrust After Influence',
       [TelemetryField.FuelAmount]: 'Fuel Amount',
+      [TelemetryField.AmmoPercentage]: 'Ammo',
       [TelemetryField.DataStorageUsedGB]: 'Data Storage Used',
       [TelemetryField.FlightTimeSec]: 'Flight Time',
       [TelemetryField.SignalStrength]: 'Signal Strength',
@@ -43,6 +44,7 @@ export class EnumUtil {
       [TelemetryField.TailId]: 'Tail Number',
       [TelemetryField.UAVTypeValue]: 'UAV Type Value',
       [TelemetryField.PlatformType]: 'Platform Type',
+      [TelemetryField.MissionId]: 'Mission ID',
     };
     return displayMap[field];
   }

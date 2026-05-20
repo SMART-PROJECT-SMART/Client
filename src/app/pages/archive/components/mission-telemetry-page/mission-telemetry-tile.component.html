@@ -1,0 +1,89 @@
+<div class="tile-header">
+  <span class="tile-field-name" [style.color]="item.chartConfig.color">
+    {{ item.chartConfig.label }}
+  </span>
+  <span class="tile-field-unit">{{ item.chartConfig.unit }}</span>
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="tileMenu"
+    class="tile-menu-btn no-drag"
+    (mousedown)="$event.stopPropagation()"
+    (touchstart)="$event.stopPropagation()"
+  >
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #tileMenu="matMenu">
+    <button mat-menu-item (click)="toggleViewMode.emit(item.field)">
+      <mat-icon>{{ item.viewMode === viewModeChart ? 'table_chart' : 'show_chart' }}</mat-icon>
+      {{
+        item.viewMode === viewModeChart
+          ? investigationUi.MENU_SHOW_AS_TABLE
+          : investigationUi.MENU_SHOW_AS_CHART
+      }}
+    </button>
+  </mat-menu>
+  <mat-icon class="drag-handle">drag_indicator</mat-icon>
+</div>
+
+@if (item.viewMode === viewModeChart) {
+  <div
+    class="tile-chart no-drag"
+    (mousedown)="$event.stopPropagation()"
+    (touchstart)="$event.stopPropagation()"
+  >
+    <canvas
+      baseChart
+      type="line"
+      [data]="item.chartConfig.data"
+      [options]="item.chartConfig.options"
+      [plugins]="[crosshairPlugin]"
+    ></canvas>
+  </div>
+} @else {
+  <div
+    class="tile-table no-drag"
+    (mousedown)="$event.stopPropagation()"
+    (touchstart)="$event.stopPropagation()"
+  >
+    <div class="tile-table-body">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ investigationUi.TIMESTAMP_TABLE_HEADER }}</th>
+            <th>{{ item.chartConfig.label }} {{ item.chartConfig.unit }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of tableRows; track row.trackId) {
+            <tr>
+              <td>{{ row.timestamp }}</td>
+              <td>{{ row.value | number: investigationUi.TABLE_VALUE_NUMBER_FORMAT }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="tile-pagination">
+      <select
+        class="page-size-select no-drag"
+        [value]="selectedPageSize ?? ''"
+        (change)="pageSizeChange.emit({ field: item.field, size: +$any($event.target).value })"
+        (mousedown)="$event.stopPropagation()"
+        (touchstart)="$event.stopPropagation()"
+      >
+        <option value="">Auto</option>
+        @for (size of pageSizeOptions; track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select>
+      <span class="row-range">{{ rowRangeDisplay }}</span>
+      <button mat-icon-button [disabled]="prevDisabled" (click)="prevPage.emit(item.field)">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span class="page-info">{{ tilePage + 1 }} / {{ totalPages }}</span>
+      <button mat-icon-button [disabled]="nextDisabled" (click)="nextPage.emit(item.field)">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+}

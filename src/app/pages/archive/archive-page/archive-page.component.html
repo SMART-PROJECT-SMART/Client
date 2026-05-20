@@ -5,7 +5,10 @@
     preserveContent
   >
     <mat-tab label="Active Missions">
-      <app-active-missions-table></app-active-missions-table>
+      <app-active-missions-table
+        [filterValue]="activeMissionsSearchFilter()"
+        (filterValueChange)="activeMissionsSearchFilter.set($event)"
+      ></app-active-missions-table>
     </mat-tab>
 
     <mat-tab label="Assignment Archive">

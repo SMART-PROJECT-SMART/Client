@@ -1,0 +1,100 @@
+<div class="time-range-picker-panel">
+  <div class="panel-header">
+    <span class="panel-title">{{ panelTitle }}</span>
+    <button mat-icon-button type="button" (click)="onCancel()" [attr.aria-label]="panelCloseAriaLabel">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="panel-body">
+    <form [formGroup]="rangeForm" class="panel-form" (ngSubmit)="$event.preventDefault()">
+      @if (boundsDisplay) {
+        <div class="valid-range-panel" role="status">
+          <mat-icon class="valid-range-icon">info_outline</mat-icon>
+          <div class="valid-range-copy">
+            <span class="valid-range-title">{{ validRangeBannerTitle }}</span>
+            <span class="valid-range-value">{{ boundsDisplay }}</span>
+          </div>
+        </div>
+      }
+
+      <div class="booking-calendar-wrap" #calendarWrap>
+        <ngx-daterangepicker-material
+          [startDate]="pickerStart"
+          [endDate]="$any(pickerEnd)"
+          [ranges]="emptyPickerRanges"
+          [showCustomRangeLabel]="false"
+          [minDate]="minDateBoundStr"
+          [maxDate]="maxDateBoundStr"
+          [autoApply]="true"
+          [alwaysShowCalendars]="true"
+          [linkedCalendars]="true"
+          [emptyWeekColumnClass]="timeRangeCalendarOutsideMonthCellClass"
+          [showCancel]="false"
+          [showClearButton]="false"
+          [showDropdowns]="true"
+          [timePicker]="false"
+          drops="down"
+          opens="center"
+          (datesUpdated)="onPickerDatesUpdated($event)"
+          (startDateChanged)="onPickerStartDateChangedFromLibrary($event)"
+          (endDateChanged)="onPickerEndDateChangedFromLibrary($event)"
+        ></ngx-daterangepicker-material>
+      </div>
+
+      <div class="time-range-times-shell">
+        <div class="time-range-times-heading">{{ timesGroupTitle }}</div>
+        <div class="time-range-times-grid">
+          <span class="time-segment-label">{{ startTimeShortLabel }}</span>
+          <span class="time-range-label-spacer" aria-hidden="true"></span>
+          <span class="time-segment-label">{{ endTimeShortLabel }}</span>
+          <div class="time-range-time-cell">
+            <app-time-range-owl-timer-segment
+              [control]="startTimeControl"
+              [useUtcWallClock]="useUtcCalendar"
+              [placeholder]="timeInputPlaceholder"
+              [ariaLabel]="startTimeLabel"
+              [triggerAriaLabel]="startTimeOpenPickerAriaLabel"
+            />
+          </div>
+          <span class="time-range-separator" aria-hidden="true">–</span>
+          <div class="time-range-time-cell">
+            <app-time-range-owl-timer-segment
+              [control]="endTimeControl"
+              [useUtcWallClock]="useUtcCalendar"
+              [placeholder]="timeInputPlaceholder"
+              [ariaLabel]="endTimeLabel"
+              [triggerAriaLabel]="endTimeOpenPickerAriaLabel"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="time-range-validation-messages" aria-live="polite">
+        @if (isInvalidRange) {
+          <div class="form-level-error">
+            <mat-icon>error</mat-icon>
+            <span>{{ msgEndBeforeStart }}</span>
+          </div>
+        }
+        @if (isStartBeforeTelemetryBounds) {
+          <div class="form-level-error">
+            <mat-icon>error</mat-icon>
+            <span>{{ msgStartBeforeFirstSample }}</span>
+          </div>
+        }
+        @if (isEndAfterTelemetryBounds) {
+          <div class="form-level-error">
+            <mat-icon>error</mat-icon>
+            <span>{{ msgEndAfterLastSample }}</span>
+          </div>
+        }
+      </div>
+    </form>
+  </div>
+
+  <div class="panel-actions">
+    <button mat-button type="button" (click)="onCancel()">{{ panelCancelLabel }}</button>
+    <button mat-raised-button color="primary" type="button" [disabled]="!isValid" (click)="onApply()">{{ panelApplyLabel }}</button>
+  </div>
+</div>

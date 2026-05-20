@@ -1,0 +1,79 @@
+<div class="page-container">
+  <app-mission-telemetry-page-header
+    [missionTitle]="missionTitle()"
+    [tailId]="tailId()"
+    [hasMissionDetails]="!!missionDetails()"
+    (back)="goBack()"
+    (openMissionDetails)="openMissionDetails()"
+  />
+
+  @if (errorMessage()) {
+    <div class="state-container">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+    </div>
+  } @else if (availableFields().length > 0) {
+    <app-mission-telemetry-investigation-toolbar
+      #investigationToolbar
+      [showParameterSearch]="unselectedFields().length > 0"
+      [parameterSearch]="parameterSearch()"
+      [filteredUnselectedFields]="filteredUnselectedFields()"
+      [selectedFields]="selectedFields()"
+      [showTimeRangeControls]="!!missionTelemetryWindow()"
+      [rangeDisplay]="rangeDisplay()"
+      [isRangeModified]="isRangeModified()"
+      [timeRangeOverlayOpen]="timeRangeOverlayOpen()"
+      [timeRangePickerConfig]="timeRangePickerConfig()"
+      (parameterSearchInput)="onParameterSearchInput($event)"
+      (parameterSelected)="onParameterSelected($event.event, $event.input)"
+      (removeField)="removeField($event)"
+      (timeRangeOpenChange)="onTimeRangeOpenChange($event)"
+      (timeRangeToggle)="onTimeRangeToggle()"
+      (timeRangeApplied)="onTimeRangeApplied($event)"
+      (resetTimeRange)="resetTimeRange()"
+    />
+
+    @if (selectedFields().length > 0) {
+      <div class="gridster-wrapper">
+        @if (fetchingData()) {
+          <div class="fetch-overlay">
+            <mat-spinner [diameter]="investigationUi.FETCH_OVERLAY_SPINNER_DIAMETER"></mat-spinner>
+          </div>
+        }
+        <gridster [options]="gridsterOptions">
+          @for (item of dashboardItems(); track item.field) {
+            <gridster-item [item]="item">
+              <app-mission-telemetry-tile
+                [item]="item"
+                [viewModeChart]="viewModeChart"
+                [tableRows]="tableRowsByField().get(item.field) ?? []"
+                [crosshairPlugin]="crosshairPlugin"
+                [pageSizeOptions]="pageSizeOptions"
+                [tilePage]="getTilePage(item.field)"
+                [totalPages]="getTotalPages(item.field, item.rows)"
+                [rowRangeDisplay]="getRowRangeDisplay(item.field, item.rows)"
+                [selectedPageSize]="getTilePageSize(item.field)"
+                [prevDisabled]="getTilePage(item.field) === 0"
+                [nextDisabled]="getTilePage(item.field) >= getTotalPages(item.field, item.rows) - 1"
+                (toggleViewMode)="toggleViewMode($event)"
+                (prevPage)="prevPage($event)"
+                (nextPage)="nextPage($event)"
+                (pageSizeChange)="setTilePageSize($event.field, $event.size)"
+              />
+            </gridster-item>
+          }
+        </gridster>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">show_chart</mat-icon>
+        <h2>{{ investigationUi.EMPTY_STATE_TITLE }}</h2>
+        <p>{{ investigationUi.EMPTY_STATE_HINT }}</p>
+        <button mat-raised-button color="primary" (click)="focusSearchInput()">
+          <mat-icon>add_circle</mat-icon>
+          {{ investigationUi.ADD_PARAMETER_LABEL }}
+        </button>
+      </div>
+    }
+  }
+</div>

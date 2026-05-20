@@ -20,6 +20,7 @@ export class TelemetryUtil {
       [TelemetryField.RollDeg]: TelemetryUnits.ROLL_DEG,
       [TelemetryField.ThrustAfterInfluence]: TelemetryUnits.THRUST_AFTER_INFLUENCE,
       [TelemetryField.FuelAmount]: TelemetryUnits.FUEL_AMOUNT,
+      [TelemetryField.AmmoPercentage]: TelemetryUnits.AMMO_PERCENTAGE,
       [TelemetryField.DataStorageUsedGB]: TelemetryUnits.DATA_STORAGE_USED_GB,
       [TelemetryField.FlightTimeSec]: TelemetryUnits.FLIGHT_TIME_SEC,
       [TelemetryField.SignalStrength]: TelemetryUnits.SIGNAL_STRENGTH,
@@ -29,6 +30,7 @@ export class TelemetryUtil {
       [TelemetryField.TailId]: TelemetryUnits.TAIL_ID,
       [TelemetryField.UAVTypeValue]: TelemetryUnits.UAV_TYPE_VALUE,
       [TelemetryField.PlatformType]: TelemetryUnits.PLATFORM_TYPE,
+      [TelemetryField.MissionId]: TelemetryUnits.MISSION_ID,
     };
     const unit = unitMap[field];
     return unit ? `(${unit})` : '';
